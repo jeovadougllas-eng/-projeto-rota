@@ -1,0 +1,554 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#052b36"><title>Traxio | Planeje melhor. Vá mais longe.</title>
+<link href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css" rel="stylesheet">
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#17304b;background:#f3f7fb}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(110deg,#0a2d52,#1264a6);color:white;padding:17px 18px}header strong{font-size:23px}header p{font-size:12px;margin:4px 0;color:#cde5fa}main{max-width:1140px;margin:auto;padding:14px}.tabs{display:flex;gap:6px;overflow:auto;padding-bottom:9px}.tabs button{white-space:nowrap}.tab{display:none}.tab.active{display:block}.tabs button.active{background:#0b3157;color:white}.card{background:white;padding:17px;border-radius:17px;margin-bottom:14px;box-shadow:0 2px 12px #123b6412}button{border:0;background:#146cba;color:white;border-radius:10px;padding:11px 13px;font-weight:650;cursor:pointer}button.secondary{background:#e8f0f9;color:#11436e}button:disabled{opacity:.55}input,select{font:inherit;border:1px solid #cbd9e7;border-radius:9px;padding:11px;width:100%;min-width:0}label{display:block;font-size:13px;font-weight:650;margin-bottom:5px}.field{margin-bottom:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.muted{color:#657e96;font-size:13px}.notice{background:#fff5de;border-radius:10px;padding:11px;font-size:13px}.ok{background:#e8f7ee;border-radius:10px;padding:11px;font-size:13px}.item{padding:12px 0;border-bottom:1px solid #e5edf5}.item:last-child{border:0}.pill{font-size:11px;padding:4px 8px;border-radius:12px;background:#e7f0fb;color:#174d7e}.map{height:360px;border-radius:14px;overflow:hidden;background:#dbe8f5}.suggestions{max-height:240px;overflow:auto}.suggestions button{display:block;text-align:left;background:#f1f6fc;color:#1c4269;width:100%;margin:5px 0}.stat{background:#edf5fc;border-radius:12px;padding:12px;flex:1;min-width:110px}h2{margin:0 0 12px}h3{margin:10px 0}small{color:#607c98}a{color:#0b63ad}#mapStatus{padding:6px 0}footer{text-align:center;padding:22px;color:#69819b;font-size:12px}@media(max-width:600px){main{padding:10px}.card{padding:13px}.map{height:340px}}
+
+:root{--navy:#082e58;--blue:#1165cc;--ink:#102c4d;--muted:#66809b;--line:#e1eaf5;--bg:#edf4fc}
+body{background:var(--bg);color:var(--ink)}header{padding:15px 24px;background:linear-gradient(100deg,#082b54,#1265aa);box-shadow:0 3px 18px #092b5320}header strong{font-size:27px;letter-spacing:-.6px}header p{font-size:13px}
+main{max-width:1800px;padding:16px 20px 30px 214px;min-height:calc(100vh - 78px)}.tabs{position:fixed;top:91px;bottom:0;left:0;width:196px;display:flex;flex-direction:column;padding:16px 10px;gap:8px;background:linear-gradient(160deg,#08345e,#05294e);z-index:15;box-shadow:3px 0 20px #082c531c;overflow-y:auto}.tabs button{width:100%;text-align:left;border:1px solid #ffffff1c;background:#0b3a6c;color:#eaf5ff;padding:15px 13px;border-radius:12px}.tabs button.active{background:#2386fa;color:#fff;border-color:#2386fa}.card{border:1px solid var(--line);border-radius:17px;box-shadow:0 5px 22px #0d427514;padding:18px}.stat{background:#eff6ff;min-width:140px}.stat strong{font-size:27px}button{transition:filter .15s;background:#116bd0}button:hover{filter:brightness(1.05)}button.secondary{background:#eaf2fd;color:#10477f}input,select{background:#fff;border:1px solid #d7e3f0}.muted{color:#67809a}.map{height:min(65vh,690px);min-height:410px;border-radius:15px}.workspace{display:grid;grid-template-columns:minmax(310px,390px) minmax(0,1fr);gap:14px;align-items:start}.workspace .card{margin-bottom:0}.workspace-side{max-height:calc(100vh - 135px);overflow:auto}.workspace-map{min-width:0}.workspace-map .map{height:min(66vh,700px)}.workspace-route{grid-column:2}.workspace-side h3{margin:12px 0}.compact-list{display:flex;flex-direction:column;gap:7px}.client-tile{border:1px solid #e2eaf4;border-radius:13px;padding:11px;background:#fff}.client-tile-top{display:flex;gap:9px;align-items:center}.client-tile-top strong{flex:1}.client-tile input[type=checkbox]{width:19px;height:19px;flex:none;accent-color:#146ed8}.priority{font-size:12px;font-weight:750;border-radius:30px;padding:4px 9px;white-space:nowrap}.priority-3{background:#ffe4e7;color:#bb1734}.priority-2{background:#fff0c8;color:#916000}.priority-1{background:#dff7e8;color:#087044}.tile-address{font-size:12px;color:#66809b;margin:7px 0 8px 28px;line-height:1.5}.tile-actions{display:flex;gap:6px;flex-wrap:wrap;margin-left:28px}.tile-actions button{font-size:11px;padding:7px 9px}.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin:11px 0}.filter-row button{padding:8px 11px;background:#e9f2fc;color:#16436e;font-size:12px}.filter-row button.selected{background:#176ed6;color:#fff}.search-inline{margin:9px 0}.section-kicker{font-size:12px;color:#64829e;font-weight:650}.workspace-route .route-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}.route-result{padding:10px;background:#f0f6ff;border-radius:10px}.client-link{border:0;background:transparent;color:#104879;padding:0;text-align:left;font-size:inherit}.client-link:hover{text-decoration:underline}.dashboard-client-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.dashboard-client{border:1px solid #e0eaf5;border-radius:12px;padding:12px;background:#f9fcff}.dashboard-client-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.dashboard-client p{font-size:12px;color:#617b94;margin:7px 0}.detail-dialog{border:0;border-radius:18px;padding:0;max-width:680px;width:calc(100% - 30px);max-height:85vh;overflow-y:auto;box-shadow:0 15px 60px #001c3850}.detail-dialog::backdrop{background:#071d38aa}.detail-inner{padding:22px}.detail-row{padding:9px 0;border-bottom:1px solid #e6edf5}.detail-row small{display:block;color:#6a8099;margin-bottom:4px}.detail-row div{overflow-wrap:anywhere}.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 16px}.detail-heading{font-size:15px;margin:22px 0 4px;color:#154b79}.dashboard-client{cursor:pointer}.dashboard-client:focus-visible{outline:3px solid #2386fa}.dashboard-client:hover{border-color:#86b8f4;background:#f1f8ff}.detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.route-hint{font-size:12px;color:#58718b}.workspace-route #routeChoices{display:none}#backToClient{display:none}body.pin-mode #backToClient{display:inline-block}.notice{line-height:1.45}
+@media(max-width:1050px){main{padding-left:15px}.tabs{position:static;width:auto;flex-direction:row;background:transparent;box-shadow:none;padding:0 0 12px;overflow:auto}.tabs button{width:auto;flex:none;text-align:center;background:#dcecff;color:#134775}.tabs button.active{background:#0d3d72}.workspace{grid-template-columns:1fr}.workspace-side{max-height:none}.workspace-route{grid-column:1}.workspace-map{grid-row:1}.workspace-map .map{height:440px}.workspace-route .route-layout{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){header{padding:14px}main{padding:10px}.card{padding:13px}.workspace-map .map{height:360px;min-height:330px}.workspace-route .route-layout{grid-template-columns:1fr}.tabs button{font-size:12px;padding:11px}.workspace-side .compact-list{max-height:420px;overflow:auto}}
+
+/* Projeto Rota 2.4 — recuperação segura de consultas CNPJ */
+.enrich-box{border:1px solid #d4e4f7;background:linear-gradient(120deg,#f4f9ff,#fff);padding:18px;border-radius:15px;margin:18px 0}.enrich-box h3{margin:0}.enrich-box progress{accent-color:#1676e5}.enrich-box .row{margin:10px 0}.detail-source{font-size:12px;color:#54738f;background:#eff6ff;padding:10px;border-radius:9px;margin:8px 0}
+/* Projeto Rota 2.1 — estrutura fixa e refinamento visual */
+:root{--header-h:82px;--sidebar-w:205px;--bg:#edf4fc;--navy:#06294e;--blue:#1479e9}
+html,body{height:100%;overflow:hidden}body{font-size:14px}
+header{height:var(--header-h);position:fixed;inset:0 0 auto 0;z-index:30;display:flex;flex-direction:column;justify-content:center;padding:12px 24px;background:linear-gradient(110deg,#06254b,#0c4c88 60%,#1166b3)}
+header strong{font-size:25px;display:flex;align-items:center;gap:9px}header p{margin:3px 0 0 39px;font-size:11px;color:#b7d9f7}.brand-mark{display:inline-flex;background:#1b84fa;color:white;width:30px;height:30px;border-radius:10px;align-items:center;justify-content:center;font-size:22px}
+.tabs{top:var(--header-h);bottom:0;width:var(--sidebar-w);left:0;border-right:1px solid #184d7a;padding:20px 12px;background:linear-gradient(165deg,#062d59,#032344);box-shadow:none}
+.tabs button{border:1px solid #ffffff18;background:#104373;color:#e9f5ff;font-size:14px;padding:14px 13px;border-radius:12px}.tabs button.active{background:linear-gradient(120deg,#1680f5,#349dff);box-shadow:0 5px 14px #0002}
+main{position:fixed;top:var(--header-h);bottom:0;left:var(--sidebar-w);right:0;max-width:none;padding:18px 20px 24px;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+footer{display:none}h2{font-size:22px;letter-spacing:-.4px}h3{font-size:17px}.card{box-shadow:0 5px 20px #11375d0d;border:1px solid #e4edf7;padding:18px}.stat{background:#eef5ff}.stat strong{font-size:30px}.dashboard-client{background:#fbfdff;border-radius:13px;min-height:93px}.dashboard-client-head .client-link{font-weight:800;font-size:15px}.dashboard-client:hover,.client-tile:hover{border-color:#bfd8f5;background:#f9fcff}
+.workspace{grid-template-columns:minmax(285px,37%) minmax(0,1fr);grid-template-rows:auto auto;align-items:start;gap:15px}.workspace-side{grid-column:1;grid-row:1 / span 2;max-height:calc(100dvh - var(--header-h) - 38px);overflow:auto;scrollbar-width:thin;position:sticky;top:0}.workspace-map{grid-column:2;grid-row:1}.workspace-route{grid-column:2;grid-row:2}.workspace-map .map{height:clamp(350px,49dvh,590px);min-height:340px}.workspace-map .muted:last-child{font-size:11px;margin-bottom:0}.compact-list{gap:7px}.client-tile{padding:10px 11px}.tile-address{margin:5px 0 7px 28px}.tile-actions button{padding:6px 10px}.filter-row button{border-radius:30px}.route-top{display:flex;justify-content:space-between;gap:10px;align-items:start}.eyebrow{font-size:10px;letter-spacing:1.4px;color:#2874b6;font-weight:800}.route-counter{background:#e7f2ff;color:#07519b;font-size:12px;padding:6px 10px;border-radius:30px;white-space:nowrap;font-weight:700}.planner-grid{display:grid;grid-template-columns:minmax(230px,1fr) minmax(260px,1fr);gap:14px}.route-summary{background:#f1f7ff;border:1px solid #e2effd;border-radius:14px;padding:13px}.route-result{margin:9px 0;font-size:13px;line-height:1.5}.route-order{display:flex;flex-direction:column;gap:5px;margin:8px 0}.route-stop{display:flex;align-items:center;gap:7px;padding:6px 8px;background:#fff;border-radius:9px;border:1px solid #e5eff9}.route-stop .num{background:#1678e6;color:white;border-radius:100%;width:23px;height:23px;display:grid;place-items:center;font-size:11px;flex:none}.route-stop .name{flex:1;font-weight:650;font-size:12px}.route-stop button{padding:5px 8px;font-size:11px}.strategy-panel{background:#f8fbff;border:1px solid #dceafa;border-radius:12px;padding:12px;margin-top:10px}.strategy-panel[hidden]{display:none}.strategy-option{display:flex;gap:9px;align-items:start;padding:8px 4px;border-bottom:1px solid #e7eef8;font-size:13px;cursor:pointer}.strategy-option input{width:auto;margin-top:3px;accent-color:#1178e7}.strategy-option small{display:block;font-weight:400;font-size:11px;margin-top:3px}.strategy-panel>button{width:100%;margin-top:10px}.route-choices-hidden{display:none}.route-hint{margin:12px 0 0;line-height:1.4}.client-tile-top strong{font-size:14px}.maplibregl-map{touch-action:pan-x pan-y}
+@media(max-width:1100px){.tabs{position:fixed;top:var(--header-h);bottom:0;left:0;width:var(--sidebar-w);flex-direction:column;background:linear-gradient(165deg,#062d59,#032344);padding:15px 10px;box-shadow:none;overflow-y:auto}.tabs button{width:100%;text-align:left;background:#104373;color:#e9f5ff}.tabs button.active{background:#1680f5}main{left:var(--sidebar-w);padding:14px}.workspace{grid-template-columns:minmax(265px,40%) minmax(0,1fr)}.planner-grid{grid-template-columns:1fr}.workspace-map .map{height:440px}}
+@media(max-width:760px){:root{--header-h:66px}header{padding:9px 14px}header strong{font-size:20px}header p{font-size:10px;margin-left:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tabs{top:var(--header-h);width:68px;padding:12px 6px;position:fixed;flex-direction:column}.tabs button{font-size:10px;text-align:center;padding:12px 4px;overflow-wrap:anywhere}main{left:68px;padding:10px}.workspace{grid-template-columns:1fr}.workspace-map{grid-column:1;grid-row:1}.workspace-side{grid-column:1;grid-row:2;position:static;max-height:430px}.workspace-route{grid-column:1;grid-row:3}.workspace-map .map{height:350px;min-height:300px}.dashboard-client-list{grid-template-columns:1fr}.card{padding:12px}.route-top{flex-wrap:wrap}}
+@media(max-width:420px){.tabs{width:55px}.tabs button{font-size:9px}main{left:55px;padding:7px}.workspace-map .map{height:300px;min-height:260px}.card{padding:10px}.row button{font-size:11px;padding:9px}h2{font-size:18px}}
+
+/* Traxio 2.6 — autenticação Supabase e carteira na nuvem */
+:root{--header-h:82px}
+body.auth-locked header,body.auth-locked main{visibility:hidden}
+#authScreen{position:fixed;inset:0;z-index:9999;background:linear-gradient(140deg,#082c36,#0c4a4b 65%,#11645c);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+#authScreen[hidden]{display:none!important}
+.auth-panel{background:#fff;width:min(100%,460px);border-radius:22px;padding:30px;box-shadow:0 22px 75px #001d2570}
+.auth-panel h1{margin:0 0 4px;color:#0c4a4b;font-size:36px;letter-spacing:-1.2px}
+.auth-panel .tagline{margin:0 0 24px;color:#46736c;font-weight:600}
+.auth-panel label{margin-top:13px;color:#153f43}
+.auth-panel button{background:#0c7771;width:100%;margin-top:12px}
+.auth-panel button.secondary{background:#e9f4f0;color:#0c4a4b}
+.auth-panel .auth-note{font-size:12px;color:#5e7475;line-height:1.5}
+#authMessage{min-height:25px;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+#authSetup{border-top:1px solid #e2ece9;margin-top:18px;padding-top:12px}
+#authSetup summary{cursor:pointer;font-size:13px;color:#0c6865;font-weight:700}
+#authSetup input{font-size:12px}
+#authLogout{position:absolute;right:20px;top:19px;background:#ffffff20;border:1px solid #ffffff60;color:white;padding:9px 12px}
+#authIdentity{position:absolute;right:92px;top:31px;font-size:12px;color:#d7f7ee;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:760px){#authIdentity{display:none}#authLogout{top:12px;right:10px;padding:7px 9px;font-size:11px}header strong{padding-right:65px}}
+
+/* Traxio 2.7 | Identidade oficial: estrada, movimento e localizacao */
+:root{--navy:#052b36;--blue:#008f95;--ink:#092e3a;--muted:#637d83;--line:#d9e9e9;--bg:#f2f8f7;--header-h:84px;--sidebar-w:210px;--traxio-lime:#dfff20;--traxio-turquoise:#00cdbf}
+body{background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(112deg,#042834 0%,#064c53 58%,#06776b 100%);box-shadow:0 5px 24px #002e3028;border-bottom:2px solid #00bbaa33}
+header strong{font-size:25px;letter-spacing:-.65px;gap:12px}header p{color:#b8e8e1;margin-left:48px}
+.brand-mark{background:none!important;overflow:hidden;width:38px;height:38px;border-radius:10px;box-shadow:0 2px 12px #001f2b66;flex:none}
+.brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
+.tabs{background:linear-gradient(175deg,#042f3b 0%,#063f49 57%,#052b36 100%);border-right:1px solid #00cab82c;padding:19px 11px}
+.tabs:before{content:'';height:4px;margin:0 6px 12px;border-radius:12px;background:linear-gradient(90deg,#00d6c5,#dfff20);flex:none}
+.tabs button{background:transparent;color:#c4e5e3;border:1px solid transparent;font-weight:650;padding:15px 13px;transition:background .18s,border-color .18s}
+.tabs button:hover{background:#ffffff12;filter:none}
+.tabs button.active{background:linear-gradient(110deg,#0b7075,#078e88);border-color:#20cbb88c;box-shadow:inset 3px 0 0 #dfff20,0 7px 18px #001e2933;color:#fff}
+main{background:radial-gradient(ellipse at 95% 0%,#dcf7ef 0%,transparent 37%),#f2f8f7}
+.card{border:1px solid #dcebe9;box-shadow:0 6px 22px #073b3d0a;border-radius:19px;background:#fff;padding:20px}
+.card h2{color:#073943;font-size:22px}.card h3{color:#0b4d53}
+button{background:#087d7e;color:white;border-radius:11px;box-shadow:none}
+button:hover{filter:brightness(1.08)}button.secondary{background:#e7f5f2;color:#07545a}
+input,select{border:1px solid #cddfdf;background:#fff;color:#10363e}
+input:focus,select:focus{outline:2px solid #00b8ad66;outline-offset:1px;border-color:#00a59c}
+.stat{background:linear-gradient(140deg,#f3fcfa,#eaf7f4);border:1px solid #d9efea;border-radius:14px;position:relative;overflow:hidden}
+.stat:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(#00d4c6,#dfff20)}
+.stat strong{color:#073e47;font-size:31px}.muted,small{color:#617f84}
+.pill{background:#e4f5ed;color:#11605b}.priority-3{background:#ffe9e7;color:#b93b35}.priority-2{background:#fff6d8;color:#926d09}.priority-1{background:#e4f8e8;color:#14794c}
+.dashboard-client,.client-tile{border-color:#e0ebea;background:#fcfefd;border-radius:13px;transition:background .16s,border-color .16s}
+.dashboard-client:hover,.client-tile:hover{border-color:#5dcab9;background:#f1fcf8}
+.client-link{color:#07686a}.route-counter{background:#e3f8ee;color:#075b55}.eyebrow{color:#087f7b}
+.route-summary,.route-result{background:#effaf6;border-color:#d6f0e8}.route-stop .num{background:#008b83}
+.filter-row button{background:#e9f5f2;color:#1a6265}.filter-row button.selected{background:#007c78;color:#fff}
+.enrich-box{background:linear-gradient(140deg,#f5fcfa,#fff);border-color:#d5eae6}
+#cloudPanel{border-left:4px solid #00bba9}
+#authScreen{background:radial-gradient(circle at 85% 12%,#0b766c 0%,transparent 35%),linear-gradient(145deg,#052632,#084b4e 70%,#086b60)}
+.auth-panel{border:1px solid #ffffffa8}.auth-panel h1{color:#073f47}.auth-panel button{background:#00877e}.auth-panel button.secondary{background:#e7f7f1;color:#065c58}
+.auth-panel .tagline{color:#38766f}.auth-panel label{color:#174d50}
+#authLogout{background:#ffffff15;border-color:#ffffff70}#authIdentity{color:#c5f4e7}
+.traxio-hero{position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(112deg,#04303d 0%,#06525b 70%,#078a76 100%);color:white;padding:24px 25px;margin-bottom:17px;min-height:135px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.traxio-hero:after{content:'';position:absolute;right:-32px;bottom:-87px;width:260px;height:260px;border:22px solid #dfff2040;border-left-color:#00d5c566;border-top-color:transparent;border-radius:50%;transform:rotate(-35deg)}
+.traxio-hero h2{color:white!important;margin:4px 0 7px;font-size:clamp(20px,2.5vw,29px)}
+.traxio-hero p{margin:0;color:#c6eeeb;max-width:530px;font-size:13px;line-height:1.6}
+.traxio-kicker{font-size:10px;letter-spacing:2px;color:#dfff20;font-weight:850}
+.traxio-hero-symbol{font-size:55px;line-height:1;color:#dfff20;transform:rotate(-14deg);position:relative;z-index:1;opacity:.95}
+.traxio-sync-badge{display:inline-flex;gap:7px;align-items:center;background:#e6f6ef;border:1px solid #ccece0;color:#145d58;border-radius:100px;padding:8px 12px;font-size:12px;font-weight:700;margin:0 0 14px}
+.traxio-sync-badge:before{content:'';width:8px;height:8px;border-radius:50%;background:#08a88f}
+.traxio-sync-badge.warning{background:#fff6dc;color:#8c640f;border-color:#f2e0a9}.traxio-sync-badge.warning:before{background:#d4a017}
+.traxio-section-note{color:#597c7e;font-size:13px;margin-top:-3px;margin-bottom:17px}
+@media(max-width:760px){:root{--header-h:66px}.tabs{width:68px}.tabs:before{margin:0 3px 7px}.tabs button{padding:12px 4px}header p{margin-left:0}.brand-mark{width:31px;height:31px}.traxio-hero{padding:17px;min-height:120px}.traxio-hero-symbol{font-size:35px}}
+@media(max-width:420px){.tabs{width:55px}.traxio-hero-symbol{display:none}}
+
+/* Traxio 2.8 — correção visual explícita da área autenticada */
+:root{--navy:#052b36!important;--blue:#008f95!important;--ink:#092e3a!important;--bg:#f2f8f7!important}
+body:not(.auth-locked) header{background:linear-gradient(110deg,#032b36,#07555a 65%,#058577)!important;border-bottom:3px solid #dfff20!important}
+body:not(.auth-locked) header .brand-mark{background:transparent!important}
+body:not(.auth-locked) .tabs{background:linear-gradient(170deg,#042e3a,#07515a 68%,#032c36)!important;border-right:1px solid #10b9aa!important}
+body:not(.auth-locked) .tabs button{background:transparent!important;color:#e1f5ef!important;border-color:transparent!important}
+body:not(.auth-locked) .tabs button.active{background:linear-gradient(110deg,#007d7b,#079f91)!important;color:white!important;border-color:#32c9ae!important;box-shadow:inset 4px 0 #dfff20!important}
+body:not(.auth-locked) main{background:radial-gradient(ellipse at 100% 0%,#dcf8ed,transparent 40%),#f2f8f7!important}
+body:not(.auth-locked) main .card{border-color:#d7e9e5!important}
+body:not(.auth-locked) main button:not(.tabs button){accent-color:#008e85}
+body:not(.auth-locked) .stat{background:linear-gradient(120deg,#e9f9f4,#f7fcfa)!important}
+body:not(.auth-locked) .traxio-hero{background:linear-gradient(110deg,#04313c,#076f69)!important}
+</style></head><body class="auth-locked"><div id="authScreen" role="region" aria-label="Acesso ao Traxio"><div class="auth-panel"><div style="display:flex;align-items:center;gap:13px;margin-bottom:12px"><img alt="Símbolo Traxio" src="data:image/webp;base64,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" style="width:59px;height:59px;border-radius:15px"><h1>Traxio<span style="color:#00bbaa">.</span></h1></div><p class="tagline">Planeje melhor. Vá mais longe.</p><form id="authForm"><label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="username" required placeholder="seuemail@exemplo.com"><label for="authPassword">Senha</label><input id="authPassword" type="password" autocomplete="current-password" required placeholder="Sua senha"><button id="authLogin" type="submit">Entrar no Traxio</button></form><p id="authMessage" role="status" aria-live="polite"></p><details id="authSetup"><summary>Configuração inicial do Supabase</summary><p class="auth-note">Configure uma única vez neste navegador. Utilize somente a chave <b>Publishable</b> (sb_publishable_...). Nunca use a Secret key ou service_role.</p><label for="authUrl">Project URL</label><input id="authUrl" type="url" placeholder="https://seu-projeto.supabase.co"><label for="authKey">Publishable key</label><input id="authKey" type="text" autocomplete="off" placeholder="sb_publishable_..."><button id="authSaveConfig" type="button" class="secondary">Salvar configuração pública</button></details><p class="auth-note">A carteira atual permanece armazenada neste navegador. A sincronização automática é conservadora: alterações conflitantes não são sobrescritas e exclusões não são propagadas.</p></div></div><header><strong><span class="brand-mark"><img alt="Símbolo Traxio" src="data:image/webp;base64,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"></span> Traxio</strong><p>Planeje melhor. Vá mais longe. · Mapas, clientes e rotas comerciais</p><span id="authIdentity"></span><button id="authLogout" type="button" hidden>Sair</button></header><main><nav class="tabs"><button data-tab="painel" class="active">⌂ Painel</button><button data-tab="clientes">♧ Clientes</button><button data-tab="mapa">▧ Mapa e Rotas</button><button data-tab="dados">⇅ Planilhas</button></nav>
+<section id="painel" class="tab active"><div class="traxio-hero"><div style="position:relative;z-index:1"><div class="traxio-kicker">TRAXIO · CENTRAL COMERCIAL</div><h2>Seu território em movimento.</h2><p>Clientes, planejamento e rotas em um só lugar. Planeje melhor. Vá mais longe.</p></div><div class="traxio-hero-symbol" aria-hidden="true">↗</div></div><div class="card"><h2>Visão geral da carteira</h2><div class="row"><div class="stat"><strong id="total">0</strong><div class="muted">Clientes</div></div><div class="stat"><strong id="located">0</strong><div class="muted">Localizados</div></div><div class="stat"><strong id="pending">0</strong><div class="muted">Pendentes</div></div></div><p>Seu território em um só lugar. Acesse a ficha dos clientes e planeje suas visitas.</p><h3>Minha carteira</h3><p class="traxio-section-note">Encontre rapidamente uma loja para consultar ou planejar uma visita.</p><div class="field"><input id="dashboardSearch" placeholder="Buscar cliente pelo nome ou endereço"></div><div id="dashboardClients" class="dashboard-client-list"></div><div class="notice">⚠️ Esta versão usa servidores públicos de demonstração. Requer internet para mapas, CEP e busca. Não é navegação segura para dirigir nem serviço de produção.</div></div></section>
+<section id="clientes" class="tab"><div class="card"><h2>Cadastro de clientes</h2><p class="traxio-section-note">Cadastre, consulte e localize seus pontos de atendimento.</p><div class="grid"><div class="field"><label>Nome do cliente</label><input id="name" placeholder="Ex.: Farmácia Central"></div><div class="field"><label>CEP (8 dígitos)</label><input id="cep" inputmode="numeric" maxlength="9" placeholder="59000-000"></div></div><div class="row"><button class="secondary" id="cepBtn">Consultar CEP</button><span class="muted" id="cepStatus"></span></div><div class="grid"><div class="field"><label>Rua, bairro, cidade / UF</label><input id="address" autocomplete="off" placeholder="Comece a digitar o endereço"></div><div class="field"><label>Número do imóvel</label><input id="houseNumber" inputmode="text" placeholder="Ex.: 150 ou S/N"></div><div class="field"><label>Complemento (opcional)</label><input id="complement" placeholder="Sala, bloco, loja..."></div></div><div class="row"><button id="searchBtn">Buscar agora</button><button class="secondary" id="gpsBtn">Usar minha posição</button></div><p class="muted">Sugestões automáticas após 3 caracteres (pausa de 700 ms). O número será pesquisado quando informado. Confirme o marcador no mapa: nem todos os imóveis têm número mapeado.</p><div id="suggestions" class="suggestions"></div><div class="grid"><input id="lat" type="hidden"><input id="lon" type="hidden"><div class="field"><label>Prioridade comercial</label><select id="priority"><option value="1">Baixa</option><option value="2" selected>Média</option><option value="3">Alta</option></select></div></div><div class="row"><button class="secondary" id="adjustPin">📍 Ajustar ponto no mapa</button><button id="saveClient">Salvar cliente</button></div><p id="saveStatus" class="muted"></p></div><div class="card"><h3>Minha carteira</h3><div id="clientList"></div></div></section>
+<section id="mapa" class="tab"><div class="workspace"><aside class="card workspace-side"><h2>Clientes para visita</h2><p class="section-kicker">Escolha os clientes e filtre por prioridade ou região.</p><input class="search-inline" id="mapClientSearch" placeholder="Buscar cliente, rua ou bairro"><div class="filter-row" id="priorityFilters"><button class="selected" data-priority-filter="all">Todos</button><button data-priority-filter="3">Alta</button><button data-priority-filter="2">Média</button><button data-priority-filter="1">Baixa</button></div><div class="field"><label for="regionFilter">Região / bairro</label><select id="regionFilter"><option value="all">Todas as regiões</option></select></div><div class="row"><button class="secondary" id="selectAllClients">Selecionar todos</button><button class="secondary" id="selectNoClients">Limpar seleção</button></div><div id="mapClientList" class="compact-list"></div></aside><div class="card workspace-map"><h2>Mapa de visitas</h2><div class="row"><button class="secondary" id="fitBtn">Enquadrar clientes</button><button class="secondary" id="myLocation">Minha localização</button><button class="secondary" id="backToClient">✓ Confirmar ponto e voltar ao cadastro</button></div><div id="mapStatus" class="muted">Carregando mapa…</div><div id="map" class="map"></div><p class="muted">© OpenStreetMap contributors · OpenFreeMap · Visualização MapLibre. O marcador laranja é arrastável. Toque no mapa para reposicionar o ponto e depois confirme para voltar ao cadastro. Mapas: OpenFreeMap, dados OpenStreetMap.</p></div>
+<div class="workspace-route card"><div class="route-top"><div><span class="eyebrow">PLANEJAMENTO COMERCIAL</span><h2>Planejar visitas</h2><p class="muted">Selecione os clientes na lista e escolha como organizar seu dia.</p></div><span class="route-counter" id="selectedCount">0 selecionados</span></div>
+<div class="planner-grid"><div class="planner-main"><div class="field"><label>Origem da rota</label><select id="origin"><option value="first">Primeiro cliente selecionado</option><option value="gps">Minha localização (se permitida)</option></select></div><div class="row"><button class="secondary" id="suggestToggle" type="button">✦ Sugerir rota</button><button id="calcRoute" type="button">Organizar visitas</button></div><div id="strategyPanel" class="strategy-panel" hidden><label>Como você prefere organizar?</label><label class="strategy-option"><input type="radio" name="routeStrategy" value="distance" checked><span><strong>Menor deslocamento</strong><small>Prioriza menor percurso estimado pelas ruas.</small></span></label><label class="strategy-option"><input type="radio" name="routeStrategy" value="priority"><span><strong>Clientes mais importantes primeiro</strong><small>Favorece prioridade alta e depois reduz deslocamentos.</small></span></label><label class="strategy-option"><input type="radio" name="routeStrategy" value="balanced"><span><strong>Equilíbrio entre distância e prioridade</strong><small>Combina relevância comercial e percurso estimado.</small></span></label><button id="generateSuggestion" type="button">✦ Gerar sugestão agora</button></div><div id="routeChoices" class="route-choices-hidden"></div></div>
+<div class="route-summary"><div class="row" style="justify-content:space-between"><strong>Resumo do roteiro</strong><span class="pill">Experimental</span></div><div id="routeResult" class="route-result">Selecione os clientes e toque em “Sugerir rota” ou “Organizar visitas”.</div><div id="routeOrder" class="route-order"></div><div class="row"><button id="roadRoute" class="secondary" disabled type="button">Traçar pelas ruas</button><button id="clearRoute" class="secondary" type="button">Limpar trajeto</button></div></div></div><p class="route-hint">Cálculo estimado com dados OpenStreetMap. Sem trânsito em tempo real; confira as vias antes de dirigir. O servidor de roteamento é apenas de demonstração.</p></div></div></section>
+<section id="dados" class="tab"><div class="card"><h2>Central de dados e sincronização</h2><p class="traxio-section-note">Importe, proteja e recupere sua carteira comercial com clareza e controle.</p><h3>Importar planilhas</h3><p>Importe CSV, Excel (.xlsx/.xls) ou planilhas do LibreOffice (.ods). No Google Sheets, exporte como XLSX ou CSV.</p><input id="sheetFile" type="file" accept=".csv,.xlsx,.xls,.ods"><p id="importStatus" class="muted"></p><p class="muted">Preserva todas as colunas originais da planilha na ficha de cada cliente, incluindo CNPJ, telefones e responsáveis, quando informados. Registros sem coordenadas ficam pendentes para localização posterior. Arquivos Excel/ODS dependem da biblioteca de leitura carregada pela internet.</p><div class="enrich-box"><div class="row" style="justify-content:space-between"><h3>Dados empresariais por CNPJ</h3><span class="pill">BrasilAPI · sob demanda da importação</span></div><p class="muted">Após importar uma planilha com CNPJ, o Projeto Rota pode consultar e guardar informações públicas de cada empresa. Os dados originais da planilha não serão substituídos. Requer internet enquanto consulta; fichas já salvas ficam disponíveis sem conexão.</p><div class="row"><button id="enrichStart" type="button">Consultar CNPJs pendentes</button><button id="enrichStop" class="secondary" type="button" disabled>Pausar consultas</button><button id="enrichRefresh" class="secondary" type="button">Atualizar dados já consultados</button></div><progress id="enrichProgress" max="100" value="0" style="width:100%;height:13px;margin-top:13px"></progress><p id="enrichStatus" role="status" aria-live="polite" class="muted">Aguardando consulta.</p><p id="enrichDiagnostic" class="muted" style="font-weight:650;overflow-wrap:anywhere"></p><p class="muted">As consultas são feitas sequencialmente, com intervalo conservador. Mantenha a página aberta e a tela ligada durante a execução. Se houver interrupção, use “Consultar CNPJs pendentes” para retomar; os resultados já salvos serão preservados. A disponibilidade da API não é garantida.</p></div><div class="enrich-box" id="cloudPanel"><div class="row" style="justify-content:space-between"><h3>☁️ Carteira na nuvem · Supabase</h3><span class="pill">Sincronização protegida · versão 2.9</span></div><p class="muted">Os dados são sincronizados automaticamente após o login e alterações locais, com proteção contra conflitos. Os botões abaixo permitem executar verificações e operações manuais quando necessário.</p><div class="row"><button id="cloudUpload" type="button">Enviar carteira à nuvem</button><button id="cloudDownload" type="button" class="secondary">Buscar clientes da nuvem</button><button id="cloudCheck" type="button" class="secondary">Verificar conexão</button></div><p id="cloudStatus" role="status" aria-live="polite" class="muted">Faça login para usar a nuvem. Faça backup JSON antes da primeira sincronização.</p><p class="muted">O envio verifica a revisão de cada registro e não sobrescreve alterações divergentes. A recuperação não sobrescreve registros locais. Para testar em outro dispositivo, entre na mesma conta e use “Buscar clientes da nuvem”.</p></div><div class="row"><button id="exportCSV" class="secondary">Exportar clientes CSV</button><button id="backup" class="secondary">Backup JSON</button><button id="clear" class="secondary">Apagar carteira</button></div><div class="field"><label>Restaurar backup JSON</label><input id="restore" type="file" accept=".json"></div></div></section>
+</main><dialog id="clientDialog" class="detail-dialog"><div class="detail-inner"><div id="clientDetail"></div><div class="detail-actions"><button id="detailMap">Ver no mapa</button><button class="secondary" id="detailEdit">Editar cadastro</button><button class="secondary" id="detailClose">Fechar</button></div></div></dialog><footer>Projeto Rota · Protótipo de validação, não APK e não navegador automotivo</footer>
+<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id), KEY='projeto_rota_mapa_v1';
+let selectedIds=new Set(),selectionInitialized=false,routeBusy=false;let editingClientId=null;let clients=[],map=null,markers=[],draftMarker=null,routeGeo=null,gps=null,lastRoute=null,adjustingPin=false;
+try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))clients=raw}catch{}
+const save=()=>{localStorage.setItem(KEY,JSON.stringify(clients));render();if(typeof traxioScheduleSync==='function')traxioScheduleSync()};
+const valid=(a,b)=>Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a)<=90&&Math.abs(b)<=180;
+const num=v=>{if(v==null||String(v).trim()==='')return null;const n=Number(String(v).replace(',','.'));return Number.isFinite(n)?n:null};
+const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const uid=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();
+function switchTab(id){if(id==='rotas')id='mapa';document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===id));if(id==='mapa')setTimeout(()=>{initMap();map?.resize();renderMarkers();if(adjustingPin)showDraftMarker();renderWorkspace()},150)}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+let mapErro=false;
+function initMap(){
+ if(map)return;if(!window.maplibregl){$('mapStatus').textContent='Mapa indisponível. Verifique a conexão com a internet.';return}
+ try{
+  map=new maplibregl.Map({container:'map',center:[-35.211,-5.795],zoom:11,style:'https://tiles.openfreemap.org/styles/liberty'});
+  map.addControl(new maplibregl.NavigationControl(),'top-right');
+  map.on('load',()=>{$('mapStatus').textContent='Mapa inicializado. Aguardando o carregamento dos dados cartográficos do OpenFreeMap…';renderMarkers();if(adjustingPin)showDraftMarker()});
+  map.on('idle',()=>{if(!mapErro)$('mapStatus').textContent='Mapa renderizado · OpenFreeMap / OpenStreetMap.'});
+  map.on('click',e=>{if(adjustingPin){setDraft(e.lngLat.lat,e.lngLat.lng,false);$('mapStatus').textContent='Ponto ajustado. Arraste o marcador laranja para refinar ou confirme para voltar ao cadastro.'}else{$('mapStatus').textContent='Para alterar o ponto, abra Clientes e toque em Ajustar ponto no mapa.'}});
+  map.on('error',e=>{mapErro=true;const msg=e?.error?.message||'Falha de rede';$('mapStatus').textContent='Falha ao carregar o mapa: '+msg+'. Confira a conexão ou teste em uma página HTTPS.'});
+ }catch(e){$('mapStatus').textContent='Erro ao iniciar mapa: '+e.message}
+}
+function showDraftMarker(){
+ if(!map)return;
+ const lat=num($('lat').value),lon=num($('lon').value);
+ if(!valid(lat,lon))return;
+ if(!draftMarker){
+  draftMarker=new maplibregl.Marker({color:'#f97316',draggable:true}).setLngLat([lon,lat]).addTo(map);
+  draftMarker.on('dragend',()=>{const p=draftMarker.getLngLat();$('lat').value=p.lat.toFixed(6);$('lon').value=p.lng.toFixed(6);selectedPrecision='manual';$('mapStatus').textContent='Marcador ajustado manualmente. Confirme o ponto para voltar ao cadastro.'});
+ }else{draftMarker.setLngLat([lon,lat])}
+ map.flyTo({center:[lon,lat],zoom:17});
+}
+function setDraft(lat,lon,move=true){
+ $('lat').value=lat.toFixed(6);$('lon').value=lon.toFixed(6);
+ if(map){showDraftMarker();if(!move)map.jumpTo({center:[lon,lat],zoom:map.getZoom()})}
+}
+$('adjustPin').onclick=()=>{
+ const lat=num($('lat').value),lon=num($('lon').value);
+ if(!valid(lat,lon)){$('saveStatus').textContent='Primeiro escolha uma sugestão de endereço para obter um ponto inicial.';return}
+ adjustingPin=true;document.body.classList.add('pin-mode');switchTab('mapa');$('mapStatus').textContent='Arraste o marcador laranja ou toque no mapa para ajustar. Depois toque em Confirmar ponto.';
+};
+$('backToClient').onclick=()=>{adjustingPin=false;document.body.classList.remove('pin-mode');switchTab('clientes');$('saveStatus').textContent='Ponto confirmado no mapa. Confira os dados e salve o cliente.'};
+function renderMarkers(){if(!map)return;markers.forEach(m=>m.remove());markers=[];clients.filter(c=>valid(c.lat,c.lon)).forEach(c=>{const m=new maplibregl.Marker({color:c.priority===3?'#dc4a54':'#176ab0'}).setLngLat([c.lon,c.lat]).setPopup(new maplibregl.Popup().setText(c.name+' — '+(c.address||'Sem endereço'))).addTo(map);markers.push(m)})}
+function fit(){if(!map)return;const located=clients.filter(c=>valid(c.lat,c.lon));if(!located.length)return;const bounds=new maplibregl.LngLatBounds();located.forEach(c=>bounds.extend([c.lon,c.lat]));map.fitBounds(bounds,{padding:55,maxZoom:15})}
+$('fitBtn').onclick=fit;
+function requestGPS(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(Error('Geolocalização indisponível.'));navigator.geolocation.getCurrentPosition(p=>{gps={lat:p.coords.latitude,lon:p.coords.longitude};resolve(gps)},reject,{enableHighAccuracy:true,timeout:12000,maximumAge:60000})})}
+$('gpsBtn').onclick=async()=>{try{const p=await requestGPS();setDraft(p.lat,p.lon);$('saveStatus').textContent='Posição aproximada preenchida; confirme o ponto antes de salvar.'}catch(e){$('saveStatus').textContent='GPS indisponível: '+e.message}};
+$('myLocation').onclick=async()=>{try{const p=await requestGPS();initMap();map?.flyTo({center:[p.lon,p.lat],zoom:15})}catch(e){$('mapStatus').textContent='GPS indisponível: '+e.message}};
+$('cepBtn').onclick=async()=>{const cep=$('cep').value.replace(/\D/g,'');if(cep.length!==8){$('cepStatus').textContent='Digite 8 dígitos.';return}const status=$('cepStatus');status.textContent='Consultando…';try{const r=await fetch('https://viacep.com.br/ws/'+cep+'/json/',{signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error('Serviço indisponível');const d=await r.json();if(d.erro)throw Error('CEP não encontrado');$('address').value=[d.logradouro,d.bairro,d.localidade,d.uf,'Brasil'].filter(Boolean).join(', ');resetLocation();$('suggestions').replaceChildren();status.textContent='CEP encontrado. Informe o número e confirme o ponto no mapa.'}catch(e){status.textContent='Falha: '+e.message}};
+let searchTimer=null, searchController=null, searchSequence=0, selectedPrecision='none';
+function resetLocation(){selectedPrecision='none';$('lat').value='';$('lon').value='';if(draftMarker){draftMarker.remove();draftMarker=null}}
+function scheduleSearch(){clearTimeout(searchTimer);searchController?.abort();searchSequence++;resetLocation();const q=$('address').value.trim();if(q.length<3){$('suggestions').replaceChildren();return}searchTimer=setTimeout(()=>searchAddress(),700)}
+$('address').addEventListener('input',scheduleSearch);
+$('houseNumber').addEventListener('input',scheduleSearch);
+$('searchBtn').onclick=()=>{clearTimeout(searchTimer);searchAddress()};
+async function searchAddress(){
+ const box=$('suggestions'),base=$('address').value.trim(),house=$('houseNumber').value.trim();
+ if(base.length<3){box.textContent='Digite pelo menos 3 caracteres.';return}
+ const seq=++searchSequence;searchController?.abort();searchController=new AbortController();
+ box.textContent='Buscando sugestões…';
+ const queries=house?[house+' '+base,base]:[base];
+ try{
+  let features=[];
+  for(const query of queries){
+   const url='https://photon.komoot.io/api/?limit=7&q='+encodeURIComponent(query);
+   const response=await fetch(url,{signal:searchController.signal});
+   if(!response.ok)throw Error('Serviço indisponível ('+response.status+')');
+   const data=await response.json();
+   if(seq!==searchSequence)return;
+   features=data.features||[];
+   if(features.length)break;
+  }
+  if(seq!==searchSequence)return;box.replaceChildren();
+  if(!features.length){box.textContent='Nenhum endereço encontrado. Tente incluir bairro e cidade.';return}
+  for(const f of features){
+   const p=f.properties||{},coords=f.geometry?.coordinates;
+   if(!coords||!valid(coords[1],coords[0]))continue;
+   const hasNumber=!!p.housenumber, numberMatch=house&&hasNumber&&String(p.housenumber).trim().toLowerCase()===house.toLowerCase();
+   const text=[p.name,p.housenumber,p.street,p.district,p.city,p.state,p.country].filter(Boolean).join(', ');
+   const b=document.createElement('button');
+   b.textContent=(hasNumber?'📍 Imóvel nº '+p.housenumber+' · ':'📌 Local aproximado · ')+(text||'Local sem nome');
+   b.onclick=()=>{
+    $('address').value=[p.street||p.name,p.district,p.city,p.state,p.country].filter(Boolean).join(', ');
+    if(hasNumber)$('houseNumber').value=p.housenumber;
+    selectedPrecision=numberMatch?'number':'approx';setDraft(coords[1],coords[0]);
+    box.replaceChildren();box.textContent=numberMatch?'Número encontrado na base cartográfica. Confira a posição no mapa.':'Resultado aproximado: confira e arraste o marcador no mapa antes de salvar.';
+    $('saveStatus').textContent=box.textContent;
+   };box.append(b)
+  }
+ }catch(e){if(e.name==='AbortError'||seq!==searchSequence)return;box.textContent='Busca indisponível: '+e.message+'. Tente novamente.'}
+}
+$('saveClient').onclick=()=>{const name=$('name').value.trim(),lat=num($('lat').value),lon=num($('lon').value);if(!name){$('saveStatus').textContent='Informe o nome.';return}if(lat!==null&&selectedPrecision!=='number'&&!confirm('A posição pode ser aproximada. Você conferiu o marcador no mapa?'))return;if((lat===null)!==(lon===null)||lat!==null&&!valid(lat,lon)){$('saveStatus').textContent='Informe ambas as coordenadas válidas ou deixe as duas vazias.';return}const original=editingClientId?clients.find(c=>c.id===editingClientId):null;const record={...(original||{}),id:editingClientId||uid(),name,address:[$('address').value.trim(),$('houseNumber').value.trim()?'nº '+$('houseNumber').value.trim():'',$('complement').value.trim()].filter(Boolean).join(' · '),cep:$('cep').value.trim(),lat,lon,priority:Number($('priority').value)};if(editingClientId){const i=clients.findIndex(c=>c.id===editingClientId);if(i>=0)clients[i]=record;else clients.push(record)}else clients.push(record);editingClientId=null;save();$('name').value='';$('address').value='';$('houseNumber').value='';$('complement').value='';$('cep').value='';$('lat').value='';$('lon').value='';$('saveStatus').textContent='Cliente salvo.';draftMarker?.remove();draftMarker=null};
+function render(){const previousSelection=new Set(selectedIds);const located=clients.filter(c=>valid(c.lat,c.lon));$('total').textContent=clients.length;$('located').textContent=located.length;$('pending').textContent=clients.length-located.length;const list=$('clientList'),choices=$('routeChoices');list.replaceChildren();choices.replaceChildren();if(!clients.length)list.textContent='Nenhum cliente cadastrado.';for(const c of clients){const div=document.createElement('div');div.className='item';const name=document.createElement('strong');name.textContent=c.name;const detail=document.createElement('div');detail.className='muted';detail.textContent=(c.address||'Endereço não informado')+' · '+(valid(c.lat,c.lon)?'Localizado':'Pendente de localização');const actions=document.createElement('div');actions.className='row';const show=document.createElement('button');show.className='secondary';show.textContent='Ver no mapa';show.disabled=!valid(c.lat,c.lon);show.onclick=()=>{switchTab('mapa');setTimeout(()=>map?.flyTo({center:[c.lon,c.lat],zoom:16}),150)};const edit=document.createElement('button');edit.className='secondary';edit.textContent='Localizar / editar';edit.onclick=()=>{switchTab('clientes');$('name').value=c.name;$('address').value=c.address||'';$('houseNumber').value='';$('complement').value='';$('cep').value=c.cep||'';$('lat').value=c.lat??'';$('lon').value=c.lon??'';$('priority').value=c.priority||2;editingClientId=c.id;$('saveStatus').textContent='Editando cadastro: altere os dados e toque em Salvar cliente. O registro original será preservado até salvar.'};const del=document.createElement('button');del.className='secondary';del.textContent='Excluir';del.onclick=()=>{if(confirm('Excluir '+c.name+'?')){clients=clients.filter(x=>x.id!==c.id);save()}};actions.append(show,edit,del);div.append(name,detail,actions);list.append(div);if(valid(c.lat,c.lon)){const label=document.createElement('label');label.className='item';const check=document.createElement('input');check.type='checkbox';check.value=c.id;check.checked=!selectionInitialized||previousSelection.has(c.id);check.onchange=()=>{selectionInitialized=true;if(check.checked)selectedIds.add(c.id);else selectedIds.delete(c.id);renderWorkspace();updateSelectedCount()};check.style.width='auto';check.style.marginRight='8px';label.append(check,document.createTextNode(c.name));choices.append(label)}}if(!selectionInitialized){selectedIds=new Set(located.map(c=>c.id));selectionInitialized=true}selectedIds=new Set([...selectedIds].filter(id=>located.some(c=>c.id===id)));choices.querySelectorAll('input').forEach(x=>x.checked=selectedIds.has(x.value));renderMarkers();renderWorkspace();renderDashboard();updateRegionOptions();updateSelectedCount()}
+const rad=n=>n*Math.PI/180;
+function km(a,b){const dlat=rad(b.lat-a.lat),dlon=rad(b.lon-a.lon),q=Math.sin(dlat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dlon/2)**2;return 12742*Math.asin(Math.sqrt(q))}
+function order(points,start){const left=[...points],out=[];let current=start;while(left.length){left.sort((a,b)=>km(current,a)-km(current,b));const next=left.shift();out.push(next);current=next}return out}
+// A sequência só é calculada quando o representante solicitar.
+const selectedClients=()=>clients.filter(c=>selectedIds.has(c.id)&&valid(c.lat,c.lon));
+const updateSelectedCount=()=>{$('selectedCount').textContent=selectedClients().length+' selecionados'};
+function syncRouteChoices(){document.querySelectorAll('#routeChoices input').forEach(x=>x.checked=selectedIds.has(x.value));updateSelectedCount()}
+function getRegion(c){const a=(c.address||'').split(',').map(x=>x.trim());return a.length>1?a[1]:''}
+function updateRegionOptions(){const select=$('regionFilter');if(!select)return;const old=select.value;const regions=[...new Set(clients.map(getRegion).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));select.replaceChildren(new Option('Todas as regiões','all'));regions.forEach(r=>select.add(new Option(r,norm(r))));select.value=[...select.options].some(x=>x.value===old)?old:'all'}
+$('regionFilter').onchange=renderWorkspace;
+$('suggestToggle').onclick=()=>{$('strategyPanel').hidden=!$('strategyPanel').hidden};
+function clearRouteVisual(){if(map&&map.getLayer('route-line'))map.removeLayer('route-line');if(map&&map.getSource('route'))map.removeSource('route')}
+$('clearRoute').onclick=()=>{lastRoute=null;clearRouteVisual();$('routeOrder').replaceChildren();$('routeResult').textContent='Trajeto limpo. Selecione os clientes e gere outra sugestão.';$('roadRoute').disabled=true};
+function showOrder(points){const root=$('routeOrder');root.replaceChildren();points.forEach((c,i)=>{const d=document.createElement('div');d.className='route-stop';const n=document.createElement('span');n.className='num';n.textContent=i+1;const label=document.createElement('span');label.className='name';label.textContent=c.name;const up=document.createElement('button');up.className='secondary';up.textContent='↑';up.title='Subir visita';up.disabled=i===0;up.onclick=()=>swapStops(i,i-1);const down=document.createElement('button');down.className='secondary';down.textContent='↓';down.title='Descer visita';down.disabled=i===points.length-1;down.onclick=()=>swapStops(i,i+1);d.append(n,label,up,down);root.append(d)})}
+function swapStops(a,b){if(!lastRoute)return;[lastRoute.points[a],lastRoute.points[b]]=[lastRoute.points[b],lastRoute.points[a]];showOrder(lastRoute.points);$('routeResult').textContent='Ordem ajustada manualmente. Toque em “Traçar pelas ruas” para recalcular a distância e o percurso.';$('roadRoute').disabled=false;clearRouteVisual()}
+async function getStart(points){if($('origin').value==='gps')return await requestGPS();return points[0]}
+function drawRoute(points,road=false){initMap();if(!map)return;const coords=points.map(c=>[c.lon,c.lat]);if(coords.length<2)return;const apply=()=>{const geo={type:'Feature',geometry:{type:'LineString',coordinates:coords},properties:{}};if(map.getSource('route'))map.getSource('route').setData(geo);else{map.addSource('route',{type:'geojson',data:geo});map.addLayer({id:'route-line',type:'line',source:'route',paint:{'line-color':road?'#1377e8':'#f19a38','line-width':5}})}map.setPaintProperty('route-line','line-color',road?'#1377e8':'#f19a38');const bounds=new maplibregl.LngLatBounds();coords.forEach(p=>bounds.extend(p));map.fitBounds(bounds,{padding:65,maxZoom:14})};if(map.isStyleLoaded())apply();else map.once('load',apply)}
+function matrixHaversine(nodes){return nodes.map(a=>nodes.map(b=>km(a,b)*1000))}
+async function roadMatrix(nodes){if(nodes.length>11)throw Error('Limite de 10 clientes por sugestão no serviço público de teste. Reduza a seleção.');const coords=nodes.map(p=>p.lon+','+p.lat).join(';');const u='https://router.project-osrm.org/table/v1/driving/'+coords+'?annotations=distance,duration';const r=await fetch(u,{signal:AbortSignal.timeout(22000)});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();if(data.code!=='Ok'||!data.distances)throw Error('Matriz rodoviária indisponível');return data.distances}
+function pathCost(path,matrix){let cost=0;for(let i=1;i<path.length;i++)cost+=matrix[path[i-1]][path[i]]??1e12;return cost}
+function optimizeDistance(matrix){const n=matrix.length,remaining=new Set(Array.from({length:n-1},(_,i)=>i+1));let seq=[0],cur=0;while(remaining.size){let best=-1,score=Infinity;for(const j of remaining){const d=matrix[cur][j]??Infinity;if(d<score){best=j;score=d}}if(best<0)throw Error('Há locais sem ligação rodoviária na matriz.');seq.push(best);remaining.delete(best);cur=best}let improved=true;while(improved){improved=false;for(let i=1;i<seq.length-1;i++)for(let j=i+1;j<seq.length;j++){const candidate=seq.slice();candidate.splice(i,j-i+1,...seq.slice(i,j+1).reverse());if(pathCost(candidate,matrix)+1e-5<pathCost(seq,matrix)){seq=candidate;improved=true}}}return seq}
+function optimizeStrategy(nodes,matrix,strategy){const n=nodes.length;if(strategy==='distance')return optimizeDistance(matrix);const remaining=new Set(Array.from({length:n-1},(_,i)=>i+1));let seq=[0],cur=0;const dist=matrix.flat().filter(x=>Number.isFinite(x)&&x>0).sort((a,b)=>a-b);const scale=dist[Math.floor(dist.length/2)]||3000;while(remaining.size){let best=-1,score=Infinity;for(const j of remaining){const p=Number(nodes[j].priority)||2;const d=matrix[cur][j]??1e12;const penalty=(3-p)*(strategy==='priority'?scale*2.5:scale*.65);const val=d+penalty;if(val<score){score=val;best=j}}seq.push(best);remaining.delete(best);cur=best}return seq}
+function routeSummary(nodes,matrix,indices,mode){const distance=pathCost(indices,matrix);const text=Number.isFinite(distance)?(distance/1000).toFixed(1)+' km':'distância indisponível';return 'Sugestão '+mode+': '+text+' de percurso estimado entre as paradas. Confira o trajeto por ruas antes de dirigir.'}
+async function makeRoute(strategy){if(routeBusy)return;const points=selectedClients();if(!points.length){$('routeResult').textContent='Selecione pelo menos um cliente localizado.';return}routeBusy=true;$('generateSuggestion').disabled=true;$('calcRoute').disabled=true;$('routeResult').textContent='Calculando sequência de visitas…';try{const start=await getStart(points);const nodes=[start,...points.filter(p=>p!==start)];if(nodes.length<2){lastRoute={start,points};showOrder(points);$('routeResult').textContent='Um único cliente selecionado. Para traçar o percurso, escolha “Minha localização” como origem.';$('roadRoute').disabled=true;return}let matrix,mode='por ruas';try{matrix=await roadMatrix(nodes)}catch(err){if(nodes.length>11)throw err;matrix=matrixHaversine(nodes);mode='aproximada em linha reta (serviço rodoviário indisponível)'}const seq=optimizeStrategy(nodes,matrix,strategy);const arranged=seq.slice(1).map(i=>nodes[i]);lastRoute={start,points:arranged};showOrder(arranged);$('roadRoute').disabled=false;$('routeResult').textContent=routeSummary(nodes,matrix,seq,mode);drawRoute([start,...arranged],false)}catch(e){$('routeResult').textContent='Não foi possível sugerir a rota: '+e.message}finally{routeBusy=false;$('generateSuggestion').disabled=false;$('calcRoute').disabled=false}}
+$('calcRoute').onclick=()=>makeRoute('distance');
+$('generateSuggestion').onclick=()=>makeRoute(document.querySelector('input[name="routeStrategy"]:checked')?.value||'distance');
+$('roadRoute').onclick=async()=>{if(!lastRoute)return;const pts=[lastRoute.start,...lastRoute.points];if(pts.length>11){$('routeResult').textContent='Limite de 10 destinos no serviço de demonstração.';return}$('routeResult').textContent='Calculando trajeto real pelas ruas…';try{const coords=pts.map(p=>p.lon+','+p.lat).join(';');const r=await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson',{signal:AbortSignal.timeout(20000)});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();if(data.code!=='Ok'||!data.routes?.[0])throw Error('Rota não encontrada');const route=data.routes[0];$('routeResult').textContent='Trajeto rodoviário: '+(route.distance/1000).toFixed(1)+' km · '+Math.round(route.duration/60)+' min estimados. Sem trânsito em tempo real.';initMap();if(map){const update=()=>{const geo={type:'Feature',geometry:route.geometry,properties:{}};if(map.getSource('route'))map.getSource('route').setData(geo);else{map.addSource('route',{type:'geojson',data:geo});map.addLayer({id:'route-line',type:'line',source:'route',paint:{'line-color':'#1679ef','line-width':5}})}map.setPaintProperty('route-line','line-color','#1679ef');const b=new maplibregl.LngLatBounds();route.geometry.coordinates.forEach(c=>b.extend(c));map.fitBounds(b,{padding:65,maxZoom:14})};if(map.isStyleLoaded())update();else map.once('load',update)}}catch(e){$('routeResult').textContent='Serviço rodoviário indisponível: '+e.message}};
+function parseCSV(text){text=text.replace(/^\uFEFF/,'');const first=text.split(/\r?\n/).find(Boolean)||'';const delim=(first.match(/;/g)||[]).length>=(first.match(/,/g)||[]).length?';':',';const rows=[];let row=[],value='',quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'){if(quoted&&text[i+1]==='"'){value+='"';i++}else quoted=!quoted}else if(ch===delim&&!quoted){row.push(value);value=''}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(value);if(row.some(x=>x.trim()))rows.push(row);row=[];value=''}else value+=ch}if(quoted)throw Error('CSV com aspas incompletas');row.push(value);if(row.some(x=>x.trim()))rows.push(row);return rows}
+$('sheetFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>8_000_000)throw Error('Arquivo acima de 8 MB');let rows;const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv')rows=parseCSV(await file.text());else{if(!window.XLSX)throw Error('Biblioteca de Excel indisponível; conecte-se à internet ou exporte CSV');const book=XLSX.read(await file.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]],{header:1,defval:'',raw:false})}if(rows.length<2)throw Error('Nenhum registro');const originalHeaders=rows[0].map((h,i)=>String(h??'').trim()||'Coluna '+(i+1));const headers=originalHeaders.map(norm),index=(...keys)=>headers.findIndex(h=>keys.includes(h));const ni=index('nome','razaosocial','cliente','nomefantasia','fantasia'),ai=index('endereco','rua','logradouro'),ci=index('cidade','municipio'),cepi=index('cep'),lati=index('lat','latitude'),loni=index('lon','lng','longitude');if(ni<0)throw Error('Coluna Nome ou Razão Social não encontrada');let count=0,located=0;for(const r of rows.slice(1)){const val=i=>i<0?'':String(r[i]??'').trim();if(!r.some(v=>String(v??'').trim()))continue;const lat=num(val(lati)),lon=num(val(loni)),has=lat!==null&&lon!==null&&valid(lat,lon);const fields=originalHeaders.map((label,i)=>({label,value:val(i)}));clients.push({id:uid(),name:val(ni)||val(index('nomefantasia','razaosocial'))||'Cliente sem nome',address:[val(ai),val(ci)].filter(Boolean).join(', '),cep:val(cepi),lat:has?lat:null,lon:has?lon:null,priority:2,importFields:fields,importSource:file.name});count++;if(has)located++}save();$('importStatus').textContent=count+' importados com todas as colunas preservadas; '+located+' com coordenadas; '+(count-located)+' aguardando localização. Nenhuma geocodificação em massa foi executada.';enrichUI('Planilha importada.');if(confirm('Deseja consultar agora os CNPJs importados para guardar os dados empresariais? Mantenha a página aberta; o processo pode levar vários minutos.'))enrichRun(false)}catch(err){$('importStatus').textContent='Erro na importação: '+err.message}e.target.value=''};
+function download(content,name,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+$('exportCSV').onclick=()=>{const rows=[['Nome','Endereço','CEP','Latitude','Longitude','Prioridade'],...clients.map(c=>[c.name,c.address,c.cep||'',c.lat??'',c.lon??'',c.priority])];download('\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\r\n'),'projeto_rota_clientes.csv','text/csv;charset=utf-8')};
+$('backup').onclick=()=>download(JSON.stringify({version:1,clients},null,2),'projeto_rota_backup.json','application/json');
+$('restore').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;if(f.size>8_000_000)throw Error('Arquivo muito grande');const data=JSON.parse(await f.text());if(!Array.isArray(data.clients)||data.clients.length>20000||!data.clients.every(c=>typeof c.name==='string'&&c.name.length<500))throw Error('Backup inválido');if(confirm('Substituir clientes atuais?')){clients=data.clients.map(c=>({...c,id:uid(),lat:valid(Number(c.lat),Number(c.lon))&&c.lat!=null&&c.lon!=null?Number(c.lat):null,lon:valid(Number(c.lat),Number(c.lon))&&c.lat!=null&&c.lon!=null?Number(c.lon):null}));save();enrichUI('Backup restaurado.')}}catch(err){alert(err.message)}e.target.value=''};
+$('clear').onclick=()=>{if(confirm('Apagar toda a carteira local?')){clients=[];save();enrichUI('Carteira apagada.')}};
+
+let activePriorityFilter='all',activeDetailId=null;
+const priorityName=p=>Number(p)===3?'Alta':Number(p)===1?'Baixa':'Média';
+function makePriority(p){const el=document.createElement('span');el.className='priority priority-'+(Number(p)||2);el.textContent=priorityName(p);return el}
+// Enriquecimento cadastral v2.3. Executa apenas com a página aberta; dados ficam no backup JSON.
+let enrichRunning=false,enrichStopRequested=false,enrichController=null,enrichRefreshAll=false;
+let enrichProcessed=0,enrichTotal=0,enrichMessage='Pronto para iniciar.',enrichLastError='';
+const digits=v=>String(v??'').replace(/\D/g,'');
+function clientCNPJ(c){const candidate=(c.importFields||[]).find(f=>norm(f.label)==='cnpj');return digits(candidate?.value||c.cnpj||'')}
+function validCNPJ(s){if(!/^\d{14}$/.test(s)||/^(\d)\1{13}$/.test(s))return false;const calc=(part,weights)=>{const sum=[...part].reduce((acc,ch,i)=>acc+Number(ch)*weights[i],0);return sum%11<2?0:11-sum%11};return calc(s.slice(0,12),[5,4,3,2,9,8,7,6,5,4,3,2])===Number(s[12])&&calc(s.slice(0,13),[6,5,4,3,2,9,8,7,6,5,4,3,2])===Number(s[13])}
+function enrichStats(){const eligible=clients.filter(c=>validCNPJ(clientCNPJ(c)));return {eligible,done:eligible.filter(c=>c.companyData?.cnpj===clientCNPJ(c)).length,failed:eligible.filter(c=>c.companyError&&c.companyData?.cnpj!==clientCNPJ(c)).length}}
+function enrichUI(message){if(message!==undefined)enrichMessage=message;const s=enrichStats(),pending=s.eligible.length-s.done-s.failed;$('enrichProgress').value=s.eligible.length?Math.round(s.done/s.eligible.length*100):0;$('enrichStatus').textContent=enrichMessage+' '+s.done+' de '+s.eligible.length+' CNPJs consultados e salvos. '+s.failed+' com falha; '+pending+' ainda sem tentativa ou resultado.';const diag=$('enrichDiagnostic');if(diag){diag.textContent=enrichRunning?'Processados nesta execução: '+enrichProcessed+' de '+enrichTotal+'.'+(enrichLastError?' Último erro: '+enrichLastError:''):(enrichLastError?'Último erro: '+enrichLastError:'Clique em “Consultar CNPJs pendentes” para tentar novamente apenas os não concluídos.');} $('enrichStart').disabled=enrichRunning;$('enrichRefresh').disabled=enrichRunning;$('enrichStop').disabled=!enrichRunning}
+function companyFields(data){const fields=[['Razão social',data.razao_social],['Nome fantasia',data.nome_fantasia],['Situação cadastral',data.descricao_situacao_cadastral],['Data de abertura',data.data_inicio_atividade],['Natureza jurídica',data.natureza_juridica],['Porte',data.porte],['Capital social',data.capital_social],['CNAE principal',data.cnae_fiscal_descricao],['Telefone 1',data.ddd_telefone_1],['Telefone 2',data.ddd_telefone_2],['E-mail',data.email],['Logradouro',data.logradouro],['Número',data.numero],['Complemento',data.complemento],['Bairro',data.bairro],['Município',data.municipio],['UF',data.uf],['CEP',data.cep]];if(Array.isArray(data.qsa)&&data.qsa.length)fields.push(['Quadro societário',data.qsa.map(p=>[p.nome_socio,p.qualificacao_socio].filter(Boolean).join(' — ')).join('; ')]);return fields.filter(([k,v])=>v!==null&&v!==undefined&&String(v).trim()!=='')}
+async function companyFetch(cnpj){const controller=new AbortController();enrichController=controller;const timer=setTimeout(()=>controller.abort(),22000);try{const response=await fetch('https://brasilapi.com.br/api/cnpj/v1/'+cnpj,{signal:controller.signal,headers:{Accept:'application/json'}});if(!response.ok){const err=new Error('HTTP '+response.status);err.status=response.status;const retry=Number(response.headers.get('Retry-After'));if(Number.isFinite(retry)&&retry>0)err.retryAfter=Math.min(retry,300);throw err}const data=await response.json();if(digits(data.cnpj)!==cnpj)throw Error('CNPJ divergente na resposta');return data}finally{clearTimeout(timer);if(enrichController===controller)enrichController=null}}
+async function waitEnrich(ms){const until=Date.now()+ms;while(!enrichStopRequested&&Date.now()<until){await new Promise(resolve=>setTimeout(resolve,Math.min(1000,until-Date.now())))}}
+function enrichError(e){return e?.name==='AbortError'?'Tempo limite excedido (22 s)':(e?.message||'Erro desconhecido').slice(0,120)}
+function isTemporaryEnrichError(e){return e?.name==='AbortError'||!e?.status||e.status===408||e.status===425||e.status===429||e.status>=500}
+async function enrichRun(refresh=false){
+ if(enrichRunning)return;
+ if(!navigator.onLine){enrichUI('Sem internet. Verifique sua conexão.');return}
+ const all=enrichStats().eligible;
+ const pending=all.filter(c=>refresh||c.companyData?.cnpj!==clientCNPJ(c));
+ if(!pending.length){enrichUI('Nenhuma consulta pendente.');return}
+ if(refresh&&!confirm('Atualizar os dados públicos dos '+pending.length+' clientes? Os dados originais serão preservados.'))return;
+ enrichRunning=true;enrichStopRequested=false;enrichProcessed=0;enrichTotal=pending.length;enrichLastError='';
+ let consecutiveFailures=0,haltReason='';
+ enrichUI('Consultando... mantenha esta aba aberta e a tela ligada.');
+ try{
+  for(const entry of pending){
+   if(enrichStopRequested)break;
+   if(!navigator.onLine){haltReason='Conexão perdida. Retome quando voltar a internet.';break}
+   const c=clients.find(x=>x.id===entry.id);if(!c)continue;
+   const cnpj=clientCNPJ(c);if(!validCNPJ(cnpj))continue;
+   let succeeded=false,hardStop=false;
+   for(let attempt=1;attempt<=3&&!enrichStopRequested;attempt++){
+    try{
+     enrichUI('Consultando '+c.name+' (tentativa '+attempt+'/3)...');
+     const data=await companyFetch(cnpj);
+     c.companyData={cnpj,fields:companyFields(data),source:'BrasilAPI',checkedAt:new Date().toISOString()};
+     delete c.companyError;save();succeeded=true;consecutiveFailures=0;
+     enrichUI('Consultado: '+c.name+'.');break;
+    }catch(e){
+     if(enrichStopRequested)break;
+     const message=enrichError(e);enrichLastError=c.name+': '+message;
+     const blocked=e.status===429||e.status===403;
+     if(blocked){haltReason='BrasilAPI retornou HTTP '+e.status+'. Consultas interrompidas para respeitar o limite do serviço. Aguarde antes de retomar.';hardStop=true;break}
+     if(isTemporaryEnrichError(e)&&attempt<3){
+      const pause=attempt===1?20000:45000;
+      enrichUI('Falha temporária em '+c.name+' ('+message+'). Nova tentativa em '+Math.round(pause/1000)+' s...');
+      await waitEnrich(pause);continue;
+     }
+     c.companyError=message;save();enrichUI('Falha em '+c.name+': '+message+'.');break;
+    }
+   }
+   if(enrichStopRequested||hardStop)break;
+   enrichProcessed++;
+   if(!succeeded){consecutiveFailures++;if(consecutiveFailures>=4){haltReason='Quatro clientes consecutivos falharam. Interrompido para evitar dezenas de erros. Verifique a conexão e a disponibilidade da BrasilAPI.';break}}
+   enrichUI(succeeded?'Consulta salva.':'Consulta com falha registrada.');
+   if(enrichProcessed<enrichTotal)await waitEnrich(15000);
+  }
+ }finally{enrichRunning=false;enrichController=null;enrichUI(haltReason|| (enrichStopRequested?'Consultas pausadas. Pode retomar depois.':'Etapa concluída. Consulte o diagnóstico.'))}
+}
+$('enrichStart').onclick=()=>enrichRun(false);
+$('enrichRefresh').onclick=()=>enrichRun(true);
+$('enrichStop').onclick=()=>{enrichStopRequested=true;enrichController?.abort();enrichUI('Pausando...')};
+enrichUI('Pronto para iniciar.');
+function viewClient(id){activeDetailId=id;const c=clients.find(x=>x.id===id);if(!c)return;const d=$('clientDetail');d.replaceChildren();const h=document.createElement('h2');h.textContent=c.name;d.append(h,makePriority(c.priority));const section=(heading,entries)=>{const title=document.createElement('h3');title.className='detail-heading';title.textContent=heading;const grid=document.createElement('div');grid.className='detail-grid';for(const [label,value] of entries){if(value===null||value===undefined||String(value).trim()==='')continue;const row=document.createElement('div');row.className='detail-row';const l=document.createElement('small');l.textContent=label;const t=document.createElement('div');t.textContent=String(value);row.append(l,t);grid.append(row)}if(grid.childElementCount)d.append(title,grid)};section('Dados do cadastro',[['Nome',c.name],['Endereço',c.address||'Não informado'],['CEP',c.cep],['Prioridade',priorityName(c.priority)],['Localização',valid(c.lat,c.lon)?'Confirmada no mapa':'Pendente']]);if(Array.isArray(c.importFields)&&c.importFields.length){section('Dados originais da planilha',c.importFields.filter(f=>f&&typeof f.label==='string').map(f=>[f.label,f.value]));if(c.importSource){const note=document.createElement('p');note.className='muted';note.textContent='Origem dos dados: '+c.importSource;d.append(note)}}else{const note=document.createElement('p');note.className='muted';note.textContent='Este cadastro não possui campos adicionais importados. Para visualizar CNPJ, responsáveis e telefones, importe uma planilha que contenha essas colunas. Dados descartados em importações antigas não podem ser recuperados automaticamente.';d.append(note)}if(c.companyData?.cnpj===clientCNPJ(c)){section('Dados empresariais consultados',c.companyData.fields||[]);const source=document.createElement('p');source.className='detail-source';source.textContent='Fonte: '+c.companyData.source+' · Consulta: '+new Date(c.companyData.checkedAt).toLocaleString('pt-BR')+' · Dados podem estar desatualizados.';d.append(source)}else if(validCNPJ(clientCNPJ(c))){const note=document.createElement('p');note.className='detail-source';note.textContent='Dados empresariais ainda não consultados. Abra Planilhas e escolha Consultar CNPJs pendentes.'+(c.companyError?' Última tentativa: '+c.companyError:'');d.append(note)}$('detailMap').disabled=!valid(c.lat,c.lon);$('clientDialog').showModal()}
+$('detailClose').onclick=()=>$('clientDialog').close();
+$('detailMap').onclick=()=>{const c=clients.find(x=>x.id===activeDetailId);$('clientDialog').close();if(!c||!valid(c.lat,c.lon))return;switchTab('mapa');setTimeout(()=>map?.flyTo({center:[c.lon,c.lat],zoom:16}),220)};
+$('detailEdit').onclick=()=>{const c=clients.find(x=>x.id===activeDetailId);$('clientDialog').close();if(!c)return;switchTab('clientes');$('name').value=c.name;$('address').value=c.address||'';$('houseNumber').value='';$('complement').value='';$('cep').value=c.cep||'';$('lat').value=c.lat??'';$('lon').value=c.lon??'';$('priority').value=c.priority||2;editingClientId=c.id;$('saveStatus').textContent='Editando cadastro. O cliente original será preservado até salvar.'};
+function renderDashboard(){const root=$('dashboardClients');if(!root)return;root.replaceChildren();const q=norm($('dashboardSearch').value);const filtered=clients.filter(c=>!q||norm(c.name+' '+c.address+' '+(c.importFields||[]).map(f=>f.value).join(' ')).includes(q));if(!filtered.length){root.textContent=clients.length?'Nenhum cliente encontrado.':'Cadastre seu primeiro cliente para começar.';return}for(const c of filtered){const tile=document.createElement('div');tile.className='dashboard-client';const head=document.createElement('div');head.className='dashboard-client-head';const btn=document.createElement('button');btn.className='client-link';btn.textContent=c.name;btn.onclick=()=>viewClient(c.id);tile.tabIndex=0;tile.setAttribute('role','button');tile.setAttribute('aria-label','Abrir ficha de '+c.name);tile.onclick=e=>{if(e.target!==btn)viewClient(c.id)};tile.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();viewClient(c.id)}};head.append(btn,makePriority(c.priority));const address=document.createElement('p');address.textContent=c.address||'Endereço não informado';tile.append(head,address);root.append(tile)}}
+$('dashboardSearch').addEventListener('input',renderDashboard);
+function renderWorkspace(){const root=$('mapClientList');if(!root)return;root.replaceChildren();const q=norm($('mapClientSearch').value);const selected=new Set(selectedIds);const region=$('regionFilter')?.value||'all';const filtered=clients.filter(c=>(activePriorityFilter==='all'||String(c.priority||2)===activePriorityFilter)&&(region==='all'||norm(c.address).includes(region))&&(!q||norm(c.name+' '+c.address+' '+(c.importFields||[]).map(f=>f.value).join(' ')).includes(q)));if(!filtered.length){root.textContent='Nenhum cliente corresponde ao filtro.';return}for(const c of filtered){const tile=document.createElement('div');tile.className='client-tile';const top=document.createElement('div');top.className='client-tile-top';const ck=document.createElement('input');ck.type='checkbox';ck.checked=selected.has(c.id);ck.disabled=!valid(c.lat,c.lon);ck.setAttribute('aria-label','Selecionar '+c.name+' para a rota');ck.onchange=()=>{if(ck.checked)selectedIds.add(c.id);else selectedIds.delete(c.id);const original=[...document.querySelectorAll('#routeChoices input')].find(x=>x.value===c.id);if(original)original.checked=ck.checked;updateSelectedCount()};const name=document.createElement('strong');name.textContent=c.name;top.append(ck,name,makePriority(c.priority));const addr=document.createElement('div');addr.className='tile-address';addr.textContent=c.address||'Endereço não informado';const actions=document.createElement('div');actions.className='tile-actions';const info=document.createElement('button');info.className='secondary';info.textContent='Ver ficha';info.onclick=()=>viewClient(c.id);const locate=document.createElement('button');locate.className='secondary';locate.textContent='Ver no mapa';locate.disabled=!valid(c.lat,c.lon);locate.onclick=()=>{initMap();map?.flyTo({center:[c.lon,c.lat],zoom:16})};actions.append(info,locate);tile.append(top,addr,actions);root.append(tile)}}
+$('mapClientSearch').addEventListener('input',renderWorkspace);
+$('selectAllClients').onclick=()=>{selectedIds=new Set(clients.filter(c=>valid(c.lat,c.lon)).map(c=>c.id));syncRouteChoices();renderWorkspace()};
+$('selectNoClients').onclick=()=>{selectedIds.clear();syncRouteChoices();renderWorkspace()};
+document.querySelectorAll('[data-priority-filter]').forEach(b=>b.onclick=()=>{activePriorityFilter=b.dataset.priorityFilter;document.querySelectorAll('[data-priority-filter]').forEach(x=>x.classList.toggle('selected',x===b));renderWorkspace()});
+
+render();
+
+// A autenticação controla o acesso à interface; os dados continuam locais nesta versão.
+const AUTH_CONFIG_KEY='traxio_supabase_public_config_v1';
+const AUTH_DEFAULT_URL='https://ggsptbcgpdakxsdjrldd.supabase.co';
+let authClient=null,authGeneration=0;
+const authEl=id=>document.getElementById(id);
+function authNotice(message,error=false){const el=authEl('authMessage');el.textContent=message;el.style.color=error?'#b32e3a':'#19675d'}
+function readAuthConfig(){try{return JSON.parse(localStorage.getItem(AUTH_CONFIG_KEY)||'{}')}catch{return {}}}
+function authLock(){document.body.classList.add('auth-locked');authEl('authScreen').hidden=false;authEl('authLogout').hidden=true;authEl('authIdentity').textContent=''}
+function authUnlock(user){if(!user)return;authEl('authScreen').hidden=true;document.body.classList.remove('auth-locked');authEl('authLogout').hidden=false;authEl('authIdentity').textContent=user.email||'Conectado';if(typeof traxioScheduleSync==='function')traxioScheduleSync(2500)}
+async function authInitialize(){
+ const generation=++authGeneration;const cfg=readAuthConfig();
+ authEl('authUrl').value=cfg.url||AUTH_DEFAULT_URL;authEl('authKey').value=cfg.key||'';
+ authLock();authClient=null;
+ if(!cfg.key){authEl('authSetup').open=true;authNotice('Para começar, informe a Publishable key do projeto Supabase.');return}
+ if(!window.supabase?.createClient){authNotice('Biblioteca do Supabase não carregou. Verifique sua conexão e recarregue.',true);return}
+ try{
+  authClient=window.supabase.createClient(cfg.url||AUTH_DEFAULT_URL,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+  authClient.auth.onAuthStateChange((event,session)=>{if(generation!==authGeneration)return;if(session?.user)authUnlock(session.user);else authLock()});
+  const {data,error}=await authClient.auth.getSession();if(generation!==authGeneration)return;
+  if(error)throw error;
+  if(data.session?.user)authUnlock(data.session.user);else authNotice('Entre com o e-mail e a senha da conta criada no Supabase.');
+ }catch(e){authLock();authNotice('Falha ao conectar ao Supabase: '+(e.message||e),true)}
+}
+authEl('authSaveConfig').onclick=async()=>{
+ const url=authEl('authUrl').value.trim().replace(/\/$/,'');const key=authEl('authKey').value.trim();
+ if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)){authNotice('Informe uma Project URL válida terminada em .supabase.co.',true);return}
+ if(!key.startsWith('sb_publishable_')&&!key.startsWith('eyJ')){authNotice('Use somente a Publishable key (ou a chave anon pública legada).',true);return}
+ localStorage.setItem(AUTH_CONFIG_KEY,JSON.stringify({url,key}));authNotice('Configuração salva. Preparando login...');await authInitialize();
+};
+authEl('authForm').onsubmit=async e=>{
+ e.preventDefault();if(!authClient){authNotice('Primeiro salve a configuração pública do Supabase.',true);authEl('authSetup').open=true;return}
+ const button=authEl('authLogin');button.disabled=true;authNotice('Validando suas credenciais...');
+ try{const {data,error}=await authClient.auth.signInWithPassword({email:authEl('authEmail').value.trim(),password:authEl('authPassword').value});if(error)throw error;if(!data.user)throw Error('Usuário não confirmado.');authEl('authPassword').value='';authUnlock(data.user)}catch(e){authNotice('Não foi possível entrar: '+(e.message||e),true)}finally{button.disabled=false}
+};
+authEl('authLogout').onclick=async()=>{if(!authClient)return;authEl('authLogout').disabled=true;try{const {error}=await authClient.auth.signOut();if(error)throw error;authLock();authNotice('Sessão encerrada. Sua carteira local foi preservada.')}catch(e){authNotice('Não foi possível sair: '+e.message,true)}finally{authEl('authLogout').disabled=false}};
+authInitialize();
+
+// Traxio 2.6 — sincronização explícita, sem exclusões automáticas.
+// Cada registro é guardado integralmente em data e indexado por (user_id,local_id).
+let cloudBusy=false;
+function cloudNotice(message,error=false){const el=$('cloudStatus');if(el){el.textContent=message;el.style.color=error?'#a52b37':'#256957'}}
+async function cloudIdentity(){
+ if(!authClient)throw Error('Faça login no Traxio primeiro.');
+ const {data,error}=await authClient.auth.getUser();
+ if(error||!data?.user?.id)throw Error('Sessão expirada. Entre novamente.');
+ return data.user.id;
+}
+function cloudButtons(disabled){cloudBusy=disabled;['cloudUpload','cloudDownload','cloudCheck'].forEach(id=>$(id).disabled=disabled)}
+function cloudRow(c,userId){
+ const id=String(c.id??'').trim();if(!id)throw Error('Cliente sem ID local: '+String(c.name||''));
+ const data=JSON.parse(JSON.stringify(c));
+ const latitude=num(c.lat),longitude=num(c.lon);
+ return {user_id:userId,local_id:id,name:String(c.name||'Cliente sem nome'),cnpj:clientCNPJ(c)||null,
+ city:null,neighborhood:null,address:c.address||null,zip_code:c.cep||null,
+ latitude:valid(latitude,longitude)?latitude:null,longitude:valid(latitude,longitude)?longitude:null,
+ data,updated_at:new Date().toISOString()};
+}
+async function cloudTask(fn){
+ if(cloudBusy)return;cloudButtons(true);
+ try{const userId=await cloudIdentity();await fn(userId)}
+ catch(e){cloudNotice('Falha: '+(e.message||e)+'. Nenhum dado local foi apagado.',true)}
+ finally{cloudButtons(false)}
+}
+$('cloudCheck').onclick=()=>cloudTask(async userId=>{
+ cloudNotice('Verificando acesso à tabela...');
+ const {count,error}=await authClient.from('clients').select('id',{count:'exact',head:true}).eq('user_id',userId);
+ if(error)throw error;
+ cloudNotice('Conexão autenticada e consulta permitida. Registros na nuvem: '+count+'. Clientes neste dispositivo: '+clients.length+'.');
+});
+// Traxio 2.8 — escrita otimista com revisão, sem upsert destrutivo.
+// Registros idênticos não são regravados; divergências são bloqueadas.
+const cloudCanonical=v=>{
+ const stable=x=>Array.isArray(x)?x.map(stable):x&&typeof x==='object'
+  ?Object.fromEntries(Object.keys(x).sort().map(k=>[k,stable(x[k])])):x;
+ return JSON.stringify(stable(v));
+};
+async function cloudReadAll(userId){
+ let offset=0,rows=[];
+ while(true){
+  const {data,error}=await authClient.from('clients').select('local_id,data,revision,deleted_at').eq('user_id',userId).order('local_id',{ascending:true}).range(offset,offset+499);
+  if(error)throw error;
+  rows.push(...(data||[]));if(!data||data.length<500)break;
+  offset+=500;if(offset>50000)throw Error('Limite de 50 mil registros atingido');
+ }
+ return rows;
+}
+$('cloudUpload').onclick=()=>cloudTask(async userId=>{
+ if(!clients.length){cloudNotice('Não há clientes locais para enviar.');return}
+ if(!confirm('Sincronizar '+clients.length+' clientes com proteção de conflitos? Faça antes um Backup JSON. Divergências não serão sobrescritas; nenhum registro será apagado.'))return;
+ const localSnapshot=clients.map(c=>cloudRow(c,userId));
+ const remote=await cloudReadAll(userId);
+ const remoteById=new Map(remote.map(r=>[String(r.local_id),r]));
+ let inserted=0,identical=0,conflicts=0,failures=[];
+ for(let i=0;i<localSnapshot.length;i++){
+  const row=localSnapshot[i],existing=remoteById.get(row.local_id);
+  if(existing){
+   // A versão 2.8 não assume que o dado local é mais recente que o da nuvem.
+   // Só considera sincronizado se o conteúdo completo for igual.
+   if(!existing.deleted_at && cloudCanonical(existing.data)===cloudCanonical(row.data))identical++;
+   else conflicts++;
+  }else{
+   const {error}=await authClient.from('clients').insert(row);
+   if(error){if(error.code==='23505')conflicts++;else failures.push(row.local_id+': '+error.message)}
+   else inserted++;
+  }
+  if(i%20===0)cloudNotice('Conferindo segurança: '+(i+1)+'/'+localSnapshot.length+'...');
+ }
+ const {count,error}=await authClient.from('clients').select('id',{count:'exact',head:true}).eq('user_id',userId);
+ if(error)throw error;
+ cloudNotice('Concluído: '+inserted+' novos, '+identical+' idênticos, '+conflicts+' divergentes bloqueados, '+failures.length+' falhas. Total na nuvem: '+count+'. '+(conflicts?'Os divergentes precisam de revisão manual; não foram sobrescritos. ':'')+(failures.length?'Erros: '+failures.slice(0,3).join(' | '):'Dados locais preservados.'),!!failures.length);
+});
+$('cloudDownload').onclick=()=>cloudTask(async userId=>{
+ if(!confirm('Buscar os clientes da sua conta Supabase e adicionar somente os que não existem neste dispositivo? Nenhum cliente local será apagado ou substituído.'))return;
+ let offset=0,all=[];
+ while(true){
+  cloudNotice('Buscando registros da nuvem: '+all.length+'...');
+  const {data,error}=await authClient.from('clients').select('local_id,data').eq('user_id',userId).order('local_id',{ascending:true}).range(offset,offset+499);
+  if(error)throw error;
+  all.push(...(data||[]));
+  if(!data||data.length<500)break;
+  offset+=500;
+  if(offset>50000)throw Error('Limite de segurança de 50 mil registros atingido');
+ }
+ const known=new Set(clients.map(c=>String(c.id)));
+ let added=0,skipped=0;
+ for(const row of all){
+  const c=row.data;
+  if(!c||typeof c!=='object'||Array.isArray(c)||typeof c.name!=='string'){skipped++;continue}
+  const id=String(row.local_id||'');if(!id||known.has(id)){skipped++;continue}
+  clients.push({...c,id});known.add(id);added++;
+ }
+ if(added)save();
+ cloudNotice('Recuperação concluída: '+added+' clientes adicionados, '+skipped+' já existentes ou inválidos. Total local: '+clients.length+'. Nenhum cliente local foi substituído.');
+});
+
+
+// Traxio 2.9 — sincronização automática conservadora por revisão.
+// Nunca propaga exclusões. Divergências sem ancestral comum permanecem intactas.
+const TRAXIO_SYNC_BASE='traxio_sync_baseline_v29_';
+const TRAXIO_SYNC_OWNER='traxio_sync_owner_v29';
+let traxioSyncTimer=null,traxioSyncRunning=false,traxioSyncSuspended=false;
+function traxioReadBase(userId){
+ try{const obj=JSON.parse(localStorage.getItem(TRAXIO_SYNC_BASE+userId)||'{}');return obj&&typeof obj==='object'&&!Array.isArray(obj)?obj:{}}catch{return {}}
+}
+function traxioWriteBase(userId,base){localStorage.setItem(TRAXIO_SYNC_BASE+userId,JSON.stringify(base))}
+function traxioScheduleSync(delay=4500){
+ if(traxioSyncSuspended||!authClient||document.body.classList.contains('auth-locked'))return;
+ clearTimeout(traxioSyncTimer);
+ traxioSyncTimer=setTimeout(()=>traxioAutoSync().catch(e=>cloudNotice('Sincronização: '+(e.message||e),true)),delay);
+}
+async function traxioAutoSync(){
+ if(traxioSyncRunning||cloudBusy||traxioSyncSuspended||!authClient||!navigator.onLine||document.body.classList.contains('auth-locked'))return;
+ traxioSyncRunning=true;
+ let inserted=0,updated=0,received=0,conflicts=0;
+ try{
+  const userId=await cloudIdentity();
+  const owner=localStorage.getItem(TRAXIO_SYNC_OWNER);
+  if(owner&&owner!==userId){cloudNotice('Sincronização automática bloqueada: este navegador foi associado a outra conta. Exporte o backup e revise a troca de conta.',true);return}
+  if(!owner)localStorage.setItem(TRAXIO_SYNC_OWNER,userId);
+  const baseline=traxioReadBase(userId);
+  const remote=await cloudReadAll(userId);
+  const remoteById=new Map(remote.map(r=>[String(r.local_id),r]));
+  const snapshot=clients.map(c=>JSON.parse(JSON.stringify(c)));
+  const localById=new Map(snapshot.map(c=>[String(c.id),c]));
+  const pendingReceive=[];
+  for(const r of remote){
+   const id=String(r.local_id||'');
+   if(!id||r.deleted_at||!r.data||typeof r.data!=='object'||Array.isArray(r.data)||typeof r.data.name!=='string')continue;
+   const current=localById.get(id),remoteHash=cloudCanonical(r.data),prior=baseline[id];
+   if(!current){
+    // Um registro localmente excluído não é recriado caso já constasse na base.
+    if(!prior)pendingReceive.push({id,data:r.data,hash:remoteHash,revision:r.revision});
+    continue;
+   }
+   const localHash=cloudCanonical(current);
+   if(localHash===remoteHash){baseline[id]={hash:remoteHash,revision:r.revision};continue}
+   if(prior&&prior.hash===localHash&&prior.hash!==remoteHash){
+    // Nuvem avançou; dispositivo local permaneceu na última versão confirmada.
+    pendingReceive.push({id,data:r.data,hash:remoteHash,revision:r.revision,expectedLocalHash:localHash});
+    continue;
+   }
+   if(prior&&prior.hash===remoteHash&&prior.hash!==localHash&&Number.isSafeInteger(prior.revision)&&prior.revision===r.revision){
+    const {data,error}=await authClient.rpc('traxio_update_client_safe',{
+     p_local_id:id,p_expected_revision:prior.revision,p_data:current
+    });
+    if(error)throw error;
+    const outcome=Array.isArray(data)?data[0]:data;
+    if(outcome?.result==='updated'&&Number.isSafeInteger(Number(outcome.current_revision))){
+     baseline[id]={hash:localHash,revision:Number(outcome.current_revision)};updated++;
+    }else conflicts++;
+    continue;
+   }
+   conflicts++;
+  }
+  // Novos cadastros locais: INSERT somente quando não existe registro na nuvem.
+  for(const c of snapshot){
+   const id=String(c.id||'');
+   if(!id||remoteById.has(id)||baseline[id])continue;
+   const row=cloudRow(c,userId);
+   const {data,error}=await authClient.from('clients').insert(row).select('revision').single();
+   if(error){conflicts++;continue}
+   baseline[id]={hash:cloudCanonical(c),revision:Number(data.revision)};inserted++;
+  }
+  if(pendingReceive.length){
+   let changed=false;
+   for(const item of pendingReceive){
+    const idx=clients.findIndex(c=>String(c.id)===item.id);
+    if(idx<0){
+     if(!baseline[item.id]){clients.push({...item.data,id:item.id});baseline[item.id]={hash:item.hash,revision:item.revision};received++;changed=true}
+    }else if(item.expectedLocalHash&&cloudCanonical(clients[idx])===item.expectedLocalHash){
+     clients[idx]={...item.data,id:item.id};baseline[item.id]={hash:item.hash,revision:item.revision};received++;changed=true;
+    }else conflicts++;
+   }
+   if(changed){
+    traxioSyncSuspended=true;
+    try{localStorage.setItem(KEY,JSON.stringify(clients));render()}finally{traxioSyncSuspended=false}
+   }
+  }
+  traxioWriteBase(userId,baseline);
+  cloudNotice('Automática: '+inserted+' enviados, '+updated+' atualizados, '+received+' recebidos, '+conflicts+' conflitos protegidos.'+(conflicts?' Nenhum conflito foi sobrescrito.':''),conflicts>0);
+ }finally{traxioSyncRunning=false}
+}
+window.addEventListener('online',()=>traxioScheduleSync(1200));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)traxioScheduleSync(1200)});
+setInterval(()=>traxioScheduleSync(1200),120000);
+
+</script></body></html>
