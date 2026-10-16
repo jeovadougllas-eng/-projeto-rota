@@ -886,4 +886,52 @@ window.addEventListener('online',()=>traxioScheduleSync(1200));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)traxioScheduleSync(1200)});
 setInterval(()=>traxioScheduleSync(1200),120000);
 
-</script><div id="accountDialog" class="account-overlay" hidden><section class="account-dialog" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><div class="account-dialog-head"><h2 id="accountTitle">Minha conta</h2><button type="button" id="accountClose" aria-label="Fechar">×</button></div><div id="accountContent"></div><p id="accountFeedback" aria-live="polite"></p></section></div></body></html>
+</script><div id="accountDialog" class="account-overlay" hidden><section class="account-dialog" role="dialog" aria-modal="true" aria-labelledby="accountTitle"><div class="account-dialog-head"><h2 id="accountTitle">Minha conta</h2><button type="button" id="accountClose" aria-label="Fechar">×</button></div><div id="accountContent"></div><p id="accountFeedback" aria-live="polite"></p></section></div>
+<script>
+(function(){
+const el=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const key='traxio.account.preferences.v1';
+function prefs(){try{return JSON.parse(localStorage.getItem(key)||'{}')}catch{return {}}}
+function apply(){const p=prefs();document.body.classList.toggle('traxio-dark',p.theme==='dark');document.documentElement.style.fontSize=(p.font||100)+'%'}
+apply();
+function feedback(t,bad=false){el('accountFeedback').textContent=t;el('accountFeedback').style.color=bad?'#d25360':'#16836b'}
+function closeMenu(){el('accountMenu').hidden=true;el('accountToggle').setAttribute('aria-expanded','false')}
+function closeDialog(){el('accountDialog').hidden=true;el('accountContent').replaceChildren();feedback('')}
+async function user(){if(!authClient)return null;const {data,error}=await authClient.auth.getUser();if(error)throw error;return data.user}
+function show(title,content){closeMenu();el('accountTitle').textContent=title;el('accountContent').innerHTML=content;el('accountDialog').hidden=false;feedback('')}
+async function open(section){
+ if(section==='settings'){const p=prefs();show('Configurações',`<form id="accountSettings" class="account-form"><label>Aparência<select name="theme"><option value="light" ${p.theme!=='dark'?'selected':''}>Modo claro</option><option value="dark" ${p.theme==='dark'?'selected':''}>Modo escuro</option></select></label><label>Tamanho da fonte<select name="font">${[85,100,115,130].map(n=>`<option value="${n}" ${Number(p.font||100)===n?'selected':''}>${n===100?'Padrão':n<100?'Menor':n===115?'Maior':'Extra grande'} (${n}%)</option>`).join('')}</select></label><button type="submit">Salvar preferências</button></form>`);return}
+ if(section==='subscriptions'){show('Gerenciar assinaturas','<p>Os planos e assinaturas do Traxio ainda não estão disponíveis.</p><p class="account-note">Este menu está preparado para o lançamento dos planos. Nenhuma cobrança ou assinatura será iniciada por aqui.</p>');return}
+ if(section==='payments'){show('Dados de pagamento','<p>O cadastro de cartões e débito em conta estará disponível quando o sistema de pagamentos for implementado com um provedor certificado.</p><p class="account-note">Por segurança, o Traxio não coleta nem armazena números de cartão ou dados bancários nesta versão.</p>');return}
+ show('Dados cadastrais','<p>Carregando dados da conta…</p>');
+ try{
+ const u=await user();if(!u)throw Error('Faça login para editar sua conta.');
+ const m=u.user_metadata||{};
+ show('Dados cadastrais',`<form id="accountProfile" class="account-form"><label>Nome de exibição<input name="display_name" maxlength="80" value="${esc(m.display_name||'')}" placeholder="Como deseja aparecer no Traxio"></label><label>Telefone<input name="phone_contact" type="tel" maxlength="35" value="${esc(m.phone_contact||'')}"></label><label>Endereço<input name="address_contact" maxlength="240" value="${esc(m.address_contact||'')}"></label><label>E-mail da conta<input name="email" type="email" value="${esc(u.email||'')}" required></label><p class="account-note">Ao alterar o e-mail, o Supabase poderá solicitar confirmação por mensagem.</p><button type="submit">Salvar dados cadastrais</button></form>`);
+ }catch(e){feedback(e.message||'Não foi possível carregar o perfil.',true)}
+}
+el('accountToggle').addEventListener('click',()=>{const opening=el('accountMenu').hidden;el('accountMenu').hidden=!opening;el('accountToggle').setAttribute('aria-expanded',String(opening))});
+document.querySelectorAll('[data-account]').forEach(b=>b.addEventListener('click',()=>open(b.dataset.account)));
+el('accountClose').addEventListener('click',closeDialog);
+el('accountDialog').addEventListener('click',e=>{if(e.target===el('accountDialog'))closeDialog()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();if(!el('accountDialog').hidden)closeDialog()}});
+document.addEventListener('click',e=>{if(!el('accountArea').contains(e.target))closeMenu()});
+el('accountSignOut').addEventListener('click',()=>{closeMenu();el('authLogout').click()});
+el('accountContent').addEventListener('submit',async e=>{
+ e.preventDefault();const form=e.target;const data=new FormData(form);const btn=form.querySelector('button[type="submit"]');if(btn)btn.disabled=true;
+ try{
+ if(form.id==='accountSettings'){const p={theme:String(data.get('theme')),font:Number(data.get('font'))};localStorage.setItem(key,JSON.stringify(p));apply();feedback('Preferências salvas neste dispositivo.');return}
+ if(form.id==='accountProfile'){
+  if(!authClient)throw Error('Sessão indisponível.');
+  const u=await user();if(!u)throw Error('Sessão expirada.');
+  const updates={data:{display_name:String(data.get('display_name')||'').trim(),phone_contact:String(data.get('phone_contact')||'').trim(),address_contact:String(data.get('address_contact')||'').trim()}};
+  const email=String(data.get('email')||'').trim();if(email&&email!==u.email)updates.email=email;
+  const {error}=await authClient.auth.updateUser(updates);if(error)throw error;
+  el('authIdentity').textContent=updates.data.display_name||u.email||'Minha conta';
+  feedback(updates.email?'Dados salvos. Confira seu e-mail para confirmar a alteração.':'Dados cadastrais salvos.');
+ }
+ }catch(err){feedback(err.message||'Erro ao salvar.',true)}finally{if(btn)btn.disabled=false}
+});
+})();
+</script></body></html>
