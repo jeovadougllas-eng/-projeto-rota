@@ -106,7 +106,25 @@ body:not(.auth-locked) .stat{background:linear-gradient(120deg,#e9f9f4,#f7fcfa)!
 body:not(.auth-locked) .traxio-hero{background:linear-gradient(110deg,#04313c,#076f69)!important}
 .traxio-route-pin{width:31px;height:31px;border-radius:50%;background:#008a80;border:3px solid white;box-shadow:0 2px 9px #003c3980;color:white;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}.traxio-route-pin::after{content:attr(data-label);transform:rotate(45deg)}
 .traxio-route-pin[title^="Ponto sugerido"]{cursor:pointer;box-shadow:0 2px 8px #0004}
-.tabs button[data-tab]{display:flex;align-items:center;gap:11px}.tabs button[data-tab] svg{width:19px;height:19px;min-width:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.tabs button[data-tab] span{white-space:nowrap}</style><style>
+.tabs button[data-tab]{display:flex;align-items:center;gap:11px}.tabs button[data-tab] svg{width:19px;height:19px;min-width:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.tabs button[data-tab] span{white-space:nowrap}
+/* Traxio: mapa prioritario em orientacao retrato (celular e tablet) */
+@media (orientation:portrait) and (max-width:1100px){
+  #mapa .workspace{display:flex!important;flex-direction:column!important;gap:12px!important}
+  #mapa .workspace-map{order:0;width:100%;min-width:0}
+  #mapa .workspace-side{order:1;width:100%;position:static!important;max-height:none!important;overflow:visible!important}
+  #mapa .workspace-route{order:2;width:100%}
+  #mapa .workspace-map .map{height:clamp(390px,62dvh,780px)!important;min-height:390px!important;width:100%}
+  #mapa .workspace-map{padding:12px}
+  #mapa .workspace-map h2{margin-bottom:8px}
+  #mapa .workspace-map .row{gap:6px;flex-wrap:wrap}
+  #mapa .workspace-map .row button{font-size:12px;padding:9px}
+  #mapa .workspace-side .compact-list{max-height:none;overflow:visible}
+}
+@media (orientation:portrait) and (max-width:600px){
+  #mapa .workspace-map .map{height:clamp(350px,58dvh,640px)!important;min-height:350px!important}
+  #mapa .workspace-map{padding:9px}
+}
+</style><style>
 .traxio-data-center{max-width:930px}
 .traxio-data-block{padding:21px 22px;border:1px solid #dcebe7;border-radius:17px;margin:16px 0;background:#f9fcfb}
 .traxio-data-primary{background:linear-gradient(120deg,#edf9f5,#f9fdfb);border-left:4px solid #16b6a0}
