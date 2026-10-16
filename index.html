@@ -198,6 +198,16 @@ body:not(.auth-locked) .tabs:before,body:not(.auth-locked) .tabs:after{display:n
 body:not(.auth-locked) .tab{min-width:0!important;width:100%!important}
 body:not(.auth-locked) .card{max-width:100%!important}
 }
+
+.traxio-nav-overlay[hidden]{display:none!important}
+.traxio-nav-overlay{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;z-index:1000!important;background:#061c24!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;color:#fff!important}
+.traxio-nav-top{flex:none;min-height:60px;padding:calc(env(safe-area-inset-top,0px) + 8px) 15px 9px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#063943;color:#fff}
+.traxio-nav-top strong{font-size:16px}.traxio-nav-top button{background:#d8f8ee!important;color:#06453d!important;padding:9px 12px!important;border-radius:10px!important;font-size:12px!important}
+.traxio-nav-map-host{flex:1;min-height:0;position:relative}.traxio-nav-map-host #map{width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;border-radius:0!important}
+.traxio-nav-controls{flex:none;max-height:38dvh;overflow-y:auto;background:#092e38;color:#e9f9f5;padding:10px 14px calc(env(safe-area-inset-bottom,0px) + 12px);border-top:2px solid #11b59b}
+.traxio-nav-controls .live-navigation{display:block!important;background:transparent!important;border:0!important;margin:0!important;padding:0!important;color:#e9f9f5!important}
+.traxio-nav-controls .live-navigation p{color:#d5e9e6!important;margin:6px 0}.traxio-nav-controls .live-head{color:#fff}.traxio-nav-controls .live-stop-list{max-height:80px;overflow:auto;margin:6px 0}.traxio-nav-controls .live-stop{color:#102e35!important}.traxio-nav-controls #liveStart,.traxio-nav-controls #liveStop{font-size:13px;padding:10px!important}
+@media(max-width:760px){.traxio-nav-top{min-height:55px}.traxio-nav-controls{max-height:42dvh}}
 </style><style>
 .traxio-data-center{max-width:930px}
 .traxio-data-block{padding:21px 22px;border:1px solid #dcebe7;border-radius:17px;margin:16px 0;background:#f9fcfb}
@@ -1013,6 +1023,23 @@ render();
 (function(){
 const $=id=>document.getElementById(id);
 let watch=null,car=null,route=null,arrivedSince=0,previousPosition=null;
+let originalMapParent=null,originalMapNext=null,originalPanelParent=null,originalPanelNext=null;
+function enterNav(){
+const overlay=$('traxioNavOverlay'),mapEl=$('map'),panel=$('liveNavigation');
+if(!mapEl||!map||!panel)return;
+if(!originalMapParent){originalMapParent=mapEl.parentNode;originalMapNext=mapEl.nextSibling;originalPanelParent=panel.parentNode;originalPanelNext=panel.nextSibling}
+$('traxioNavMapHost').appendChild(mapEl);$('traxioNavControls').appendChild(panel);
+overlay.hidden=false;document.body.classList.add('traxio-navigating');
+setTimeout(()=>{map.resize();if(previousPosition)map.easeTo({center:previousPosition,zoom:16,duration:500})},80);
+}
+function exitNav(){
+const overlay=$('traxioNavOverlay');if(overlay.hidden)return;
+const mapEl=$('map'),panel=$('liveNavigation');
+if(originalMapParent){originalMapParent.insertBefore(mapEl,originalMapNext?.parentNode===originalMapParent?originalMapNext:null);originalPanelParent.insertBefore(panel,originalPanelNext?.parentNode===originalPanelParent?originalPanelNext:null)}
+overlay.hidden=true;document.body.classList.remove('traxio-navigating');setTimeout(()=>map?.resize(),80);
+}
+$('traxioNavMinimize').onclick=exitNav;
+
 window.traxioVisitedIds=new Set();
 function status(msg){$('liveGPSState').textContent=msg}
 function stops(){return route?.stops||[]}
@@ -1023,7 +1050,7 @@ stops().forEach((stop,i)=>{const d=document.createElement('div');d.className='li
 $('liveNextStop').textContent=next()?'Próxima parada: '+next().name:route?'Todas as paradas foram registradas.':'Nenhuma rota em andamento.';
 renderMarkers();
 }
-function stopGPS(){if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null}if(car){car.remove();car=null}previousPosition=null;arrivedSince=0;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado')}
+function stopGPS(){exitNav();if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null}if(car){car.remove();car=null}previousPosition=null;arrivedSince=0;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado')}
 function recordHistory(outcome){
 const key='traxio.route.history.v1:'+(document.getElementById('authIdentity')?.textContent||'account');
 let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(rows))rows=[]}catch{}
@@ -1051,7 +1078,7 @@ const lat=p.coords.latitude,lon=p.coords.longitude,accuracy=p.coords.accuracy;
 if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
 const coord=[lon,lat];
 if(!car){const dot=document.createElement('div');dot.className='traxio-gps-dot';car=new maplibregl.Marker({element:dot}).setLngLat(coord).addTo(map)}else car.setLngLat(coord);
-if(!previousPosition){map?.easeTo({center:coord,zoom:Math.max(map.getZoom(),14),duration:700})}previousPosition=coord;
+map?.easeTo({center:coord,zoom:Math.max(map.getZoom(),15),duration:500});previousPosition=coord;
 status('GPS ativo · precisão ±'+Math.round(accuracy)+' m');
 const target=next();if(!target)return;
 const dist=km({lat,lon},target)*1000;
@@ -1062,7 +1089,7 @@ if(Date.now()-arrivedSince>=30000)arrived(target);
 $('liveStart').addEventListener('click',()=>{
 if(!route||watch!==null)return;
 if(!navigator.geolocation){status('GPS indisponível neste navegador');return}
-try{watch=navigator.geolocation.watchPosition(position,e=>{status('Erro no GPS: '+e.message);arrivedSince=0},{enableHighAccuracy:true,maximumAge:3000,timeout:18000});$('liveStart').disabled=true;$('liveStop').disabled=false;status('Aguardando sinal GPS…')}catch(e){status('Não foi possível iniciar o GPS: '+e.message)}
+try{enterNav();watch=navigator.geolocation.watchPosition(position,e=>{status('Erro no GPS: '+e.message);arrivedSince=0},{enableHighAccuracy:true,maximumAge:3000,timeout:18000});$('liveStart').disabled=true;$('liveStop').disabled=false;status('Aguardando sinal GPS…')}catch(e){status('Não foi possível iniciar o GPS: '+e.message)}
 });
 $('liveStop').addEventListener('click',()=>{if(confirm('Encerrar esta rota agora? As visitas restantes ficarão pendentes no histórico.'))end('partial')});
 window.traxioBeginNavigation=function(points){
@@ -1110,4 +1137,4 @@ $('liveNavigation').scrollIntoView({behavior:'smooth',block:'center'});
 }catch(e){status('Não foi possível traçar a rota: '+(e.message||e))}finally{$('avulsoRoute').disabled=false}
 };
 })();
-</script></body></html>
+</script><div id="traxioNavOverlay" class="traxio-nav-overlay" hidden><div class="traxio-nav-top"><strong>Traxio · Navegação</strong><button id="traxioNavMinimize" type="button">Voltar ao planejamento</button></div><div id="traxioNavMapHost" class="traxio-nav-map-host"></div><div id="traxioNavControls" class="traxio-nav-controls"></div></div></body></html>
