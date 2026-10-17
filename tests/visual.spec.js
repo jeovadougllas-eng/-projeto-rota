@@ -4,7 +4,7 @@ import { prepare, ready } from './fixtures/browser.js';
 test('login — approved composition',async({page},testInfo)=>{
   await prepare(page,{authenticated:false,theme:testInfo.project.metadata.theme}); await ready(page);
   await expect(page.getByRole('heading',{name:'Acesse sua conta'})).toBeVisible();
-  await expect(page.locator('.auth-brand-panel .brand-crop img')).toHaveAttribute('src','assets/visual-kit/assets/logo_dark_background.png');
+  await expect(page.locator('.auth-brand-panel .brand-crop img')).toHaveAttribute('src','assets/visual-kit/assets/login_hero_reference.png');
   await expect(page).toHaveScreenshot('login.png',{animations:'disabled'});
 });
 

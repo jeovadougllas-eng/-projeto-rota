@@ -27,8 +27,10 @@ for(const pane of panes)test(`approved reference: ${pane.id}`,async({page,contex
     expect(Math.abs(geometry.login.y-(viewport.height-526*viewport.width/563)/2-59*viewport.width/563)).toBeLessThan(3);
     expect(Math.abs(geometry.login.w-249*viewport.width/563)).toBeLessThan(3);
   }else{
-    expect(Math.abs(geometry.header.h-72*viewport.height/650)).toBeLessThan(3);
-    expect(Math.abs(geometry.sidebar.w-(pane.id==='painel'?160:164)*viewport.height/650)).toBeLessThan(3);
+    const previous=!!process.env.TRAXIO_REVIEW_ORIGIN;
+    const header=previous?72:({painel:71,mapa:69,dados:69}[pane.id]||72),sidebar=previous?(pane.id==='painel'?160:164):({painel:157,mapa:158,dados:154}[pane.id]||164);
+    expect(Math.abs(geometry.header.h-header*viewport.height/650)).toBeLessThan(3);
+    expect(Math.abs(geometry.sidebar.w-sidebar*viewport.height/650)).toBeLessThan(3);
   }
   const output=process.env.TRAXIO_REFERENCE_OUTPUT||'docs/captures/reference';
   await mkdir(output,{recursive:true});

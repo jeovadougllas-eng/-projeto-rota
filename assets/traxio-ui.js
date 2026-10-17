@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Login uses the existing forms and their original event handlers.
   const authBrand = node('div', 'auth-brand-panel');
-  authBrand.innerHTML = brand() + `<p class="auth-brand-motto">PLANEJE MELHOR.<br>VÁ MAIS LONGE.</p><div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
+  authBrand.innerHTML = '<span class="brand-crop auth-original-logo"><img src="assets/visual-kit/assets/login_hero_reference.png" alt="Traxio — Planeje melhor. Vá mais longe." width="354" height="632"></span>' + `<div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
   el('authScreen').prepend(authBrand);
   const approvedScene = node('div','auth-approved-scene'); approvedScene.setAttribute('aria-hidden','true');
   approvedScene.innerHTML='<img class="reconstructed-login-plate" src="assets/reconstructed/login-background.png" alt=""><img class="original-login-art" src="assets/visual-kit/assets/login_hero_reference.png" alt="" width="354" height="632">';
@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const navArt = node('div','nav-art'); navArt.setAttribute('aria-hidden','true');
   navArt.innerHTML = '<img src="assets/visual-kit/assets/dashboard_mockup_reference.png" alt="" width="858" height="635"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
   const navPattern=node('div','nav-pattern');navPattern.setAttribute('aria-hidden','true');navPattern.innerHTML='<img src="assets/visual-kit/reference/1411.png" alt="" width="1536" height="1024">';nav.append(navPattern);
+  [...nav.querySelectorAll(':scope>button')].forEach((b,i)=>{b.querySelector('svg')?.remove();const [x,y]=[[19,90],[19,134],[19,177],[19,220],[19,261]][i];b.insertAdjacentHTML('afterbegin',i===0?glyph('clients_mockup_reference.png',565,388,15,53,18,19,'kit-nav-icon'):glyph('dashboard_mockup_reference.png',858,635,x,y,24,25,'kit-nav-icon'));});
   const originalSwitch = switchTab;
   switchTab = id => {
     originalSwitch(id); const actual = id === 'rotas' ? 'mapa' : id;
@@ -139,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const dashboardLayout = node('div','dashboard-layout'), dashboardMain = node('div','dashboard-main'); overview.before(dashboardLayout); dashboardMain.append(overview); dashboardLayout.append(dashboardMain);
   const quick = node('aside','card quick-actions'); quick.innerHTML = '<h3>Ações rápidas</h3>';
   [['Planejar rota','clients','mapa'],['Ver no mapa','map','mapa'],['Importar clientes','upload','dados'],['Sincronizar dados','sync','dados']].forEach(([text,ico,target], i) => {
-    const b = button(text, () => { switchTab(target); if(i === 2) el('sheetFile').focus(); if(i === 3) el('cloudCheck').click(); }); b.setAttribute('aria-label',text); b.insertAdjacentHTML('afterbegin',icon(ico)); quick.append(b);
+    const b = button(text, () => { switchTab(target); if(i === 2) el('sheetFile').focus(); if(i === 3) el('cloudCheck').click(); }); b.setAttribute('aria-label',text); b.insertAdjacentHTML('afterbegin',glyph('dashboard_mockup_reference.png',858,635,668,[266,306,347,389][i],25,25,'kit-quick-icon')); quick.append(b);
   });
   const overviewTop=node('div','overview-top'), overviewSummary=node('div','overview-summary');
   const walletCards=el('dashboardClients');
