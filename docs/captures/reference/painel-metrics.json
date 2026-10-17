@@ -1,0 +1,45 @@
+{
+  "reference": {
+    "id": "painel",
+    "x": 563,
+    "y": 0,
+    "w": 717,
+    "h": 526,
+    "theme": "light"
+  },
+  "viewport": {
+    "width": 1434,
+    "height": 1052
+  },
+  "geometry": {
+    "header": {
+      "x": 0,
+      "y": 0,
+      "w": 1434,
+      "h": 116.515625
+    },
+    "sidebar": {
+      "x": 0,
+      "y": 116.515625,
+      "w": 265.421875,
+      "h": 935.484375
+    },
+    "login": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "hero": {
+      "x": 292.921875,
+      "y": 135.921875,
+      "w": 1113.578125,
+      "h": 210.515625
+    }
+  },
+  "metrics": {
+    "meanAbsoluteRGBError": 23.269742563808858,
+    "pixelsDifferingOver24": 0.21876441764640375,
+    "identical": false
+  }
+}

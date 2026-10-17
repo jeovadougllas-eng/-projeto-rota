@@ -1,0 +1,45 @@
+{
+  "reference": {
+    "id": "mapa",
+    "x": 472,
+    "y": 528,
+    "w": 423,
+    "h": 325,
+    "theme": "dark"
+  },
+  "viewport": {
+    "width": 846,
+    "height": 650
+  },
+  "geometry": {
+    "header": {
+      "x": 0,
+      "y": 0,
+      "w": 846,
+      "h": 72
+    },
+    "sidebar": {
+      "x": 0,
+      "y": 72,
+      "w": 164,
+      "h": 578
+    },
+    "login": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    }
+  },
+  "metrics": {
+    "meanAbsoluteRGBError": 33.27420136994605,
+    "pixelsDifferingOver24": 0.2868285142753228,
+    "identical": false
+  }
+}

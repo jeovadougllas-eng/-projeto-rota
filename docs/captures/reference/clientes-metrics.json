@@ -1,0 +1,45 @@
+{
+  "reference": {
+    "id": "clientes",
+    "x": 0,
+    "y": 528,
+    "w": 469,
+    "h": 325,
+    "theme": "dark"
+  },
+  "viewport": {
+    "width": 938,
+    "height": 650
+  },
+  "geometry": {
+    "header": {
+      "x": 0,
+      "y": 0,
+      "w": 938,
+      "h": 72
+    },
+    "sidebar": {
+      "x": 0,
+      "y": 72,
+      "w": 164,
+      "h": 578
+    },
+    "login": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    }
+  },
+  "metrics": {
+    "meanAbsoluteRGBError": 25.784366081679515,
+    "pixelsDifferingOver24": 0.20517303591930458,
+    "identical": false
+  }
+}
