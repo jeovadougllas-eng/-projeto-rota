@@ -1,28 +1,29 @@
 {
   "reference": {
     "id": "painel",
-    "x": 563,
+    "file": "dashboard_mockup_reference.png",
+    "x": 678,
     "y": 0,
-    "w": 717,
-    "h": 526,
+    "w": 858,
+    "h": 635,
     "theme": "light"
   },
   "viewport": {
-    "width": 1434,
-    "height": 1052
+    "width": 1716,
+    "height": 1270
   },
   "geometry": {
     "header": {
       "x": 0,
       "y": 0,
-      "w": 1434,
-      "h": 116.515625
+      "w": 1716,
+      "h": 140.671875
     },
     "sidebar": {
       "x": 0,
-      "y": 116.515625,
-      "w": 258.953125,
-      "h": 935.484375
+      "y": 140.671875,
+      "w": 312.609375,
+      "h": 1129.328125
     },
     "login": {
       "x": 0,
@@ -31,15 +32,15 @@
       "h": 0
     },
     "hero": {
-      "x": 278.359375,
-      "y": 132.6875,
-      "w": 1136.234375,
-      "h": 214.796875
+      "x": 336.046875,
+      "y": 160.203125,
+      "w": 1356.515625,
+      "h": 268.53125
     }
   },
   "metrics": {
-    "meanAbsoluteRGBError": 17.065928306402718,
-    "pixelsDifferingOver24": 0.17439319937848344,
+    "meanAbsoluteRGBError": 24.74283752118398,
+    "pixelsDifferingOver24": 0.21463575794284456,
     "identical": false
   }
 }

@@ -1,28 +1,29 @@
 {
   "reference": {
     "id": "clientes",
+    "file": "clients_mockup_reference.png",
     "x": 0,
-    "y": 528,
-    "w": 469,
-    "h": 325,
+    "y": 636,
+    "w": 565,
+    "h": 388,
     "theme": "dark"
   },
   "viewport": {
-    "width": 938,
-    "height": 650
+    "width": 1130,
+    "height": 776
   },
   "geometry": {
     "header": {
       "x": 0,
       "y": 0,
-      "w": 938,
-      "h": 72
+      "w": 1130,
+      "h": 85.953125
     },
     "sidebar": {
       "x": 0,
-      "y": 72,
-      "w": 164,
-      "h": 578
+      "y": 85.953125,
+      "w": 195.78125,
+      "h": 690.046875
     },
     "login": {
       "x": 0,
@@ -38,8 +39,8 @@
     }
   },
   "metrics": {
-    "meanAbsoluteRGBError": 18.237991908588924,
-    "pixelsDifferingOver24": 0.1633049040511727,
+    "meanAbsoluteRGBError": 19.133848036979593,
+    "pixelsDifferingOver24": 0.1607551774473132,
     "identical": false
   }
 }
