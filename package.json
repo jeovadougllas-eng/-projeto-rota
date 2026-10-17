@@ -1,0 +1,15 @@
+{
+  "name": "traxio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "test": "playwright test",
+    "test:visual": "playwright test tests/visual.spec.js",
+    "test:update-snapshots": "playwright test tests/visual.spec.js --update-snapshots",
+    "test:report": "playwright show-report",
+    "check": "node scripts/check.mjs"
+  },
+  "devDependencies": { "playwright": "1.62.1" }
+}

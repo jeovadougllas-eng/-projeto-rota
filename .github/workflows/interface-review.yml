@@ -1,0 +1,34 @@
+name: Traxio interface review
+on:
+  push:
+    branches: [dev/traxio-mockup-fidelity]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run check
+      - name: Browser flows and initial visual captures
+        run: npm test -- --update-snapshots
+      - name: Preserve screenshots and report for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traxio-interface-review
+          retention-days: 14
+          path: |
+            playwright-report/
+            test-results/
+            tests/visual.spec.js-snapshots/

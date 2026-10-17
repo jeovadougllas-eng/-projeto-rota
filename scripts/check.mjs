@@ -1,0 +1,11 @@
+import { readFile } from 'node:fs/promises';
+import { Script } from 'node:vm';
+const html = await readFile(new URL('../index.html', import.meta.url),'utf8');
+const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]).filter(Boolean);
+scripts.forEach((source,index) => new Script(source,{filename:'application-inline-'+index+'.js'}));
+new Script(await readFile(new URL('../assets/traxio-ui.js', import.meta.url),'utf8'),{filename:'traxio-ui.js'});
+const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
+if(new Set(ids).size !== ids.length) throw Error('Duplicate IDs in HTML');
+for(const source of ['https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js','https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js']) if(!html.includes(source)) throw Error('Missing existing dependency: '+source);
+for(const provider of ["data-provider=\"google\"", "data-provider=\"azure\"", "flowType:'pkce'", "KEY='projeto_rota_mapa_v1'", "storageKey:'traxio-auth-v3'"]) if(!html.includes(provider)) throw Error('Existing integration changed: '+provider);
+console.log(`Validated ${scripts.length} inline scripts, the presentation adapter, unique HTML IDs and existing integration identifiers.`);
