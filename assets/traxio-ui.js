@@ -42,6 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const authBrand = node('div', 'auth-brand-panel');
   authBrand.innerHTML = brand() + `<div class="auth-features"><div class="auth-feature">${icon('pin')}<span>Organize<br>sua carteira</span></div><div class="auth-feature">${icon('chart')}<span>Otimize<br>seus trajetos</span></div><div class="auth-feature">${icon('chart')}<span>Conquiste<br>mais resultados</span></div></div>`;
   el('authScreen').prepend(authBrand);
+  const approvedScene = node('div','auth-approved-scene'); approvedScene.setAttribute('aria-hidden','true');
+  approvedScene.innerHTML='<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853">';
+  el('authScreen').prepend(approvedScene);
   const authPanel = document.querySelector('.auth-panel');
   const authHeading = node('div', 'auth-heading');
   authHeading.innerHTML = '<h1>Acesse sua conta</h1><p>Entre para planejar suas rotas e gerenciar sua carteira.</p>';

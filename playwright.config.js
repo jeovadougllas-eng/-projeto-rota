@@ -8,8 +8,8 @@ const resolutions = [
 ];
 export default defineConfig({
   testDir:'./tests', fullyParallel:true, forbidOnly:!!process.env.CI,
-  retries:process.env.CI ? 1 : 0, workers:process.env.CI ? 2 : 2,
-  timeout:30000, expect:{timeout:6000,toHaveScreenshot:{maxDiffPixelRatio:0.005}},
+  retries:0, workers:2, maxFailures:4,
+  timeout:15000, expect:{timeout:5000,toHaveScreenshot:{maxDiffPixelRatio:0.005}},
   reporter:[['list'],['html',{open:'never'}],['json',{outputFile:'test-results/results.json'}]],
   outputDir:'test-results',
   use:{baseURL:'http://127.0.0.1:4173',browserName:'chromium',trace:'retain-on-failure',screenshot:'only-on-failure',launchOptions:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? {executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH} : {}},

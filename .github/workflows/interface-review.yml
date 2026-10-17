@@ -7,6 +7,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: traxio-interface-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   browser-review:
     runs-on: ubuntu-latest
@@ -20,7 +23,9 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run check
-      - name: Browser flows and initial visual captures
+      - name: Verify core flows before the full matrix
+        run: npm test -- --project=desktop-light tests/auth.spec.js tests/flows.spec.js
+      - name: Browser matrix and initial visual captures
         run: npm test -- --update-snapshots
       - name: Preserve screenshots and report for review
         if: always()
