@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   const originalInitMap=initMap;
-  initMap=()=>{originalInitMap();if(map&&!map.__traxioPalette){map.__traxioPalette=true;map.on('style.load',()=>{originalPaint.clear();applyMapPalette();});map.once('load',applyMapPalette);if(map.isStyleLoaded())applyMapPalette();}};
+  initMap=()=>{originalInitMap();if(map&&!map.__traxioPalette){map.__traxioPalette=true;map.jumpTo({center:[-35.23,-5.83],zoom:11.8});map.on('style.load',()=>{originalPaint.clear();applyMapPalette();});map.once('load',applyMapPalette);if(map.isStyleLoaded())applyMapPalette();}};
   new MutationObserver(applyMapPalette).observe(document.body,{attributes:true,attributeFilter:['class']});
   function selectMode(mode) {
     modes.querySelectorAll('button').forEach(b=>{ const selected=b.dataset.mode===mode; b.setAttribute('aria-selected',String(selected)); b.tabIndex=selected?0:-1; });
@@ -259,6 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
   modes.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const list=[...modes.children];let index=list.indexOf(document.activeElement);index=e.key==='Home'?0:e.key==='End'?list.length-1:(index+(e.key==='ArrowRight'?1:-1)+list.length)%list.length;list[index].click();list[index].focus();});
   document.querySelector('#mapa .tab-title').after(modes,modePanel); selectMode('daily');
   // Real dependency failures remain explicit; no decorative map is presented as a live map.
+  const visitSide=document.querySelector('.workspace-side'),selectionLabel=node('p','approved-selection-count');
+  const traceSelected=button('Traçar rota selecionada',()=>{el('calcRoute').click();document.querySelector('.workspace-route').scrollIntoView({behavior:'smooth',block:'start'});},'approved-trace-route secondary');
+  const reflectSelection=()=>{selectionLabel.textContent=selectedIds.size+' clientes selecionados';traceSelected.disabled=!selectedIds.size;};
+  new MutationObserver(reflectSelection).observe(el('selectedCount'),{childList:true,characterData:true,subtree:true});reflectSelection();
+  el('mapClientListDisclosure').before(selectionLabel,traceSelected);
   const mapNode=el('map');
   mapNode.after(el('mapStatus'),el('mapSelectionStatus'));
   const layerSwitch=node('div','map-layer-switch');layerSwitch.setAttribute('role','group');layerSwitch.setAttribute('aria-label','Camada do mapa');

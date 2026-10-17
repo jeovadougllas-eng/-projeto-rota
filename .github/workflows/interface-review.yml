@@ -59,7 +59,7 @@ jobs:
           done
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tests/visual.spec.js-snapshots/ docs/captures/
+          git add tests/*-snapshots/ docs/captures/
           if ! git diff --cached --quiet; then
             git commit -m "test: capture Traxio interface for visual review [skip ci]"
             git push origin "HEAD:${GITHUB_REF_NAME}"
@@ -75,4 +75,4 @@ jobs:
             test-results-reference/
             playwright-report/
             test-results/
-            tests/visual.spec.js-snapshots/
+            tests/*-snapshots/

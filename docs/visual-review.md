@@ -1,6 +1,8 @@
 # Traxio — revisão visual
 
-Referência aprovada: `assets/approved-mockup.jpg`, fornecida pelo proprietário do aplicativo.
+Referências aprovadas, preservadas sem alterações: `assets/approved-mockup.jpg` (interface) e `assets/approved-identity.jpg` (marca).
+
+A comparação interativa está em `docs/reference-review.html`. Execute `npm run dev` e abra `http://127.0.0.1:4173/docs/reference-review.html`.
 
 ## Escopo da implementação
 
@@ -21,7 +23,7 @@ Os testes usam 157 registros sintéticos, injetados exclusivamente pelo Playwrig
 
 ## Capturas e comparação
 
-A matriz inclui desktop 1440×1000, tablet horizontal 1024×768, tablet vertical 768×1024 e celular 390×844, em ambos os temas. Cada projeto captura login, painel, clientes, mapa, histórico e planilhas.
+A matriz inclui desktop 1440×1000, tablet horizontal 1024×768, tablet vertical 768×1024 e celular 390×844, em ambos os temas. Cada projeto captura login, painel, clientes, mapa, histórico e planilhas, além do menu de conta, configurações, ficha, editor de cliente, cadastro de conta e recuperação de senha: 96 capturas na matriz.
 
 A primeira execução gera uma linha de base da implementação para revisão humana. Essa linha de base **não comprova equivalência com o mockup**. Depois da aprovação, as capturas devem ser incorporadas ao controle de versão e comparadas com `npm run test:visual`, sem `--update-snapshots`.
 
@@ -32,8 +34,8 @@ Depois da geração inicial, o workflow compara as telas com as capturas version
 ## Limites conhecidos da fidelidade
 
 - A referência é um JPEG composto de várias telas; não há arquivos originais das artes ou identificação da fonte. Foi incorporada a fonte variável Roboto Condensed, sob licença OFL, para aproximar a tipografia da referência; sua identidade exata não foi confirmada.
-- Marca, detalhe do banner e ilustração lateral usam recortes CSS do JPEG fornecido; sua resolução é limitada pela referência.
-- A área ilustrada do login em desktop e tablet reaproveita o próprio JPEG aprovado com recorte CSS. No celular, a paisagem foi reconstruída a partir da referência.
+- A marca do cabeçalho e do login móvel usa o arquivo aprovado de identidade. O banner completo e as ilustrações usam recortes CSS do mockup original, preservando as artes e suas proporções. A resolução é limitada pelos JPEGs fornecidos.
+- A área ilustrada do login em desktop e tablet reaproveita o próprio JPEG aprovado com recorte CSS. No celular, a mesma arte aprovada é usada com recorte responsivo; a imagem anteriormente reconstruída foi removida.
 - As 48 capturas de regressão isolam os serviços externos e mostram o estado indisponível do mapa. Um teste adicional em cada tema desktop verifica o carregamento real do MapLibre/OpenFreeMap e anexa a captura ao relatório.
 - Histórico não aparece no mockup; sua composição estende os mesmos padrões visuais.
 
@@ -48,3 +50,14 @@ Esses pontos devem permanecer explícitos até a revisão das capturas e a entre
 5. Revisado o fluxo de ajuste de localização: o retorno do mapa reabre o formulário com o rascunho preservado; o comando de localizar na lista do mapa abre o editor; uma tentativa de ajuste sem coordenadas mantém a mensagem de validação visível. Adicionado teste em todas as resoluções e temas.
 
 As capturas geradas são evidência da implementação e não equivalem à aprovação visual do proprietário.
+
+
+## Comparação direta com o arquivo aprovado
+
+Além das capturas de regressão, `tests/reference.spec.js` compara a implementação com cinco áreas imutáveis do mockup: login (563×526), painel (717×526), clientes (469×325), mapa (423×325) e planilhas (381×325). As duas imagens são apresentadas com escala de 2×, lado a lado, em `docs/captures/reference/`. O JSON de cada tela informa a diferença média RGB e a proporção de pixels com diferenças acima de 24 níveis; nenhuma dessas medidas é convertida em uma alegação de fidelidade de 100%.
+
+As verificações geométricas confirmam as dimensões do cabeçalho e da barra lateral; o login também verifica posição e largura do formulário segundo as coordenadas aprovadas. O mapa nessa comparação carrega cartografia real. As diferenças de dados da conta, localização dos clientes e cartografia permanecem explícitas.
+
+A segunda revisão incorporou a marca do arquivo de identidade, alinhou o formulário de login às coordenadas aprovadas, corrigiu o banner duplicado, as alturas de navegação, o tamanho da tabela e a disposição dos dois cartões de planilhas. Os botões Mapa/Satélite alternam a camada real e preservam fontes, rotas e marcadores. Os rótulos do mapa escuro tiveram seus contornos corrigidos.
+
+O JPEG de identidade contém logotipos e lettering rasterizado, mas não identifica uma família tipográfica nem fornece fontes editáveis. A composição usa o lettering original nas marcas, Arial na interface e Roboto Condensed no formulário; a equivalência exata da fonte da interface não pode ser certificada a partir desse material. O histórico e as variantes móveis não aparecem na referência e estendem seus padrões.

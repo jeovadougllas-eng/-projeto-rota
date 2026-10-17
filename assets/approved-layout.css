@@ -185,3 +185,18 @@ input[type=checkbox]:indeterminate{background:#00b79a}
 .workspace-map>.row{top:calc(50 * var(--u));gap:calc(5 * var(--u));left:calc(7 * var(--u));right:auto}
 @media(max-aspect-ratio:1/1) and (min-width:651px){.workspace{grid-template-columns:215px minmax(0,1fr)}body[data-screen="painel"]{--sidebar-w:150px}body[data-screen="painel"] .header-motto{display:none}}
 @media(max-width:650px){body[data-screen="painel"]{--sidebar-w:64px}.tabs>button{font-size:8px;font-weight:500;min-height:53px}.workspace{grid-template-columns:1fr;gap:12px}.header-motto,body[data-screen="painel"] .header-motto{display:none}.client-table{min-width:650px}.tab-title h2{font-size:20px}.traxio-data-guide{grid-template-columns:1fr}.quick-actions button{font-size:10px}.portfolio-heading h3{font-size:16px}.dashboard-client .client-link{font-size:12px}.stat strong{font-size:24px}.traxio-hero{aspect-ratio:566/160}.approved-sync-bar{padding:10px}.auth-panel{font-family:'Roboto Condensed',Arial,sans-serif}}
+body[data-screen="painel"] .tabs>button{min-height:calc(44 * var(--u));font-size:calc(13 * var(--u))}
+.tabs{background:#012630}
+.tabs>button.active{background:linear-gradient(100deg,#007e79,#087681)}
+.nav-pattern{mask-image:linear-gradient(transparent,#000 38%)}
+.overview-note{margin-bottom:calc(8 * var(--u))}
+.portfolio-heading p{margin-bottom:calc(5 * var(--u))}
+#dashboardSearch{height:calc(35 * var(--u));min-height:calc(35 * var(--u))}
+.overview-top{margin-bottom:calc(10 * var(--u))}
+.client-table input[type=checkbox]{width:calc(18 * var(--u));height:calc(18 * var(--u));min-width:calc(18 * var(--u));padding:0}
+@media(max-width:650px){body[data-screen="painel"] .tabs>button{min-height:53px;font-size:8px}}
+.workspace-map{padding:0}
+.workspace-map .maplibregl-ctrl-top-right{top:auto;bottom:calc(32 * var(--u))}
+.approved-selection-count{font-size:calc(12 * var(--u));color:var(--muted);margin:calc(13 * var(--u)) 0 calc(22 * var(--u))}
+.approved-trace-route{width:100%;min-height:calc(38 * var(--u));font-size:calc(13 * var(--u));padding:calc(8 * var(--u));border:1px solid var(--line)}
+.workspace-side .traxio-client-disclosure{margin-top:calc(14 * var(--u))}
