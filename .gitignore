@@ -6,3 +6,4 @@ playwright-report/
 !.env.example
 *.log
 test-results-reference/
+test-results-retest/

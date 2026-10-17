@@ -200,3 +200,5 @@ body[data-screen="painel"] .tabs>button{min-height:calc(44 * var(--u));font-size
 .approved-selection-count{font-size:calc(12 * var(--u));color:var(--muted);margin:calc(13 * var(--u)) 0 calc(22 * var(--u))}
 .approved-trace-route{width:100%;min-height:calc(38 * var(--u));font-size:calc(13 * var(--u));padding:calc(8 * var(--u));border:1px solid var(--line)}
 .workspace-side .traxio-client-disclosure{margin-top:calc(14 * var(--u))}
+body.traxio-dark:not([data-screen="painel"]) .theme-toggle{background:transparent;border-color:transparent;color:#c7dfda}
+body.traxio-dark:not([data-screen="painel"]) #accountToggle{background:#092c39;border-color:#1b3c46;color:#c6dcd9}

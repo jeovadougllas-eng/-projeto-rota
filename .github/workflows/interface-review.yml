@@ -47,6 +47,9 @@ jobs:
           else
             npm test
           fi
+      - name: Retest the newly captured screens without accepting differences
+        if: inputs.refresh_snapshots || contains(github.event.head_commit.message, '[refresh snapshots]')
+        run: npm test -- tests/visual.spec.js tests/dialogs.visual.spec.js --output=test-results-retest --reporter=list
       - name: Store captures on the development branch for visual review
         if: success() && github.ref == 'refs/heads/dev/traxio-mockup-fidelity'
         run: |
@@ -73,6 +76,7 @@ jobs:
           path: |
             docs/captures/reference/
             test-results-reference/
+            test-results-retest/
             playwright-report/
             test-results/
             tests/*-snapshots/
