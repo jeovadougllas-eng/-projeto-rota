@@ -2,8 +2,6 @@ name: Traxio interface review
 on:
   push:
     branches: [dev/traxio-mockup-fidelity]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
     inputs:
       refresh_snapshots:

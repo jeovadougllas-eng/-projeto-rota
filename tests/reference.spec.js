@@ -16,6 +16,7 @@ for(const pane of panes)test(`approved reference: ${pane.id}`,async({page,contex
   const viewport={width:pane.w*2,height:pane.h*2};await page.setViewportSize(viewport);
   await prepare(page,{authenticated:pane.id!=='login',theme:pane.theme,liveMaps:pane.id==='mapa'});await ready(page);
   if(pane.id!=='login')await page.locator(`.tabs [data-tab="${pane.id}"]`).click();
+  if(pane.id==='dados'){await page.locator('#cloudCheck').click();await expect(page.locator('#cloudStatus')).not.toHaveText('Aguardando verificação.');}
   if(pane.id==='mapa'){
     await expect(page.locator('#map canvas')).toBeVisible({timeout:20000});
     await expect.poll(()=>page.evaluate(()=>map?.isStyleLoaded()&&map?.areTilesLoaded()),{timeout:35000}).toBe(true);
@@ -31,7 +32,7 @@ for(const pane of panes)test(`approved reference: ${pane.id}`,async({page,contex
     expect(Math.abs(geometry.login.w-498)).toBeLessThan(1);
   }else{
     expect(Math.abs(geometry.header.h-72*viewport.height/650)).toBeLessThan(1);
-    expect(Math.abs(geometry.sidebar.w-164*viewport.height/650)).toBeLessThan(1);
+    expect(Math.abs(geometry.sidebar.w-(pane.id==='painel'?160:164)*viewport.height/650)).toBeLessThan(1);
   }
   await mkdir('docs/captures/reference',{recursive:true});
   const actual=await page.screenshot({path:`docs/captures/reference/${pane.id}-actual.png`,animations:'disabled'});

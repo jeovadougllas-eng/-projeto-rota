@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fixed shell, account menu and shared persisted theme preference.
   const header = document.querySelector('body>header');
   const headerBrand = node('a','header-brand'); headerBrand.href = '#painel';
-  headerBrand.innerHTML = brand();
+  headerBrand.innerHTML = brand()+'<span class="header-motto">PLANEJE MELHOR.<br>VÁ MAIS LONGE.</span>';
   headerBrand.addEventListener('click', e => { e.preventDefault(); switchTab('painel'); }); header.prepend(headerBrand);
   const search = node('form','header-search'); search.setAttribute('role','search');
   search.innerHTML = '<input id="globalSearch" type="search" placeholder="Buscar cliente, endereço ou cidade..." aria-label="Buscar na carteira">' + icon('search');
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!map?.isStyleLoaded())return;
     const dark=document.body.classList.contains('traxio-dark');
     for(const layer of map.getStyle().layers) {
-      if(layer.source==='route')continue;
+      if(layer.source==='route'||layer.id==='traxio-satellite')continue;
       const key=layer.type==='background'?'background-color':layer.type==='fill'?'fill-color':layer.type==='line'?'line-color':layer.type==='symbol'?'text-color':null;
       if(!key)continue;
       const id=layer.id+'|'+key;
@@ -260,6 +260,21 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#mapa .tab-title').after(modes,modePanel); selectMode('daily');
   // Real dependency failures remain explicit; no decorative map is presented as a live map.
   const mapNode=el('map');
+  mapNode.after(el('mapStatus'),el('mapSelectionStatus'));
+  const layerSwitch=node('div','map-layer-switch');layerSwitch.setAttribute('role','group');layerSwitch.setAttribute('aria-label','Camada do mapa');
+  let satellite=false;
+  const layerButtons=['Mapa','Satélite'].map((label,i)=>{const b=button(label,()=>{
+    if(!map?.isStyleLoaded()){el('mapStatus').textContent='Aguarde o carregamento do mapa para trocar a camada.';return;}
+    satellite=!!i;
+    if(satellite&&!map.getSource('traxio-satellite')){
+      map.addSource('traxio-satellite',{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,attribution:'Imagery © Esri'});
+      const before=map.getStyle().layers.find(l=>l.type==='symbol'||l.source==='route')?.id;
+      map.addLayer({id:'traxio-satellite',type:'raster',source:'traxio-satellite'},before);
+    }
+    if(map.getLayer('traxio-satellite'))map.setLayoutProperty('traxio-satellite','visibility',satellite?'visible':'none');
+    layerButtons.forEach((b,j)=>b.setAttribute('aria-pressed',String(j===i)));
+  });b.setAttribute('aria-pressed',String(i===0));layerSwitch.append(b);return b;});
+  mapNode.before(layerSwitch);
   if(!window.maplibregl) {
     mapNode.innerHTML=`<div class="map-unavailable">${icon('map')}<strong>Conecte-se para carregar o mapa</strong><p>Não foi possível carregar o serviço de mapas. Sua carteira e seu planejamento continuam disponíveis.</p><button type="button" id="retryMap" class="secondary">Tentar novamente</button></div>`;
     el('retryMap').addEventListener('click',()=>location.reload());
