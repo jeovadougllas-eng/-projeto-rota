@@ -29,10 +29,18 @@ O workflow `Traxio interface review` publica capturas, traces de falha e relató
 
 ## Limites conhecidos da fidelidade
 
-- A referência é um JPEG composto de várias telas; não há arquivos originais das artes ou identificação da fonte. A fonte atual usa Arial/Helvetica.
+- A referência é um JPEG composto de várias telas; não há arquivos originais das artes ou identificação da fonte. Foi incorporada a fonte variável Roboto Condensed, sob licença OFL, para aproximar a tipografia da referência; sua identidade exata não foi confirmada.
 - Marca, detalhe do banner e ilustração lateral usam recortes CSS do JPEG fornecido; sua resolução é limitada pela referência.
-- A paisagem do login foi reconstruída a partir da referência. Ela não é o arquivo original da ilustração aprovada.
-- Os screenshots automatizados isolam serviços externos e mostram o estado indisponível do mapa; é necessária uma conferência adicional com os tiles reais carregados.
+- A área ilustrada do login em desktop e tablet reaproveita o próprio JPEG aprovado com recorte CSS. No celular, a paisagem foi reconstruída a partir da referência.
+- As 48 capturas de regressão isolam os serviços externos e mostram o estado indisponível do mapa. Um teste adicional em cada tema desktop verifica o carregamento real do MapLibre/OpenFreeMap e anexa a captura ao relatório.
 - Histórico não aparece no mockup; sua composição estende os mesmos padrões visuais.
 
 Esses pontos devem permanecer explícitos até a revisão das capturas e a entrega dos arquivos originais. Não se deve declarar fidelidade exata antes dessa revisão.
+
+## Iterações realizadas
+
+1. Primeira execução: falha no nome acessível das ações rápidas, que incluía a seta decorativa. Corrigida com rótulos explícitos.
+2. Execução seguinte: os 9 testes principais e a matriz completa de 120 testes passaram; 48 capturas foram geradas e salvas na branch de desenvolvimento.
+3. Comparação visual: corrigidos o recorte horizontal da marca no cabeçalho, a distribuição das ações rápidas e da carteira no painel, o espaço adicional acima da tabela, a decoração lateral nas telas escuras e a transição entre a arte aprovada e o fundo do login. Incorporada a fonte local Roboto Condensed.
+
+As capturas geradas são evidência da implementação e não equivalem à aprovação visual do proprietário.

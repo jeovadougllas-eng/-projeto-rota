@@ -1,7 +1,7 @@
 import { clients } from './clients.js';
 
 // Only Playwright injects these doubles. Production HTML has no test switch or auth bypass.
-export async function prepare(page, {authenticated=true, theme='light', records=clients}={}) {
+export async function prepare(page, {authenticated=true, theme='light', records=clients, liveMaps=false}={}) {
   await page.addInitScript(({authenticated,theme,records})=>{
     if(!localStorage.getItem('projeto_rota_mapa_v1')) localStorage.setItem('projeto_rota_mapa_v1',JSON.stringify(records));
     if(!localStorage.getItem('traxio.account.preferences.v1')) localStorage.setItem('traxio.account.preferences.v1',JSON.stringify({theme,font:100}));
@@ -29,6 +29,7 @@ export async function prepare(page, {authenticated=true, theme='light', records=
   // Block all external services so no real account, client record, geocoder, or provider is touched.
   await page.route(/^https?:\/\/(?!127\.0\.0\.1(?::|\/))/,async route=>{
     const url=route.request().url();
+    if(liveMaps && (/^https:\/\/unpkg\.com\/maplibre-gl@/.test(url) || /^https:\/\/[^/]*openfreemap\.org\//.test(url))) { await route.continue(); return; }
     if(/\.(js|css)(\?|$)/.test(url))await route.fulfill({status:200,contentType:url.includes('.css')?'text/css':'application/javascript',body:''});
     else await route.fulfill({status:200,contentType:'application/json',body:'[]'});
   });

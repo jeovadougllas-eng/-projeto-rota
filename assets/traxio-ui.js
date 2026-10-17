@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fixed shell, account menu and shared persisted theme preference.
   const header = document.querySelector('body>header');
   const headerBrand = node('a','header-brand'); headerBrand.href = '#painel';
-  headerBrand.innerHTML = brand() + '<span class="header-motto">Planeje melhor.<br>Vá mais longe.</span>';
+  headerBrand.innerHTML = brand();
   headerBrand.addEventListener('click', e => { e.preventDefault(); switchTab('painel'); }); header.prepend(headerBrand);
   const search = node('form','header-search'); search.setAttribute('role','search');
   search.innerHTML = '<input id="globalSearch" type="search" placeholder="Buscar cliente, endereço ou cidade..." aria-label="Buscar na carteira">' + icon('search');
@@ -105,10 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const originalSwitch = switchTab;
   switchTab = id => {
     originalSwitch(id); const actual = id === 'rotas' ? 'mapa' : id;
+    document.body.dataset.screen=actual;
     document.querySelectorAll('.tabs [data-tab]').forEach(b => { if(b.dataset.tab === actual) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
     document.querySelector('main').scrollTop = 0;
   };
   document.querySelector('.tabs [data-tab="painel"]').setAttribute('aria-current','page');
+  document.body.dataset.screen='painel';
 
   // Dashboard: approved hero, three metrics, wallet cards and quick actions.
   const hero = document.querySelector('.traxio-hero');
@@ -130,7 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const quick = node('aside','card quick-actions'); quick.innerHTML = '<h3>Ações rápidas</h3>';
   [['Planejar rota','clients','mapa'],['Ver no mapa','map','mapa'],['Importar clientes','upload','dados'],['Sincronizar dados','sync','dados']].forEach(([text,ico,target], i) => {
     const b = button(text, () => { switchTab(target); if(i === 2) el('sheetFile').focus(); if(i === 3) el('cloudCheck').click(); }); b.setAttribute('aria-label',text); b.insertAdjacentHTML('afterbegin',icon(ico)); quick.append(b);
-  }); dashboardLayout.append(quick);
+  });
+  const overviewTop=node('div','overview-top'), overviewSummary=node('div','overview-summary');
+  const walletCards=el('dashboardClients');
+  [...overview.children].forEach(child=>{if(child!==walletCards&&!child.classList.contains('notice'))overviewSummary.append(child);});
+  overviewTop.append(overviewSummary,quick);overview.prepend(overviewTop);
 
   // Clients: retain the exact original edit form, expose it in a native modal.
   const clientSection = el('clientes'), editCard = clientSection.querySelector('.card');
@@ -146,6 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for(const id of ['name','address','houseNumber','complement','cep','lat','lon']) el(id).value = '';
     el('priority').value='2'; el('saveStatus').textContent=''; editorTitle.textContent='Cadastrar cliente'; editor.showModal();
   },'')); clientSection.append(sectionActions);
+  sectionActions.classList.add('registry-title-actions');sectionActions.querySelector('h2').remove();
   const registry = node('div','card registry-card');
   registry.innerHTML = `<div class="registry-controls"><div class="registry-search-row"><div class="search-field">${icon('search')}<input id="registrySearch" type="search" placeholder="Buscar cliente por nome, cidade, bairro ou endereço..." aria-label="Buscar clientes"></div><button type="button" id="registryFilterToggle" class="secondary icon-button" aria-label="Mostrar ou ocultar filtros" aria-expanded="true" aria-controls="registryFilters">${icon('filter')}</button></div><div class="registry-filters" id="registryFilters"><select id="registryCity" aria-label="Filtrar por cidade"><option value="">Todas as cidades</option></select><select id="registryNeighborhood" aria-label="Filtrar por bairro"><option value="">Todos os bairros</option></select><select id="registryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select><button type="button" id="registryClear" class="secondary">Limpar filtros</button></div><p class="registry-count" id="registryCount" aria-live="polite"></p></div><div class="table-scroll"><table class="client-table"><thead><tr><th><input id="registrySelectAll" type="checkbox" aria-label="Selecionar todos os clientes filtrados"></th><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Bairro</th><th scope="col">Categoria</th><th scope="col">Prioridade</th></tr></thead><tbody id="registryRows"></tbody></table></div><div class="registry-footer"><span id="registrySelection" aria-live="polite"></span><button type="button" id="registryPlan" class="secondary">Planejar visitas selecionadas →</button></div>`;
   clientSection.append(registry);
@@ -205,6 +212,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const modes = node('div','route-mode-tabs'); modes.setAttribute('role','tablist'); modes.setAttribute('aria-label','Modo de planejamento');
   const modePanel = node('div','route-mode-panel'); modePanel.id='routeModePanel'; modePanel.setAttribute('role','tabpanel'); modePanel.hidden=true;
   const modesList = [['daily','Rota diária'],['weekly','Planejamento semanal'],['cities','Viagem entre cidades']];
+  // Change only the basemap palette; retain route layers, sources, markers and camera.
+  const originalPaint = new Map();
+  function applyMapPalette() {
+    if(!map?.isStyleLoaded())return;
+    const dark=document.body.classList.contains('traxio-dark');
+    for(const layer of map.getStyle().layers) {
+      if(layer.source==='route')continue;
+      const key=layer.type==='background'?'background-color':layer.type==='fill'?'fill-color':layer.type==='line'?'line-color':layer.type==='symbol'?'text-color':null;
+      if(!key)continue;
+      const id=layer.id+'|'+key;
+      if(!originalPaint.has(id))originalPaint.set(id,map.getPaintProperty(layer.id,key));
+      const color=layer.type==='background'?'#062432':layer.type==='symbol'?'#c3d8d8':layer.type==='line'?(/water/.test(layer.id)?'#075260':'#3d5b64'):/water/.test(layer.id)?'#084653':/park|wood|landcover|grass/.test(layer.id)?'#123c3f':'#0e303b';
+      map.setPaintProperty(layer.id,key,dark?color:(originalPaint.get(id)??null));
+    }
+  }
+  const originalInitMap=initMap;
+  initMap=()=>{originalInitMap();if(map&&!map.__traxioPalette){map.__traxioPalette=true;map.on('style.load',()=>{originalPaint.clear();applyMapPalette();});map.once('load',applyMapPalette);if(map.isStyleLoaded())applyMapPalette();}};
+  new MutationObserver(applyMapPalette).observe(document.body,{attributes:true,attributeFilter:['class']});
   function selectMode(mode) {
     modes.querySelectorAll('button').forEach(b=>{ const selected=b.dataset.mode===mode; b.setAttribute('aria-selected',String(selected)); b.tabIndex=selected?0:-1; });
     modePanel.replaceChildren(); modePanel.hidden=mode==='daily';
