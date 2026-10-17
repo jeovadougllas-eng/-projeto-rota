@@ -208,7 +208,7 @@ body:not(.auth-locked) .card{max-width:100%!important}
 .traxio-nav-controls .live-navigation{display:block!important;background:transparent!important;border:0!important;margin:0!important;padding:0!important;color:#e9f9f5!important}
 .traxio-nav-controls .live-navigation p{color:#d5e9e6!important;margin:6px 0}.traxio-nav-controls .live-head{color:#fff}.traxio-nav-controls .live-stop-list{max-height:80px;overflow:auto;margin:6px 0}.traxio-nav-controls .live-stop{color:#102e35!important}.traxio-nav-controls #liveStart,.traxio-nav-controls #liveStop{font-size:13px;padding:10px!important}
 @media(max-width:760px){.traxio-nav-top{min-height:55px}.traxio-nav-controls{max-height:42dvh}}
-</style><style>
+.traxio-nav-overlay .traxio-nav-map-host{touch-action:pan-x pan-y}.traxio-nav-controls .live-head strong{color:#fff!important}body:not(.auth-locked) .tabs{background-image:linear-gradient(170deg,#042e3a,#07515a 68%,#032c36)!important}body:not(.auth-locked) .tabs:after{opacity:.27!important;filter:drop-shadow(0 0 3px #00d6b5)}@media(min-width:761px){body:not(.auth-locked) .tabs:before{content:"●  ┄ ┄  ◆  ┄ ┄  ◎";position:absolute;bottom:214px;left:10px;right:10px;text-align:center;color:#7be7d0;font-size:16px;letter-spacing:2px;opacity:.5;pointer-events:none}}</style><style>
 .traxio-data-center{max-width:930px}
 .traxio-data-block{padding:21px 22px;border:1px solid #dcebe7;border-radius:17px;margin:16px 0;background:#f9fcfb}
 .traxio-data-primary{background:linear-gradient(120deg,#edf9f5,#f9fdfb);border-left:4px solid #16b6a0}
@@ -266,7 +266,7 @@ body:not(.auth-locked) .card{max-width:100%!important}
   <div class="traxio-danger-zone"><strong>Zona de cuidado</strong><p class="muted">Apagar os dados deste dispositivo pode exigir restauração. Faça backup primeiro.</p><button id="clear" type="button" class="secondary">Apagar carteira deste dispositivo</button></div></div>
 </details>
 </div></section>
-</main><dialog id="clientDialog" class="detail-dialog"><div class="detail-inner"><div id="clientDetail"></div><div class="detail-actions"><button id="detailMap">Ver no mapa</button><button class="secondary" id="detailEdit">Editar cadastro</button><button class="secondary" id="detailClose">Fechar</button></div></div></dialog><footer>Projeto Rota · Protótipo de validação, não APK e não navegador automotivo</footer>
+</main><div id="traxioNavOverlay" class="traxio-nav-overlay" hidden><div class="traxio-nav-top"><strong>Traxio · Navegação</strong><button id="traxioNavMinimize" type="button">Voltar ao planejamento</button></div><div id="traxioNavMapHost" class="traxio-nav-map-host"></div><div id="traxioNavControls" class="traxio-nav-controls"></div></div><dialog id="clientDialog" class="detail-dialog"><div class="detail-inner"><div id="clientDetail"></div><div class="detail-actions"><button id="detailMap">Ver no mapa</button><button class="secondary" id="detailEdit">Editar cadastro</button><button class="secondary" id="detailClose">Fechar</button></div></div></dialog><footer>Projeto Rota · Protótipo de validação, não APK e não navegador automotivo</footer>
 <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -1137,4 +1137,4 @@ $('liveNavigation').scrollIntoView({behavior:'smooth',block:'center'});
 }catch(e){status('Não foi possível traçar a rota: '+(e.message||e))}finally{$('avulsoRoute').disabled=false}
 };
 })();
-</script><div id="traxioNavOverlay" class="traxio-nav-overlay" hidden><div class="traxio-nav-top"><strong>Traxio · Navegação</strong><button id="traxioNavMinimize" type="button">Voltar ao planejamento</button></div><div id="traxioNavMapHost" class="traxio-nav-map-host"></div><div id="traxioNavControls" class="traxio-nav-controls"></div></div></body></html>
+</script></body></html>
