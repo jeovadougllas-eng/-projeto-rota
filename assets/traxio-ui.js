@@ -27,9 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/visual-kit/assets/logo_dark_background.png" alt="Traxio — Planeje melhor. Vá mais longe." width="497" height="141"></span>`;
   // Display unmodified original pixels from the supplied reference crops.
   const glyph=(source,sourceWidth,sourceHeight,x,y,w,h,className='')=>`<span class="kit-glyph ${className}" aria-hidden="true" style="aspect-ratio:${w}/${h}"><img src="assets/visual-kit/assets/${source}" alt="" width="${sourceWidth}" height="${sourceHeight}" style="width:${100*sourceWidth/w}%;height:${100*sourceHeight/h}%;left:${-100*x/w}%;top:${-100*y/h}%"></span>`;
-  const filterDefs=document.createElementNS('http://www.w3.org/2000/svg','svg');filterDefs.classList.add('kit-filter-defs');filterDefs.setAttribute('aria-hidden','true');
-  filterDefs.innerHTML='<defs><filter id="kit-remove-light" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3"/><feComponentTransfer><feFuncA type="linear" slope="4" intercept="-.4"/></feComponentTransfer></filter><filter id="kit-remove-dark" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -.6"/><feComponentTransfer><feFuncA type="linear" slope="2"/></feComponentTransfer></filter></defs>';
-  document.body.append(filterDefs);
   const node = (tag, className, text) => {
     const n = document.createElement(tag);
     if (className) n.className = className;

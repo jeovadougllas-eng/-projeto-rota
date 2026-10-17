@@ -23,9 +23,13 @@ for(const pane of panes)test(`approved reference: ${pane.id}`,async({page,contex
     return{header:bounds('body>header'),sidebar:bounds('.tabs'),login:bounds('.auth-panel'),hero:bounds('.traxio-hero')};
   });
   if(pane.id==='login'){
-    expect(Math.abs(geometry.login.x-296*viewport.width/563)).toBeLessThan(3);
-    expect(Math.abs(geometry.login.y-(viewport.height-526*viewport.width/563)/2-59*viewport.width/563)).toBeLessThan(3);
-    expect(Math.abs(geometry.login.w-249*viewport.width/563)).toBeLessThan(3);
+    const previous=!!process.env.TRAXIO_REVIEW_ORIGIN;
+    const left=previous?296*viewport.width/563:355*2;
+    const top=previous?(viewport.height-526*viewport.width/563)/2+59*viewport.width/563:71*2;
+    const width=previous?249*viewport.width/563:300*2;
+    expect(Math.abs(geometry.login.x-left)).toBeLessThan(3);
+    expect(Math.abs(geometry.login.y-top)).toBeLessThan(3);
+    expect(Math.abs(geometry.login.w-width)).toBeLessThan(3);
   }else{
     const previous=!!process.env.TRAXIO_REVIEW_ORIGIN;
     const header=previous?72:({painel:71,mapa:69,dados:69}[pane.id]||72),sidebar=previous?(pane.id==='painel'?160:164):({painel:157,mapa:158,dados:154}[pane.id]||164);

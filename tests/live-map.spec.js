@@ -1,8 +1,7 @@
 import { test, expect } from 'playwright/test';
 import { prepare, ready } from './fixtures/browser.js';
 
-test('live OpenFreeMap tiles render in both desktop themes',async({page},testInfo)=>{
-  test.skip(!testInfo.project.name.startsWith('desktop-'),'External map smoke check runs in the two desktop themes.');
+test('live OpenFreeMap tiles and satellite switch render in every viewport and theme',async({page},testInfo)=>{
   test.setTimeout(60000);
   await prepare(page,{theme:testInfo.project.metadata.theme,liveMaps:true});await ready(page);
   await page.locator('.tabs [data-tab="mapa"]').click();
@@ -17,6 +16,7 @@ test('live OpenFreeMap tiles render in both desktop themes',async({page},testInf
   await page.getByRole('button',{name:'Mapa',exact:true}).click();
   await expect.poll(()=>page.evaluate(()=>map.getLayoutProperty('traxio-satellite','visibility'))).toBe('none');
   await expect(page.getByRole('button',{name:'Mapa',exact:true})).toHaveAttribute('aria-pressed','true');
+  await page.locator('#map').scrollIntoViewIfNeeded();
   const path=testInfo.outputPath('mapa-real.png');
   await page.screenshot({path,animations:'disabled'});await testInfo.attach('Mapa real — '+testInfo.project.metadata.theme,{path,contentType:'image/png'});
 });

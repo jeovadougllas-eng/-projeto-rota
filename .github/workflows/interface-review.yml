@@ -75,6 +75,13 @@ jobs:
               cp "$capture" "docs/captures/mapa-real-${theme}.png"
             fi
           done
+          mkdir -p docs/captures/live-maps
+          for viewport in desktop tablet-landscape tablet-portrait phone; do
+            for theme in light dark; do
+              capture=$(find test-results -path "*${viewport}-${theme}/mapa-real.png" -print -quit)
+              if [ -n "$capture" ]; then cp "$capture" "docs/captures/live-maps/${viewport}-${theme}.png"; fi
+            done
+          done
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add tests/*-snapshots/ docs/captures/
