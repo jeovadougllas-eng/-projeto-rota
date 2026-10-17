@@ -42,10 +42,14 @@ for(const pane of panes)test(`approved reference: ${pane.id}`,async({page,contex
     const current=document.createElement('canvas');current.width=img.width;current.height=img.height;const cc=current.getContext('2d');cc.drawImage(img,0,0);
     const a=ac.getImageData(0,0,img.width,img.height).data,b=cc.getImageData(0,0,img.width,img.height).data;
     let absolute=0,mismatch=0;for(let i=0;i<a.length;i+=4){let d=0;for(let c=0;c<3;c++)d+=Math.abs(a[i+c]-b[i+c]);absolute+=d;if(d/3>24)mismatch++;}
+    const thumbnail=document.createElement('canvas');thumbnail.width=pane.w;thumbnail.height=pane.h;thumbnail.getContext('2d').drawImage(img,0,0,pane.w,pane.h);
+    const preview=thumbnail.toDataURL('image/png');
     document.documentElement.innerHTML='<head><title>Approved / actual</title><style>*{box-sizing:border-box}html,body{margin:0;background:#001e2d;overflow:hidden}body{display:flex}canvas,img{display:block}</style></head><body></body>';
     document.body.append(approved,img);
-    return{meanAbsoluteRGBError:absolute/(img.width*img.height*3),pixelsDifferingOver24:mismatch/(img.width*img.height),identical:absolute===0};
+    return{preview,meanAbsoluteRGBError:absolute/(img.width*img.height*3),pixelsDifferingOver24:mismatch/(img.width*img.height),identical:absolute===0};
   },{pane,actual:actual.toString('base64')});
+  const {preview,...pixelMetrics}=metrics;
+  await writeFile(`${output}/${pane.id}-actual-preview.png`,Buffer.from(preview.split(',')[1],'base64'));
   await review.screenshot({path:`${output}/${pane.id}-comparison.png`});
-  await writeFile(`${output}/${pane.id}-metrics.json`,JSON.stringify({reference:pane,viewport,geometry,metrics},null,2));await review.close();
+  await writeFile(`${output}/${pane.id}-metrics.json`,JSON.stringify({reference:pane,viewport,geometry,metrics:pixelMetrics},null,2));await review.close();
 });
