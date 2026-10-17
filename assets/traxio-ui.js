@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.pin}</svg>`;
   };
-  const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/approved-mockup.jpg" alt="Traxio — Planeje melhor. Vá mais longe." width="1280" height="853"></span>`;
+  const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/approved-identity.jpg" alt="Traxio — Planeje melhor. Vá mais longe." width="1280" height="427"></span>`;
   const node = (tag, className, text) => {
     const n = document.createElement(tag);
     if (className) n.className = className;
@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const approvedScene = node('div','auth-approved-scene'); approvedScene.setAttribute('aria-hidden','true');
   approvedScene.innerHTML='<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853">';
   el('authScreen').prepend(approvedScene);
+  const roadContinuation=node('div','auth-road-continuation');roadContinuation.setAttribute('aria-hidden','true');roadContinuation.innerHTML='<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853">';el('authScreen').prepend(roadContinuation);
   const authPanel = document.querySelector('.auth-panel');
   const authHeading = node('div', 'auth-heading');
   authHeading.innerHTML = '<h1>Acesse sua conta</h1><p>Entre para planejar suas rotas e gerenciar sua carteira.</p>';
@@ -102,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const nav = document.querySelector('.tabs'); nav.setAttribute('aria-label','Navegação principal');
   const navArt = node('div','nav-art'); navArt.setAttribute('aria-hidden','true');
   navArt.innerHTML = '<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
+  const navPattern=node('div','nav-pattern');navPattern.setAttribute('aria-hidden','true');navPattern.innerHTML='<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853">';nav.append(navPattern);
   const originalSwitch = switchTab;
   switchTab = id => {
     originalSwitch(id); const actual = id === 'rotas' ? 'mapa' : id;
@@ -228,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(!originalPaint.has(id))originalPaint.set(id,map.getPaintProperty(layer.id,key));
       const color=layer.type==='background'?'#062432':layer.type==='symbol'?'#c3d8d8':layer.type==='line'?(/water/.test(layer.id)?'#075260':'#3d5b64'):/water/.test(layer.id)?'#084653':/park|wood|landcover|grass/.test(layer.id)?'#123c3f':'#0e303b';
       map.setPaintProperty(layer.id,key,dark?color:(originalPaint.get(id)??null));
+      if(layer.type==='symbol'){const haloId=layer.id+'|text-halo-color';if(!originalPaint.has(haloId))originalPaint.set(haloId,map.getPaintProperty(layer.id,'text-halo-color'));map.setPaintProperty(layer.id,'text-halo-color',dark?'#082b37':(originalPaint.get(haloId)??null));}
     }
   }
   const originalInitMap=initMap;
@@ -273,6 +276,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }); b.innerHTML=icon(['cloud','upload','search','database'][i]); const content=node('div'); while(old.firstChild)content.append(old.firstChild);b.append(content);guide.append(b);
   });
   document.querySelector('.traxio-data-center>.traxio-section-note').hidden=true;
+  const dataCenter=document.querySelector('.traxio-data-center'),syncCard=document.querySelector('.traxio-data-primary');
+  syncCard.classList.add('card');dataCenter.after(syncCard);
+  const syncBar=node('div','approved-sync-bar'),syncText=node('div','approved-sync-text'),syncMark=node('span','approved-sync-mark','✓');
+  syncMark.setAttribute('aria-hidden','true');syncText.append(el('traxioSyncSimple'),el('cloudStatus'));syncBar.append(syncMark,syncText,el('cloudCheck'));syncCard.append(syncBar);syncCard.querySelector('.row').remove();
+  const tools=node('div','data-tools');syncCard.after(tools);
+  [...dataCenter.children].filter(n=>n.classList.contains('traxio-data-block')||n.tagName==='DETAILS').forEach(n=>tools.append(n));
+  const importBlock=el('sheetFile').closest('.traxio-data-block');importBlock.classList.add('card');
   el('historico').prepend(title('Histórico','Acompanhe suas visitas e os resultados dos seus trajetos.'));
 
   // Modal keyboard focus and backdrop interactions.

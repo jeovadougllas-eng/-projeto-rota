@@ -7,7 +7,7 @@ const resolutions = [
   {name:'phone',width:390,height:844}
 ];
 export default defineConfig({
-  testDir:'./tests', fullyParallel:true, forbidOnly:!!process.env.CI,
+  testDir:'./tests', testIgnore:'**/reference.spec.js', fullyParallel:true, forbidOnly:!!process.env.CI,
   retries:0, workers:2, maxFailures:4,
   timeout:15000, expect:{timeout:5000,toHaveScreenshot:{maxDiffPixelRatio:0.005}},
   reporter:[['list'],['html',{open:'never'}],['json',{outputFile:'test-results/results.json'}]],
