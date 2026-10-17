@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Change only the basemap palette; retain route layers, sources, markers and camera.
   const originalPaint = new Map();
   function applyMapPalette() {
-    if(!map?.isStyleLoaded())return;
+    if(!map?.__traxioStyleReady)return;
     const dark=document.body.classList.contains('traxio-dark');
     for(const layer of map.getStyle().layers) {
       if(layer.source==='route'||layer.id==='traxio-satellite')continue;
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   const originalInitMap=initMap;
-  initMap=()=>{originalInitMap();if(map&&!map.__traxioPalette){map.__traxioPalette=true;map.jumpTo({center:[-35.23,-5.83],zoom:11.8});map.on('style.load',()=>{originalPaint.clear();applyMapPalette();});map.once('load',applyMapPalette);if(map.isStyleLoaded())applyMapPalette();}};
+  initMap=()=>{originalInitMap();if(map&&!map.__traxioPalette){map.__traxioPalette=true;map.jumpTo({center:[-35.22,-5.817],zoom:11.3});map.on('style.load',()=>{map.__traxioStyleReady=true;originalPaint.clear();applyMapPalette();});map.once('load',()=>{map.__traxioStyleReady=true;applyMapPalette();});if(map.isStyleLoaded()){map.__traxioStyleReady=true;applyMapPalette();}}};
   new MutationObserver(applyMapPalette).observe(document.body,{attributes:true,attributeFilter:['class']});
   function selectMode(mode) {
     modes.querySelectorAll('button').forEach(b=>{ const selected=b.dataset.mode===mode; b.setAttribute('aria-selected',String(selected)); b.tabIndex=selected?0:-1; });

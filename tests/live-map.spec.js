@@ -9,6 +9,9 @@ test('live OpenFreeMap tiles render in both desktop themes',async({page},testInf
   await expect(page.locator('#map canvas.maplibregl-canvas')).toBeVisible({timeout:20000});
   await expect.poll(()=>page.evaluate(()=>map?.isStyleLoaded() && map?.areTilesLoaded()),{timeout:40000}).toBe(true);
   await expect(page.locator('#mapStatus')).toContainText('Mapa renderizado');
+  const background=()=>page.evaluate(()=>{const layer=map.getStyle().layers.find(l=>l.type==='background');return map.getPaintProperty(layer.id,'background-color');});
+  if(testInfo.project.metadata.theme==='dark')await expect.poll(background).toBe('#062432');
+  else await expect.poll(background).not.toBe('#062432');
   await page.getByRole('button',{name:'Satélite',exact:true}).click();
   await expect.poll(()=>page.evaluate(()=>map.getLayoutProperty('traxio-satellite','visibility')||'visible')).toBe('visible');
   await page.getByRole('button',{name:'Mapa',exact:true}).click();

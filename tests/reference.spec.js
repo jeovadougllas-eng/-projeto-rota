@@ -20,6 +20,7 @@ for(const pane of panes)test(`approved reference: ${pane.id}`,async({page,contex
   if(pane.id==='mapa'){
     await expect(page.locator('#map canvas')).toBeVisible({timeout:20000});
     await expect.poll(()=>page.evaluate(()=>map?.isStyleLoaded()&&map?.areTilesLoaded()),{timeout:35000}).toBe(true);
+    await expect.poll(()=>page.evaluate(()=>{const l=map.getStyle().layers.find(l=>l.type==='background');return map.getPaintProperty(l.id,'background-color');})).toBe('#062432');
   }
   await page.evaluate(()=>document.fonts.ready);
   const geometry=await page.evaluate(()=>{
