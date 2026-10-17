@@ -38,8 +38,8 @@
     }
   },
   "metrics": {
-    "meanAbsoluteRGBError": 25.784366081679515,
-    "pixelsDifferingOver24": 0.20517303591930458,
+    "meanAbsoluteRGBError": 22.059036684708328,
+    "pixelsDifferingOver24": 0.18011481056257175,
     "identical": false
   }
 }
