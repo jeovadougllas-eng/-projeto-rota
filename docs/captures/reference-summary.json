@@ -11,11 +11,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 15.774880494074134,
-        "pixelsDifferingOver24": 0.13640947208039172,
+        "meanAbsoluteRGBError": 17.89137521953035,
+        "pixelsDifferingOver24": 0.14488596052524452,
         "identical": false
       },
-      "meanRGBErrorChange": 2.7811781559062876
+      "meanRGBErrorChange": 4.897672881362503
     },
     {
       "screen": "painel",
@@ -25,11 +25,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 24.74283752118398,
-        "pixelsDifferingOver24": 0.21463575794284456,
+        "meanAbsoluteRGBError": 21.490476845988656,
+        "pixelsDifferingOver24": 0.20036846355743992,
         "identical": false
       },
-      "meanRGBErrorChange": 4.11175336037541
+      "meanRGBErrorChange": 0.8593926851800866
     },
     {
       "screen": "clientes",
@@ -39,11 +39,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 19.133848036979593,
-        "pixelsDifferingOver24": 0.1607551774473132,
+        "meanAbsoluteRGBError": 19.20074468570386,
+        "pixelsDifferingOver24": 0.162644831675942,
         "identical": false
       },
-      "meanRGBErrorChange": 0.1405148557005127
+      "meanRGBErrorChange": 0.20741150442477974
     },
     {
       "screen": "mapa",
@@ -53,11 +53,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 33.5275250334564,
-        "pixelsDifferingOver24": 0.2770694211874836,
+        "meanAbsoluteRGBError": 31.877608842576713,
+        "pixelsDifferingOver24": 0.2705618153206771,
         "identical": false
       },
-      "meanRGBErrorChange": 0.42434860895353665
+      "meanRGBErrorChange": -1.2255675819261498
     },
     {
       "screen": "dados",
@@ -67,11 +67,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 19.396958800402167,
-        "pixelsDifferingOver24": 0.16393694008013326,
+        "meanAbsoluteRGBError": 18.45643457659929,
+        "pixelsDifferingOver24": 0.15599395624184037,
         "identical": false
       },
-      "meanRGBErrorChange": 0.6209309676015557
+      "meanRGBErrorChange": -0.3195932562013226
     }
   ]
 }

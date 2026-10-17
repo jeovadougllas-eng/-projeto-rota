@@ -17,13 +17,13 @@
       "x": 0,
       "y": 0,
       "w": 916,
-      "h": 85.953125
+      "h": 82.375
     },
     "sidebar": {
       "x": 0,
-      "y": 85.953125,
-      "w": 195.78125,
-      "h": 690.046875
+      "y": 82.375,
+      "w": 183.84375,
+      "h": 693.625
     },
     "login": {
       "x": 0,
@@ -39,8 +39,8 @@
     }
   },
   "metrics": {
-    "meanAbsoluteRGBError": 19.396958800402167,
-    "pixelsDifferingOver24": 0.16393694008013326,
+    "meanAbsoluteRGBError": 18.45643457659929,
+    "pixelsDifferingOver24": 0.15599395624184037,
     "identical": false
   }
 }
