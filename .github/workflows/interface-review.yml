@@ -5,6 +5,11 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      refresh_snapshots:
+        description: Regenerate visual captures for an intentional visual change
+        type: boolean
+        default: false
 permissions:
   contents: write
 concurrency:
@@ -25,14 +30,26 @@ jobs:
       - run: npm run check
       - name: Verify core flows before the full matrix
         run: npm test -- --project=desktop-light tests/auth.spec.js tests/flows.spec.js
-      - name: Browser matrix and initial visual captures
-        run: npm test -- --update-snapshots
+      - name: Browser matrix and visual regression checks
+        run: |
+          if [ "${{ inputs.refresh_snapshots || contains(github.event.head_commit.message, '[refresh snapshots]') }}" = "true" ]; then
+            npm test -- --update-snapshots
+          else
+            npm test
+          fi
       - name: Store captures on the development branch for visual review
         if: success() && github.ref == 'refs/heads/dev/traxio-mockup-fidelity'
         run: |
+          mkdir -p docs/captures
+          for theme in light dark; do
+            capture=$(find test-results -path "*desktop-${theme}/mapa-real.png" -print -quit)
+            if [ -n "$capture" ]; then
+              cp "$capture" "docs/captures/mapa-real-${theme}.png"
+            fi
+          done
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tests/visual.spec.js-snapshots/
+          git add tests/visual.spec.js-snapshots/ docs/captures/
           if ! git diff --cached --quiet; then
             git commit -m "test: capture Traxio interface for visual review [skip ci]"
             git push origin "HEAD:${GITHUB_REF_NAME}"
