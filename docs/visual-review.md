@@ -33,10 +33,10 @@ Depois da geração inicial, o workflow compara as telas com as capturas version
 
 ## Limites conhecidos da fidelidade
 
-- A referência é um JPEG composto de várias telas; não há arquivos originais das artes ou identificação da fonte. Foi incorporada a fonte variável Roboto Condensed, sob licença OFL, para aproximar a tipografia da referência; sua identidade exata não foi confirmada.
+- As referências são JPEGs; não há arquivos vetoriais, fontes editáveis ou identificação da família tipográfica. Foi incorporada a fonte variável Roboto Condensed, sob licença OFL, para aproximar a tipografia da referência; sua identidade exata não foi confirmada.
 - A marca do cabeçalho e do login móvel usa o arquivo aprovado de identidade. O banner completo e as ilustrações usam recortes CSS do mockup original, preservando as artes e suas proporções. A resolução é limitada pelos JPEGs fornecidos.
 - A área ilustrada do login em desktop e tablet reaproveita o próprio JPEG aprovado com recorte CSS. No celular, a mesma arte aprovada é usada com recorte responsivo; a imagem anteriormente reconstruída foi removida.
-- As 48 capturas de regressão isolam os serviços externos e mostram o estado indisponível do mapa. Um teste adicional em cada tema desktop verifica o carregamento real do MapLibre/OpenFreeMap e anexa a captura ao relatório.
+- As 48 capturas das telas principais fazem parte da matriz de 96 imagens e isolam os serviços externos; o mapa apresenta o estado indisponível nesse conjunto. Um teste adicional em cada tema desktop verifica o carregamento real do MapLibre/OpenFreeMap e anexa a captura ao relatório.
 - Histórico não aparece no mockup; sua composição estende os mesmos padrões visuais.
 
 Esses pontos devem permanecer explícitos até a revisão das capturas e a entrega dos arquivos originais. Não se deve declarar fidelidade exata antes dessa revisão.
@@ -61,3 +61,18 @@ As verificações geométricas confirmam as dimensões do cabeçalho e da barra 
 A segunda revisão incorporou a marca do arquivo de identidade, alinhou o formulário de login às coordenadas aprovadas, corrigiu o banner duplicado, as alturas de navegação, o tamanho da tabela e a disposição dos dois cartões de planilhas. Os botões Mapa/Satélite alternam a camada real e preservam fontes, rotas e marcadores. Os rótulos do mapa escuro tiveram seus contornos corrigidos.
 
 O JPEG de identidade contém logotipos e lettering rasterizado, mas não identifica uma família tipográfica nem fornece fontes editáveis. A composição usa o lettering original nas marcas, Arial na interface e Roboto Condensed no formulário; a equivalência exata da fonte da interface não pode ser certificada a partir desse material. O histórico e as variantes móveis não aparecem na referência e estendem seus padrões.
+
+
+## Resultado final da execução
+
+Execução validada: [GitHub Actions 39078485014](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39078485014), código `be42fdcaea16d8f0b7f5047c64c6596107481564`.
+
+- Verificação estática: dez scripts originais preservados e integrações mantidas.
+- Comparação direta com as cinco áreas do mockup: 5 verificações geométricas aprovadas, com capturas e métricas salvas. Isso não representa igualdade de pixels.
+- Verificação inicial dos fluxos principais: 10 testes aprovados.
+- Matriz de navegador: 146 testes aprovados e 6 ignorados intencionalmente; somente a verificação externa de cartografia não é repetida nas seis combinações de tablet/celular.
+- Reteste das telas e diálogos, sem atualizar referências: 64 testes aprovados, comparando as 96 capturas geradas.
+- Consulta somente de leitura ao Supabase: 157 clientes, todos ativos. Nenhuma migração ou alteração de registros realizada.
+- Branch principal preservada em `84b23d405fa141854314267b528544a184e89f23`.
+
+As diferenças restantes de tipografia, ícones, dados de conta e cartografia estão visíveis nas comparações. O resultado não é declarado 100% idêntico ao JPEG aprovado.

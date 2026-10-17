@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "test": "playwright test",
-    "test:visual": "playwright test tests/visual.spec.js",
-    "test:update-snapshots": "playwright test tests/visual.spec.js --update-snapshots",
+    "test:visual": "playwright test tests/visual.spec.js tests/dialogs.visual.spec.js",
+    "test:update-snapshots": "playwright test tests/visual.spec.js tests/dialogs.visual.spec.js --update-snapshots",
     "test:report": "playwright show-report",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "test:reference": "playwright test --config=playwright.reference.config.js"
   },
-  "devDependencies": { "playwright": "1.62.1" }
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
 }
