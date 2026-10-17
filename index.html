@@ -208,7 +208,7 @@ body:not(.auth-locked) .card{max-width:100%!important}
 .traxio-nav-controls .live-navigation{display:block!important;background:transparent!important;border:0!important;margin:0!important;padding:0!important;color:#e9f9f5!important}
 .traxio-nav-controls .live-navigation p{color:#d5e9e6!important;margin:6px 0}.traxio-nav-controls .live-head{color:#fff}.traxio-nav-controls .live-stop-list{max-height:80px;overflow:auto;margin:6px 0}.traxio-nav-controls .live-stop{color:#102e35!important}.traxio-nav-controls #liveStart,.traxio-nav-controls #liveStop{font-size:13px;padding:10px!important}
 @media(max-width:760px){.traxio-nav-top{min-height:55px}.traxio-nav-controls{max-height:42dvh}}
-.traxio-nav-overlay .traxio-nav-map-host{touch-action:pan-x pan-y}.traxio-nav-controls .live-head strong{color:#fff!important}body:not(.auth-locked) .tabs{background-image:linear-gradient(170deg,#042e3a,#07515a 68%,#032c36)!important}body:not(.auth-locked) .tabs:after{opacity:.27!important;filter:drop-shadow(0 0 3px #00d6b5)}@media(min-width:761px){body:not(.auth-locked) .tabs:before{content:"●  ┄ ┄  ◆  ┄ ┄  ◎";position:absolute;bottom:214px;left:10px;right:10px;text-align:center;color:#7be7d0;font-size:16px;letter-spacing:2px;opacity:.5;pointer-events:none}}</style><style>
+.traxio-nav-overlay .traxio-nav-map-host{touch-action:pan-x pan-y}.traxio-nav-controls .live-head strong{color:#fff!important}body:not(.auth-locked) .tabs{background-image:linear-gradient(170deg,#042e3a,#07515a 68%,#032c36)!important}body:not(.auth-locked) .tabs:after{opacity:.27!important;filter:drop-shadow(0 0 3px #00d6b5)}@media(min-width:761px){body:not(.auth-locked) .tabs:before{content:"●  ┄ ┄  ◆  ┄ ┄  ◎";position:absolute;bottom:214px;left:10px;right:10px;text-align:center;color:#7be7d0;font-size:16px;letter-spacing:2px;opacity:.5;pointer-events:none}}.traxio-nav-actions{display:flex;gap:7px}.traxio-nav-actions button{min-height:38px}.traxio-nav-expand[hidden]{display:none!important}.traxio-nav-expand{position:fixed;right:14px;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);z-index:110;background:#008f95!important;color:white!important;border:2px solid #b8ffe4!important;border-radius:40px!important;padding:13px 17px!important;font-weight:800;box-shadow:0 5px 20px #001e2499}.traxio-car-marker{width:37px;height:43px;display:grid;place-items:center;filter:drop-shadow(0 2px 4px #001b2a99)}.traxio-car-marker svg{width:37px;height:43px;transform:rotate(var(--car-bearing,0deg));transition:transform .35s ease}.traxio-nav-top{z-index:2}@media(max-width:600px){.traxio-nav-top strong{font-size:13px}.traxio-nav-actions button{font-size:11px!important;padding:8px!important}}</style><style>
 .traxio-data-center{max-width:930px}
 .traxio-data-block{padding:21px 22px;border:1px solid #dcebe7;border-radius:17px;margin:16px 0;background:#f9fcfb}
 .traxio-data-primary{background:linear-gradient(120deg,#edf9f5,#f9fdfb);border-left:4px solid #16b6a0}
@@ -266,7 +266,7 @@ body:not(.auth-locked) .card{max-width:100%!important}
   <div class="traxio-danger-zone"><strong>Zona de cuidado</strong><p class="muted">Apagar os dados deste dispositivo pode exigir restauração. Faça backup primeiro.</p><button id="clear" type="button" class="secondary">Apagar carteira deste dispositivo</button></div></div>
 </details>
 </div></section>
-</main><div id="traxioNavOverlay" class="traxio-nav-overlay" hidden><div class="traxio-nav-top"><strong>Traxio · Navegação</strong><button id="traxioNavMinimize" type="button">Voltar ao planejamento</button></div><div id="traxioNavMapHost" class="traxio-nav-map-host"></div><div id="traxioNavControls" class="traxio-nav-controls"></div></div><dialog id="clientDialog" class="detail-dialog"><div class="detail-inner"><div id="clientDetail"></div><div class="detail-actions"><button id="detailMap">Ver no mapa</button><button class="secondary" id="detailEdit">Editar cadastro</button><button class="secondary" id="detailClose">Fechar</button></div></div></dialog><footer>Projeto Rota · Protótipo de validação, não APK e não navegador automotivo</footer>
+</main><div id="traxioNavOverlay" class="traxio-nav-overlay" hidden><div class="traxio-nav-top"><strong>Traxio · Navegação</strong><div class="traxio-nav-actions"><button id="traxioNavMinimize" type="button" aria-label="Minimizar mapa">▣ Minimizar</button><button id="traxioNavClose" type="button" aria-label="Fechar mapa ampliado">✕</button></div></div><div id="traxioNavMapHost" class="traxio-nav-map-host"></div><div id="traxioNavControls" class="traxio-nav-controls"></div></div><button id="traxioNavExpand" class="traxio-nav-expand" type="button" hidden>↗ Ampliar navegação</button><dialog id="clientDialog" class="detail-dialog"><div class="detail-inner"><div id="clientDetail"></div><div class="detail-actions"><button id="detailMap">Ver no mapa</button><button class="secondary" id="detailEdit">Editar cadastro</button><button class="secondary" id="detailClose">Fechar</button></div></div></dialog><footer>Projeto Rota · Protótipo de validação, não APK e não navegador automotivo</footer>
 <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -1022,25 +1022,25 @@ render();
 </script><script>
 (function(){
 const $=id=>document.getElementById(id);
-let watch=null,car=null,route=null,arrivedSince=0,previousPosition=null;
+let watch=null,car=null,route=null,arrivedSince=0,previousPosition=null;let rerouteBusy=false,lastRerouteAt=0,offRouteSince=0,activeGeometry=null;
 let originalMapParent=null,originalMapNext=null,originalPanelParent=null,originalPanelNext=null;
 function enterNav(){
 const overlay=$('traxioNavOverlay'),mapEl=$('map'),panel=$('liveNavigation');
 if(!mapEl||!map||!panel)return;
 if(!originalMapParent){originalMapParent=mapEl.parentNode;originalMapNext=mapEl.nextSibling;originalPanelParent=panel.parentNode;originalPanelNext=panel.nextSibling}
 $('traxioNavMapHost').appendChild(mapEl);$('traxioNavControls').appendChild(panel);
-overlay.hidden=false;document.body.classList.add('traxio-navigating');
+overlay.hidden=false;$('traxioNavExpand').hidden=true;document.body.classList.add('traxio-navigating');
 setTimeout(()=>{map.resize();if(previousPosition)map.easeTo({center:previousPosition,zoom:16,duration:500})},80);
 }
 function exitNav(){
 const overlay=$('traxioNavOverlay');if(overlay.hidden)return;
 const mapEl=$('map'),panel=$('liveNavigation');
 if(originalMapParent){originalMapParent.insertBefore(mapEl,originalMapNext?.parentNode===originalMapParent?originalMapNext:null);originalPanelParent.insertBefore(panel,originalPanelNext?.parentNode===originalPanelParent?originalPanelNext:null)}
-overlay.hidden=true;document.body.classList.remove('traxio-navigating');setTimeout(()=>map?.resize(),80);
+overlay.hidden=true;$('traxioNavExpand').hidden=watch===null;document.body.classList.remove('traxio-navigating');setTimeout(()=>map?.resize(),80);
 }
-$('traxioNavMinimize').onclick=exitNav;
+$('traxioNavMinimize').onclick=exitNav;$('traxioNavClose').onclick=exitNav;$('traxioNavExpand').onclick=enterNav;
 
-window.traxioVisitedIds=new Set();
+window.traxioVisitedIds=new Set();window.traxioSetActiveGeometry=g=>{activeGeometry=g};
 function status(msg){$('liveGPSState').textContent=msg}
 function stops(){return route?.stops||[]}
 function next(){return stops().find(x=>!x.visited)}
@@ -1050,7 +1050,7 @@ stops().forEach((stop,i)=>{const d=document.createElement('div');d.className='li
 $('liveNextStop').textContent=next()?'Próxima parada: '+next().name:route?'Todas as paradas foram registradas.':'Nenhuma rota em andamento.';
 renderMarkers();
 }
-function stopGPS(){exitNav();if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null}if(car){car.remove();car=null}previousPosition=null;arrivedSince=0;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado')}
+function stopGPS(){exitNav();$('traxioNavExpand').hidden=true;activeGeometry=null;offRouteSince=0;if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null}if(car){car.remove();car=null}previousPosition=null;arrivedSince=0;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado')}
 function recordHistory(outcome){
 const key='traxio.route.history.v1:'+(document.getElementById('authIdentity')?.textContent||'account');
 let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(rows))rows=[]}catch{}
@@ -1070,22 +1070,55 @@ renderMarkers();
 }
 function arrived(stop){
 stop.visited=true;stop.arrivalTime=new Date().toISOString();window.traxioVisitedIds.add(String(stop.id));arrivedSince=0;render();
-if(!next())end('completed');
+if(!next())end('completed');else if(previousPosition)recalculate(previousPosition,true);
+}
+function distanceToSegmentMeters(lat,lon,a,b){
+const scale=Math.cos(lat*Math.PI/180),x=lon*111320*scale,y=lat*111320,ax=a[0]*111320*scale,ay=a[1]*111320,bx=b[0]*111320*scale,by=b[1]*111320;
+const dx=bx-ax,dy=by-ay,t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy||1)));
+return Math.hypot(x-(ax+t*dx),y-(ay+t*dy));
+}
+function routeDeviation(lat,lon){
+const coords=activeGeometry?.coordinates;if(!coords?.length)return 0;
+let min=Infinity;for(let i=1;i<coords.length;i++)min=Math.min(min,distanceToSegmentMeters(lat,lon,coords[i-1],coords[i]));
+return min;
+}
+async function recalculate(coord,force=false){
+if(rerouteBusy||!route||!next()||!coord)return;
+if(!force&&Date.now()-lastRerouteAt<15000)return;
+rerouteBusy=true;lastRerouteAt=Date.now();status('Recalculando rota pelas ruas…');
+try{
+const remaining=stops().filter(x=>!x.visited),points=[{lon:coord[0],lat:coord[1]},...remaining];
+const road=await fetchRoadRoute(points);activeGeometry=road.geometry;displayRoadGeometry(road.geometry);
+status('Nova rota calculada · '+(road.distance/1000).toFixed(1)+' km restantes');
+if(map&&coord)map.easeTo({center:coord,zoom:16,duration:500});
+offRouteSince=0;
+}catch(e){status('Sem recálculo: '+(e.message||'servidor indisponível')+'. Siga a sinalização da via.')}finally{rerouteBusy=false}
 }
 function position(p){
 if(!route)return;
 const lat=p.coords.latitude,lon=p.coords.longitude,accuracy=p.coords.accuracy;
 if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
-const coord=[lon,lat];
-if(!car){const dot=document.createElement('div');dot.className='traxio-gps-dot';car=new maplibregl.Marker({element:dot}).setLngLat(coord).addTo(map)}else car.setLngLat(coord);
-map?.easeTo({center:coord,zoom:Math.max(map.getZoom(),15),duration:500});previousPosition=coord;
+const coord=[lon,lat],bearing=Number.isFinite(p.coords.heading)?p.coords.heading:null;
+if(!car){
+const el=document.createElement('div');el.className='traxio-car-marker';
+el.innerHTML='<svg viewBox="0 0 40 48" xmlns="http://www.w3.org/2000/svg" aria-label="Veículo"><path d="M12 5Q20 1 28 5L34 13V37Q34 42 29 43H11Q6 42 6 37V13Z" fill="#0876e9" stroke="white" stroke-width="2.8"/><path d="M12 14L15 9H25L28 14V22H12Z" fill="#c9f5ff"/><path d="M12 28H28V35H12Z" fill="#0b3655"/><path d="M7 23H33" stroke="#fff" stroke-width="2"/><path d="M16 3L20 0L24 3" fill="#d5ff50"/></svg>';
+car=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat(coord).addTo(map);
+}else car.setLngLat(coord);
+if(bearing!==null)car.getElement().style.setProperty('--car-bearing',bearing+'deg');
+if(!previousPosition||km({lat:previousPosition[1],lon:previousPosition[0]},{lat,lon})>0.008)map?.easeTo({center:coord,zoom:Math.max(map.getZoom(),15),duration:650});
+previousPosition=coord;
 status('GPS ativo · precisão ±'+Math.round(accuracy)+' m');
 const target=next();if(!target)return;
 const dist=km({lat,lon},target)*1000;
-if(accuracy>80||dist>100){arrivedSince=0;return}
-if(!arrivedSince){arrivedSince=Date.now();status('Chegada detectada · verificando permanência');return}
-if(Date.now()-arrivedSince>=30000)arrived(target);
+if(accuracy<=80&&dist<=100){if(!arrivedSince){arrivedSince=Date.now();status('Chegada detectada · verificando permanência')}else if(Date.now()-arrivedSince>=30000){arrived(target);return}}
+else arrivedSince=0;
+if(accuracy<=55&&activeGeometry?.coordinates?.length>1){
+const deviation=routeDeviation(lat,lon);
+if(deviation>90){if(!offRouteSince)offRouteSince=Date.now();if(Date.now()-offRouteSince>=5000)recalculate(coord)}
+else offRouteSince=0;
 }
+}
+
 $('liveStart').addEventListener('click',()=>{
 if(!route||watch!==null)return;
 if(!navigator.geolocation){status('GPS indisponível neste navegador');return}
@@ -1096,7 +1129,7 @@ window.traxioBeginNavigation=function(points){
 if(!Array.isArray(points)||!points.length)return;
 if(route&&watch!==null)stopGPS();
 route={stops:points.filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)).map(x=>({id:x.id,name:x.name,lat:x.lat,lon:x.lon,visited:false}))};
-window.traxioVisitedIds.clear();$('liveNavigation').hidden=false;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado');render();
+window.traxioVisitedIds.clear();activeGeometry=map?.getSource('route')?._data?.geometry||null;offRouteSince=0;$('liveNavigation').hidden=false;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado');render();
 };
 $('clearRoute').addEventListener('click',()=>{if(route){stopGPS();route=null;window.traxioVisitedIds.clear();$('liveNavigation').hidden=true;renderMarkers()}});
 window.addEventListener('pagehide',stopGPS);
@@ -1130,7 +1163,7 @@ try{
 const start=await requestGPS();const road=await fetchRoadRoute([start,dest]);
 displayRoadGeometry(road.geometry);
 window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:[dest.name],strategy:'avulso',at:new Date().toISOString()};
-window.traxioBeginNavigation?.([dest]);
+window.traxioBeginNavigation?.([dest]);window.traxioSetActiveGeometry?.(road.geometry);
 $('routeResult').textContent='Destino avulso: '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados. Toque em “Iniciar acompanhamento GPS” abaixo.';
 status('Rota desenhada. Inicie o GPS na seção Execução da rota.');
 $('liveNavigation').scrollIntoView({behavior:'smooth',block:'center'});
