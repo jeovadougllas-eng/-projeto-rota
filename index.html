@@ -966,8 +966,8 @@ function traxioAuthTrace(step){traxioAuthSteps.push(step);if(traxioAuthSteps.len
 const authEl=id=>document.getElementById(id);
 function authNotice(message,error=false){const el=authEl('authMessage');el.textContent=message;el.style.color=error?'#b32e3a':'#19675d'}
 function readAuthConfig(){return {url:AUTH_DEFAULT_URL,key:AUTH_DEFAULT_PUBLISHABLE_KEY}}
-function authLock(){document.body.classList.add('traxio-auth-ready');document.body.classList.add('auth-locked');authEl('authScreen').hidden=false;authEl('authLogout').hidden=true;authEl('accountArea').hidden=true;authEl('accountDialog').hidden=true;authEl('accountMenu').hidden=true;authEl('authIdentity').textContent=''}
-function authUnlock(user){if(!user)return;document.body.classList.add('traxio-auth-ready');authEl('authScreen').hidden=true;document.body.classList.remove('auth-locked');authEl('authLogout').hidden=false;authEl('accountArea').hidden=false;authEl('authIdentity').textContent=user.user_metadata?.display_name||user.email||'Minha conta';if(typeof traxioScheduleSync==='function')traxioScheduleSync(2500)}
+function authLock(){document.body.classList.add('traxio-auth-ready');document.body.classList.add('auth-locked');const screen=authEl('authScreen');if(screen)screen.hidden=false;for(const id of ['authLogout','accountArea','accountDialog','accountMenu']){const el=authEl(id);if(el)el.hidden=true}const identity=authEl('authIdentity');if(identity)identity.textContent=''}
+function authUnlock(user){if(!user)return;document.body.classList.add('traxio-auth-ready');const screen=authEl('authScreen');if(screen)screen.hidden=true;document.body.classList.remove('auth-locked');for(const id of ['authLogout','accountArea']){const el=authEl(id);if(el)el.hidden=false}const identity=authEl('authIdentity');if(identity)identity.textContent=user.user_metadata?.display_name||user.email||'Minha conta';if(typeof traxioScheduleSync==='function')traxioScheduleSync(2500)}
 let authLibraryLoading=null;
 async function ensureAuthLibrary(){
  if(window.supabase?.createClient)return true;
