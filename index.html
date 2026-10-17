@@ -903,9 +903,28 @@ async function authInitialize(){
  try{
   authClient=window.supabase.createClient(cfg.url||AUTH_DEFAULT_URL,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   authClient.auth.onAuthStateChange((event,session)=>{if(generation!==authGeneration)return;if(event==='PASSWORD_RECOVERY'){authLock();document.getElementById('traxioResetPanel').hidden=false;return}if(session?.user){authUnlock(session.user);setTimeout(()=>traxioCheckProfile(session.user),300)}else authLock()});
-  const {data,error}=await authClient.auth.getSession();if(generation!==authGeneration)return;
+  // Handle OAuth return explicitly before displaying the login screen.
+  const params=new URLSearchParams(location.search);
+  const hash=new URLSearchParams(location.hash.replace(/^#/,''));
+  const oauthError=params.get('error_description')||params.get('error')||hash.get('error_description')||hash.get('error');
+  if(oauthError){authNotice('Google: '+oauthError,true);return}
+  const oauthCode=params.get('code');
+  if(oauthCode){
+    authNotice('Concluindo acesso com Google...');
+    const {data:exchange,error:exchangeError}=await authClient.auth.exchangeCodeForSession(oauthCode);
+    if(exchangeError)throw exchangeError;
+    if(exchange?.session?.user){history.replaceState(null,'',location.pathname);authUnlock(exchange.session.user);setTimeout(()=>traxioCheckProfile(exchange.session.user),300);return}
+  }
+  let {data,error}=await authClient.auth.getSession();if(generation!==authGeneration)return;
   if(error)throw error;
-  if(data.session?.user){authUnlock(data.session.user);setTimeout(()=>traxioCheckProfile(data.session.user),300)}else authNotice('Entre com seu e-mail e senha.');
+  if(!data.session?.user && (hash.has('access_token')||hash.has('refresh_token'))){
+    authNotice('Finalizando autenticação Google...');
+    await new Promise(resolve=>setTimeout(resolve,1200));
+    ({data,error}=await authClient.auth.getSession());
+    if(error)throw error;
+  }
+  if(data.session?.user){authUnlock(data.session.user);setTimeout(()=>traxioCheckProfile(data.session.user),300)}
+  else authNotice('Não foi possível restaurar a sessão após o retorno do Google. Tente novamente; se persistir, informe esta mensagem.',true);
  }catch(e){authLock();authNotice('Falha ao conectar ao Supabase: '+(e.message||e),true)}
 }
 authEl('authSaveConfig').onclick=async()=>{
