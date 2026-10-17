@@ -509,6 +509,17 @@ body:not(.auth-locked) .tabs:after{content:"⌖　↝　▱　♧　▦　◈　
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js"></script>
 <script>
+(function(){
+ const diag=document.getElementById('traxioAuthDiagnostic');
+ if(!diag)return;
+ const update=(message)=>{diag.textContent='Diagnóstico de inicialização: '+message;diag.style.display='block';};
+ update('Página carregada (v5).');
+ window.addEventListener('error',e=>{const msg=String(e.message||'Erro JavaScript');update('Erro de execução: '+msg.slice(0,180));});
+ window.addEventListener('unhandledrejection',e=>{const reason=e.reason;const msg=String(reason?.message||reason||'Promessa rejeitada');update('Falha assíncrona: '+msg.slice(0,180));});
+ if(new URLSearchParams(location.search).has('code'))update('Retorno Google recebido. Aguardando autenticação...');
+})();
+</script>
+<script>
 'use strict';
 const $=id=>document.getElementById(id), KEY='projeto_rota_mapa_v1';
 let selectedIds=new Set(),selectionInitialized=false,routeBusy=false;let editingClientId=null;let clients=[],map=null,markers=[],draftMarker=null,routeGeo=null,gps=null,lastRoute=null,adjustingPin=false;
