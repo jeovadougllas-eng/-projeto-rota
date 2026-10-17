@@ -515,7 +515,7 @@ body:not(.auth-locked) .tabs:after{content:"⌖　↝　▱　♧　▦　◈　
  const update=(message)=>{diag.textContent='Diagnóstico de inicialização: '+message;diag.style.display='block';};
  update('Página carregada (v5).');
  window.addEventListener('error',e=>{const msg=String(e.message||'Erro JavaScript');update('Erro de execução: '+msg.slice(0,180));});
- window.addEventListener('unhandledrejection',e=>{const reason=e.reason;const msg=String(reason?.message||reason||'Promessa rejeitada');update('Falha assíncrona: '+msg.slice(0,180));});
+ window.addEventListener('unhandledrejection',e=>{const reason=e.reason;const msg=String(reason?.message||reason||'Promessa rejeitada');const stack=String(reason?.stack||'').split('\n').slice(1,3).join(' ').replace(/https?:\/\/[^\s)]+/g,m=>m.replace(/^.*\/(-projeto-rota\/)?/,'index.html'));update('Falha assíncrona: '+msg.slice(0,110)+' | '+stack.slice(0,180));});
  if(new URLSearchParams(location.search).has('code'))update('Retorno Google recebido. Aguardando autenticação...');
 })();
 </script>
