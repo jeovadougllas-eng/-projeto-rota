@@ -547,6 +547,7 @@ function showOrder(points){const root=$('routeOrder');root.replaceChildren();poi
 function swapStops(a,b){if(!lastRoute)return;[lastRoute.points[a],lastRoute.points[b]]=[lastRoute.points[b],lastRoute.points[a]];showOrder(lastRoute.points);$('routeResult').textContent='Ordem ajustada manualmente. Toque em “Traçar pelas ruas” para recalcular a distância e o percurso.';$('roadRoute').disabled=false;clearRouteVisual()}
 async function getStart(points){if($('origin').value==='gps')return await requestGPS();return points[0]}
 function displayRoadGeometry(geometry){
+ window.traxioSetActiveGeometry?.(geometry);
  initMap();if(!map)return;
  const apply=()=>{
   const geo={type:'Feature',geometry,properties:{}};
