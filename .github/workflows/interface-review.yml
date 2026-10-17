@@ -6,7 +6,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: traxio-interface-${{ github.ref }}
   cancel-in-progress: true
@@ -27,6 +27,16 @@ jobs:
         run: npm test -- --project=desktop-light tests/auth.spec.js tests/flows.spec.js
       - name: Browser matrix and initial visual captures
         run: npm test -- --update-snapshots
+      - name: Store captures on the development branch for visual review
+        if: success() && github.ref == 'refs/heads/dev/traxio-mockup-fidelity'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/visual.spec.js-snapshots/
+          if ! git diff --cached --quiet; then
+            git commit -m "test: capture Traxio interface for visual review [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
       - name: Preserve screenshots and report for review
         if: always()
         uses: actions/upload-artifact@v4

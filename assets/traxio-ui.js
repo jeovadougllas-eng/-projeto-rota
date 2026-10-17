@@ -129,11 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const dashboardLayout = node('div','dashboard-layout'), dashboardMain = node('div','dashboard-main'); overview.before(dashboardLayout); dashboardMain.append(overview); dashboardLayout.append(dashboardMain);
   const quick = node('aside','card quick-actions'); quick.innerHTML = '<h3>Ações rápidas</h3>';
   [['Planejar rota','clients','mapa'],['Ver no mapa','map','mapa'],['Importar clientes','upload','dados'],['Sincronizar dados','sync','dados']].forEach(([text,ico,target], i) => {
-    const b = button(text, () => { switchTab(target); if(i === 2) el('sheetFile').focus(); if(i === 3) el('cloudCheck').click(); }); b.insertAdjacentHTML('afterbegin',icon(ico)); quick.append(b);
+    const b = button(text, () => { switchTab(target); if(i === 2) el('sheetFile').focus(); if(i === 3) el('cloudCheck').click(); }); b.setAttribute('aria-label',text); b.insertAdjacentHTML('afterbegin',icon(ico)); quick.append(b);
   }); dashboardLayout.append(quick);
 
   // Clients: retain the exact original edit form, expose it in a native modal.
   const clientSection = el('clientes'), editCard = clientSection.querySelector('.card');
+  editCard.querySelectorAll('.field').forEach(field=>{const label=field.querySelector('label'),input=field.querySelector('input,select');if(label&&input?.id)label.htmlFor=input.id;});
   const editor = node('dialog','detail-dialog client-edit-dialog'); editor.id = 'clientEditDialog'; editor.setAttribute('aria-labelledby','clientEditTitle');
   const editorHeader = node('div','dialog-header'); const editorTitle = editCard.querySelector('h2'); editorTitle.id='clientEditTitle';
   editorHeader.append(editorTitle,button('×',() => editor.close(),'close-client-editor')); editorHeader.lastChild.setAttribute('aria-label','Fechar cadastro'); editCard.prepend(editorHeader);
