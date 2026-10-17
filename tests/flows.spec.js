@@ -56,3 +56,20 @@ test('JSON backup contains all 157 original records',async({page})=>{
   const stream=await download.createReadStream();const chunks=[];for await(const chunk of stream)chunks.push(chunk);
   const data=JSON.parse(Buffer.concat(chunks).toString());expect(Array.isArray(data)?data:data.clients).toHaveLength(157);
 });
+
+test('pin adjustment returns to the editor and keeps the unsaved client',async({page})=>{
+  await page.evaluate(()=>{const rows=JSON.parse(localStorage.getItem('projeto_rota_mapa_v1'));rows[0].lat=-5.795;rows[0].lon=-35.211;localStorage.setItem('projeto_rota_mapa_v1',JSON.stringify(rows));});
+  await page.reload();await page.locator('body.traxio-ui-ready').waitFor();
+  await page.locator('.tabs [data-tab="clientes"]').click();
+  await page.locator('#registryRows .client-link').first().click();await page.locator('#detailEdit').click();
+  await page.locator('#name').fill('RASCUNHO DE CLIENTE');
+  await page.locator('#adjustPin').click();await expect(page.locator('#clientEditDialog')).toBeHidden();
+  await expect(page.locator('#backToClient')).toBeVisible();await page.locator('#backToClient').click();
+  await expect(page.locator('#clientEditDialog')).toBeVisible();await expect(page.locator('#name')).toHaveValue('RASCUNHO DE CLIENTE');
+  await expect(page.locator('#lat')).toHaveValue('-5.795');await page.keyboard.press('Escape');
+  await page.locator('.tabs [data-tab="mapa"]').click();await page.locator('#mapClientListDisclosure summary').click();
+  await page.locator('#mapClientList').getByRole('button',{name:'Localizar cliente',exact:true}).first().click();
+  await expect(page.locator('#clientEditDialog')).toBeVisible();
+  await page.locator('#adjustPin').click();await expect(page.locator('#clientEditDialog')).toBeVisible();
+  await expect(page.locator('#saveStatus')).toContainText('Primeiro escolha uma sugestão');
+});

@@ -198,7 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
   el('registryPlan').addEventListener('click',()=>switchTab('mapa'));
   el('detailEdit').addEventListener('click',()=>{ editorTitle.textContent='Editar cliente'; editor.showModal(); });
   el('saveClient').addEventListener('click',()=>{ if(el('saveStatus').textContent === 'Cliente salvo.') editor.close(); });
-  el('adjustPin').addEventListener('click',()=>editor.close());
+  el('adjustPin').addEventListener('click',()=>{if(adjustingPin)editor.close();});
+  el('backToClient').addEventListener('click',()=>{editorTitle.textContent=editingClientId?'Editar cliente':'Cadastrar cliente';if(!editor.open)editor.showModal();});
+  const originalOpenClientLocation=openClientLocation;
+  openClientLocation=(...args)=>{originalOpenClientLocation(...args);editorTitle.textContent='Localizar cliente';if(!editor.open)editor.showModal();el('address').focus();};
   const remove = button('Excluir cliente',()=>{
     const c=clients.find(x=>x.id===activeDetailId); if(!c || !confirm('Excluir '+c.name+'?')) return;
     clients=clients.filter(x=>x.id!==c.id); save(); el('clientDialog').close();

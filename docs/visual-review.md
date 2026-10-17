@@ -45,5 +45,6 @@ Esses pontos devem permanecer explícitos até a revisão das capturas e a entre
 2. Execução seguinte: os 9 testes principais e a matriz completa de 120 testes passaram; 48 capturas foram geradas e salvas na branch de desenvolvimento.
 3. Comparação visual: corrigidos o recorte horizontal da marca no cabeçalho, a distribuição das ações rápidas e da carteira no painel, o espaço adicional acima da tabela, a decoração lateral nas telas escuras e a transição entre a arte aprovada e o fundo do login. Incorporada a fonte local Roboto Condensed.
 4. Nova bateria aprovada: 122 testes passaram, incluindo MapLibre e tiles OpenFreeMap reais nos dois temas desktop; as 6 combinações de tablet/celular não repetem esse teste externo, mas mantêm os testes funcionais e as capturas. Nova inspeção ajustou a suavidade da máscara do banner.
+5. Revisado o fluxo de ajuste de localização: o retorno do mapa reabre o formulário com o rascunho preservado; o comando de localizar na lista do mapa abre o editor; uma tentativa de ajuste sem coordenadas mantém a mensagem de validação visível. Adicionado teste em todas as resoluções e temas.
 
 As capturas geradas são evidência da implementação e não equivalem à aprovação visual do proprietário.
