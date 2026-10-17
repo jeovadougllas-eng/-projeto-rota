@@ -969,48 +969,43 @@ async function ensureAuthLibrary(){
  return authLibraryLoading;
 }
 async function authInitialize(){
- const generation=++authGeneration;const cfg=readAuthConfig();
- authEl('authUrl').value=cfg.url||AUTH_DEFAULT_URL;authEl('authKey').value=cfg.key||AUTH_DEFAULT_PUBLISHABLE_KEY;
- authLock();authClient=null;traxioAuthTrace('início');
- if(!cfg.key){authEl('authSetup').open=true;authNotice('Para começar, informe a Publishable key do projeto Supabase.');return}
- if(!await ensureAuthLibrary()){authNotice('Não foi possível carregar a conexão de autenticação. Confira a internet e tente novamente.',true);return}
+ const generation=++authGeneration, cfg=readAuthConfig();
+ authEl('authUrl').value=cfg.url||AUTH_DEFAULT_URL;
+ authEl('authKey').value=cfg.key||AUTH_DEFAULT_PUBLISHABLE_KEY;
+ authLock();
+ traxioAuthTrace('início');
+ if(!await ensureAuthLibrary()){authNotice('Não foi possível carregar a autenticação. Verifique a conexão.',true);return}
+ if(generation!==authGeneration)return;
  try{
-  authClient=window.supabase.createClient(cfg.url||AUTH_DEFAULT_URL,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit'}});
-  authClient.auth.onAuthStateChange((event,session)=>{if(generation!==authGeneration)return;traxioAuthTrace('evento '+event+(session?.user?' com sessão':' sem sessão'));if(event==='PASSWORD_RECOVERY'){authLock();document.getElementById('traxioResetPanel').hidden=false;return}if(session?.user){authUnlock(session.user);document.getElementById('traxioProfilePanel').hidden=true;}else if(event==='SIGNED_OUT'&&!new URLSearchParams(location.search).has('code')){authLock()}});
-  // Handle OAuth return explicitly before displaying the login screen.
+  // One stable client and one PKCE exchange: avoid reinitializing auth during OAuth callback.
+  if(!authClient)authClient=window.supabase.createClient(cfg.url||AUTH_DEFAULT_URL,cfg.key,{
+   auth:{storageKey:'traxio-auth-v3',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'pkce'}
+  });
   const params=new URLSearchParams(location.search);
-  const hash=new URLSearchParams(location.hash.replace(/^#/,''));
-  const oauthError=params.get('error_description')||params.get('error')||hash.get('error_description')||hash.get('error');
-  if(oauthError){traxioAuthTrace('retorno com erro OAuth');authNotice('Google: '+oauthError,true);return}
-  const oauthReturn=params.has('code')||hash.has('access_token')||hash.has('refresh_token');
-  if(oauthReturn){traxioAuthTrace('retorno OAuth recebido');authNotice('Concluindo autenticação com Google...')}
-  // Implicit OAuth returns tokens in the URL fragment; supabase-js recovers the session.
-  // Never call exchangeCodeForSession a second time: the code is single-use.
-  let session=null,sessionError=null;
-  for(let attempt=0;attempt<(oauthReturn?8:1);attempt++){
-    const result=await authClient.auth.getSession();
-    if(generation!==authGeneration)return;
-    session=result.data?.session||null;
-    sessionError=result.error;
-    if(session?.user){traxioAuthTrace('sessão recuperada');break;}
-    if(attempt<7&&oauthReturn)await new Promise(resolve=>setTimeout(resolve,350));
-  }
-  if(!session?.user && hash.has('access_token') && hash.has('refresh_token')){
-    traxioAuthTrace('restaurando tokens do retorno');
-    const restored=await authClient.auth.setSession({access_token:hash.get('access_token'),refresh_token:hash.get('refresh_token')});
-    if(restored.error){sessionError=restored.error;traxioAuthTrace('falha ao restaurar tokens')}else session=restored.data?.session||null;
-  }
-  if(session?.user){
-    authUnlock(session.user);
-    if(oauthReturn)history.replaceState(null,'',location.pathname);
-  }else if(sessionError){
-    traxioAuthTrace('erro ao recuperar sessão: '+(sessionError.status||sessionError.name||'desconhecido'));
-    authNotice('Não foi possível concluir o acesso: '+sessionError.message,true);
+  const oauthError=params.get('error_description')||params.get('error');
+  if(oauthError){authNotice('Falha no retorno do provedor: '+oauthError,true);return}
+  const oauthReturn=params.has('code');
+  if(oauthReturn)authNotice('Concluindo acesso seguro...');
+  // Supabase JS processes the PKCE code during client initialization. Do not exchange it again.
+  const {data,error}=await authClient.auth.getSession();
+  if(generation!==authGeneration)return;
+  if(error){authNotice('Falha ao recuperar sessão: '+error.message,true);return}
+  if(data?.session?.user){
+   authUnlock(data.session.user);
+   if(oauthReturn)history.replaceState(null,'',location.pathname);
   }else if(oauthReturn){
-    traxioAuthTrace('retorno sem sessão');
-    authNotice('Não foi possível recuperar a sessão após o retorno do Google. Verifique o diagnóstico abaixo e tente novamente.',true);
+   authNotice('Não foi possível concluir o login Google. Tente novamente; se persistir, informe o erro exibido.',true);
   }
- }catch(e){traxioAuthTrace('falha na inicialização');authLock();authNotice('Falha ao conectar ao Supabase: '+(e.message||e),true)}
+  if(!window.traxioAuthSubscription){
+   const {data:subscription}=authClient.auth.onAuthStateChange((event,session)=>{
+    traxioAuthTrace('evento '+event+(session?.user?' com sessão':' sem sessão'));
+    if(event==='PASSWORD_RECOVERY'){authLock();document.getElementById('traxioResetPanel').hidden=false;return}
+    if(session?.user){authUnlock(session.user);document.getElementById('traxioProfilePanel').hidden=true}
+    else if(event==='SIGNED_OUT')authLock();
+   });
+   window.traxioAuthSubscription=subscription?.subscription;
+  }
+ }catch(e){authLock();authNotice('Falha ao conectar ao Supabase: '+(e.message||e),true)}
 }
 authEl('authSaveConfig').onclick=async()=>{
  const url=authEl('authUrl').value.trim().replace(/\/$/,'');const key=authEl('authKey').value.trim();
