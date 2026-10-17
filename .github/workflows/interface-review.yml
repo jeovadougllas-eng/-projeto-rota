@@ -26,14 +26,29 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run check
+      - name: Measure the previous interface against the new supplied kit
+        run: |
+          git fetch --depth=1 origin 666c21a59af996b8e94b5a8faf130529d763b6c5
+          mkdir -p /tmp/traxio-before-kit
+          git archive 666c21a59af996b8e94b5a8faf130529d763b6c5 | tar -x -C /tmp/traxio-before-kit
+          PORT=4174 node /tmp/traxio-before-kit/scripts/serve.mjs &
+          baseline_server_pid=$!
+          trap 'kill "$baseline_server_pid"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:4174/ > /dev/null; then break; fi
+            sleep 0.1
+          done
+          TRAXIO_REVIEW_ORIGIN=http://127.0.0.1:4174 TRAXIO_REFERENCE_OUTPUT=docs/captures/reference-before-kit npx playwright test --config=playwright.reference.config.js
       - name: Compare directly with the immutable approved mockup
         run: npx playwright test --config=playwright.reference.config.js
+      - name: Summarize before/after pixel differences
+        run: node scripts/summarize-reference.mjs
       - name: Store approved-reference comparison evidence
         if: success() && github.ref == 'refs/heads/dev/traxio-mockup-fidelity'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/captures/reference/
+          git add docs/captures/reference/ docs/captures/reference-before-kit/ docs/captures/reference-summary.*
           if ! git diff --cached --quiet; then
             git commit -m "test: compare application with approved reference [skip ci]"
             git push origin "HEAD:${GITHUB_REF_NAME}"
@@ -75,6 +90,8 @@ jobs:
           retention-days: 14
           path: |
             docs/captures/reference/
+            docs/captures/reference-before-kit/
+            docs/captures/reference-summary.*
             test-results-reference/
             test-results-retest/
             playwright-report/

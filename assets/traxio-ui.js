@@ -24,7 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.pin}</svg>`;
   };
-  const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/approved-identity.jpg" alt="Traxio — Planeje melhor. Vá mais longe." width="1280" height="427"></span>`;
+  const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/visual-kit/assets/logo_dark_background.png" alt="Traxio — Planeje melhor. Vá mais longe." width="497" height="141"></span>`;
+  // Display unmodified original pixels from the supplied reference crops.
+  const glyph=(source,sourceWidth,sourceHeight,x,y,w,h,className='')=>`<span class="kit-glyph ${className}" aria-hidden="true" style="aspect-ratio:${w}/${h}"><img src="assets/visual-kit/assets/${source}" alt="" width="${sourceWidth}" height="${sourceHeight}" style="width:${100*sourceWidth/w}%;height:${100*sourceHeight/h}%;left:${-100*x/w}%;top:${-100*y/h}%"></span>`;
+  const filterDefs=document.createElementNS('http://www.w3.org/2000/svg','svg');filterDefs.classList.add('kit-filter-defs');filterDefs.setAttribute('aria-hidden','true');
+  filterDefs.innerHTML='<defs><filter id="kit-remove-light" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3"/><feComponentTransfer><feFuncA type="linear" slope="4" intercept="-.4"/></feComponentTransfer></filter><filter id="kit-remove-dark" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -.6"/><feComponentTransfer><feFuncA type="linear" slope="2"/></feComponentTransfer></filter></defs>';
+  document.body.append(filterDefs);
   const node = (tag, className, text) => {
     const n = document.createElement(tag);
     if (className) n.className = className;
@@ -40,12 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Login uses the existing forms and their original event handlers.
   const authBrand = node('div', 'auth-brand-panel');
-  authBrand.innerHTML = brand() + `<div class="auth-features"><div class="auth-feature">${icon('pin')}<span>Organize<br>sua carteira</span></div><div class="auth-feature">${icon('chart')}<span>Otimize<br>seus trajetos</span></div><div class="auth-feature">${icon('chart')}<span>Conquiste<br>mais resultados</span></div></div>`;
+  authBrand.innerHTML = brand() + `<p class="auth-brand-motto">PLANEJE MELHOR.<br>VÁ MAIS LONGE.</p><div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
   el('authScreen').prepend(authBrand);
   const approvedScene = node('div','auth-approved-scene'); approvedScene.setAttribute('aria-hidden','true');
-  approvedScene.innerHTML='<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853">';
+  approvedScene.innerHTML='<img class="reconstructed-login-plate" src="assets/reconstructed/login-background.png" alt=""><img class="original-login-art" src="assets/visual-kit/assets/login_hero_reference.png" alt="" width="354" height="632">';
   el('authScreen').prepend(approvedScene);
-  const roadContinuation=node('div','auth-road-continuation');roadContinuation.setAttribute('aria-hidden','true');roadContinuation.innerHTML='<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853">';el('authScreen').prepend(roadContinuation);
+  const roadContinuation=node('div','auth-road-continuation');roadContinuation.setAttribute('aria-hidden','true');roadContinuation.innerHTML='<img src="assets/visual-kit/reference/1411.png" alt="" width="1536" height="1024">';el('authScreen').prepend(roadContinuation);
   const authPanel = document.querySelector('.auth-panel');
   const authHeading = node('div', 'auth-heading');
   authHeading.innerHTML = '<h1>Acesse sua conta</h1><p>Entre para planejar suas rotas e gerenciar sua carteira.</p>';
@@ -102,8 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
   new MutationObserver(updateAvatar).observe(el('authIdentity'),{childList:true,characterData:true,subtree:true}); updateAvatar();
   const nav = document.querySelector('.tabs'); nav.setAttribute('aria-label','Navegação principal');
   const navArt = node('div','nav-art'); navArt.setAttribute('aria-hidden','true');
-  navArt.innerHTML = '<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
-  const navPattern=node('div','nav-pattern');navPattern.setAttribute('aria-hidden','true');navPattern.innerHTML='<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853">';nav.append(navPattern);
+  navArt.innerHTML = '<img src="assets/visual-kit/assets/dashboard_mockup_reference.png" alt="" width="858" height="635"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
+  const navPattern=node('div','nav-pattern');navPattern.setAttribute('aria-hidden','true');navPattern.innerHTML='<img src="assets/visual-kit/reference/1411.png" alt="" width="1536" height="1024">';nav.append(navPattern);
   const originalSwitch = switchTab;
   switchTab = id => {
     originalSwitch(id); const actual = id === 'rotas' ? 'mapa' : id;
@@ -118,12 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const hero = document.querySelector('.traxio-hero');
   hero.querySelector('h2').innerHTML = 'Seu território<br>em <em>movimento.</em>';
   const heroArt = node('div','hero-art'); heroArt.setAttribute('aria-hidden','true');
-  heroArt.innerHTML = '<img src="assets/approved-mockup.jpg" alt="" width="1280" height="853">'; hero.append(heroArt);
+  heroArt.innerHTML = '<img class="reconstructed-hero-plate" src="assets/reconstructed/dashboard-background.png" alt=""><img class="original-hero-art" src="assets/visual-kit/assets/dashboard_hero_reference.png" alt="" width="687" height="136">'; hero.append(heroArt);
   const overview = el('painel').querySelector('.card'); overview.classList.add('dashboard-overview');
   const stats = overview.querySelector('.row'); stats.className = 'stats-row';
   stats.querySelectorAll('.stat').forEach((stat,i) => {
     const wrap = node('div'); while(stat.firstChild) wrap.append(stat.firstChild);
-    stat.innerHTML = icon(['clients','pin','pending'][i]); stat.append(wrap);
+    const [x,y,w,h]=[[188,278,35,36],[346,278,32,36],[496,278,32,36]][i];
+    stat.innerHTML = glyph('dashboard_mockup_reference.png',858,635,x,y,w,h,'kit-metric-icon'); stat.append(wrap);
   });
   stats.nextElementSibling.className = 'overview-note';
   const portfolioHeading = node('div','portfolio-heading');
@@ -293,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const target = i===0?document.querySelector('.traxio-data-primary'):i===1?el('sheetFile').closest('.traxio-data-block'):document.querySelectorAll('.traxio-data-expand')[i-2];
       if(target.tagName==='DETAILS')target.open=true;
       target.scrollIntoView({behavior:'smooth',block:'center'});if(i===1)el('sheetFile').focus();
-    }); b.innerHTML=icon(['cloud','upload','search','database'][i]); const content=node('div'); while(old.firstChild)content.append(old.firstChild);b.append(content);guide.append(b);
+    }); const [x,y,w,h]=[[117,130,30,30],[285,130,29,30],[118,186,29,31],[285,186,29,31]][i];b.innerHTML=glyph('spreadsheets_mockup_reference.png',458,388,x,y,w,h,'kit-data-icon'); const content=node('div'); while(old.firstChild)content.append(old.firstChild);b.append(content);guide.append(b);
   });
   document.querySelector('.traxio-data-center>.traxio-section-note').hidden=true;
   const dataCenter=document.querySelector('.traxio-data-center'),syncCard=document.querySelector('.traxio-data-primary');

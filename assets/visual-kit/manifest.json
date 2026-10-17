@@ -1,0 +1,98 @@
+{
+  "name": "Traxio",
+  "tagline": "PLANEJE MELHOR. VÁ MAIS LONGE.",
+  "sources": {
+    "brand": "reference/839.png",
+    "mockup": "reference/1411.png"
+  },
+  "assets": {
+    "brand_crops": {
+      "logo_primary_reference.png": [
+        35,
+        48,
+        958,
+        327
+      ],
+      "logo_horizontal_compact.png": [
+        60,
+        355,
+        451,
+        486
+      ],
+      "logo_dark_background.png": [
+        503,
+        354,
+        1000,
+        495
+      ],
+      "logo_monochrome_reference.png": [
+        1081,
+        350,
+        1498,
+        483
+      ],
+      "app_icon_dark.png": [
+        990,
+        44,
+        1250,
+        325
+      ],
+      "app_icon_light.png": [
+        1257,
+        42,
+        1520,
+        325
+      ]
+    },
+    "mockup_crops": {
+      "login_mockup_reference.png": [
+        0,
+        0,
+        677,
+        635
+      ],
+      "dashboard_mockup_reference.png": [
+        678,
+        0,
+        1536,
+        635
+      ],
+      "clients_mockup_reference.png": [
+        0,
+        636,
+        565,
+        1024
+      ],
+      "routes_mockup_reference.png": [
+        566,
+        636,
+        1077,
+        1024
+      ],
+      "spreadsheets_mockup_reference.png": [
+        1078,
+        636,
+        1536,
+        1024
+      ],
+      "login_hero_reference.png": [
+        0,
+        0,
+        354,
+        632
+      ],
+      "dashboard_hero_reference.png": [
+        841,
+        77,
+        1528,
+        213
+      ]
+    }
+  },
+  "limitations": [
+    "Crops contain original screenshot pixels and may include background, shadows or neighboring elements.",
+    "No original Figma, AI, PSD, font files, SVG source or separated 3D illustrations supplied.",
+    "Do not present reconstructed typography or vector tracing as the original source.",
+    "Mockup has illustrative data and is not authoritative for business data or backend state."
+  ]
+}

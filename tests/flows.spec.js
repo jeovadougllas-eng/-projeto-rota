@@ -57,6 +57,30 @@ test('JSON backup contains all 157 original records',async({page})=>{
   const data=JSON.parse(Buffer.concat(chunks).toString());expect(Array.isArray(data)?data:data.clients).toHaveLength(157);
 });
 
+test('CSV import and export preserve the 157 existing records and quoted fields',async({page})=>{
+  const original=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1')));
+  page.on('dialog',dialog=>dialog.dismiss());
+  await page.locator('.tabs [data-tab="dados"]').click();
+  const csv='Nome;Endereço;Cidade;CEP;Latitude;Longitude;Observações\r\n"CLIENTE KIT ""A""";Rua de Teste 10;Natal;59000000;-5.811;-35.222;"Rota A; conferir portaria"\r\nCLIENTE KIT B;Rua de Teste 20;Natal;59000001;;;Sem coordenadas';
+  await page.locator('#sheetFile').setInputFiles({name:'carteira-kit.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
+  await expect(page.locator('#importStatus')).toContainText('2 importados com todas as colunas preservadas');
+  await expect(page.locator('#total')).toHaveText('159');
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1')));
+  expect(saved.slice(0,157)).toEqual(original);
+  expect(saved[157].name).toBe('CLIENTE KIT "A"');
+  expect(saved[157].lat).toBe(-5.811);
+  expect(saved[157].importFields).toContainEqual({label:'Observações',value:'Rota A; conferir portaria'});
+  expect(saved[158].lat).toBeNull();
+  await page.locator('.traxio-data-expand').nth(1).locator('summary').click();
+  const pending=page.waitForEvent('download');await page.locator('#exportCSV').click();
+  const download=await pending,stream=await download.createReadStream(),chunks=[];
+  for await(const chunk of stream)chunks.push(chunk);
+  const exported=Buffer.concat(chunks).toString();
+  expect(exported).toContain('"CLIENTE KIT ""A"""');
+  expect(exported).toContain('"CLIENTE KIT B"');
+  expect(exported.split('\r\n')).toHaveLength(160);
+});
+
 test('pin adjustment returns to the editor and keeps the unsaved client',async({page})=>{
   await page.evaluate(()=>{const rows=JSON.parse(localStorage.getItem('projeto_rota_mapa_v1'));rows[0].lat=-5.795;rows[0].lon=-35.211;localStorage.setItem('projeto_rota_mapa_v1',JSON.stringify(rows));});
   await page.reload();await page.locator('body.traxio-ui-ready').waitFor();
