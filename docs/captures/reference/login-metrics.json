@@ -29,7 +29,7 @@
       "x": 710,
       "y": 141.984375,
       "w": 600,
-      "h": 906.78125
+      "h": 875.578125
     },
     "hero": {
       "x": 330.1875,
@@ -39,8 +39,8 @@
     }
   },
   "metrics": {
-    "meanAbsoluteRGBError": 17.628175097019813,
-    "pixelsDifferingOver24": 0.14257842031193663,
+    "meanAbsoluteRGBError": 11.49806968368245,
+    "pixelsDifferingOver24": 0.09784540411030601,
     "identical": false
   }
 }

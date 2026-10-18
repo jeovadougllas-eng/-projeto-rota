@@ -4,7 +4,7 @@ As mesmas referências PNG e proporções foram usadas nas duas execuções. Uma
 
 | Tela | Antes do kit | Depois do kit | Variação |
 | --- | ---: | ---: | ---: |
-| login | 12.99 | 17.63 | 4.63 |
+| login | 12.99 | 11.50 | -1.50 |
 | painel | 20.63 | 21.27 | 0.64 |
 | clientes | 18.99 | 19.20 | 0.21 |
 | mapa | 33.10 | 31.88 | -1.23 |
