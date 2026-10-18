@@ -19,3 +19,17 @@ jobs:
           node-version: 22
       - name: Probe existing public providers with a small diagnostic sample
         run: node scripts/geolocation-probe.mjs
+      - name: Validate address evidence, route batching and provider security
+        run: npm run test:geolocation
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify import, geocoding, route generation and GPS deviations
+        run: npm test -- --project=desktop-light tests/geolocation.spec.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: traxio-geolocation-review
+          retention-days: 14
+          path: |
+            test-results/
+            playwright-report/

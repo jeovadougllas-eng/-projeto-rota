@@ -52,6 +52,7 @@ if(new URLSearchParams(location.search).has('code'))document.documentElement.cla
 </details>
 </div></section>
 </main><div id="traxioNavOverlay" class="traxio-nav-overlay" hidden><div class="traxio-nav-top"><strong>Traxio · Navegação</strong><div class="traxio-nav-actions"><button id="traxioNavMinimize" type="button" aria-label="Minimizar mapa">▣ Minimizar</button><button id="traxioNavClose" type="button" aria-label="Fechar mapa ampliado">✕</button></div></div><div id="traxioNavMapHost" class="traxio-nav-map-host"></div><div id="traxioNavControls" class="traxio-nav-controls"></div></div><button id="traxioNavExpand" class="traxio-nav-expand" type="button" hidden>↗ Ampliar navegação</button><dialog id="clientDialog" class="detail-dialog"><div class="detail-inner"><div id="clientDetail"></div><div class="detail-actions"><button id="detailMap">Ver no mapa</button><button class="secondary" id="detailEdit">Editar cadastro</button><button class="secondary" id="detailClose">Fechar</button></div></div></dialog><footer>Projeto Rota · Protótipo de validação, não APK e não navegador automotivo</footer>
+<script src="assets/traxio-geolocation.js"></script>
 <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js"></script>
@@ -66,7 +67,7 @@ const valid=(a,b)=>Number.isFinite(a)&&Number.isFinite(b)&&Math.abs(a)<=90&&Math
 const num=v=>{if(v==null||String(v).trim()==='')return null;const n=Number(String(v).replace(',','.'));return Number.isFinite(n)?n:null};
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const uid=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random();
-function switchTab(id){if(id==='rotas')id='mapa';document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===id));if(id==='mapa')setTimeout(()=>{initMap();map?.resize();renderMarkers();updateMapSelection();if(adjustingPin)showDraftMarker();renderWorkspace()},150)}
+function switchTab(id){if(id==='rotas')id='mapa';document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===id));if(id==='mapa')setTimeout(()=>{queueSelectedGeocode();initMap();map?.resize();renderMarkers();updateMapSelection();if(adjustingPin)showDraftMarker();renderWorkspace()},150)}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 let mapErro=false;
 function initMap(){
@@ -76,7 +77,7 @@ function initMap(){
   map.addControl(new maplibregl.NavigationControl(),'top-right');
   map.on('load',()=>{$('mapStatus').textContent='Mapa inicializado. Aguardando o carregamento dos dados cartográficos do OpenFreeMap…';renderMarkers();updateMapSelection();if(adjustingPin)showDraftMarker()});
   map.on('idle',()=>{if(!mapErro)$('mapStatus').textContent='Mapa renderizado · OpenFreeMap / OpenStreetMap.'});
-  map.on('click',e=>{if(window.traxioAvulsoPicking){window.traxioAvulsoSet?.(e.lngLat.lat,e.lngLat.lng);return}if(adjustingPin){setDraft(e.lngLat.lat,e.lngLat.lng,false);$('mapStatus').textContent='Ponto ajustado. Arraste o marcador laranja para refinar ou confirme para voltar ao cadastro.'}else{$('mapStatus').textContent='Para alterar o ponto, abra Clientes e toque em Ajustar ponto no mapa.'}});
+  map.on('click',e=>{if(window.traxioAvulsoPicking){window.traxioAvulsoSet?.(e.lngLat.lat,e.lngLat.lng);return}if(adjustingPin){selectedPrecision='manual';setDraft(e.lngLat.lat,e.lngLat.lng,false);$('mapStatus').textContent='Ponto ajustado. Arraste o marcador laranja para refinar ou confirme para voltar ao cadastro.'}else{$('mapStatus').textContent='Para alterar o ponto, abra Clientes e toque em Ajustar ponto no mapa.'}});
   map.on('error',e=>{mapErro=true;const msg=e?.error?.message||'Falha de rede';$('mapStatus').textContent='Falha ao carregar o mapa: '+msg+'. Confira a conexão ou teste em uma página HTTPS.'});
  }catch(e){$('mapStatus').textContent='Erro ao iniciar mapa: '+e.message}
 }
@@ -99,76 +100,41 @@ $('adjustPin').onclick=()=>{
  if(!valid(lat,lon)){$('saveStatus').textContent='Primeiro escolha uma sugestão de endereço para obter um ponto inicial.';return}
  adjustingPin=true;document.body.classList.add('pin-mode');switchTab('mapa');$('mapStatus').textContent='Arraste o marcador laranja ou toque no mapa para ajustar. Depois toque em Confirmar ponto.';
 };
-$('backToClient').onclick=()=>{adjustingPin=false;document.body.classList.remove('pin-mode');switchTab('clientes');$('saveStatus').textContent='Ponto confirmado no mapa. Confira os dados e salve o cliente.'};
+$('backToClient').onclick=()=>{if(valid(num($('lat').value),num($('lon').value)))selectedPrecision='manual';adjustingPin=false;document.body.classList.remove('pin-mode');switchTab('clientes');$('saveStatus').textContent='Ponto confirmado no mapa. Confira os dados e salve o cliente.'};
 // Busca assistida: pontos candidatos NÃO são gravados nem usados na rota sem confirmação.
 const geoCandidates=new Map(),geoInFlight=new Set(),geoScheduled=new Set();
-let geoQueue=Promise.resolve(),geoLastCall=0;
-function clientGeoQuery(c){
- const r=regionParts(c),raw=String(c.address||'');
- const street=raw.split(',')[0].trim();
- const house=raw.match(/(?:^|,)\s*(?:N[º°o.]?\s*)?(\d{1,6}[A-Za-z]?)\b/i)?.[1]||'';
- return {street,house,city:r.city||raw.split(',').at(-1)?.trim()||'',district:r.district||''};
-}
-function geoConfidence(feature,query){
- const p=feature.properties||{};
- const city=norm(query.city),foundCity=norm(p.city||p.county||'');
- const stripRoad=v=>norm(v).replace(/^(rua|avenida|av|travessa|tv|praca|rodovia)/,'');
- const street=stripRoad(query.street),foundStreet=stripRoad(p.street||p.name||'');
- const house=String(query.house||'').replace(/\D/g,''),foundHouse=String(p.housenumber||'').replace(/\D/g,'');
- if(p.countrycode&&String(p.countrycode).toLowerCase()!=='br')return null;
- if(city&&foundCity&&city!==foundCity&&!foundCity.includes(city)&&!city.includes(foundCity))return null;
- if(!street||!foundStreet||!(street===foundStreet||street.includes(foundStreet)||foundStreet.includes(street)))return null;
- // Rua sem número nunca recebe o selo de localização precisa.
- return {score:(city&&foundCity?3:0)+(street===foundStreet?5:2)+(house&&foundHouse===house?6:0),
-  exactNumber:!!(house&&foundHouse===house),mismatchedNumber:!!(house&&foundHouse&&house!==foundHouse)};
-}
+let geoQueue=Promise.resolve();
+for(const c of clients)if(c.locationCandidate&&c.locationCandidate.fingerprint===JSON.stringify(TraxioGeo.parse(c)))geoCandidates.set(c.id,c.locationCandidate);
+function clientGeoQuery(c){return TraxioGeo.parse(c)}
+async function geoToken(){try{return (await authClient?.auth.getSession())?.data?.session?.access_token}catch{return null}}
 async function geocodeOneSelected(c){
  if(valid(c.lat,c.lon)||geoCandidates.has(c.id)||geoInFlight.has(c.id))return;
  geoInFlight.add(c.id);updateMapSelection();
- const q=clientGeoQuery(c);
+ const fingerprint=JSON.stringify(TraxioGeo.parse(c));
  try{
-  if(q.street.length<4)throw Error('Rua incompleta');
-  // Uma consulta por cliente, serializada e com intervalo para não abusar do serviço público.
-  const delay=Math.max(0,1700-(Date.now()-geoLastCall));
-  if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
-  geoLastCall=Date.now();
-  const textQuery=[q.street,q.house,q.district,q.city,'Rio Grande do Norte','Brasil'].filter(Boolean).join(', ');
-  const url='https://photon.komoot.io/api/?limit=8&lang=pt&q='+encodeURIComponent(textQuery);
-  const response=await fetch(url,{signal:AbortSignal.timeout(16000)});
-  if(!response.ok)throw Error('Busca temporariamente indisponível ('+response.status+')');
-  const data=await response.json();
-  const ranked=(data.features||[]).map(f=>({f,match:geoConfidence(f,q)}))
-   .filter(x=>x.match&&!x.match.mismatchedNumber&&valid(x.f.geometry?.coordinates?.[1],x.f.geometry?.coordinates?.[0]))
-   .sort((a,b)=>b.match.score-a.match.score);
-  if(!ranked.length)throw Error('Nenhuma correspondência confiável');
-  const best=ranked[0],coords=best.f.geometry.coordinates;
-  // Resultado com rua, cidade e número correspondentes: salvar automaticamente.
-  // Se o provedor não identificar o número, não inventar precisão.
-  const runnerUp=ranked[1];
-  const safe=best.match.exactNumber && best.match.score>=12 &&
-   (!runnerUp || !runnerUp.match.exactNumber ||
-    (Math.abs(runnerUp.f.geometry.coordinates[0]-coords[0])<0.0001 && Math.abs(runnerUp.f.geometry.coordinates[1]-coords[1])<0.0001));
-  if(safe){
-   const current=clients.find(x=>x.id===c.id);
-   if(current && !valid(current.lat,current.lon)){
-    current.lat=coords[1];current.lon=coords[0];
-    current.locationVerification='automatic_housenumber';
-    current.locationSource='photon_osm';
-    current.locationMatchedAt=new Date().toISOString();
-    geoCandidates.delete(c.id);
-    save();
-   }
-  }else{
-   geoCandidates.set(c.id,{error:'O serviço não encontrou o número do imóvel com segurança. Localização não atribuída.'});
-  }
+  const result=await TraxioGeo.locate(c,{token:await geoToken()});
+  const current=clients.find(x=>x.id===c.id);
+  // Editing or deleting a client while a lookup runs invalidates its result.
+  if(!current||valid(current.lat,current.lon)||JSON.stringify(TraxioGeo.parse(current))!==fingerprint)return;
+  if(result.status==='matched'){
+   const point=result.best;current.lat=point.lat;current.lon=point.lon;
+   current.locationVerification='automatic_housenumber';current.locationSource=point.provider;
+   current.locationMatchedAt=new Date().toISOString();current.locationEvidence={...point,query:result.query};
+   delete current.locationCandidate;geoCandidates.delete(c.id);save();
+  }else if(result.best){
+   const candidate={...result.best,error:result.reason,query:result.query,fingerprint};
+   current.locationCandidate=candidate;geoCandidates.set(c.id,candidate);save();
+  }else{geoCandidates.set(c.id,{error:'Endereço não encontrado. Confira rua, número, cidade, UF e CEP.'})}
  }catch(e){geoCandidates.set(c.id,{error:e.message||'Busca indisponível'});}
  finally{geoInFlight.delete(c.id);geoScheduled.delete(c.id);updateMapSelection();renderWorkspace()}
 }
-function queueSelectedGeocode(){
- const pending=clients.filter(c=>selectedIds.has(c.id)&&!valid(c.lat,c.lon)&&!geoCandidates.has(c.id)&&!geoInFlight.has(c.id)&&!geoScheduled.has(c.id));
- // Fila serial para todos os selecionados, sem limite arbitrário de cinco por ação.
- for(const c of pending){geoScheduled.add(c.id);geoQueue=geoQueue.then(()=>selectedIds.has(c.id)?geocodeOneSelected(c):null).catch(()=>{}).finally(()=>geoScheduled.delete(c.id));}
+function queueClientGeocode(ids){
+ const requested=new Set(ids);
+ const pending=clients.filter(c=>requested.has(c.id)&&!valid(c.lat,c.lon)&&!geoCandidates.has(c.id)&&!geoInFlight.has(c.id)&&!geoScheduled.has(c.id));
+ for(const c of pending){geoScheduled.add(c.id);geoQueue=geoQueue.then(()=>geocodeOneSelected(c)).catch(()=>{}).finally(()=>geoScheduled.delete(c.id));}
+ return geoQueue;
 }
+function queueSelectedGeocode(){return queueClientGeocode(selectedIds)}
 function renderMarkers(){
  if(!map)return;
  markers.forEach(m=>m.remove());markers=[];
@@ -181,7 +147,7 @@ function renderMarkers(){
   markers.push(marker);
  });
  // Candidatos em laranja: pontos sugeridos, não confirmados.
- clients.filter(c=>selectedIds.has(c.id)&&!valid(c.lat,c.lon)&&geoCandidates.get(c.id)?.lat).forEach(c=>{
+ clients.filter(c=>selectedIds.has(c.id)&&!valid(c.lat,c.lon)&&valid(geoCandidates.get(c.id)?.lat,geoCandidates.get(c.id)?.lon)).forEach(c=>{
   const candidate=geoCandidates.get(c.id);
   const el=document.createElement('button');el.type='button';el.className='traxio-route-pin';
   el.style.background='#f59e0b';el.style.border='3px dashed #fff';el.textContent='?';
@@ -196,7 +162,7 @@ function updateMapSelection(){
  const missing=clients.filter(c=>selectedIds.has(c.id)&&!valid(c.lat,c.lon)).length;
  const located=clients.filter(c=>selectedIds.has(c.id)&&valid(c.lat,c.lon));
  const el=$('mapSelectionStatus');
- if(el){const suggestions=clients.filter(c=>selectedIds.has(c.id)&&!valid(c.lat,c.lon)&&geoCandidates.get(c.id)?.lat).length;
+ if(el){const suggestions=clients.filter(c=>selectedIds.has(c.id)&&!valid(c.lat,c.lon)&&valid(geoCandidates.get(c.id)?.lat,geoCandidates.get(c.id)?.lon)).length;
  const searching=clients.filter(c=>selectedIds.has(c.id)&&geoInFlight.has(c.id)).length;
  el.textContent=located.length+' localizados no mapa · '+suggestions+' sugestões'+(missing?' · '+missing+' sem confirmação':'')+(searching?' · '+searching+' buscando':'');}
  const visible=clients.filter(c=>selectedIds.has(c.id)).map(c=>valid(c.lat,c.lon)?{lat:c.lat,lon:c.lon}:geoCandidates.get(c.id)).filter(p=>valid(p?.lat,p?.lon));
@@ -224,56 +190,23 @@ async function searchAddress(){
  if(base.length<3){box.textContent='Digite pelo menos 3 caracteres.';return}
  const seq=++searchSequence;searchController?.abort();searchController=new AbortController();
  box.textContent='Buscando pontos no mapa…';
- const client=editingClientId?clients.find(c=>c.id===editingClientId):null;
- const region=client?regionParts(client):{city:'',neighborhood:''};
- const zip=$('cep').value.replace(/\D/g,'');
- const clean=base.replace(/\s*·\s*n[ºo.]?\s*\d+[a-z]?/ig,'').replace(/\s*·\s*[^·]+$/,'').trim();
- const city=region.city||'',district=region.neighborhood||'';
- const locality=[district,city,'RN','Brasil'].filter(Boolean).join(', ');
- const queries=[
-  [clean,house&&'nº '+house,locality].filter(Boolean).join(', '),
-  [clean,locality].filter(Boolean).join(', '),
-  [clean,city||'RN','Brasil'].filter(Boolean).join(', ')
- ].filter((v,i,a)=>a.indexOf(v)===i);
+ const original=editingClientId?clients.find(c=>c.id===editingClientId):null;
+ const region=original?TraxioGeo.parse(original):{};
+ // Form edits take precedence over imported columns and old lookup evidence.
+ const request={address:base+(house?', '+house:''),houseNumber:house,cep:$('cep').value,city:region.city||'',state:region.state||'',neighborhood:region.district||''};
  try{
-  let features=[];
-  for(const query of queries){
-   const url='https://photon.komoot.io/api/?limit=12&lang=pt&q='+encodeURIComponent(query);
-   const response=await fetch(url,{signal:searchController.signal});
-   if(!response.ok)throw Error('Serviço indisponível ('+response.status+')');
-   const data=await response.json();if(seq!==searchSequence)return;
-   features=(data.features||[]).filter(f=>{
-    const p=f.properties||{},xy=f.geometry?.coordinates;
-    if(!xy||!valid(xy[1],xy[0]))return false;
-    if(p.countrycode&&String(p.countrycode).toLowerCase()!=='br')return false;
-    if(city&&p.city&&norm(p.city)!==norm(city)&&!norm(p.city).includes(norm(city)))return false;
-    return true;
-   });
-   if(features.length)break;
-  }
+  const result=await TraxioGeo.locate(request,{signal:searchController.signal,token:await geoToken()});
   if(seq!==searchSequence)return;box.replaceChildren();
-  if(!features.length){box.textContent='Nenhum ponto confiável encontrado para esta cidade. Confira rua, número e cidade ou ajuste manualmente o marcador a partir de um ponto conhecido.';return}
-  const intro=document.createElement('p');intro.className='muted';intro.textContent='Confira a cidade, a rua e o número. Escolher um resultado NÃO confirma a entrada da loja: ajuste o marcador no mapa.';box.append(intro);
-  const ranked=features.map(f=>{
-   const p=f.properties||{},numberMatch=!!(house&&p.housenumber&&norm(p.housenumber)===norm(house));
-   const streetMatch=!!(p.street&&(norm(clean).includes(norm(p.street))||norm(p.street).includes(norm(clean))));
-   const districtMatch=!!(district&&p.district&&norm(p.district)===norm(district));
-   return {f,p,numberMatch,score:(numberMatch?8:0)+(streetMatch?4:0)+(districtMatch?2:0)-(house&&p.housenumber&&!numberMatch?15:0)};
-  }).sort((a,b)=>b.score-a.score);
-  for(const item of ranked.slice(0,8)){
-   const {f,p,numberMatch}=item,coords=f.geometry.coordinates;
-   const title=[p.name,p.housenumber,p.street,p.district,p.city,p.state].filter(Boolean).join(', ');
-   const b=document.createElement('button');b.type='button';b.className='secondary';
-   b.textContent=(numberMatch?'Número compatível (verificar) · ':'Endereço não confirmado (verificar) · ')+(title||'Ponto sem descrição');
-   b.onclick=()=>{
-    selectedPrecision='approx';setDraft(coords[1],coords[0]);
-    box.replaceChildren();box.textContent='Ponto provisório encontrado. Abra “Ajustar ponto no mapa”, posicione o marcador na entrada da loja e confirme antes de salvar.';
-    $('saveStatus').textContent=box.textContent;
-   };box.append(b);
+  if(!result.candidates.length){box.textContent='Nenhum ponto encontrado. Confira cidade, UF e CEP; você também pode informar coordenadas ou usar o GPS no local.';return}
+  const intro=document.createElement('p');intro.className='muted';intro.textContent='Escolha uma sugestão e confira a entrada do cliente no mapa. Um resultado de rua não identifica o imóvel.';box.append(intro);
+  for(const point of result.candidates){
+   const button=document.createElement('button');button.type='button';button.className='secondary';
+   button.textContent=(point.confidence==='address'?'Rua e número compatíveis · ':'Ponto aproximado da rua · ')+point.label;
+   button.onclick=()=>{selectedPrecision='approx';setDraft(point.lat,point.lon);box.replaceChildren();box.textContent='Sugestão selecionada. Confira ou ajuste o ponto no mapa e confirme antes de salvar.';$('saveStatus').textContent=box.textContent;};box.append(button);
   }
- }catch(e){if(e.name==='AbortError'||seq!==searchSequence)return;box.textContent='Busca indisponível: '+e.message+'. Tente novamente.'}
+ }catch(e){if(e.name==='AbortError'||seq!==searchSequence)return;box.textContent='Busca indisponível: '+e.message;}
 }
-$('saveClient').onclick=()=>{const name=$('name').value.trim(),lat=num($('lat').value),lon=num($('lon').value);if(!name){$('saveStatus').textContent='Informe o nome.';return}if(lat!==null&&selectedPrecision!=='manual'&&!confirm('A busca fornece um ponto aproximado. Você conferiu a posição EXATA da entrada da loja no mapa? Se não, cancele e use Ajustar ponto no mapa.'))return;if((lat===null)!==(lon===null)||lat!==null&&!valid(lat,lon)){$('saveStatus').textContent='Informe ambas as coordenadas válidas ou deixe as duas vazias.';return}const original=editingClientId?clients.find(c=>c.id===editingClientId):null;const record={...(original||{}),id:editingClientId||uid(),name,address:[$('address').value.trim(),$('houseNumber').value.trim()?'nº '+$('houseNumber').value.trim():'',$('complement').value.trim()].filter(Boolean).join(' · '),cep:$('cep').value.trim(),lat,lon,locationVerification:lat!==null?(selectedPrecision==='manual'?'manual_reviewed':selectedPrecision==='number'?'unverified':(original?.locationVerification||'unverified')):'pending',priority:Number($('priority').value)};if(editingClientId){const i=clients.findIndex(c=>c.id===editingClientId);if(i>=0)clients[i]=record;else clients.push(record)}else clients.push(record);editingClientId=null;save();$('name').value='';$('address').value='';$('houseNumber').value='';$('complement').value='';$('cep').value='';$('lat').value='';$('lon').value='';$('saveStatus').textContent='Cliente salvo.';draftMarker?.remove();draftMarker=null};
+$('saveClient').onclick=()=>{const name=$('name').value.trim(),lat=num($('lat').value),lon=num($('lon').value);if(!name){$('saveStatus').textContent='Informe o nome.';return}if(lat!==null&&selectedPrecision!=='manual'&&!confirm('A busca fornece um ponto aproximado. Você conferiu a posição EXATA da entrada da loja no mapa? Se não, cancele e use Ajustar ponto no mapa.'))return;if((lat===null)!==(lon===null)||lat!==null&&!valid(lat,lon)){$('saveStatus').textContent='Informe ambas as coordenadas válidas ou deixe as duas vazias.';return}const original=editingClientId?clients.find(c=>c.id===editingClientId):null;const record={...(original||{}),...(original?{city:regionParts(original).city,neighborhood:regionParts(original).district,state:TraxioGeo.parse(original).state}:{}),id:editingClientId||uid(),name,address:[$('address').value.trim(),$('houseNumber').value.trim()?'nº '+$('houseNumber').value.trim():'',$('complement').value.trim()].filter(Boolean).join(' · '),cep:$('cep').value.trim(),lat,lon,locationVerification:lat!==null?(selectedPrecision==='manual'?'manual_reviewed':selectedPrecision==='number'?'unverified':(original?.locationVerification||'unverified')):'pending',priority:Number($('priority').value)};if(editingClientId){const i=clients.findIndex(c=>c.id===editingClientId);if(i>=0)clients[i]=record;else clients.push(record)}else clients.push(record);if(original&&original.address!==record.address){record.geocodingAddressOverride=record.address;record.houseNumber=$('houseNumber').value.trim();}delete record.locationCandidate;geoCandidates.delete(record.id);if(original&&(original.lat!==lat||original.lon!==lon||original.address!==record.address))delete record.locationEvidence;editingClientId=null;save();$('name').value='';$('address').value='';$('houseNumber').value='';$('complement').value='';$('cep').value='';$('lat').value='';$('lon').value='';$('saveStatus').textContent='Cliente salvo.';draftMarker?.remove();draftMarker=null};
 function render(){const previousSelection=new Set(selectedIds);const located=clients.filter(c=>valid(c.lat,c.lon));$('total').textContent=clients.length;$('located').textContent=located.length;$('pending').textContent=clients.length-located.length;const list=$('clientList'),choices=$('routeChoices');list.replaceChildren();choices.replaceChildren();if(!clients.length)list.textContent='Nenhum cliente cadastrado.';for(const c of clients){const div=document.createElement('div');div.className='item';const name=document.createElement('strong');name.textContent=c.name;const detail=document.createElement('div');detail.className='muted';detail.textContent=(c.address||'Endereço não informado')+' · '+(valid(c.lat,c.lon)?(c.locationVerification==='manual_reviewed'?'Ponto confirmado':'Ponto localizado automaticamente'):'Pendente de localização');const actions=document.createElement('div');actions.className='row';const show=document.createElement('button');show.className='secondary';show.textContent='Ver no mapa';show.disabled=!valid(c.lat,c.lon);show.onclick=()=>{switchTab('mapa');setTimeout(()=>map?.flyTo({center:[c.lon,c.lat],zoom:16}),150)};const edit=document.createElement('button');edit.className='secondary';edit.textContent='Localizar / editar';edit.onclick=()=>{switchTab('clientes');$('name').value=c.name;$('address').value=c.address||'';$('houseNumber').value='';$('complement').value='';$('cep').value=c.cep||'';$('lat').value=c.lat??'';$('lon').value=c.lon??'';$('priority').value=c.priority||2;editingClientId=c.id;$('saveStatus').textContent='Editando cadastro: altere os dados e toque em Salvar cliente. O registro original será preservado até salvar.'};const del=document.createElement('button');del.className='secondary';del.textContent='Excluir';del.onclick=()=>{if(confirm('Excluir '+c.name+'?')){clients=clients.filter(x=>x.id!==c.id);save()}};actions.append(show,edit,del);div.append(name,detail,actions);list.append(div);if(valid(c.lat,c.lon)){const label=document.createElement('label');label.className='item';const check=document.createElement('input');check.type='checkbox';check.value=c.id;check.checked=!selectionInitialized||previousSelection.has(c.id);check.onchange=()=>{selectionInitialized=true;if(check.checked)selectedIds.add(c.id);else selectedIds.delete(c.id);renderWorkspace();updateSelectedCount()};check.style.width='auto';check.style.marginRight='8px';label.append(check,document.createTextNode(c.name));choices.append(label)}}if(!selectionInitialized){selectedIds=new Set();selectionInitialized=true}selectedIds=new Set([...selectedIds].filter(id=>clients.some(c=>c.id===id)));choices.querySelectorAll('input').forEach(x=>x.checked=selectedIds.has(x.value));renderMarkers();renderWorkspace();renderDashboard();updateRegionOptions();updateSelectedCount();updateMapSelection()}
 const rad=n=>n*Math.PI/180;
 function km(a,b){const dlat=rad(b.lat-a.lat),dlon=rad(b.lon-a.lon),q=Math.sin(dlat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dlon/2)**2;return 12742*Math.asin(Math.sqrt(q))}
@@ -327,13 +260,13 @@ function updateRegionSummary(){const city=$('regionCity');const label=city?.sele
 $('regionCity').onchange=e=>{regionCityValue=e.target.value;regionSelectedNeighborhoods.clear();updateRegionOptions();renderWorkspace()};
 $('regionClearNeighborhoods').onclick=()=>{regionSelectedNeighborhoods.clear();updateRegionOptions();renderWorkspace()};
 $('suggestToggle').onclick=()=>{$('strategyPanel').hidden=!$('strategyPanel').hidden};
-function clearRouteVisual(){if(map&&map.getLayer('route-line'))map.removeLayer('route-line');if(map&&map.getSource('route'))map.removeSource('route')}
+function clearRouteVisual(){routeGeo=null;window.traxioSetActiveGeometry?.(null);if(map&&map.getLayer('route-line'))map.removeLayer('route-line');if(map&&map.getSource('route'))map.removeSource('route')}
 $('clearRoute').onclick=()=>{lastRoute=null;clearRouteVisual();$('routeOrder').replaceChildren();$('routeResult').textContent='Trajeto limpo. Selecione os clientes e gere outra sugestão.';$('roadRoute').disabled=true};
 function showOrder(points){const root=$('routeOrder');root.replaceChildren();points.forEach((c,i)=>{const d=document.createElement('div');d.className='route-stop';const n=document.createElement('span');n.className='num';n.textContent=i+1;const label=document.createElement('span');label.className='name';label.textContent=c.name;const up=document.createElement('button');up.className='secondary';up.textContent='↑';up.title='Subir visita';up.disabled=i===0;up.onclick=()=>swapStops(i,i-1);const down=document.createElement('button');down.className='secondary';down.textContent='↓';down.title='Descer visita';down.disabled=i===points.length-1;down.onclick=()=>swapStops(i,i+1);d.append(n,label,up,down);root.append(d)})}
-function swapStops(a,b){if(!lastRoute)return;[lastRoute.points[a],lastRoute.points[b]]=[lastRoute.points[b],lastRoute.points[a]];showOrder(lastRoute.points);$('routeResult').textContent='Ordem ajustada manualmente. Toque em “Traçar pelas ruas” para recalcular a distância e o percurso.';$('roadRoute').disabled=false;clearRouteVisual()}
+function swapStops(a,b){if(!lastRoute)return;[lastRoute.points[a],lastRoute.points[b]]=[lastRoute.points[b],lastRoute.points[a]];showOrder(lastRoute.points);window.traxioBeginNavigation?.(lastRoute.points,null);$('routeResult').textContent='Ordem ajustada manualmente. Toque em “Traçar pelas ruas” para recalcular a distância e o percurso.';$('roadRoute').disabled=false;clearRouteVisual()}
 async function getStart(points){if($('origin').value==='gps')return await requestGPS();return points[0]}
 function displayRoadGeometry(geometry){
- window.traxioSetActiveGeometry?.(geometry);
+ routeGeo=geometry;window.traxioSetActiveGeometry?.(geometry);
  initMap();if(!map)return;
  const apply=()=>{
   const geo={type:'Feature',geometry,properties:{}};
@@ -344,33 +277,52 @@ function displayRoadGeometry(geometry){
  };
  if(map.isStyleLoaded())apply();else map.once('load',apply);
 }
-async function fetchRoadRoute(points){
- if(points.length>11)throw Error('O serviço gratuito de demonstração aceita no máximo 10 destinos por rota.');
- const coords=points.map(p=>p.lon+','+p.lat).join(';');
- const r=await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson',{signal:AbortSignal.timeout(22000)});
- if(!r.ok)throw Error('HTTP '+r.status);
- const data=await r.json();if(data.code!=='Ok'||!data.routes?.[0]?.geometry)throw Error('Trajeto rodoviário não encontrado');
- return data.routes[0];
+async function fetchRoadRoute(points,{signal}={}){
+ if(points.length<2)throw Error('Informe uma origem e um destino.');
+ let distance=0,duration=0,coordinates=[];
+ // Overlapping chunks retain every selected stop, including selections over 10 clients.
+ for(let offset=0;offset<points.length-1;offset+=59){
+  const part=points.slice(offset,offset+60),coords=part.map(p=>p.lon+','+p.lat).join(';');
+  const r=await fetch('https://router.project-osrm.org/route/v1/driving/'+coords+'?overview=full&geometries=geojson',{signal:signal?AbortSignal.any([signal,AbortSignal.timeout(22000)]):AbortSignal.timeout(22000)});
+  if(!r.ok)throw Error('HTTP '+r.status);
+  const data=await r.json(),road=data.routes?.[0];
+  if(data.code!=='Ok'||road?.geometry?.type!=='LineString'||road.geometry.coordinates.length<2||!Number.isFinite(road.distance)||!Number.isFinite(road.duration))throw Error('Trajeto rodoviário não encontrado');
+  coordinates.push(...road.geometry.coordinates.slice(offset?1:0));distance+=road.distance;duration+=road.duration;
+ }
+ return {geometry:{type:'LineString',coordinates},distance,duration};
 }
-
 function matrixHaversine(nodes){return nodes.map(a=>nodes.map(b=>km(a,b)*1000))}
-async function roadMatrix(nodes){if(nodes.length>11)throw Error('Limite de 10 clientes por sugestão no serviço público de teste. Reduza a seleção.');const coords=nodes.map(p=>p.lon+','+p.lat).join(';');const u='https://router.project-osrm.org/table/v1/driving/'+coords+'?annotations=distance,duration';const r=await fetch(u,{signal:AbortSignal.timeout(22000)});if(!r.ok)throw Error('HTTP '+r.status);const data=await r.json();if(data.code!=='Ok'||!data.distances)throw Error('Matriz rodoviária indisponível');return data.distances}
+async function roadMatrix(nodes){
+ const matrix=nodes.map(()=>nodes.map(()=>null));
+ const blocks=[];for(let i=0;i<nodes.length;i+=40)blocks.push(Array.from({length:Math.min(40,nodes.length-i)},(_,j)=>i+j));
+ for(const rows of blocks)for(const cols of blocks){
+  const indices=[...new Set([...rows,...cols])],coords=indices.map(i=>nodes[i].lon+','+nodes[i].lat).join(';');
+  const params='?annotations=distance&sources='+rows.map(i=>indices.indexOf(i)).join(';')+'&destinations='+cols.map(i=>indices.indexOf(i)).join(';');
+  const response=await fetch('https://router.project-osrm.org/table/v1/driving/'+coords+params,{signal:AbortSignal.timeout(22000)});
+  if(!response.ok)throw Error('HTTP '+response.status);const data=await response.json();
+  if(data.code!=='Ok'||!Array.isArray(data.distances)||data.distances.length!==rows.length||data.distances.some(row=>!Array.isArray(row)||row.length!==cols.length))throw Error('Matriz rodoviária indisponível');
+  rows.forEach((i,a)=>cols.forEach((j,b)=>{const v=data.distances[a][b];matrix[i][j]=Number.isFinite(v)&&v>=0?v:null;}));
+  if(blocks.length>1)await new Promise(r=>setTimeout(r,1000));
+ }
+ return matrix;
+}
 function pathCost(path,matrix){let cost=0;for(let i=1;i<path.length;i++)cost+=matrix[path[i-1]][path[i]]??1e12;return cost}
 function optimizeDistance(matrix){const n=matrix.length,remaining=new Set(Array.from({length:n-1},(_,i)=>i+1));let seq=[0],cur=0;while(remaining.size){let best=-1,score=Infinity;for(const j of remaining){const d=matrix[cur][j]??Infinity;if(d<score){best=j;score=d}}if(best<0)throw Error('Há locais sem ligação rodoviária na matriz.');seq.push(best);remaining.delete(best);cur=best}let improved=true;while(improved){improved=false;for(let i=1;i<seq.length-1;i++)for(let j=i+1;j<seq.length;j++){const candidate=seq.slice();candidate.splice(i,j-i+1,...seq.slice(i,j+1).reverse());if(pathCost(candidate,matrix)+1e-5<pathCost(seq,matrix)){seq=candidate;improved=true}}}return seq}
-function optimizeStrategy(nodes,matrix,strategy){const n=nodes.length;if(strategy==='distance')return optimizeDistance(matrix);const remaining=new Set(Array.from({length:n-1},(_,i)=>i+1));let seq=[0],cur=0;const dist=matrix.flat().filter(x=>Number.isFinite(x)&&x>0).sort((a,b)=>a-b);const scale=dist[Math.floor(dist.length/2)]||3000;while(remaining.size){let best=-1,score=Infinity;for(const j of remaining){const p=Number(nodes[j].priority)||2;const d=matrix[cur][j]??1e12;const penalty=(3-p)*(strategy==='priority'?scale*2.5:scale*.65);const val=d+penalty;if(val<score){score=val;best=j}}seq.push(best);remaining.delete(best);cur=best}return seq}
+function optimizeStrategy(nodes,matrix,strategy){const n=nodes.length;if(strategy==='distance')return optimizeDistance(matrix);const remaining=new Set(Array.from({length:n-1},(_,i)=>i+1));let seq=[0],cur=0;const dist=matrix.flat().filter(x=>Number.isFinite(x)&&x>0).sort((a,b)=>a-b);const scale=dist[Math.floor(dist.length/2)]||3000;while(remaining.size){let best=-1,score=Infinity;for(const j of remaining){const p=Number(nodes[j].priority)||2;if(strategy==='priority'&&p<Math.max(...[...remaining].map(k=>Number(nodes[k].priority)||2)))continue;const d=matrix[cur][j]??Infinity;if(!Number.isFinite(d))continue;const penalty=(3-p)*(strategy==='priority'?scale*2.5:scale*.65);const val=d+penalty;if(val<score){score=val;best=j}}if(best<0)throw Error('Há clientes sem ligação rodoviária na seleção.');seq.push(best);remaining.delete(best);cur=best}return seq}
 function routeSummary(nodes,matrix,indices,mode){const distance=pathCost(indices,matrix);const text=Number.isFinite(distance)?(distance/1000).toFixed(1)+' km':'distância indisponível';return 'Sugestão '+mode+': '+text+' de percurso estimado entre as paradas. Confira o trajeto por ruas antes de dirigir.'}
-async function makeRoute(strategy){if(routeBusy)return;const points=selectedClients();if(selectedAllClients().length>points.length){$('routeResult').textContent='Existem '+(selectedAllClients().length-points.length)+' cliente(s) selecionado(s) sem localização confiável. A busca automática não identificou o número do imóvel para todos.';return}if(!points.length){$('routeResult').textContent=selectedAllClients().length?'Você selecionou '+selectedAllClients().length+' cliente(s), mas nenhum possui coordenadas confiáveis. A localização automática está pendente ou não encontrou o número exato.':'Selecione pelo menos um cliente.';return}routeBusy=true;$('generateSuggestion').disabled=true;$('calcRoute').disabled=true;$('routeResult').textContent='Calculando sequência de visitas…';try{const start=await getStart(points);const nodes=[start,...points.filter(p=>p!==start)];if(nodes.length<2){lastRoute={start,points};showOrder(points);$('routeResult').textContent='Um único cliente selecionado. Para traçar o percurso, escolha “Minha localização” como origem.';$('roadRoute').disabled=true;return}let matrix,mode='por ruas';try{matrix=await roadMatrix(nodes)}catch(err){throw Error('Serviço de distâncias por ruas indisponível. Rota não calculada para evitar percurso enganoso.')}const seq=optimizeStrategy(nodes,matrix,strategy);const arranged=seq.slice(1).map(i=>nodes[i]);lastRoute={start,points:arranged};showOrder(arranged);window.traxioBeginNavigation?.(arranged);$('roadRoute').disabled=false;$('routeResult').textContent=routeSummary(nodes,matrix,seq,mode);try{const road=await fetchRoadRoute([start,...arranged]);displayRoadGeometry(road.geometry);$('routeResult').textContent='Trajeto por ruas: '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados. Sequência organizada pelo critério escolhido; sem trânsito em tempo real.';window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:arranged.map(c=>c.name),strategy,at:new Date().toISOString()};window.traxioShowSaveTrip?.()}catch(roadError){clearRouteVisual();$('routeResult').textContent='Ordem das visitas calculada, mas não foi possível desenhar o trajeto pelas ruas: '+roadError.message+'. Tente novamente mais tarde.'}}catch(e){$('routeResult').textContent='Não foi possível sugerir a rota: '+e.message}finally{routeBusy=false;$('generateSuggestion').disabled=false;$('calcRoute').disabled=false}}
+let routeLookupBusy=false;
+async function makeRoute(strategy){if(routeBusy||routeLookupBusy)return;if(selectedAllClients().some(c=>!valid(c.lat,c.lon))){routeLookupBusy=true;$('routeResult').textContent='Localizando os clientes selecionados…';try{await queueSelectedGeocode();}finally{routeLookupBusy=false}}const points=selectedClients();if(selectedAllClients().length>points.length){$('routeResult').textContent='Existem '+(selectedAllClients().length-points.length)+' cliente(s) selecionado(s) sem localização confiável. Abra a lista de clientes e toque em Conferir pin sugerido para confirmar os pontos pendentes.';return}if(!points.length){$('routeResult').textContent=selectedAllClients().length?'Você selecionou '+selectedAllClients().length+' cliente(s), mas nenhum possui coordenadas confiáveis. A localização automática está pendente ou não encontrou o número exato.':'Selecione pelo menos um cliente.';return}routeBusy=true;$('generateSuggestion').disabled=true;$('calcRoute').disabled=true;$('routeResult').textContent='Calculando sequência de visitas…';try{const start=await getStart(points);const nodes=[start,...points.filter(p=>p!==start)];if(nodes.length<2){lastRoute={start,points};showOrder(points);$('routeResult').textContent='Um único cliente selecionado. Para traçar o percurso, escolha “Minha localização” como origem.';$('roadRoute').disabled=true;return}let matrix,mode='por ruas';try{matrix=await roadMatrix(nodes)}catch(err){throw Error('Serviço de distâncias por ruas indisponível. Rota não calculada para evitar percurso enganoso.')}const seq=optimizeStrategy(nodes,matrix,strategy);const arranged=seq.slice(1).map(i=>nodes[i]);lastRoute={start,points:arranged};showOrder(arranged);window.traxioBeginNavigation?.(arranged,null);$('roadRoute').disabled=false;$('routeResult').textContent=routeSummary(nodes,matrix,seq,mode);try{const road=await fetchRoadRoute([start,...arranged]);displayRoadGeometry(road.geometry);$('routeResult').textContent='Trajeto por ruas: '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados. Sequência organizada pelo critério escolhido; sem trânsito em tempo real.';window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:arranged.map(c=>c.name),strategy,at:new Date().toISOString()};window.traxioShowSaveTrip?.()}catch(roadError){clearRouteVisual();$('routeResult').textContent='Ordem das visitas calculada, mas não foi possível desenhar o trajeto pelas ruas: '+roadError.message+'. Tente novamente mais tarde.'}}catch(e){$('routeResult').textContent='Não foi possível sugerir a rota: '+e.message}finally{routeBusy=false;$('generateSuggestion').disabled=false;$('calcRoute').disabled=false}}
 $('calcRoute').onclick=()=>makeRoute('distance');
 $('generateSuggestion').onclick=()=>makeRoute(document.querySelector('input[name="routeStrategy"]:checked')?.value||'distance');
 $('roadRoute').onclick=async()=>{
  if(!lastRoute)return;
  $('routeResult').textContent='Atualizando trajeto pelas ruas…';
- try{const road=await fetchRoadRoute([lastRoute.start,...lastRoute.points]);displayRoadGeometry(road.geometry);
+ try{const road=await fetchRoadRoute([lastRoute.start,...lastRoute.points]);displayRoadGeometry(road.geometry);window.traxioBeginNavigation?.(lastRoute.points,road.geometry);
  $('routeResult').textContent='Trajeto por ruas: '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados. Sem trânsito em tempo real.';window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:lastRoute.points.map(c=>c.name),strategy:'distance',at:new Date().toISOString()};window.traxioShowSaveTrip?.();
  }catch(e){clearRouteVisual();$('routeResult').textContent='Não foi possível traçar pelas ruas: '+e.message}
 };
 function parseCSV(text){text=text.replace(/^\uFEFF/,'');const first=text.split(/\r?\n/).find(Boolean)||'';const delim=(first.match(/;/g)||[]).length>=(first.match(/,/g)||[]).length?';':',';const rows=[];let row=[],value='',quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'){if(quoted&&text[i+1]==='"'){value+='"';i++}else quoted=!quoted}else if(ch===delim&&!quoted){row.push(value);value=''}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(value);if(row.some(x=>x.trim()))rows.push(row);row=[];value=''}else value+=ch}if(quoted)throw Error('CSV com aspas incompletas');row.push(value);if(row.some(x=>x.trim()))rows.push(row);return rows}
-$('sheetFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>8_000_000)throw Error('Arquivo acima de 8 MB');let rows;const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv')rows=parseCSV(await file.text());else{if(!window.XLSX)throw Error('Biblioteca de Excel indisponível; conecte-se à internet ou exporte CSV');const book=XLSX.read(await file.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]],{header:1,defval:'',raw:false})}if(rows.length<2)throw Error('Nenhum registro');const originalHeaders=rows[0].map((h,i)=>String(h??'').trim()||'Coluna '+(i+1));const headers=originalHeaders.map(norm),index=(...keys)=>headers.findIndex(h=>keys.includes(h));const ni=index('nome','razaosocial','cliente','nomefantasia','fantasia'),ai=index('endereco','rua','logradouro'),ci=index('cidade','municipio'),cepi=index('cep'),lati=index('lat','latitude'),loni=index('lon','lng','longitude');if(ni<0)throw Error('Coluna Nome ou Razão Social não encontrada');let count=0,located=0;for(const r of rows.slice(1)){const val=i=>i<0?'':String(r[i]??'').trim();if(!r.some(v=>String(v??'').trim()))continue;const lat=num(val(lati)),lon=num(val(loni)),has=lat!==null&&lon!==null&&valid(lat,lon);const fields=originalHeaders.map((label,i)=>({label,value:val(i)}));clients.push({id:uid(),name:val(ni)||val(index('nomefantasia','razaosocial'))||'Cliente sem nome',address:[val(ai),val(ci)].filter(Boolean).join(', '),cep:val(cepi),lat:has?lat:null,lon:has?lon:null,priority:2,importFields:fields,importSource:file.name});count++;if(has)located++}save();$('importStatus').textContent=count+' importados com todas as colunas preservadas; '+located+' com coordenadas; '+(count-located)+' aguardando localização. Nenhuma geocodificação em massa foi executada.';enrichUI('Planilha importada.');if(confirm('Deseja consultar agora os CNPJs importados para guardar os dados empresariais? Mantenha a página aberta; o processo pode levar vários minutos.'))enrichRun(false)}catch(err){$('importStatus').textContent='Erro na importação: '+err.message}e.target.value=''};
+$('sheetFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>8_000_000)throw Error('Arquivo acima de 8 MB');let rows;const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv')rows=parseCSV(await file.text());else{if(!window.XLSX)throw Error('Biblioteca de Excel indisponível; conecte-se à internet ou exporte CSV');const book=XLSX.read(await file.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]],{header:1,defval:'',raw:false})}if(rows.length<2)throw Error('Nenhum registro');const originalHeaders=rows[0].map((h,i)=>String(h??'').trim()||'Coluna '+(i+1));const headers=originalHeaders.map(norm),index=(...keys)=>headers.findIndex(h=>keys.includes(h));const ni=index('nome','razaosocial','cliente','nomefantasia','fantasia'),ai=index('endereco','rua','logradouro'),ci=index('cidade','municipio'),cepi=index('cep'),lati=index('lat','latitude'),loni=index('lon','lng','longitude');if(ni<0)throw Error('Coluna Nome ou Razão Social não encontrada');let count=0,located=0;const importedIds=[];for(const r of rows.slice(1)){const val=i=>i<0?'':String(r[i]??'').trim();if(!r.some(v=>String(v??'').trim()))continue;const lat=num(val(lati)),lon=num(val(loni)),has=lat!==null&&lon!==null&&valid(lat,lon);const fields=originalHeaders.map((label,i)=>({label,value:val(i)}));const importedId=uid();importedIds.push(importedId);clients.push({id:importedId,name:val(ni)||val(index('nomefantasia','razaosocial'))||'Cliente sem nome',address:[val(ai),val(ci)].filter(Boolean).join(', '),city:val(ci),neighborhood:val(index('bairro','distrito')),state:val(index('estado','uf')),houseNumber:val(index('numero','nro','num')),cep:val(cepi),locationVerification:has?'imported_coordinates':'pending',lat:has?lat:null,lon:has?lon:null,priority:2,importFields:fields,importSource:file.name});count++;if(has)located++}save();$('importStatus').textContent=count+' importados com todas as colunas preservadas; '+located+' com coordenadas; '+(count-located)+' aguardando localização. A localização dos endereços será consultada em sequência; mantenha esta aba aberta.';queueClientGeocode(importedIds).then(()=>{const added=clients.filter(c=>importedIds.includes(c.id));const ready=added.filter(c=>valid(c.lat,c.lon)).length;const review=added.filter(c=>c.locationCandidate).length;$('importStatus').textContent=count+' importados com todas as colunas preservadas; '+ready+' localizados; '+review+' para conferir no mapa; '+(count-ready-review)+' sem resultado. Selecione os clientes em Mapa e Rotas para conferir as sugestões.';});enrichUI('Planilha importada.');if(confirm('Deseja consultar agora os CNPJs importados para guardar os dados empresariais? Mantenha a página aberta; o processo pode levar vários minutos.'))enrichRun(false)}catch(err){$('importStatus').textContent='Erro na importação: '+err.message}e.target.value=''};
 function download(content,name,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
 $('exportCSV').onclick=()=>{const rows=[['Nome','Endereço','CEP','Latitude','Longitude','Prioridade'],...clients.map(c=>[c.name,c.address,c.cep||'',c.lat??'',c.lon??'',c.priority])];download('\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\r\n'),'projeto_rota_clientes.csv','text/csv;charset=utf-8')};
 $('backup').onclick=()=>download(JSON.stringify({version:1,clients},null,2),'projeto_rota_backup.json','application/json');
@@ -449,7 +401,7 @@ $('detailEdit').onclick=()=>{const c=clients.find(x=>x.id===activeDetailId);$('c
 function renderDashboard(){const root=$('dashboardClients');if(!root)return;root.replaceChildren();const q=norm($('dashboardSearch').value);const filtered=clients.filter(c=>!q||norm(c.name+' '+c.address+' '+(c.importFields||[]).map(f=>f.value).join(' ')).includes(q));if(!filtered.length){root.textContent=clients.length?'Nenhum cliente encontrado.':'Cadastre seu primeiro cliente para começar.';return}for(const c of filtered){const tile=document.createElement('div');tile.className='dashboard-client';const head=document.createElement('div');head.className='dashboard-client-head';const btn=document.createElement('button');btn.className='client-link';btn.textContent=c.name;btn.onclick=()=>viewClient(c.id);tile.tabIndex=0;tile.setAttribute('role','button');tile.setAttribute('aria-label','Abrir ficha de '+c.name);tile.onclick=e=>{if(e.target!==btn)viewClient(c.id)};tile.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();viewClient(c.id)}};head.append(btn,makePriority(c.priority));const address=document.createElement('p');address.textContent=c.address||'Endereço não informado';tile.append(head,address);root.append(tile)}}
 $('dashboardSearch').addEventListener('input',renderDashboard);
 function renderWorkspace(){const root=$('mapClientList');if(!root)return;root.replaceChildren();const q=norm($('mapClientSearch').value);const selected=new Set(selectedIds);const filtered=clients.filter(c=>(activePriorityFilter==='all'||String(c.priority||2)===activePriorityFilter)&&regionMatches(c)&&(!q||norm(c.name+' '+c.address+' '+(c.importFields||[]).map(f=>f.value).join(' ')).includes(q)));if(!filtered.length){root.textContent='Nenhum cliente corresponde ao filtro.';return}for(const c of filtered){const tile=document.createElement('div');tile.className='client-tile';const top=document.createElement('div');top.className='client-tile-top';const ck=document.createElement('input');ck.type='checkbox';ck.checked=selected.has(c.id);ck.disabled=false;ck.setAttribute('aria-label','Selecionar '+c.name+' para a rota');ck.onchange=()=>{if(ck.checked)selectedIds.add(c.id);else selectedIds.delete(c.id);const original=[...document.querySelectorAll('#routeChoices input')].find(x=>x.value===c.id);if(original)original.checked=ck.checked;updateSelectedCount();updateMapSelection();if(ck.checked)queueSelectedGeocode()};const name=document.createElement('strong');name.textContent=c.name;top.append(ck,name,makePriority(c.priority));const addr=document.createElement('div');addr.className='tile-address';addr.textContent=(c.address||'Endereço não informado')+(!valid(c.lat,c.lon)?' · Localização pendente':'');const actions=document.createElement('div');actions.className='tile-actions';const info=document.createElement('button');info.className='secondary';info.textContent='Ver ficha';info.onclick=()=>viewClient(c.id);const locate=document.createElement('button');locate.className='secondary';locate.textContent='Ver no mapa';locate.disabled=!valid(c.lat,c.lon);locate.onclick=()=>{initMap();map?.flyTo({center:[c.lon,c.lat],zoom:16})};const locateEdit=document.createElement('button');locateEdit.className='secondary';locateEdit.textContent=valid(c.lat,c.lon)?'Conferir ponto':'Localizar cliente';locateEdit.onclick=()=>openClientLocation(c.id);const candidate=geoCandidates.get(c.id);
- if(candidate?.lat&&!valid(c.lat,c.lon)){
+ if(valid(candidate?.lat,candidate?.lon)&&!valid(c.lat,c.lon)){
   const confirm=document.createElement('button');confirm.type='button';confirm.className='secondary';
   confirm.textContent='Conferir pin sugerido';confirm.onclick=()=>openClientLocation(c.id,candidate);
   actions.append(confirm);
@@ -463,14 +415,13 @@ function openClientLocation(id,candidate=null){
  const c=clients.find(x=>x.id===id);if(!c)return;
  switchTab('clientes');editingClientId=c.id;
  $('name').value=c.name;$('cep').value=c.cep||'';$('priority').value=c.priority||2;
- const raw=String(c.address||'');
+ const raw=String(c.geocodingAddressOverride||c.address||'');
  // Endereços importados normalmente usam 'RUA EXEMPLO, 123, CIDADE'.
  // Não confundir número do imóvel com quadra, lote ou CEP.
- const number=raw.match(/(?:^|,)\s*(?:N[º°o.]?\s*)?(\d{1,6}[A-Za-z]?)\b/i)||raw.match(/\bN[º°o.]?\s*(\d{1,6}[A-Za-z]?)\b/i);
- $('houseNumber').value=number?.[1]||'';
+ const parts=TraxioGeo.parse(c);
+ $('houseNumber').value=parts.house;
  const region=regionParts(c);
- let street=raw.split(',')[0].trim();
- if(!street)street=raw;
+ let street=parts.street||raw;
  $('address').value=street;
  const r=regionParts(c);
  // A cidade e o bairro são adicionados na busca, sem contaminar o campo rua.
@@ -478,7 +429,7 @@ function openClientLocation(id,candidate=null){
  selectedPrecision=valid(c.lat,c.lon)?(c.locationVerification==='manual_reviewed'?'manual':'approx'):'none';
  if(candidate&&valid(candidate.lat,candidate.lon)){
   $('lat').value=candidate.lat.toFixed(6);$('lon').value=candidate.lon.toFixed(6);
-  selectedPrecision='approx';
+  selectedPrecision='approx';showDraftMarker();
   $('saveStatus').textContent='Ponto sugerido, NÃO confirmado. Confira no mapa a entrada da loja antes de salvar.';
  }
  $('saveStatus').textContent='Confira rua, número, cidade e bairro. Busque o endereço, selecione uma sugestão e ajuste o marcador na entrada correta da loja antes de salvar.';
@@ -860,7 +811,7 @@ render();
 </script><script>
 (function(){
 const $=id=>document.getElementById(id);
-let watch=null,car=null,route=null,arrivedSince=0,previousPosition=null;let rerouteBusy=false,lastRerouteAt=0,offRouteSince=0,activeGeometry=null;
+let watch=null,car=null,route=null,arrivedSince=0,previousPosition=null;let rerouteBusy=false,lastRerouteAt=0,offRouteSince=null,activeGeometry=null,offRouteSamples=0,navGeneration=0,rerouteController=null;
 let originalMapParent=null,originalMapNext=null,originalPanelParent=null,originalPanelNext=null;
 function enterNav(){
 const overlay=$('traxioNavOverlay'),mapEl=$('map'),panel=$('liveNavigation');
@@ -890,7 +841,7 @@ stops().forEach((stop,i)=>{const d=document.createElement('div');d.className='li
 $('liveNextStop').textContent=next()?'Próxima parada: '+next().name:route?'Todas as paradas foram registradas.':'Nenhuma rota em andamento.';
 renderMarkers();
 }
-function stopGPS(){exitNav();$('traxioNavExpand').hidden=true;activeGeometry=null;offRouteSince=0;if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null}if(car){car.remove();car=null}previousPosition=null;arrivedSince=0;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado')}
+function stopGPS(){navGeneration++;rerouteController?.abort();rerouteController=null;rerouteBusy=false;lastRerouteAt=0;offRouteSamples=0;exitNav();$('traxioNavExpand').hidden=true;activeGeometry=null;offRouteSince=null;if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null}if(car){car.remove();car=null}previousPosition=null;arrivedSince=0;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado')}
 function recordHistory(outcome){
 const key='traxio.route.history.v1:'+(document.getElementById('authIdentity')?.textContent||'account');
 let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(rows))rows=[]}catch{}
@@ -923,21 +874,27 @@ let min=Infinity;for(let i=1;i<coords.length;i++)min=Math.min(min,distanceToSegm
 return min;
 }
 async function recalculate(coord,force=false){
-if(rerouteBusy||!route||!next()||!coord)return;
-if(!force&&Date.now()-lastRerouteAt<15000)return;
-rerouteBusy=true;lastRerouteAt=Date.now();status('Recalculando rota pelas ruas…');
-try{
-const remaining=stops().filter(x=>!x.visited),points=[{lon:coord[0],lat:coord[1]},...remaining];
-const road=await fetchRoadRoute(points);activeGeometry=road.geometry;displayRoadGeometry(road.geometry);
-status('Nova rota calculada · '+(road.distance/1000).toFixed(1)+' km restantes');
-if(map&&coord)map.easeTo({center:coord,zoom:16,duration:500});
-offRouteSince=0;
-}catch(e){status('Sem recálculo: '+(e.message||'servidor indisponível')+'. Siga a sinalização da via.')}finally{rerouteBusy=false}
+ if(rerouteBusy||!route||!next()||!coord)return;
+ if(!force&&lastRerouteAt&&Date.now()-lastRerouteAt<15000)return;
+ const generation=navGeneration,controller=new AbortController();rerouteController=controller;
+ rerouteBusy=true;lastRerouteAt=Date.now();status('Recalculando rota pelas ruas…');
+ try{
+  const remaining=stops().filter(x=>!x.visited),points=[{lon:coord[0],lat:coord[1]},...remaining];
+  const road=await fetchRoadRoute(points,{signal:controller.signal});
+  if(generation!==navGeneration||!route)return;
+  activeGeometry=road.geometry;displayRoadGeometry(road.geometry);
+  $('routeResult').textContent='Rota atualizada · '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min restantes.';
+  status('Nova rota calculada · '+(road.distance/1000).toFixed(1)+' km restantes');
+  if(map)map.easeTo({center:coord,zoom:16,duration:500});
+  offRouteSince=null;offRouteSamples=0;
+ }catch(e){if(generation===navGeneration&&!controller.signal.aborted)status('Sem conexão para recalcular. Nova tentativa com o próximo sinal GPS.');}
+ finally{if(generation===navGeneration){rerouteBusy=false;rerouteController=null;}}
 }
 function position(p){
 if(!route)return;
 const lat=p.coords.latitude,lon=p.coords.longitude,accuracy=p.coords.accuracy;
-if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
+if(!valid(lat,lon)||!Number.isFinite(accuracy)||accuracy<0)return;
+if(p.timestamp&&Date.now()-p.timestamp>20000){status('Sinal GPS antigo. Aguardando posição atual…');return;}
 const coord=[lon,lat],bearing=Number.isFinite(p.coords.heading)?p.coords.heading:null;
 if(!car){
 const el=document.createElement('div');el.className='traxio-car-marker';
@@ -947,29 +904,34 @@ car=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat(coord).addTo(m
 if(bearing!==null)car.getElement().style.setProperty('--car-bearing',bearing+'deg');
 if(!previousPosition||km({lat:previousPosition[1],lon:previousPosition[0]},{lat,lon})>0.008)map?.easeTo({center:coord,zoom:Math.max(map.getZoom(),15),duration:650});
 previousPosition=coord;
-status('GPS ativo · precisão ±'+Math.round(accuracy)+' m');
+if(!rerouteBusy)status(accuracy>100?'Sinal GPS impreciso · aguardando melhora (±'+Math.round(accuracy)+' m)':'GPS ativo · recálculo automático ligado · precisão ±'+Math.round(accuracy)+' m');
 const target=next();if(!target)return;
 const dist=km({lat,lon},target)*1000;
 if(accuracy<=80&&dist<=100){if(!arrivedSince){arrivedSince=Date.now();status('Chegada detectada · verificando permanência')}else if(Date.now()-arrivedSince>=30000){arrived(target);return}}
 else arrivedSince=0;
-if(accuracy<=55&&activeGeometry?.coordinates?.length>1){
-const deviation=routeDeviation(lat,lon);
-if(deviation>90){if(!offRouteSince)offRouteSince=Date.now();if(Date.now()-offRouteSince>=5000)recalculate(coord)}
-else offRouteSince=0;
-}
+if(accuracy<=100){
+ if(!activeGeometry?.coordinates?.length){recalculate(coord);return;}
+ const deviation=routeDeviation(lat,lon),threshold=Math.max(35,accuracy*1.7);
+ if(deviation>threshold){
+  offRouteSamples++;if(offRouteSince===null)offRouteSince=Date.now();
+  if(!rerouteBusy)status('Fora do trajeto · verificando desvio para recalcular…');
+  if(offRouteSamples>=2&&Date.now()-offRouteSince>=3000)recalculate(coord);
+ }else{offRouteSince=null;offRouteSamples=0;}
+}else{offRouteSince=null;offRouteSamples=0;}
+
 }
 
 $('liveStart').addEventListener('click',()=>{
 if(!route||watch!==null)return;
 if(!navigator.geolocation){status('GPS indisponível neste navegador');return}
-try{enterNav();watch=navigator.geolocation.watchPosition(position,e=>{status('Erro no GPS: '+e.message);arrivedSince=0},{enableHighAccuracy:true,maximumAge:3000,timeout:18000});$('liveStart').disabled=true;$('liveStop').disabled=false;status('Aguardando sinal GPS…')}catch(e){status('Não foi possível iniciar o GPS: '+e.message)}
+try{activeGeometry=activeGeometry||routeGeo;enterNav();const generation=navGeneration;watch=navigator.geolocation.watchPosition(p=>{if(generation===navGeneration)position(p)},e=>{status('Erro no GPS: '+e.message);arrivedSince=0;offRouteSince=null;offRouteSamples=0},{enableHighAccuracy:true,maximumAge:3000,timeout:18000});$('liveStart').disabled=true;$('liveStop').disabled=false;status('Aguardando sinal GPS…')}catch(e){status('Não foi possível iniciar o GPS: '+e.message)}
 });
 $('liveStop').addEventListener('click',()=>{if(confirm('Encerrar esta rota agora? As visitas restantes ficarão pendentes no histórico.'))end('partial')});
-window.traxioBeginNavigation=function(points){
+window.traxioBeginNavigation=function(points,geometry=routeGeo){
 if(!Array.isArray(points)||!points.length)return;
-if(route&&watch!==null)stopGPS();
+stopGPS();
 route={stops:points.filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)).map(x=>({id:x.id,name:x.name,lat:x.lat,lon:x.lon,visited:false}))};
-window.traxioVisitedIds.clear();activeGeometry=map?.getSource('route')?._data?.geometry||null;offRouteSince=0;$('liveNavigation').hidden=false;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado');render();
+window.traxioVisitedIds.clear();activeGeometry=geometry;offRouteSince=null;offRouteSamples=0;$('liveNavigation').hidden=false;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado');render();
 };
 $('clearRoute').addEventListener('click',()=>{if(route){stopGPS();route=null;window.traxioVisitedIds.clear();$('liveNavigation').hidden=true;renderMarkers()}});
 window.addEventListener('pagehide',stopGPS);

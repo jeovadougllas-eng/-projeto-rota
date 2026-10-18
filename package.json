@@ -10,7 +10,8 @@
     "test:update-snapshots": "playwright test tests/visual.spec.js tests/dialogs.visual.spec.js --update-snapshots",
     "test:report": "playwright show-report",
     "check": "node scripts/check.mjs && node scripts/check-kit.mjs",
-    "test:reference": "playwright test --config=playwright.reference.config.js"
+    "test:reference": "playwright test --config=playwright.reference.config.js",
+    "test:geolocation": "node --test test-unit/*.test.mjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

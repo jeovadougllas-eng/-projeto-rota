@@ -1,0 +1,75 @@
+/* Address parsing and evidence-based geocoding shared by the UI and tests. */
+(function(root){
+'use strict';
+const clean=v=>String(v??'').trim().replace(/\s+/g,' ');
+const norm=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const digits=v=>clean(v).replace(/\D/g,'');
+const valid=(lat,lon)=>Number.isFinite(lat)&&Number.isFinite(lon)&&Math.abs(lat)<=90&&Math.abs(lon)<=180;
+const states={AC:'Acre',AL:'Alagoas',AP:'Amapá',AM:'Amazonas',BA:'Bahia',CE:'Ceará',DF:'Distrito Federal',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Pará',PB:'Paraíba',PR:'Paraná',PE:'Pernambuco',PI:'Piauí',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondônia',RR:'Roraima',SC:'Santa Catarina',SP:'São Paulo',SE:'Sergipe',TO:'Tocantins'};
+const stateCode=v=>Object.keys(states).find(k=>norm(k)===norm(v)||norm(states[k])===norm(v))||'';
+function field(c,aliases){return clean((c.importFields||[]).find(f=>aliases.includes(norm(f.label))&&clean(f.value))?.value);}
+function parse(c){
+ const company=Object.fromEntries((c.companyData?.fields||[]).map(([k,v])=>[norm(k),v]));
+ const raw=clean(c.geocodingAddressOverride)||field(c,['endereco','logradouro','rua'])||clean(c.address);
+ const city=field(c,['cidade','municipio','localidade'])||clean(c.city)||clean(company.municipio);
+ const district=field(c,['bairro','distrito','neighborhood'])||clean(c.neighborhood)||clean(company.bairro);
+ const state=stateCode(field(c,['uf','estado'])||c.state||c.uf||company.uf)||stateCode(raw.split(',').map(clean).find(v=>stateCode(v)))||'';
+ let street=raw.split(/[,·]/)[0].trim();
+ const found=raw.match(/(?:^|[,·])\s*(?:n[º°o.]?\s*)?(\d{1,6}\s*[a-z]?)\b/i)||raw.match(/\bn[º°o.]\s*(\d{1,6}\s*[a-z]?)\b/i);
+ const house=(c.geocodingAddressOverride?clean(c.houseNumber):field(c,['numero','numerodologradouro','numerodoimovel','nro','num'])||clean(c.houseNumber))||clean(found?.[1]);
+ street=street.replace(/\s+n[º°o.]\s*\d{1,6}\s*[a-z]?\b.*$/i,'').trim();
+ const inferredCity=city||raw.split(',').slice(1).map(clean).reverse().find(v=>regionName(v)&&!/^\d/.test(v))||'';
+ return {street,house:/^(s\/?n|semnumero)$/i.test(norm(house))?'':house,city:regionName(inferredCity)?inferredCity:'',district,state,zip:digits(field(c,['cep','codigopostal'])||c.cep||c.zip_code||company.cep),country:'BR'};
+}
+function regionName(v){return /[A-Za-zÀ-ÿ]{2}/.test(v)&&!/^\d/.test(v)&&!stateCode(v)&&!/^brasil$/i.test(v);}
+function streetKey(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\bdr\.?\b/g,'doutor').replace(/\bdra\.?\b/g,'doutora').replace(/\bprof\.?\b/g,'professor').replace(/^(?:rua|r\.?|avenida|av\.?|travessa|tv\.?|praca|rodovia|estrada)\s+/,'').replace(/[^a-z0-9]/g,'');}
+const houseKey=v=>norm(v).replace(/^0+(?=\d)/,'');
+function meters(a,b){const r=Math.PI/180,x=(a.lon-b.lon)*r*Math.cos((a.lat+b.lat)*r/2),y=(a.lat-b.lat)*r;return Math.hypot(x,y)*6371000;}
+function assess(item,q){
+ if(!valid(item.lat,item.lon)||norm(item.country)!=='br')return null;
+ if(q.city&&item.city&&norm(q.city)!==norm(item.city))return null;
+ if(q.state&&item.state&&stateCode(q.state)!==stateCode(item.state))return null;
+ const sameStreet=!!(streetKey(q.street)&&streetKey(q.street)===streetKey(item.street));
+ if(!sameStreet)return null;
+ const exactNumber=!!(q.house&&item.house&&houseKey(q.house)===houseKey(item.house));
+ const cityMatched=!!(q.city&&item.city&&norm(q.city)===norm(item.city));
+ const zipMatched=!q.zip||!item.zip||digits(q.zip)===digits(item.zip);
+ const mismatchedNumber=!!(q.house&&item.house&&!exactNumber);
+ return {...item,exactNumber,cityMatched,confidence:exactNumber&&cityMatched&&zipMatched&&!item.interpolated?'address':'street',score:(cityMatched?4:0)+(exactNumber?8:0)+(zipMatched?1:0)-(mismatchedNumber?10:0),mismatchedNumber};
+}
+function rank(items,q){
+ const ranked=items.map(i=>assess(i,q)).filter(Boolean).sort((a,b)=>b.score-a.score),best=ranked[0];
+ if(!best)return {status:'not_found',query:q,candidates:[]};
+ const conflict=ranked.some(x=>x!==best&&x.confidence==='address'&&best.confidence==='address'&&meters(x,best)>40);
+ return {status:best.confidence==='address'&&!conflict?'matched':'review',query:q,best,candidates:ranked.slice(0,6),reason:conflict?'Há mais de um imóvel compatível em pontos diferentes.':best.mismatchedNumber?'O número encontrado difere do cadastro.':'Confira o número e a entrada do cliente no mapa.'};
+}
+function photon(data){return (data.features||[]).map(f=>{const p=f.properties||{},xy=f.geometry?.coordinates||[];return {lat:xy[1],lon:xy[0],street:p.street||p.name||'',house:p.housenumber||'',city:p.city||p.town||p.village||'',district:p.district||p.suburb||'',state:p.state||'',zip:p.postcode||'',country:p.countrycode||'',label:[p.name,p.street,p.housenumber,p.district,p.city,p.state].filter(Boolean).join(', '),provider:'photon_osm',attribution:'© OpenStreetMap contributors',interpolated:p.osm_value==='interpolation'};});}
+function geoapify(data){return (data.features||[]).map(f=>{const p=f.properties||{},xy=f.geometry?.coordinates||[];return {lat:p.lat??xy[1],lon:p.lon??xy[0],street:p.street||'',house:p.housenumber||'',city:p.city||p.town||p.village||'',district:p.suburb||'',state:p.state_code||p.state||'',zip:p.postcode||'',country:p.country_code||'',label:p.formatted||'',provider:'geoapify',attribution:p.datasource?.attribution||'Powered by Geoapify · © OpenStreetMap contributors',interpolated:p.result_type!=='building'||(p.rank?.confidence_building_level??0)<0.9};});}
+const cache=new Map();let queue=Promise.resolve(),lastCall=0,additionalProvider=true;
+async function getJSON(url,signal){
+ const work=queue.catch(()=>{}).then(async()=>{const wait=Math.max(0,1600-(Date.now()-lastCall));if(wait)await new Promise(r=>setTimeout(r,wait));signal?.throwIfAborted();lastCall=Date.now();const r=await fetch(url,{signal:signal?AbortSignal.any([signal,AbortSignal.timeout(14000)]):AbortSignal.timeout(14000)});if(!r.ok)throw Error('Busca indisponível (HTTP '+r.status+')');return r.json();});
+ queue=work.catch(()=>{});return work;
+}
+async function locate(client,{signal,token}={}){
+ let q=parse(client);
+ if(q.street.length<3)throw Error('Informe o logradouro do cliente.');
+ // CEP establishes locality only. Never use its centroid as the client location.
+ if(q.zip.length===8&&(!q.city||!q.state)){
+  try{const zip=await getJSON('https://viacep.com.br/ws/'+q.zip+'/json/',signal);if(!zip.erro)q={...q,city:q.city||clean(zip.localidade),state:q.state||stateCode(zip.uf),district:q.district||clean(zip.bairro)};}catch(e){if(signal?.aborted)throw e;}
+ }
+ if(!q.city)throw Error('Informe cidade e UF ou um CEP válido para localizar este endereço.');
+ const key=JSON.stringify(q),saved=cache.get(key);if(saved&&Date.now()-saved.at<600000)return saved.result;
+ let result,commercial=[];
+ if(token&&additionalProvider){
+  try{const r=await fetch('/api/geocode',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(16000)]):AbortSignal.timeout(16000)});if(r.status===503||r.status===404)additionalProvider=false;if(r.ok){commercial=geoapify(await r.json());result=rank(commercial,q);if(result.status==='matched'){cache.set(key,{at:Date.now(),result});return result;}}}catch(e){if(signal?.aborted)throw e;}
+ }
+ let all=[...commercial],lastError;
+ const terms=[[q.street,q.house,q.district,q.city,states[q.state]||q.state,'Brasil'],[q.street,q.city,states[q.state]||q.state,'Brasil']].map(x=>x.filter(Boolean).join(', '));
+ for(const term of [...new Set(terms)]){
+  try{const data=await getJSON('https://photon.komoot.io/api/?limit=8&q='+encodeURIComponent(term),signal);all.push(...photon(data));result=rank(all,q);if(result.status==='matched')break;}catch(e){lastError=e;if(signal?.aborted)throw e;}
+ }
+ result=rank(all,q);if(result.status==='not_found'&&lastError)throw lastError;
+ cache.set(key,{at:Date.now(),result});return result;
+}
+root.TraxioGeo={parse,rank,assess,photon,geoapify,locate,meters,stateCode};
+})(globalThis);

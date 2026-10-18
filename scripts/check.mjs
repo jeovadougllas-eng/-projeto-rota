@@ -4,6 +4,7 @@ const html = await readFile(new URL('../index.html', import.meta.url),'utf8');
 const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]).filter(Boolean);
 scripts.forEach((source,index) => new Script(source,{filename:'application-inline-'+index+'.js'}));
 new Script(await readFile(new URL('../assets/traxio-ui.js', import.meta.url),'utf8'),{filename:'traxio-ui.js'});
+new Script(await readFile(new URL('../assets/traxio-geolocation.js', import.meta.url),'utf8'),{filename:'traxio-geolocation.js'});
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
 if(new Set(ids).size !== ids.length) throw Error('Duplicate IDs in HTML');
 for(const source of ['https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js','https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js']) if(!html.includes(source)) throw Error('Missing existing dependency: '+source);
