@@ -1,5 +1,7 @@
 # Traxio — revisão visual
 
+Este documento registra as etapas anteriores ao kit PNG. A revisão atual está em [kit-review.md](kit-review.md), com os arquivos do kit, capturas novas e relatório de comparação antes/depois.
+
 Referências aprovadas, preservadas sem alterações: `assets/approved-mockup.jpg` (interface) e `assets/approved-identity.jpg` (marca).
 
 A comparação interativa está em `docs/reference-review.html`. Execute `npm run dev` e abra `http://127.0.0.1:4173/docs/reference-review.html`.

@@ -1,5 +1,9 @@
 # Traxio
 
+Prévia de testes: https://traxio-preview.vercel.app/
+
+A revisão atual usa o kit visual aprovado em `assets/visual-kit/`. O lettering TRAXIO permanece nos pixels originais dos recortes. Veja [a aplicação do kit, diferenças restantes e testes efetivamente executados](docs/kit-review.md).
+
 Aplicativo de planejamento de rotas comerciais. HTML, CSS e JavaScript, com autenticação e sincronização Supabase, mapas MapLibre e planilhas SheetJS.
 
 ## Desenvolvimento
