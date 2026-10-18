@@ -27,6 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/visual-kit/assets/logo_dark_background.png" alt="Traxio — Planeje melhor. Vá mais longe." width="497" height="141"></span>`;
   // Display unmodified original pixels from the supplied reference crops.
   const glyph=(source,sourceWidth,sourceHeight,x,y,w,h,className='')=>`<span class="kit-glyph ${className}" aria-hidden="true" style="aspect-ratio:${w}/${h}"><img src="assets/visual-kit/assets/${source}" alt="" width="${sourceWidth}" height="${sourceHeight}" style="width:${100*sourceWidth/w}%;height:${100*sourceHeight/h}%;left:${-100*x/w}%;top:${-100*y/h}%"></span>`;
+  // Key only the crop background, then intersect with source alpha. The final
+  // composite preserves transparent input pixels instead of creating black frames.
+  const cropFilters=document.createElementNS('http://www.w3.org/2000/svg','svg');cropFilters.classList.add('kit-filter-defs');cropFilters.setAttribute('aria-hidden','true');
+  const keyFilter=(id,alpha,slope,intercept)=>`<filter id="${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  ${alpha}"/><feComponentTransfer result="keyed"><feFuncA type="linear" slope="${slope}" intercept="${intercept}"/></feComponentTransfer><feComposite in="keyed" in2="SourceGraphic" operator="in"/></filter>`;
+  cropFilters.innerHTML='<defs>'+keyFilter('kit-crop-light','-1 -1 -1 0 3',4,-.4)+keyFilter('kit-crop-dark','1 1 1 0 -.6',2,0)+keyFilter('kit-crop-nav','1 1 1 0 -1.8',2,0)+'</defs>';document.body.append(cropFilters);
   const node = (tag, className, text) => {
     const n = document.createElement(tag);
     if (className) n.className = className;

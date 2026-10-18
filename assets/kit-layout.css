@@ -82,3 +82,8 @@ body[data-screen="painel"] .tabs>button{font-size:calc(14 * var(--u))}
 @media(max-aspect-ratio:1/1) and (min-width:651px){.traxio-hero p{font-size:9px}.traxio-hero h2{margin-bottom:7px}}
 @media(max-width:650px){.auth-panel{left:auto;top:auto;width:100%;padding-left:23px;padding-right:23px}.auth-heading p{font-size:12px}.traxio-hero p{font-size:11px}.traxio-hero h2{margin-bottom:9px}}
 @media(min-width:651px){.auth-heading p{font-size:calc(9.4 * var(--au))}}
+/* Crop keys retain the original RGB and intersect with the input alpha. */
+.kit-metric-icon,body.traxio-dark .kit-metric-icon{filter:url(#kit-crop-light);mix-blend-mode:normal;background:transparent}
+.kit-data-icon,body:not(.traxio-dark) .kit-data-icon{filter:url(#kit-crop-dark);background:transparent}
+.kit-nav-icon{filter:url(#kit-crop-nav);mix-blend-mode:normal}
+.kit-quick-icon,body.traxio-dark .kit-quick-icon{filter:url(#kit-crop-light);mix-blend-mode:normal}
