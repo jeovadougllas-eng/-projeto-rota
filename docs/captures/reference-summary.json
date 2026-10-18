@@ -25,11 +25,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 21.271360332580805,
-        "pixelsDifferingOver24": 0.1987831066571224,
+        "meanAbsoluteRGBError": 21.18861678566403,
+        "pixelsDifferingOver24": 0.1971307563827249,
         "identical": false
       },
-      "meanRGBErrorChange": 0.6402761717722356
+      "meanRGBErrorChange": 0.5575326248554617
     },
     {
       "screen": "clientes",
@@ -39,11 +39,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 19.20074468570386,
-        "pixelsDifferingOver24": 0.162644831675942,
+        "meanAbsoluteRGBError": 19.133567496882886,
+        "pixelsDifferingOver24": 0.16062631146793177,
         "identical": false
       },
-      "meanRGBErrorChange": 0.20741150442477974
+      "meanRGBErrorChange": 0.14023431560380573
     },
     {
       "screen": "mapa",
@@ -53,11 +53,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 31.877608842576713,
-        "pixelsDifferingOver24": 0.2705618153206771,
+        "meanAbsoluteRGBError": 31.847796501032274,
+        "pixelsDifferingOver24": 0.2684787762019085,
         "identical": false
       },
-      "meanRGBErrorChange": -1.2255675819261498
+      "meanRGBErrorChange": -1.2553799234705885
     },
     {
       "screen": "dados",
@@ -67,11 +67,11 @@
         "identical": false
       },
       "after": {
-        "meanAbsoluteRGBError": 18.45643457659929,
-        "pixelsDifferingOver24": 0.15599395624184037,
+        "meanAbsoluteRGBError": 18.41339155749636,
+        "pixelsDifferingOver24": 0.1536375095664701,
         "identical": false
       },
-      "meanRGBErrorChange": -0.3195932562013226
+      "meanRGBErrorChange": -0.3626362753042507
     }
   ]
 }

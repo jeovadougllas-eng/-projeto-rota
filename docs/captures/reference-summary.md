@@ -5,9 +5,9 @@ As mesmas referências PNG e proporções foram usadas nas duas execuções. Uma
 | Tela | Antes do kit | Depois do kit | Variação |
 | --- | ---: | ---: | ---: |
 | login | 12.99 | 11.50 | -1.50 |
-| painel | 20.63 | 21.27 | 0.64 |
-| clientes | 18.99 | 19.20 | 0.21 |
-| mapa | 33.10 | 31.88 | -1.23 |
-| dados | 18.78 | 18.46 | -0.32 |
+| painel | 20.63 | 21.19 | 0.56 |
+| clientes | 18.99 | 19.13 | 0.14 |
+| mapa | 33.10 | 31.85 | -1.26 |
+| dados | 18.78 | 18.41 | -0.36 |
 
 Os textos dos banners da versão nova são HTML acessível; o lettering da marca e os recursos gráficos aprovados continuam sendo exibidos a partir dos recortes originais. O histórico e variantes móveis não têm referência específica no kit.
