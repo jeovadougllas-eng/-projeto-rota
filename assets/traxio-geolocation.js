@@ -20,7 +20,7 @@ function parse(c){
  const house=(c.geocodingAddressOverride?clean(c.houseNumber):field(c,['numero','numerodologradouro','numerodoimovel','nro','num'])||clean(c.houseNumber))||clean(found?.[1]);
  street=street.replace(/\s+n[º°o.]\s*\d{1,6}\s*[a-z]?\b.*$/i,'').trim();
  const inferredCity=city||raw.split(',').slice(1).map(clean).reverse().find(v=>regionName(v)&&!/^\d/.test(v))||'';
- return {street,house:/^(s\/?n|semnumero)$/i.test(norm(house))?'':house,city:regionName(inferredCity)?inferredCity:'',district,state,zip:digits(field(c,['cep','codigopostal'])||c.cep||c.zip_code||company.cep),country:'BR'};
+ return {street,house:/^(s\/?n|semnumero)$/i.test(norm(house))?'':house,city:regionName(inferredCity)?inferredCity:'',district,state,zip:digits(clean(c.cep)||field(c,['cep','codigopostal'])||c.zip_code||company.cep),country:'BR'};
 }
 function regionName(v){return /[A-Za-zÀ-ÿ]{2}/.test(v)&&!/^\d/.test(v)&&!stateCode(v)&&!/^brasil$/i.test(v);}
 function streetKey(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\bdr\.?\b/g,'doutor').replace(/\bdra\.?\b/g,'doutora').replace(/\bprof\.?\b/g,'professor').replace(/^(?:rua|r\.?|avenida|av\.?|travessa|tv\.?|praca|rodovia|estrada)\s+/,'').replace(/[^a-z0-9]/g,'');}

@@ -15,6 +15,7 @@ test('imported columns preserve street, house number, neighborhood, city, state 
 test('the latest edited address supersedes preserved spreadsheet fields',()=>{
  const q=geo.parse({address:'Rua Nova · nº 20',geocodingAddressOverride:'Rua Nova · nº 20',houseNumber:'20',city:'Natal',importFields:[{label:'Endereço',value:'Rua Antiga, 10'},{label:'Número',value:'10'}]});
  assert.equal(q.street,'Rua Nova');assert.equal(q.house,'20');
+ assert.equal(geo.parse({address:'Rua Nova, 20',cep:'59073-230',importFields:[{label:'CEP',value:'59000-000'}]}).zip,'59073230');
 });
 test('only matching country, municipality, street and house are accepted automatically',()=>{
  assert.equal(geo.rank([point],query).status,'matched');
