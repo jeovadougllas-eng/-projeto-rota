@@ -81,13 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el('rememberEmail').checked) localStorage.setItem('traxio.remembered-email.v1', el('authEmail').value.trim());
     else localStorage.removeItem('traxio.remembered-email.v1');
   });
-  el('authLogin').innerHTML = 'Entrar no Traxio ' + icon('arrow');
+  el('authLogin').innerHTML = 'Entrar no Traxelo.IA ' + icon('arrow');
   document.querySelector('.traxio-auth-links').prepend(node('span','','Ainda não tem uma conta?'));
 
   // Fixed shell, account menu and shared persisted theme preference.
   const header = document.querySelector('body>header');
   const headerBrand = node('a','header-brand'); headerBrand.href = '#painel';
-  headerBrand.innerHTML = brand()+'<span class="header-motto">PLANEJE MELHOR.<br>VÁ MAIS LONGE.</span>';
+  headerBrand.innerHTML = brand()+'<span class="header-motto">SUA ROTA<br>COM INTELIGÊNCIA.</span>';
   headerBrand.addEventListener('click', e => { e.preventDefault(); switchTab('painel'); }); header.prepend(headerBrand);
   const search = node('form','header-search'); search.setAttribute('role','search');
   search.innerHTML = '<input id="globalSearch" type="search" placeholder="Buscar cliente, endereço ou cidade..." aria-label="Buscar na carteira">' + icon('search');
