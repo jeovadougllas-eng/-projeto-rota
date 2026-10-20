@@ -38,7 +38,7 @@ test('native GPS provides coordinates and cancels a watch even while its plugin 
 
 test('external navigation in the native app uses the OS launcher',async({page})=>{
  await page.evaluate(()=>{
-  const link=document.createElement('a');link.dataset.navigationProvider='waze';link.id='testNativeLink';link.href='https://waze.com/ul?ll=-5.795,-35.211&navigate=yes';link.textContent='Teste do navegador nativo';document.querySelector('.auth-panel').append(link);
+  const link=document.createElement('a');link.dataset.navigationProvider='waze';link.id='testNativeLink';link.href='https://waze.com/ul?ll=-5.795,-35.211&navigate=yes';link.textContent='Teste do navegador nativo';document.querySelector('.auth-panel').prepend(link);
  });
  await page.locator('#testNativeLink').click();await expect.poll(()=>page.evaluate(()=>window.__nativeCalls.filter(c=>c.plugin==='AppLauncher').length)).toBe(1);
  expect((await page.evaluate(()=>window.__nativeCalls.find(c=>c.plugin==='AppLauncher'))).url).toContain('ll=-5.795,-35.211');
