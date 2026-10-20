@@ -35,7 +35,8 @@ function assess(item,q){
  const cityMatched=!!(q.city&&item.city&&norm(q.city)===norm(item.city));
  const zipMatched=!q.zip||!item.zip||digits(q.zip)===digits(item.zip);
  const mismatchedNumber=!!(q.house&&item.house&&!exactNumber);
- return {...item,exactNumber,cityMatched,confidence:exactNumber&&cityMatched&&zipMatched&&!item.interpolated?'address':'street',score:(cityMatched?4:0)+(exactNumber?8:0)+(zipMatched?1:0)-(mismatchedNumber?10:0),mismatchedNumber};
+ const districtMatched=!q.district||!item.district||norm(q.district)===norm(item.district);
+ return {...item,exactNumber,cityMatched,confidence:exactNumber&&cityMatched&&zipMatched&&districtMatched&&!item.interpolated?'address':'street',score:(cityMatched?4:0)+(exactNumber?8:0)+(zipMatched?1:0)-(mismatchedNumber?10:0),mismatchedNumber};
 }
 function rank(items,q){
  const ranked=items.map(i=>assess(i,q)).filter(Boolean).sort((a,b)=>b.score-a.score),best=ranked[0];

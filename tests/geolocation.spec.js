@@ -17,7 +17,7 @@ async function navigation(page,{missingGeometry=false}={}){
   // Map rendering is independently covered with the real MapLibre/tile tests.
   // This adapter exercises the production GPS, routing requests and GeoJSON updates deterministically.
   const source={setData(data){window.__routeData=data;}};
-  map={resize(){},easeTo(){},getZoom(){return 16;},getSource(){return source;},isStyleLoaded(){return true;},setPaintProperty(){},fitBounds(){},getStyle(){return {layers:[]};},on(){},once(){}};
+  map={__traxioPalette:true,resize(){},easeTo(){},getZoom(){return 16;},getSource(){return source;},isStyleLoaded(){return true;},setPaintProperty(){},fitBounds(){},getStyle(){return {layers:[]};},on(){},once(){}};
   class Marker{constructor(options){this.el=options?.element||document.createElement('div');}setLngLat(){return this;}addTo(){return this;}remove(){}getElement(){return this.el;}setPopup(){return this;}}
   class Bounds{extend(){return this;}}
   window.maplibregl={Marker,LngLatBounds:Bounds};

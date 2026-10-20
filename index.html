@@ -860,7 +860,7 @@ const btn=$('saveCompletedRoute');if(btn)btn.remove();
 renderMarkers();
 }
 function arrived(stop){
-stop.visited=true;stop.arrivalTime=new Date().toISOString();window.traxioVisitedIds.add(String(stop.id));arrivedSince=0;render();
+rerouteController?.abort();rerouteController=null;rerouteBusy=false;stop.visited=true;stop.arrivalTime=new Date().toISOString();window.traxioVisitedIds.add(String(stop.id));arrivedSince=0;render();
 if(!next())end('completed');else if(previousPosition)recalculate(previousPosition,true);
 }
 function distanceToSegmentMeters(lat,lon,a,b){
@@ -881,14 +881,14 @@ async function recalculate(coord,force=false){
  try{
   const remaining=stops().filter(x=>!x.visited),points=[{lon:coord[0],lat:coord[1]},...remaining];
   const road=await fetchRoadRoute(points,{signal:controller.signal});
-  if(generation!==navGeneration||!route)return;
+  if(generation!==navGeneration||!route||controller.signal.aborted)return;
   activeGeometry=road.geometry;displayRoadGeometry(road.geometry);
   $('routeResult').textContent='Rota atualizada · '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min restantes.';
   status('Nova rota calculada · '+(road.distance/1000).toFixed(1)+' km restantes');
   if(map)map.easeTo({center:coord,zoom:16,duration:500});
   offRouteSince=null;offRouteSamples=0;
- }catch(e){if(generation===navGeneration&&!controller.signal.aborted)status('Sem conexão para recalcular. Nova tentativa com o próximo sinal GPS.');}
- finally{if(generation===navGeneration){rerouteBusy=false;rerouteController=null;}}
+ }catch(e){if(generation===navGeneration&&!controller.signal.aborted){console.warn('[Traxio GPS] Falha no recálculo:',e.message);status('Sem conexão para recalcular. Nova tentativa com o próximo sinal GPS.');}}
+ finally{if(generation===navGeneration&&rerouteController===controller){rerouteBusy=false;rerouteController=null;}}
 }
 function position(p){
 if(!route)return;
@@ -931,7 +931,7 @@ window.traxioBeginNavigation=function(points,geometry=routeGeo){
 if(!Array.isArray(points)||!points.length)return;
 stopGPS();
 route={stops:points.filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)).map(x=>({id:x.id,name:x.name,lat:x.lat,lon:x.lon,visited:false}))};
-window.traxioVisitedIds.clear();activeGeometry=geometry;offRouteSince=null;offRouteSamples=0;$('liveNavigation').hidden=false;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado');render();
+window.traxioVisitedIds.clear();routeGeo=geometry;activeGeometry=geometry;offRouteSince=null;offRouteSamples=0;$('liveNavigation').hidden=false;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado');render();
 };
 $('clearRoute').addEventListener('click',()=>{if(route){stopGPS();route=null;window.traxioVisitedIds.clear();$('liveNavigation').hidden=true;renderMarkers()}});
 window.addEventListener('pagehide',stopGPS);
