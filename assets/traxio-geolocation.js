@@ -63,7 +63,7 @@ async function locate(client,{signal,token}={}){
  const key=JSON.stringify(q),saved=cache.get(key);if(saved&&Date.now()-saved.at<600000)return saved.result;
  let result,commercial=[];
  if(token&&additionalProvider){
-  try{const r=await fetch('/api/geocode',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(16000)]):AbortSignal.timeout(16000)});if(r.status===503||r.status===404)additionalProvider=false;if(r.ok){commercial=geoapify(await r.json());result=rank(commercial,q);if(result.status==='matched'){cache.set(key,{at:Date.now(),result});return result;}}}catch(e){if(signal?.aborted)throw e;}
+  try{const r=await fetch((root.TraxioNative?.apiBase||'')+'/api/geocode',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(16000)]):AbortSignal.timeout(16000)});if(r.status===503||r.status===404)additionalProvider=false;if(r.ok){commercial=geoapify(await r.json());result=rank(commercial,q);if(result.status==='matched'){cache.set(key,{at:Date.now(),result});return result;}}}catch(e){if(signal?.aborted)throw e;}
  }
  let all=[...commercial],lastError;
  const terms=[[q.street,q.house,q.district,q.city,states[q.state]||q.state,'Brasil'],[q.street,q.city,states[q.state]||q.state,'Brasil']].map(x=>x.filter(Boolean).join(', '));

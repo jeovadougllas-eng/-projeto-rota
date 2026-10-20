@@ -39,3 +39,7 @@ body:not([data-screen="painel"]) .nav-art>img{display:none}body:not([data-screen
 .auth-approved-scene{position:absolute;left:0;top:0;bottom:0;width:56.08365vh;max-width:54vw;overflow:hidden;pointer-events:none}.auth-approved-scene>img{position:absolute;width:433.8983%;height:162.1673%;max-width:none;left:0;top:0}.auth-approved-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 89%,#002333 100%)}.auth-brand-panel>.brand-crop,.auth-brand-panel>.auth-features{opacity:0}.nav-art>img{clip-path:inset(0 0 48.65% 0)}
 @media(max-width:650px){.auth-approved-scene{display:none}.auth-brand-panel>.brand-crop{opacity:1}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+/* Navigation handoff: Apple Maps owns the CarPlay screen and its turn-by-turn guidance. */
+#openAppleMaps,.external-navigation{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border:calc(1 * var(--u)) solid var(--line);border-radius:calc(7 * var(--u));padding:calc(9 * var(--u)) calc(13 * var(--u));font-size:calc(12 * var(--u));font-weight:600;color:var(--ink);background:var(--soft)}
+#openAppleMaps[aria-disabled="true"],.external-navigation[aria-disabled="true"]{opacity:.5;pointer-events:none}

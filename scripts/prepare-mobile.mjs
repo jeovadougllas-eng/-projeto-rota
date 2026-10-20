@@ -1,5 +1,7 @@
 import {readFile,writeFile,access,copyFile,mkdir} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
+import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
 const mobile=new URL('../mobile/',import.meta.url);
 const exists=async path=>access(new URL(path,mobile)).then(()=>true,()=>false);
 for(const platform of ['android','ios'])if(!await exists(platform))execFileSync('npx',['cap','add',platform],{cwd:mobile,stdio:'inherit'});
@@ -21,3 +23,9 @@ for(const [key,value] of Object.entries(additions))if(!info.includes('<key>'+key
 if(!info.includes('CFBundleURLTypes'))info=info.replace('</dict>',`<key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>Traxio authentication</string><key>CFBundleURLSchemes</key><array><string>app.traxio.mobile</string></array></dict></array></dict>`);
 await writeFile(plist,info);
 console.log('Configured foreground GPS permissions and the authenticated app return link on Android/iOS.');
+
+const sharp=createRequire(new URL('package.json',mobile))('sharp');
+const icons=new URL('ios/App/App/Assets.xcassets/AppIcon.appiconset/',mobile);
+await mkdir(icons,{recursive:true});
+await sharp(fileURLToPath(new URL('icons/app-icon-source.png',mobile))).resize(1024,1024).png().toFile(fileURLToPath(new URL('AppIcon-1024.png',icons)));
+await writeFile(new URL('Contents.json',icons),JSON.stringify({images:[{filename:'AppIcon-1024.png',idiom:'universal',platform:'ios',size:'1024x1024'}],info:{author:'xcode',version:1}},null,2));

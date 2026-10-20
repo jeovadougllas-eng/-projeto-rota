@@ -2,6 +2,8 @@
 const budgets=new Map();
 export default async function handler(req,res){
  res.setHeader('Cache-Control','no-store');
+ const origin=req.headers.origin;if(['https://localhost','capacitor://localhost','http://localhost'].includes(origin)){res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Vary','Origin');res.setHeader('Access-Control-Allow-Headers','Authorization, Content-Type');res.setHeader('Access-Control-Allow-Methods','POST, OPTIONS');}
+ if(req.method==='OPTIONS')return res.status(204).end();
  const reply=(status,error)=>res.status(status).json({error});
  if(req.method!=='POST'){res.setHeader('Allow','POST');return reply(405,'Método não permitido');}
  if(!process.env.GEOAPIFY_API_KEY)return reply(503,'Provedor adicional não configurado');

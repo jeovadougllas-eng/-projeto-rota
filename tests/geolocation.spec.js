@@ -95,3 +95,16 @@ test('arrival removes the visited stop from recalculation and preserves remainin
  await navigation(page);await page.clock.install();await emit(page,stops[0].lat,stops[0].lon);await page.clock.fastForward(30100);await emit(page,stops[0].lat,stops[0].lon);
  await expect(page.locator('#liveStopList .visited')).toHaveCount(1);await expect.poll(()=>calls.length).toBe(1);expect(calls[0]).toEqual([[-35.21,-5.81],[-35.20,-5.81]]);
 });
+
+test('Apple Maps handoff sends exact coordinates, keeps Traxio open and advances only after a confirmed visit',async({page})=>{
+ await setup(page);await navigation(page);
+ const link=page.locator('#openAppleMaps');await expect(link).toBeVisible();
+ let url=new URL(await link.getAttribute('href'));expect(url.origin).toBe('https://maps.apple.com');expect(url.searchParams.get('daddr')).toBe('-5.81,-35.21');expect(url.searchParams.get('dirflg')).toBe('d');await expect(link).toHaveAttribute('target','_blank');
+ const google=new URL(await page.locator('#openGoogleMaps').getAttribute('href'));expect(google.origin).toBe('https://www.google.com');expect(google.searchParams.get('api')).toBe('1');expect(google.searchParams.get('destination')).toBe('-5.81,-35.21');expect(google.searchParams.get('dir_action')).toBe('navigate');
+ const waze=new URL(await page.locator('#openWaze').getAttribute('href'));expect(waze.origin).toBe('https://waze.com');expect(waze.searchParams.get('ll')).toBe('-5.81,-35.21');expect(waze.searchParams.get('navigate')).toBe('yes');
+ const before=page.url();await page.route('https://maps.apple.com/**',r=>r.fulfill({status:200,contentType:'text/html',body:'<p>Apple Maps handoff test</p>'}));
+ const popupPromise=page.waitForEvent('popup');await link.click();const popup=await popupPromise;await popup.waitForLoadState();expect(new URL(popup.url()).searchParams.get('daddr')).toBe('-5.81,-35.21');await popup.close();expect(page.url()).toBe(before);
+ const dismiss=dialog=>dialog.dismiss();page.once('dialog',dismiss);await page.locator('#confirmVisit').click();await expect(page.locator('#liveStopList .visited')).toHaveCount(0);
+ page.once('dialog',d=>d.accept());await page.locator('#confirmVisit').click();await expect(page.locator('#liveStopList .visited')).toHaveCount(1);
+ url=new URL(await link.getAttribute('href'));expect(url.searchParams.get('daddr')).toBe('-5.81,-35.2');await expect(page.locator('#liveNextStop')).toContainText('Cliente B');expect(new URL(await page.locator('#openGoogleMaps').getAttribute('href')).searchParams.get('destination')).toBe('-5.81,-35.2');expect(new URL(await page.locator('#openWaze').getAttribute('href')).searchParams.get('ll')).toBe('-5.81,-35.2');
+});

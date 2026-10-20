@@ -7,7 +7,7 @@ export async function prepare(page, {authenticated=true, theme='light', records=
     if(!localStorage.getItem('traxio.account.preferences.v1')) localStorage.setItem('traxio.account.preferences.v1',JSON.stringify({theme,font:100}));
     const user={id:'00000000-0000-4000-8000-000000000001',email:'representante@exemplo.com',user_metadata:{display_name:'Representante Traxio'},app_metadata:{provider:'google'}};
     const session=authenticated?{user}:null;
-    window.__oauthCalls=[]; window.__passwordCalls=[];window.__dataCalls=[];
+    window.__oauthCalls=[];window.__exchangeCalls=[]; window.__passwordCalls=[];window.__dataCalls=[];
     const rows=records.map(c=>({id:c.id,local_id:c.id,data:c,revision:1,deleted_at:null}));
     const query=table=>{
       const result={data:table==='clients'?rows:null,count:table==='clients'?rows.length:0,error:null};
@@ -22,7 +22,7 @@ export async function prepare(page, {authenticated=true, theme='light', records=
       onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
       signInWithPassword:async credentials=>{window.__passwordCalls.push(credentials);return{data:{user},error:null};},
       signInWithOAuth:async options=>{window.__oauthCalls.push(options);return{data:{url:'https://identity.example.test/authorize'},error:null};},
-      exchangeCodeForSession:async()=>({data:{session:{user}},error:null}),
+      exchangeCodeForSession:async code=>{window.__exchangeCalls.push(code);return {data:{session:{user}},error:null};},
       signOut:async()=>({error:null}),resetPasswordForEmail:async()=>({error:null}),updateUser:async()=>({data:{user},error:null}),signUp:async()=>({data:{user,session:null},error:null})
     },from:query})};
   },{authenticated,theme,records});

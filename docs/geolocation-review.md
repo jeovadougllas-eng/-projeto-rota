@@ -1,6 +1,6 @@
 # Geolocalização e navegação — Traxio
 
-Branch: `dev/traxio-mockup-fidelity`. A branch `main` e o banco real não foram alterados por estes testes.
+Branch: `dev/traxio-mockup-fidelity`. A branch `main` não foi alterada. Os testes usam dados isolados e não escrevem no banco real. A contagem inicial de 157 clientes foi verificada em 18/10; uma tentativa de reconferência em 20/10 foi negada pelo conector por falta de permissão, por isso não foi apresentada como nova confirmação do estado do banco.
 
 ## Diagnóstico confirmado
 
@@ -55,3 +55,17 @@ O aplicativo consulta o provedor adicional quando disponível; uma instalação 
 O relatório final e os links das execuções concluídas são adicionados após o término dos testes. Casos implementados: parsing de planilhas, evidência e ambiguidade de endereço, proteção do endpoint, matrizes direcionadas com 157 clientes, composição de percursos grandes, importação → localização → confirmação → rota, desvio GPS, sinal impreciso/antigo, recuperação de rede, cancelamento de respostas e exclusão de paradas visitadas do recálculo.
 
 Testes de navegação determinísticos simulam posições e respostas do roteador. A integração com MapLibre/OSRM reais tem teste separado com GPS simulado. Nenhum teste substitui validação ao dirigir num aparelho físico; não foi realizado deslocamento real por agente.
+
+## Apple Maps e CarPlay
+
+A navegação tem o botão **Abrir no Apple Maps / CarPlay**, que envia as coordenadas da próxima visita ao Apple Maps, com percurso de carro. Abre em outra aba/aplicativo e mantém a carteira na Traxio. A rota das próximas visitas permanece na ordem escolhida na Traxio; cada acionamento envia **uma parada**. O percurso viário, a voz, o trânsito e o recálculo no CarPlay são controlados pelo Apple Maps e podem diferir do percurso OSRM.
+
+Conecte o iPhone ao veículo, abra o destino pelo botão e inicie o trajeto no Mapas. Como o navegador pode suspender o GPS ao trocar de app, ao retornar há **Registrar visita realizada**, com confirmação explícita. A próxima parada é atualizada somente após a visita ser registrada, sem simular chegada GPS. O histórico distingue registros manuais.
+
+Isto é uma passagem de destino ao aplicativo compatível, não uma interface Traxio nativa no CarPlay e não um comando de pareamento. Não há API de navegador que confirme a conexão do veículo. A integração nativa exigiria projeto iOS, conta Apple Developer e autorização específica da Apple. Fontes: [Mapas no CarPlay](https://support.apple.com/guide/iphone/get-turn-by-turn-directions-iph215b053f6/ios), [CarPlay para desenvolvedores](https://developer.apple.com/carplay/) e [URLs do Apple Maps](https://developer.apple.com/documentation/mapkit/unified-map-urls).
+
+O teste automatizado verifica coordenadas, modo de direção, abertura separada, cancelamento/confirmação de visita e atualização do próximo destino. Não houve teste com iPhone ou equipamento CarPlay físico.
+
+## Aplicativos móveis e outros navegadores
+
+Além do Apple Maps, Google Maps e Waze recebem a próxima coordenada confirmada; todos os links são atualizados quando uma visita é registrada. O projeto Android/iOS e seus requisitos de instalação, assinatura, login e CarPlay estão em [mobile/README.md](../mobile/README.md). Nenhuma conta comercial de geocodificação foi criada, conforme a informação do usuário de que ainda não possui uma.

@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const layerSwitch=node('div','map-layer-switch');layerSwitch.setAttribute('role','group');layerSwitch.setAttribute('aria-label','Camada do mapa');
   let satellite=false;
   const layerButtons=['Mapa','Satélite'].map((label,i)=>{const b=button(label,()=>{
-    if(!map?.isStyleLoaded()){el('mapStatus').textContent='Aguarde o carregamento do mapa para trocar a camada.';return;}
+    if(!map?.getStyle()?.layers?.length){el('mapStatus').textContent='Aguarde o carregamento do mapa para trocar a camada.';return;}
     satellite=!!i;
     if(satellite&&!map.getSource('traxio-satellite')){
       map.addSource('traxio-satellite',{type:'raster',tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],tileSize:256,attribution:'Imagery © Esri'});

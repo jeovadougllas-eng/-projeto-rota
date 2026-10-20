@@ -1,3 +1,5 @@
+Aplicativos móveis: [projetos, instalação e requisitos](mobile/README.md). Geolocalização/GPS: [diagnóstico e validação](docs/geolocation-review.md).
+
 # Traxio
 
 Prévia de testes: https://traxio-preview.vercel.app/
