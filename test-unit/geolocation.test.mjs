@@ -7,7 +7,7 @@ const point={lat:-5.84,lon:-35.26,street:'Rua Mira Mangue',house:'922',city:'Nat
 test('imported columns preserve street, house number, neighborhood, city, state and CEP',()=>{
  const q=geo.parse({address:'RUA MIRA MANGUE, 922 LOTE 09 QUADRA 422, NATAL',cep:'59073230',importFields:[{label:'CIDADE',value:'NATAL'},{label:'ESTADO',value:'RN'},{label:'BAIRRO',value:'PLANALTO'}]});
  assert.equal(q.house,'922');assert.equal(q.street,'RUA MIRA MANGUE');assert.equal(q.city,'NATAL');assert.equal(q.state,'RN');assert.equal(q.district,'PLANALTO');
- const sp=geo.parse({address:'Avenida Paulista',city:'São Paulo',houseNumber:'1000',state:'SP'});assert.equal(sp.state,'SP');assert.equal(sp.house,'1000');
+ const sp=geo.parse({address:'Avenida Paulista',city:'São Paulo',houseNumber:'1000',state:'SP'});assert.equal(sp.state,'SP');assert.equal(sp.house,'1000');assert.equal(geo.parse({address:'Rua Exemplo, 123',city:'Natal/RN'}).city,'Natal');assert.equal(geo.parse({address:'Rua Exemplo, 123',city:'Natal/RN'}).state,'RN');
  assert.equal(geo.parse({address:'Rua 25 de Dezembro, LOTE 9, NATAL'}).house,'');
  assert.equal(geo.parse({address:'Rua Teste, nº 123 A, Recife, PE'}).house,'123 A');
  assert.equal(geo.parse({address:'Rua Teste, 123, Recife, PE'}).city,'Recife');
@@ -19,7 +19,7 @@ test('the latest edited address supersedes preserved spreadsheet fields',()=>{
 test('only matching country, municipality, street and house are accepted automatically',()=>{
  assert.equal(geo.rank([point],query).status,'matched');
  for(const change of [{city:'Parnamirim'},{state:'SP'},{country:'US'},{street:'Rua Mira Outra'},{lat:NaN}])assert.equal(geo.rank([{...point,...change}],query).status,'not_found');
- for(const change of [{house:''},{house:'923'},{zip:'59000000'},{interpolated:true},{city:''}])assert.notEqual(geo.rank([{...point,...change}],query).status,'matched');
+ for(const change of [{house:''},{house:'923'},{zip:'59000000'},{interpolated:true},{city:''},{district:'Outro bairro'}])assert.notEqual(geo.rank([{...point,...change}],query).status,'matched');
  assert.notEqual(geo.rank([{...point,house:'922 B'}],{...query,house:'922 A'}).status,'matched');
 });
 test('street candidates remain reviewable; distant address matches remain ambiguous',()=>{

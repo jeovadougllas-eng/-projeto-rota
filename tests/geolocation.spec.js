@@ -40,7 +40,7 @@ test('CSV import geocodes a numbered address and keeps an approximate street pen
  const rows=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1')));
  expect(rows[0].lat).toBe(-5.81);expect(rows[0].locationVerification).toBe('automatic_housenumber');expect(rows[0].houseNumber).toBe('10');
  expect(rows[1].lat).toBeNull();expect(rows[1].locationCandidate.lat).toBe(-5.81);
- expect(queries.every(u=>!u.searchParams.has('lang'))).toBe(true);expect(queries.some(u=>u.searchParams.get('q').includes('10'))).toBe(true);
+ expect(queries.every(u=>u.searchParams.get('lang')==='default')).toBe(true);expect(queries.some(u=>u.searchParams.get('q').includes('10'))).toBe(true);
  await page.reload();await page.locator('body.traxio-ui-ready').waitFor();
  await page.locator('.tabs [data-tab="mapa"]').click();await page.locator('#mapClientListDisclosure summary').click();
  await page.getByRole('button',{name:'Conferir pin sugerido',exact:true}).click();
@@ -80,13 +80,13 @@ test('GPS ignores poor accuracy, brief deviations and stale fixes',async({page})
 });
 
 test('GPS builds missing geometry, retries a failed recalculation and cancels late results when the route ends',async({page})=>{
- await setup(page);let calls=0,lateResolve;const late=new Promise(r=>lateResolve=r);
- await page.route('https://router.project-osrm.org/route/**',async route=>{calls++;if(calls===1){await route.abort();return;}if(calls===3){await late;await route.fulfill({json:routeReply(geometry.coordinates)}).catch(()=>{});return;}await route.fulfill({json:routeReply(geometry.coordinates)});});
+ await setup(page);let calls=0,lateResolve,lateFinished=false;const late=new Promise(r=>lateResolve=r);
+ await page.route('https://router.project-osrm.org/route/**',async route=>{calls++;if(calls===1){await route.abort();return;}if(calls===3){await late;await route.fulfill({json:routeReply(geometry.coordinates)}).catch(()=>{});lateFinished=true;return;}await route.fulfill({json:routeReply(geometry.coordinates)});});
  await navigation(page,{missingGeometry:true});await page.clock.install();await emit(page,-5.812,-35.218);
  await expect(page.locator('#liveGPSState')).toContainText('Sem conexão');expect(calls).toBe(1);
  await page.clock.fastForward(15100);await emit(page,-5.812,-35.217);await expect(page.locator('#liveGPSState')).toContainText('Nova rota calculada');expect(calls).toBe(2);
  await page.clock.fastForward(15100);await emit(page,-5.82,-35.217);await page.clock.fastForward(3100);await emit(page,-5.82,-35.216);await expect.poll(()=>calls).toBe(3);
- page.on('dialog',d=>d.accept());await page.locator('#liveStop').click();await expect(page.locator('#routeResult')).toContainText('encerrada antecipadamente');lateResolve();
+ page.on('dialog',d=>d.accept());await page.locator('#liveStop').click();await expect(page.locator('#routeResult')).toContainText('encerrada antecipadamente');lateResolve();await expect.poll(()=>lateFinished).toBe(true);
  await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#routeResult')).toContainText('encerrada antecipadamente');
 });
 
