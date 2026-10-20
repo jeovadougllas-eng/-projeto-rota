@@ -7,3 +7,15 @@ playwright-report/
 *.log
 test-results-reference/
 test-results-retest/
+mobile/www/
+mobile/node_modules/
+mobile/android/.gradle/
+mobile/android/.idea/
+mobile/android/local.properties
+mobile/android/**/build/
+mobile/android/app/src/main/assets/
+mobile/ios/App/App/public/
+mobile/ios/App/App/capacitor.config.json
+mobile/ios/**/.build/
+mobile/ios/**/xcuserdata/
+mobile/ios/**/DerivedData/

@@ -1,0 +1,9 @@
+{
+  "appId": "app.traxio.mobile",
+  "appName": "Traxio",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "ios": { "contentInset": "automatic" },
+  "android": { "allowMixedContent": false },
+  "plugins": { "Geolocation": { "permissions": ["location", "coarseLocation"] } }
+}
