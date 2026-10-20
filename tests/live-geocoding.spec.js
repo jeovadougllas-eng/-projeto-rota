@@ -5,10 +5,10 @@ test('live Photon geocodes Brazilian address queries without the unsupported Por
  test.setTimeout(60000);
  await prepare(page,{records:[],theme:info.project.metadata.theme});
  const responses=[];
- await page.route('https://photon.komoot.io/api/**',async route=>{
+ await page.route(/^https:\/\/photon\.komoot\.io\/(?:api|structured)\/?(?:\?|$)/,async route=>{
   expect(new URL(route.request().url()).searchParams.get('lang')).toBe('default');await route.continue();
  });
- page.on('response',r=>{if(r.url().startsWith('https://photon.komoot.io/api/'))responses.push(r.status());});
+ page.on('response',r=>{if(r.url().startsWith('https://photon.komoot.io/'))responses.push(r.status());});
  await ready(page);
  const result=await page.evaluate(()=>TraxioGeo.locate({address:'Rua Luiz XV, 770, Natal',city:'Natal',state:'RN'}));
  expect(responses.length).toBeGreaterThan(0);expect(responses.every(s=>s===200)).toBe(true);

@@ -4,7 +4,8 @@ import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 const mobile=new URL('../mobile/',import.meta.url);
 const exists=async path=>access(new URL(path,mobile)).then(()=>true,()=>false);
-for(const platform of ['android','ios'])if(!await exists(platform))execFileSync('npx',['cap','add',platform],{cwd:mobile,stdio:'inherit'});
+const platforms=(process.env.TRAXIO_MOBILE_PLATFORMS||'android').split(',');
+for(const platform of platforms)if(!await exists(platform))execFileSync('npx',['cap','add',platform],{cwd:mobile,stdio:'inherit'});
 const manifest=new URL('android/app/src/main/AndroidManifest.xml',mobile);
 let xml=await readFile(manifest,'utf8');
 if(!xml.includes('app.traxio.mobile'))xml=xml.replace('</activity>',`<intent-filter>
@@ -17,15 +18,18 @@ for(const permission of ['ACCESS_FINE_LOCATION','ACCESS_COARSE_LOCATION'])if(!xm
 xml=xml.replace(/android:icon="[^"]+"/, 'android:icon="@drawable/traxio_icon"').replace(/android:roundIcon="[^"]+"/, 'android:roundIcon="@drawable/traxio_icon"');
 await mkdir(new URL('android/app/src/main/res/drawable/',mobile),{recursive:true});await copyFile(new URL('../assets/visual-kit/assets/app_icon_dark.png',import.meta.url),new URL('android/app/src/main/res/drawable/traxio_icon.png',mobile));
 await writeFile(manifest,xml);
+if(platforms.includes('ios')){
 const plist=new URL('ios/App/App/Info.plist',mobile);let info=await readFile(plist,'utf8');
 const additions={NSLocationWhenInUseUsageDescription:'A Traxio usa sua localização durante a navegação para planejar rotas, recalcular desvios e registrar a chegada aos clientes.'};
 for(const [key,value] of Object.entries(additions))if(!info.includes('<key>'+key+'</key>'))info=info.replace('</dict>','<key>'+key+'</key><string>'+value+'</string>\n</dict>');
 if(!info.includes('CFBundleURLTypes'))info=info.replace('</dict>',`<key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>Traxio authentication</string><key>CFBundleURLSchemes</key><array><string>app.traxio.mobile</string></array></dict></array></dict>`);
 await writeFile(plist,info);
-console.log('Configured foreground GPS permissions and the authenticated app return link on Android/iOS.');
+console.log('Configured foreground GPS permissions and the authenticated app return link.');
 
 const sharp=createRequire(new URL('package.json',mobile))('sharp');
 const icons=new URL('ios/App/App/Assets.xcassets/AppIcon.appiconset/',mobile);
 await mkdir(icons,{recursive:true});
 await sharp(fileURLToPath(new URL('icons/app-icon-source.png',mobile))).resize(1024,1024).png().toFile(fileURLToPath(new URL('AppIcon-1024.png',icons)));
 await writeFile(new URL('Contents.json',icons),JSON.stringify({images:[{filename:'AppIcon-1024.png',idiom:'universal',platform:'ios',size:'1024x1024'}],info:{author:'xcode',version:1}},null,2));
+
+}

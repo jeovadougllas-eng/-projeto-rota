@@ -32,3 +32,28 @@ test('Geoapify interpolation and low building confidence cannot masquerade as pr
  assert.equal(geo.rank(geo.geoapify({features:[{properties:base}]}),query).status,'matched');
  assert.equal(geo.rank(geo.geoapify({features:[{properties:{...base,result_type:'street'}}]}),query).status,'review');
 });
+
+test('lookup validates CEP and queries structured street/number before free-text fallback',async()=>{
+ const {readFile}=await import('node:fs/promises'),{runInNewContext}=await import('node:vm');
+ const source=await readFile(new URL('../assets/traxio-geolocation.js',import.meta.url),'utf8');
+ const calls=[];const context={AbortSignal,URL,Date,setTimeout:fn=>fn(),fetch:async url=>{calls.push(new URL(url));return {ok:true,json:async()=>String(url).includes('viacep')?{logradouro:'Rua Mira Mangue',bairro:'Planalto',localidade:'Natal',uf:'RN'}:{features:[{geometry:{coordinates:[-35.26,-5.84]},properties:{street:'Rua Mira Mangue',housenumber:'922',city:'Natal',state:'Rio Grande do Norte',postcode:'59073230',countrycode:'BR'}}]}};}};
+ runInNewContext(source,context);
+ const result=await context.TraxioGeo.locate({address:'Rua Mira Mangue, 922',city:'Natal',state:'RN',cep:'59073230'});
+ assert.equal(result.status,'matched');assert.equal(calls.length,2);assert.ok(calls[0].hostname.includes('viacep'));assert.equal(calls[1].pathname,'/structured');assert.equal(calls[1].searchParams.get('postcode'),'59073230');assert.equal(calls[1].searchParams.get('housenumber'),'922');assert.equal(calls[1].searchParams.get('lang'),'default');assert.equal(result.query.postal.source,'ViaCEP');
+});
+
+test('a postal conflict cannot be automatically accepted, and an invalid CEP stops lookup',async()=>{
+ const {readFile}=await import('node:fs/promises'),{runInNewContext}=await import('node:vm');const source=await readFile(new URL('../assets/traxio-geolocation.js',import.meta.url),'utf8');
+ for(const invalid of [false,true]){
+  const context={AbortSignal,URL,Date,setTimeout:fn=>fn(),fetch:async url=>({ok:true,json:async()=>String(url).includes('viacep')?(invalid?{erro:true}:{logradouro:'Rua Outra',localidade:'Natal',uf:'RN'}):{features:[{geometry:{coordinates:[-35.26,-5.84]},properties:{street:'Rua Mira Mangue',housenumber:'922',city:'Natal',postcode:'59073230',countrycode:'BR'}}]}})};
+  runInNewContext(source,context);const promise=context.TraxioGeo.locate({address:'Rua Mira Mangue, 922',city:'Natal',state:'RN',cep:'59073230'});
+  if(invalid)await assert.rejects(promise,/CEP não encontrado/);else{const result=await promise;assert.equal(result.status,'review');assert.match(result.reason,/divergência de logradouro/);}
+ }
+});
+
+test('all automatic query variants run before a street-only result requires manual review',async()=>{
+ const {readFile}=await import('node:fs/promises'),{runInNewContext}=await import('node:vm');const source=await readFile(new URL('../assets/traxio-geolocation.js',import.meta.url),'utf8');const calls=[];
+ const context={AbortSignal,URL,Date,setTimeout:fn=>fn(),fetch:async url=>{calls.push(String(url));return {ok:true,json:async()=>({features:[{geometry:{coordinates:[-35.26,-5.84]},properties:{street:'Rua Mira Mangue',city:'Natal',countrycode:'BR'}}]})};}};
+ runInNewContext(source,context);const result=await context.TraxioGeo.locate({address:'Rua Mira Mangue, 922',city:'Natal',state:'RN'});
+ assert.equal(result.status,'review');assert.equal(calls.length,3);assert.ok(calls[0].includes('/structured?'));assert.ok(calls.slice(1).every(u=>u.includes('/api/')));assert.equal(result.best.house,'');
+});

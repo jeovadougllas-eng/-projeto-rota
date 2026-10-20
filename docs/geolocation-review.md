@@ -69,3 +69,15 @@ O teste automatizado verifica coordenadas, modo de direção, abertura separada,
 ## Aplicativos móveis e outros navegadores
 
 Além do Apple Maps, Google Maps e Waze recebem a próxima coordenada confirmada; todos os links são atualizados quando uma visita é registrada. O projeto Android/iOS e seus requisitos de instalação, assinatura, login e CarPlay estão em [mobile/README.md](../mobile/README.md). Nenhuma conta comercial de geocodificação foi criada, conforme a informação do usuário de que ainda não possui uma.
+
+## Refinamento por CEP, rua e número
+
+O usuário definiu a confirmação no mapa como último recurso. Para CEP de oito dígitos, a consulta postal passa a ocorrer mesmo quando a planilha já contém cidade/UF. Há cache e reaproveitamento da evidência; o centroide do CEP nunca é usado como ponto do cliente. Divergências de CEP/logradouro/município/UF bloqueiam aceitação automática e aparecem no diagnóstico.
+
+Antes de apresentar uma revisão manual, a busca tenta: provedor adicional quando configurado; Photon estruturado com CEP, rua, número, município e UF; consulta textual completa; consulta textual simplificada sem ruído. Endereço postal canônico também é tentado quando diverge, mantendo o conflito visível. O sistema só atribui coordenadas automaticamente com correspondência suficiente de número e endereço; não transforma centro de rua em imóvel exato.
+
+A documentação atual do [Geoapify](https://apidocs.geoapify.com/docs/geocoding/) informa plano gratuito com até 3.000 consultas/dia, sem cartão e com atribuição obrigatória. A integração está preparada, mas a conta/chave ainda não foi fornecida/configurada. Não foi ativado plano pago. Esse motor adicional também precisa ser medido nos endereços reais; sua ativação não garante automaticamente cobertura de todos os números.
+
+## Escopo atual
+
+Somente site e Android. iOS pausado a pedido do usuário. O APK é disponibilizado pelo arquivo de desenvolvimento e pelo site, após o teste no emulador; não depende de publicação na Play Store para os testes.

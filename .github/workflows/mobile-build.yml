@@ -1,8 +1,8 @@
-name: Traxio Android and iOS
+name: Traxio Android
 on:
   push:
     branches: [dev/traxio-mockup-fidelity]
-    paths: ['mobile/**', 'scripts/*mobile*', 'assets/traxio-native.js', '.github/workflows/mobile-build.yml']
+    paths: ['mobile/**', 'index.html', 'assets/**', 'scripts/*mobile*', 'scripts/android-smoke.mjs', '.github/workflows/mobile-build.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -25,9 +25,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add mobile/package-lock.json mobile/android mobile/ios
+          git add mobile/package-lock.json mobile/android
           if ! git diff --cached --quiet; then
-            git commit -m "build: generate Traxio Android and iOS projects [skip ci]"
+            git commit -m "build: update Traxio Android project [skip ci]"
             git pull --rebase origin "$GITHUB_REF_NAME"
             git push origin "HEAD:$GITHUB_REF_NAME"
           fi
@@ -74,15 +74,18 @@ jobs:
             adb shell settings put secure location_mode 3
             adb emu geo fix -35.211 -5.795
             node scripts/android-smoke.mjs
-      - name: Publish the development APK for direct installation
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Preserve the tested APK and runtime evidence on the development branch
         run: |
-          if ! gh release view traxio-mobile-preview >/dev/null 2>&1; then
-            gh release create traxio-mobile-preview --target "$(git rev-parse HEAD)" --prerelease --title "Traxio — aplicativos de teste" --notes "Aplicativos gerados da branch dev/traxio-mockup-fidelity. Android: APK de testes. iOS: projeto e aplicativo para simulador; instalação no iPhone depende de assinatura Apple. A branch main permanece preservada."
-          fi
-          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk /tmp/traxio-android-testes.apk
-          gh release upload traxio-mobile-preview /tmp/traxio-android-testes.apk --clobber
+          mkdir -p downloads docs/captures/android
+          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk downloads/traxio-android-testes.apk
+          sha256sum downloads/traxio-android-testes.apk > downloads/traxio-android-testes.sha256
+          cp mobile/evidence/* docs/captures/android/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/ docs/captures/android/
+          git commit -m "build: publish tested Android APK and native GPS evidence [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -94,44 +97,3 @@ jobs:
           name: traxio-android-debug-apk
           retention-days: 30
           path: mobile/android/app/build/outputs/apk/debug/app-debug.apk
-  ios:
-    needs: prepare
-    runs-on: macos-15
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: dev/traxio-mockup-fidelity
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm ci --prefix mobile --ignore-scripts
-      - run: node scripts/build-mobile.mjs
-      - run: npm run prepare:platforms --prefix mobile
-      - run: npx cap sync ios
-        working-directory: mobile
-      - name: Compile the iOS simulator app without distribution credentials
-        run: |
-          xcodebuild -version
-          xcodebuild -project mobile/ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/traxio-ios-build CODE_SIGNING_ALLOWED=NO build
-      - name: Install and launch in an iPhone simulator
-        run: |
-          simulator_id=$(xcrun simctl list devices available --json | node -e 'let t="";process.stdin.on("data",c=>t+=c);process.stdin.on("end",()=>{const devices=Object.values(JSON.parse(t).devices).flat();const d=devices.find(d=>d.name.startsWith("iPhone"));if(!d)process.exit(1);process.stdout.write(d.udid);});')
-          xcrun simctl boot "$simulator_id"
-          xcrun simctl bootstatus "$simulator_id" -b
-          xcrun simctl install "$simulator_id" /tmp/traxio-ios-build/Build/Products/Debug-iphonesimulator/App.app
-          xcrun simctl launch "$simulator_id" app.traxio.mobile
-          mkdir -p mobile/evidence
-          sleep 8
-          xcrun simctl io "$simulator_id" screenshot mobile/evidence/ios-login.png
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: traxio-ios-runtime-evidence
-          retention-days: 30
-          path: mobile/evidence/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: traxio-ios-simulator-app
-          retention-days: 30
-          path: /tmp/traxio-ios-build/Build/Products/Debug-iphonesimulator/App.app

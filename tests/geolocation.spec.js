@@ -30,8 +30,8 @@ const routeReply=coords=>({code:'Ok',routes:[{geometry:{type:'LineString',coordi
 
 test('CSV import geocodes a numbered address and keeps an approximate street pending for explicit review',async({page},info)=>{
  test.setTimeout(35000);await setup(page);page.on('dialog',d=>d.dismiss());let queries=[];
- await page.route('https://photon.komoot.io/api/**',async route=>{
-  const u=new URL(route.request().url());queries.push(u);const street=u.searchParams.get('q').includes('Rua Exata')?'Rua Exata':'Rua Aproximada';
+ await page.route(/^https:\/\/photon\.komoot\.io\/(?:api|structured)\/?(?:\?|$)/,async route=>{
+  const u=new URL(route.request().url());queries.push(u);const street=(u.searchParams.get('q')||u.searchParams.get('street')||'').includes('Rua Exata')?'Rua Exata':'Rua Aproximada';
   await route.fulfill({json:{features:[{geometry:{type:'Point',coordinates:[-35.21,-5.81]},properties:{street,housenumber:street==='Rua Exata'?'10':undefined,city:'Natal',state:'Rio Grande do Norte',countrycode:'BR'}}]}});
  });
  await page.locator('.tabs [data-tab="dados"]').click();
@@ -40,7 +40,7 @@ test('CSV import geocodes a numbered address and keeps an approximate street pen
  const rows=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1')));
  expect(rows[0].lat).toBe(-5.81);expect(rows[0].locationVerification).toBe('automatic_housenumber');expect(rows[0].houseNumber).toBe('10');
  expect(rows[1].lat).toBeNull();expect(rows[1].locationCandidate.lat).toBe(-5.81);
- expect(queries.every(u=>u.searchParams.get('lang')==='default')).toBe(true);expect(queries.some(u=>u.searchParams.get('q').includes('10'))).toBe(true);
+ expect(queries.every(u=>u.searchParams.get('lang')==='default')).toBe(true);expect(queries.some(u=>(u.searchParams.get('q')||u.searchParams.get('housenumber')||'').includes('10'))).toBe(true);
  await page.reload();await page.locator('body.traxio-ui-ready').waitFor();
  await page.locator('.tabs [data-tab="mapa"]').click();await page.locator('#mapClientListDisclosure summary').click();
  await page.getByRole('button',{name:'Conferir pin sugerido',exact:true}).click();

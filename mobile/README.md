@@ -1,3 +1,7 @@
+# Android ativo; iOS pausado
+
+Por decisão do usuário em 20/10/2026, a entrega e os builds atuais abrangem somente o site e o Android. O código iOS previamente preparado permanece guardado; não há compilação, assinatura ou distribuição iOS em andamento.
+
 # Traxio para Android e iOS
 
 Os projetos usam Capacitor 8 e a mesma interface, identidade visual, autenticação e sincronização Supabase do site. ID inicial: `app.traxio.mobile`.
@@ -37,7 +41,7 @@ Os testes automatizados verificam o contrato com os plugins e os dois provedores
 
 ## Builds e instalação
 
-O workflow [Traxio Android and iOS](https://github.com/jeovadougllas-eng/-projeto-rota/actions/workflows/mobile-build.yml) gera os projetos, o APK debug de testes e o aplicativo para simulador iOS. Os artefatos são retidos por 30 dias. Um APK aprovado pelos testes é publicado como pré-lançamento da branch de desenvolvimento, sem alteração da `main`.
+O workflow [Traxio Android and iOS](https://github.com/jeovadougllas-eng/-projeto-rota/actions/workflows/mobile-build.yml) gera os projetos, o APK debug de testes e o aplicativo para simulador iOS. Os artefatos são retidos por 30 dias. O APK aprovado pelos testes é salvo em `downloads/traxio-android-testes.apk` na branch de desenvolvimento e nos artefatos da execução, sem alteração da `main`. A tentativa de criar um release público foi recusada pela integração GitHub (HTTP 403); a entrega usa arquivos e artefatos permitidos, sem ampliar permissões.
 
 - Android: APK debug instalável para testes. Publicação Google Play e atualizações assinadas exigem keystore de distribuição da proprietária/conta responsável; não foram configuradas.
 - iOS: projeto Xcode e compilação para simulador. **O pacote de simulador não instala em iPhone.** Instalação via TestFlight/App Store requer conta Apple Developer, equipe, assinatura e provisionamento; não foram solicitados nem utilizados certificados do usuário.
