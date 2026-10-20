@@ -2,7 +2,7 @@ name: Traxio geolocation review
 on:
   push:
     branches: [dev/traxio-mockup-fidelity]
-    paths-ignore: ['mobile/**', 'scripts/*mobile*', 'scripts/android-smoke.mjs', '.github/workflows/mobile-build.yml', '.github/workflows/interface-review.yml', '.github/workflows/geolocation-review.yml']
+    paths: ['index.html', 'assets/traxio-geolocation.js', 'assets/traxio-native.js', 'api/**', 'tests/**', 'test-unit/**', 'scripts/geolocation*', 'package*.json']
   workflow_dispatch:
 permissions:
   contents: read
