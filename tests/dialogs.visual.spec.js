@@ -26,6 +26,7 @@ test('account menu, settings, client details and editor — visual review',async
 test('registration and password recovery — visual review',async({page},testInfo)=>{
   await prepare(page,{authenticated:false,theme:testInfo.project.metadata.theme});await ready(page);
   await page.locator('#authRegisterToggle').click();await expect(page.locator('#authRegisterForm')).toBeVisible();
+  if(page.viewportSize().width<=650)await expect(page.locator('.auth-approved-scene>.original-login-art')).toBeHidden();
   await expect(page).toHaveScreenshot('register.png',{animations:'disabled'});
   await page.locator('#authBack').click();await page.locator('#authForgotToggle').click();
   await expect(page.locator('#authForgotForm')).toBeVisible();
