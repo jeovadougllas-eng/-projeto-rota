@@ -5,6 +5,7 @@ const [device]=await android.devices();if(!device)throw Error('No Android emulat
 await device.shell('am start -n app.traxio.mobile/.MainActivity');
 const view=await device.webView({pkg:'app.traxio.mobile'}),page=await view.page();
 await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
+if(await page.evaluate(()=>innerWidth)<=650&&await page.locator('.auth-approved-scene>.original-login-art').isVisible())throw Error('Duplicate background wordmark on a small screen.');
 await page.locator('#authSocial [data-provider="google"]').waitFor();await page.locator('#authSocial [data-provider="azure"]').waitFor();
 const native=await page.evaluate(()=>({native:Capacitor.isNativePlatform(),platform:Capacitor.getPlatform(),geo:Capacitor.isPluginAvailable('Geolocation'),launcher:Capacitor.isPluginAvailable('AppLauncher'),browser:Capacitor.isPluginAvailable('Browser'),redirect:TraxioNative.authRedirect}));
 if(!native.native||native.platform!=='android'||!native.geo||!native.launcher||!native.browser||native.redirect!=='app.traxio.mobile://auth/callback')throw Error('Native bridge or GPS plugin missing.');

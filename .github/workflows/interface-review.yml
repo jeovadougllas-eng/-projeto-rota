@@ -58,6 +58,9 @@ jobs:
           fi
       - name: Verify core flows before the full matrix
         run: npm test -- --project=desktop-light tests/auth.spec.js tests/flows.spec.js tests/geolocation.spec.js
+      - name: Refresh only the intentionally corrected phone login captures
+        if: contains(github.event.head_commit.message, '[refresh phone login]')
+        run: npm test -- --project=phone-light --project=phone-dark tests/visual.spec.js --grep '^login' --update-snapshots
       - name: Browser matrix and visual regression checks
         run: |
           if [ "${{ inputs.refresh_snapshots || contains(github.event.head_commit.message, '[refresh snapshots]') }}" = "true" ]; then

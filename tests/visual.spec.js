@@ -5,6 +5,7 @@ test('login — approved composition',async({page},testInfo)=>{
   await prepare(page,{authenticated:false,theme:testInfo.project.metadata.theme}); await ready(page);
   await expect(page.getByRole('heading',{name:'Acesse sua conta'})).toBeVisible();
   await expect(page.locator('.auth-brand-panel .brand-crop img')).toHaveAttribute('src','assets/visual-kit/assets/login_hero_reference.png');
+  if(page.viewportSize().width<=650)await expect(page.locator('.auth-approved-scene>.original-login-art')).toBeHidden();
   if(page.viewportSize().width>650){const description=page.locator('.auth-heading p');const dimensions=await description.evaluate(n=>({height:n.getBoundingClientRect().height,lineHeight:parseFloat(getComputedStyle(n).lineHeight)}));expect(dimensions.height).toBeLessThanOrEqual(dimensions.lineHeight+1);}
   await expect(page).toHaveScreenshot('login.png',{animations:'disabled'});
 });
