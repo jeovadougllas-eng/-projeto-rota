@@ -47,6 +47,10 @@ function rank(items,q){
 }
 function photon(data){return (data.features||[]).map(f=>{const p=f.properties||{},xy=f.geometry?.coordinates||[];return {lat:xy[1],lon:xy[0],street:p.street||p.name||'',house:p.housenumber||'',city:p.city||p.town||p.village||'',district:p.district||p.suburb||'',state:p.state||'',zip:p.postcode||'',country:p.countrycode||'',label:[p.name,p.street,p.housenumber,p.district,p.city,p.state].filter(Boolean).join(', '),provider:'photon_osm',attribution:'© OpenStreetMap contributors',interpolated:p.osm_value==='interpolation'};});}
 function geoapify(data){return (data.features||[]).map(f=>{const p=f.properties||{},xy=f.geometry?.coordinates||[];return {lat:p.lat??xy[1],lon:p.lon??xy[0],street:p.street||'',house:p.housenumber||'',city:p.city||p.town||p.village||'',district:p.suburb||'',state:p.state_code||p.state||'',zip:p.postcode||'',country:p.country_code||'',label:p.formatted||'',provider:'geoapify',attribution:p.datasource?.attribution||'Powered by Geoapify · © OpenStreetMap contributors',interpolated:p.result_type!=='building'||(p.rank?.confidence_building_level??0)<0.9};});}
+function ensureAttribution(){
+ const doc=root.document,target=doc?.getElementById('map');if(!target||doc.getElementById('traxio-geocoding-credit'))return;
+ const credit=doc.createElement('p'),link=doc.createElement('a');credit.id='traxio-geocoding-credit';credit.className='muted';credit.style.display='block';credit.style.fontSize='12px';credit.style.padding='8px';link.href='https://www.geoapify.com/';link.target='_blank';link.rel='noopener noreferrer';link.textContent='Geocoding by Geoapify';credit.append(link,' · © OpenStreetMap contributors');target.after(credit);
+}
 const cache=new Map(),postalCache=new Map();let queue=Promise.resolve(),lastCall=0,additionalProvider=true;
 async function getJSON(url,signal){
  const work=queue.catch(()=>{}).then(async()=>{const wait=Math.max(0,1600-(Date.now()-lastCall));if(wait)await new Promise(r=>setTimeout(r,wait));signal?.throwIfAborted();lastCall=Date.now();const r=await fetch(url,{signal:signal?AbortSignal.any([signal,AbortSignal.timeout(14000)]):AbortSignal.timeout(14000)});if(!r.ok)throw Error('Busca indisponível (HTTP '+r.status+')');return r.json();});
@@ -81,7 +85,7 @@ async function locate(client,{signal,token}={}){
  const key=JSON.stringify(q),saved=cache.get(key);if(saved&&Date.now()-saved.at<600000)return saved.result;
  let result,commercial=[];
  if(token&&additionalProvider){
-  try{const r=await fetch((root.TraxioNative?.apiBase||'')+'/api/geocode',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(16000)]):AbortSignal.timeout(16000)});if(r.status===503||r.status===404)additionalProvider=false;if(r.ok){commercial=geoapify(await r.json());result=rank(commercial,q);if(result.status==='matched'){cache.set(key,{at:Date.now(),result});return result;}}}catch(e){if(signal?.aborted)throw e;}
+  try{const r=await fetch((root.TraxioNative?.apiBase||'')+'/api/geocode',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(16000)]):AbortSignal.timeout(16000)});if(r.status===503||r.status===404)additionalProvider=false;if(r.ok){ensureAttribution();commercial=geoapify(await r.json());result=rank(commercial,q);if(result.status==='matched'){cache.set(key,{at:Date.now(),result});return result;}}}catch(e){if(signal?.aborted)throw e;}
  }
  let all=[...commercial],lastError;
  const structured=new URL('https://photon.komoot.io/structured');
@@ -96,5 +100,5 @@ async function locate(client,{signal,token}={}){
  result=rank(all,q);if(q.postalIssue)result.reason=q.postalIssue;if(result.status==='not_found'&&lastError)throw lastError;
  cache.set(key,{at:Date.now(),result});return result;
 }
-root.TraxioGeo={parse,rank,assess,photon,geoapify,locate,meters,stateCode};
+root.TraxioGeo={parse,rank,assess,photon,geoapify,locate,meters,stateCode,ensureAttribution};
 })(globalThis);

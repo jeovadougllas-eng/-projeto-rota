@@ -139,6 +139,7 @@ function queueClientGeocode(ids){
 function queueSelectedGeocode(){return queueClientGeocode(selectedIds)}
 function renderMarkers(){
  if(!map)return;
+ if(clients.some(c=>c.locationSource==='geoapify'||c.locationCandidate?.provider==='geoapify'))TraxioGeo.ensureAttribution();
  markers.forEach(m=>m.remove());markers=[];
  const chosen=clients.filter(c=>selectedIds.has(c.id)&&valid(c.lat,c.lon)&&!window.traxioVisitedIds?.has(String(c.id)));
  chosen.forEach((c,i)=>{
