@@ -35,7 +35,7 @@ O diagnóstico remoto de 18/10/2026, execução [39083370085](https://github.com
 |---|---|---|
 | [Photon](https://github.com/komoot/photon) | Geocodificação OSM, busca livre/estruturada. Servidor de demonstração sem garantia de disponibilidade e cobertura de números variável. | Corrigido e consultado realmente; requisições serializadas. |
 | [Nominatim](https://operations.osmfoundation.org/policies/nominatim/) | Geocodificador OSM; servidor público limitado a 1 req/s no total da aplicação, sem autocomplete, com regras de cache e uso em lote. | Não foi adicionado como mecanismo de lote. A busca avulsa anterior permanece. |
-| [ViaCEP](https://viacep.com.br/) / [BrasilAPI CEP](https://brasilapi.com.br/docs#tag/CEP-V2) | Complementam logradouro/localidade pelo CEP. Coordenada do CEP não confirma número ou estabelecimento. | Consultados realmente; ViaCEP usado somente para completar localidade. |
+| [ViaCEP](https://viacep.com.br/) / [BrasilAPI CEP](https://brasilapi.com.br/docs#tag/CEP-V2) | Complementam logradouro/localidade pelo CEP. Coordenada do CEP não confirma número ou estabelecimento. | Consultados realmente; ViaCEP valida o CEP e a coerência de rua/localidade; nunca fornece o ponto do imóvel. |
 | [Geoapify](https://apidocs.geoapify.com/docs/geocoding/) | Busca estruturada, evidência de correspondência e confiança por imóvel. Permite [armazenamento de resultados](https://www.geoapify.com/geocoding-api/), respeitando atribuições. Também depende de cobertura dos dados. | Adaptador opcional implementado no servidor. **Não ativado: nenhuma chave configurada.** |
 | [HERE](https://docs.here.com/geocoding-and-search/docs/geocode) | Distingue número, rua e localidade, com evidência de correspondência. É preciso comparar cobertura nos endereços reais e verificar plano/licença. | Documentação avaliada; sem credencial, sem chamadas reais. |
 | [TomTom](https://docs.tomtom.com/geocoding-api/documentation/tomtom-maps/v1/structured-geocode) | Geocodificação estruturada com níveis de endereço e confiança. Cobertura precisa ser medida na carteira. | Documentação avaliada; sem credencial, sem chamadas reais. |
@@ -52,7 +52,7 @@ O aplicativo consulta o provedor adicional quando disponível; uma instalação 
 
 ## Verificação
 
-O relatório final e os links das execuções concluídas são adicionados após o término dos testes. Casos implementados: parsing de planilhas, evidência e ambiguidade de endereço, proteção do endpoint, matrizes direcionadas com 157 clientes, composição de percursos grandes, importação → localização → confirmação → rota, desvio GPS, sinal impreciso/antigo, recuperação de rede, cancelamento de respostas e exclusão de paradas visitadas do recálculo.
+[Execução de geolocalização 39497705335](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39497705335): **12 testes unitários e 11 testes de navegador aprovados**, incluindo as consultas públicas reais a Photon/ViaCEP/OSRM. Casos implementados: parsing de planilhas, evidência e ambiguidade de endereço, proteção do endpoint, matrizes direcionadas com 157 clientes, composição de percursos grandes, importação → localização → confirmação → rota, desvio GPS, sinal impreciso/antigo, recuperação de rede, cancelamento de respostas e exclusão de paradas visitadas do recálculo.
 
 Testes de navegação determinísticos simulam posições e respostas do roteador. A integração com MapLibre/OSRM reais tem teste separado com GPS simulado. Nenhum teste substitui validação ao dirigir num aparelho físico; não foi realizado deslocamento real por agente.
 
@@ -81,3 +81,15 @@ A documentação atual do [Geoapify](https://apidocs.geoapify.com/docs/geocoding
 ## Escopo atual
 
 Somente site e Android. iOS pausado a pedido do usuário. O APK é disponibilizado pelo arquivo de desenvolvimento e pelo site, após o teste no emulador; não depende de publicação na Play Store para os testes.
+
+## Evidência Android
+
+A execução anterior [39496227587](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39496227587), job Android `118882021329`, compilou, instalou e abriu o APK no emulador Android 35. O teste verificou a interface, os dois botões OAuth, o runtime Capacitor, os plugins de localização/abertura e coordenadas GPS simuladas. O job falhou depois, exclusivamente na criação de release GitHub (HTTP 403). O workflow atual entrega o APK por arquivo na branch e artefato, sem depender dessa permissão. A execução Android final é registrada após o término.
+
+O login Google/Microsoft **real no APK** ainda depende de conferir/adicionar `app.traxio.mobile://auth/callback` à lista Redirect URLs do Supabase Auth; o agente não tem acesso administrativo para fazer essa configuração. Os testes com respostas isoladas comprovam o contrato PKCE, sem substituir essa configuração ou um login real. O site mantém os retornos de autenticação existentes.
+
+## Regressão final do site
+
+[Execução 39497705339](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39497705339), código `bd2d030c7e0db6d96b65e26ad32c97f472d3890c`: **248 testes da matriz aprovados**, além de 17 fluxos iniciais e dez comparações de referência (cinco anteriores, cinco atuais). Foram cobertas as quatro resoluções 1440×1000, 1024×768, 768×1024 e 390×844 em claro/escuro. As capturas de telas, menus e diálogos foram comparadas às linhas de base existentes; elas não foram atualizadas para aceitar diferenças nesta correção. Também passaram os testes com mapa/tiles e roteador reais, GPS simulado, cancelamento e retomada de recálculo. Os 17 arquivos originais do kit mantiveram seus hashes.
+
+As capturas e o relatório Playwright ficam nos artefatos dessa execução; a comparação com o mockup continua em https://traxio-preview.vercel.app/docs/reference-review.html . Passar na regressão visual não significa identidade pixel a pixel com o mockup: as diferenças previamente documentadas em `kit-review.md` continuam explícitas.
