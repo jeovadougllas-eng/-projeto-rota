@@ -52,7 +52,7 @@ O aplicativo consulta o provedor adicional quando disponível; uma instalação 
 
 ## Verificação
 
-[Execução de geolocalização 39497705335](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39497705335): **12 testes unitários e 11 testes de navegador aprovados**, incluindo as consultas públicas reais a Photon/ViaCEP/OSRM. Casos implementados: parsing de planilhas, evidência e ambiguidade de endereço, proteção do endpoint, matrizes direcionadas com 157 clientes, composição de percursos grandes, importação → localização → confirmação → rota, desvio GPS, sinal impreciso/antigo, recuperação de rede, cancelamento de respostas e exclusão de paradas visitadas do recálculo.
+[Execução de geolocalização 39501291117](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39501291117): **12 testes unitários e 11 testes de navegador aprovados**, incluindo as consultas públicas reais a Photon/ViaCEP/OSRM. Casos implementados: parsing de planilhas, evidência e ambiguidade de endereço, proteção do endpoint, matrizes direcionadas com 157 clientes, composição de percursos grandes, importação → localização → confirmação → rota, desvio GPS, sinal impreciso/antigo, recuperação de rede, cancelamento de respostas e exclusão de paradas visitadas do recálculo.
 
 Testes de navegação determinísticos simulam posições e respostas do roteador. A integração com MapLibre/OSRM reais tem teste separado com GPS simulado. Nenhum teste substitui validação ao dirigir num aparelho físico; não foi realizado deslocamento real por agente.
 
@@ -84,12 +84,28 @@ Somente site e Android. iOS pausado a pedido do usuário. O APK é disponibiliza
 
 ## Evidência Android
 
-A execução anterior [39496227587](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39496227587), job Android `118882021329`, compilou, instalou e abriu o APK no emulador Android 35. O teste verificou a interface, os dois botões OAuth, o runtime Capacitor, os plugins de localização/abertura e coordenadas GPS simuladas. O job falhou depois, exclusivamente na criação de release GitHub (HTTP 403). O workflow atual entrega o APK por arquivo na branch e artefato, sem depender dessa permissão. A execução Android final é registrada após o término.
+A execução final [39500124473](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39500124473), job Android `118895685816`, foi **aprovada**. Compilou, instalou e abriu o APK no emulador Android 35. Verificou a interface, os dois botões OAuth, o runtime Capacitor, os plugins de localização/abertura e coordenadas GPS simuladas. A captura de 320×640 foi inspecionada: a marca aparece uma vez, com o lettering original, após a correção da camada de fundo móvel. O teste nativo também rejeita a reaparição da duplicação. O instalador foi preservado na branch e nos artefatos após os testes. Não houve publicação na Play Store.
 
 O login Google/Microsoft **real no APK** ainda depende de conferir/adicionar `app.traxio.mobile://auth/callback` à lista Redirect URLs do Supabase Auth; o agente não tem acesso administrativo para fazer essa configuração. Os testes com respostas isoladas comprovam o contrato PKCE, sem substituir essa configuração ou um login real. O site mantém os retornos de autenticação existentes.
 
 ## Regressão final do site
 
-[Execução 39497705339](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39497705339), código `bd2d030c7e0db6d96b65e26ad32c97f472d3890c`: **248 testes da matriz aprovados**, além de 17 fluxos iniciais e dez comparações de referência (cinco anteriores, cinco atuais). Foram cobertas as quatro resoluções 1440×1000, 1024×768, 768×1024 e 390×844 em claro/escuro. As capturas de telas, menus e diálogos foram comparadas às linhas de base existentes; elas não foram atualizadas para aceitar diferenças nesta correção. Também passaram os testes com mapa/tiles e roteador reais, GPS simulado, cancelamento e retomada de recálculo. Os 17 arquivos originais do kit mantiveram seus hashes.
+[Execução 39501291036](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39501291036), código `c358ceff25d90a4d453c906cf5fcf40a6db51e0f`: **248 testes da matriz aprovados**, além de 17 fluxos iniciais e dez comparações de referência (cinco anteriores, cinco atuais). Foram cobertas as quatro resoluções 1440×1000, 1024×768, 768×1024 e 390×844 em claro/escuro. As capturas de telas, menus e diálogos foram comparadas às linhas de base existentes. Somente as seis imagens móveis de login, cadastro e recuperação em claro/escuro foram atualizadas intencionalmente para remover a marca duplicada no fundo, após inspeção da captura Android. Os quatro testes dessas telas passaram na atualização seletiva; em seguida a matriz completa de 248 passou sem aceitar novas diferenças. O limite de diferença visual permaneceu inalterado. Também passaram os testes com mapa/tiles e roteador reais, GPS simulado, cancelamento e retomada de recálculo. Os 17 arquivos originais do kit mantiveram seus hashes.
 
 As capturas e o relatório Playwright ficam nos artefatos dessa execução; a comparação com o mockup continua em https://traxio-preview.vercel.app/docs/reference-review.html . Passar na regressão visual não significa identidade pixel a pixel com o mockup: as diferenças previamente documentadas em `kit-review.md` continuam explícitas.
+
+## Arquivos Android de teste
+
+- [APK](https://traxio-preview.vercel.app/downloads/traxio-android-testes.apk)
+- [SHA-256](https://traxio-preview.vercel.app/downloads/traxio-android-testes.sha256)
+- [Captura do aplicativo instalado](captures/android/android-login.png) e [evidência de runtime/GPS simulado](captures/android/android-runtime.json).
+
+SHA-256 do APK final: `4b4d2052f89505ac0c5e6bdae0fde61decbeab2e0a0cb52eb88b7eea18a729f2`. As coordenadas do emulador são dados simulados, sem comprovação de precisão física.
+
+Correções adicionais da revisão: o CEP corrigido no cadastro tem precedência sobre a coluna antiga preservada da planilha; quando usado o provedor adicional, seu crédito é exibido e reaparece para resultados salvos. Não há chave Geoapify configurada, nem teste real desse provedor. A cobertura de números dos clientes reais ainda precisa ser medida com uma credencial autorizada; não foi afirmado que todos os 157 imóveis estão localizados.
+
+## Verificação pública da entrega
+
+A execução [39501598273](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39501598273) acessou a URL estável sem autenticação Vercel: página e SDK HTTP 200, código do CEP corrigido presente, endpoint de geocodificação GET 405 esperado. Fez download completo do APK, conferiu tipo MIME/attachment/no-store e comparou seu SHA-256 ao arquivo aprovado. Nenhuma chave, cookie de bypass ou login foi usado nessa checagem pública.
+
+Publicação feita somente no projeto de testes `traxio-preview`, com código da branch `dev/traxio-mockup-fidelity`. A URL é https://traxio-preview.vercel.app/ . A branch `main` permanece em `84b23d405fa141854314267b528544a184e89f23`.
