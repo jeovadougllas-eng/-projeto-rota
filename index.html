@@ -971,17 +971,12 @@ set(Number(items[0].lat),Number(items[0].lon),address);status('Endereço encontr
 }catch(e){status(e.message)}finally{$('avulsoSearch').disabled=false}
 };
 $('avulsoRoute').onclick=async()=>{
-if(!dest)return;
-$('avulsoRoute').disabled=true;status('Obtendo GPS e calculando rota por ruas…');
-try{
-const start=await requestGPS();const road=await fetchRoadRoute([start,dest]);
-displayRoadGeometry(road.geometry);
-window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:[dest.name],strategy:'avulso',at:new Date().toISOString()};
-window.traxioBeginNavigation?.([dest]);window.traxioSetActiveGeometry?.(road.geometry);
-$('routeResult').textContent='Destino avulso: '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados. Toque em “Iniciar acompanhamento GPS” abaixo.';
-status('Rota desenhada. Inicie o GPS na seção Execução da rota.');
-$('liveNavigation').scrollIntoView({behavior:'smooth',block:'center'});
-}catch(e){status('Não foi possível traçar a rota: '+(e.message||e))}finally{$('avulsoRoute').disabled=false}
+ if(!dest)return;
+ $('avulsoRoute').disabled=true;status('Obtendo GPS e calculando rota por ruas…');
+ try{await window.TraxioRouteUI.adHoc(dest);status(['calculated','partial'].includes(window.TraxioRouteUI.state.phase)?'Rota desenhada. Inicie o acompanhamento GPS.':$('routeResult').textContent);}
+ catch(e){status('Não foi possível traçar a rota: '+(e.message||e));}
+ finally{$('avulsoRoute').disabled=false;}
+
 };
 })();
 </script><script>document.addEventListener('DOMContentLoaded',()=>{const m=document.querySelector('.workspace-map'),r=document.querySelector('.workspace-route');if(m&&r){r.parentNode.insertBefore(m,r);const a=document.getElementById('traxioAvulso'),e=document.getElementById('liveNavigation');if(a&&e){m.appendChild(a);m.appendChild(e)}}});</script><script>document.addEventListener('DOMContentLoaded',()=>{const d=document.getElementById('mapClientListDisclosure'),c=document.getElementById('mapClientListCount'),l=document.getElementById('mapClientList');if(d&&c&&l){const refresh=()=>{const n=l.children.length;c.textContent=n?'('+n+')':''};new MutationObserver(refresh).observe(l,{childList:true});refresh();d.open=false}});</script><script>

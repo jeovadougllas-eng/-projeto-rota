@@ -157,21 +157,22 @@ document.addEventListener('DOMContentLoaded',()=>{
   signal.throwIfAborted();displayRoadGeometry(geometry);
   if(!map.getSource('route')||!map.getLayer('route-line'))throw Error('Não foi possível renderizar o itinerário no mapa.');
  }
- async function calculate(strategy='distance',{existing=null}={}){
+ async function calculate(strategy='distance',{existing=null,destination=null}={}){
   if(routeBusy||checking){el('mapStatus').textContent='Já há uma operação em andamento. Aguarde ou limpe o trajeto para cancelar.';return;}
   cancel('Verificando os clientes selecionados…');const run=generation;controller=new AbortController();const signal=controller.signal;
   routeBusy=true;phase('checking-locations','Verificando as localizações antes de calcular…');
   try{
-   let report=P.partition(selectedInOrder(),selectedIds);
+   let report=destination?{ready:[destination],blocked:[],unverified:[],unloaded:[],total:1}:P.partition(selectedInOrder(),selectedIds);
    if(!report.total){phase('awaiting-selection','Selecione pelo menos um cliente.');return;}
    let consent=false;
    if(report.blocked.length||report.unverified.length||report.unloaded.length){consent=await confirmSubset(report);if(!current(run))return;if(!consent){phase('location-error','Corrija as localizações indicadas ou confirme uma rota com os clientes aptos.');return;}}
-   report=P.partition(selectedInOrder(),selectedIds,{allowUnverified:consent});
+   if(!destination)report=P.partition(selectedInOrder(),selectedIds,{allowUnverified:consent});
    const points=report.ready;
    if(!points.length){review.open=true;phase('location-error','Nenhum cliente selecionado possui localização utilizável. Corrija os endereços ou confirme os pontos no mapa.');return;}
    state.excluded=[...report.blocked.map(c=>String(c.id)),...report.unloaded];
    const snapshot=signature();let start;phase('awaiting-origin','Verificando a origem da rota…');
-   if(existing)start=existing.start;
+   if(destination){if(!valid(destination.lat,destination.lon)){phase('location-error','Confirme um destino com coordenadas válidas.');return;}try{start=await requestGPS();}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message);return;}}
+   else if(existing)start=existing.start;
    else if(el('origin').value==='manual'){if(!manualOrigin){phase('awaiting-origin','Busque e confirme o endereço ou marque a origem no mapa.');return;}start={...manualOrigin};}
    else if(el('origin').value==='gps'){try{start=await requestGPS();}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');return;}}
    else start=points[0];
@@ -179,15 +180,15 @@ document.addEventListener('DOMContentLoaded',()=>{
    const nodes=existing?[start,...existing.points]:[start,...points.filter(c=>!(start.id!==undefined&&String(c.id)===String(start.id)))];
    if(nodes.length<2){phase('impossible','A origem já é o único cliente selecionado. Escolha GPS ou uma origem manual para traçar o percurso.');return;}
    phase('calculating','Calculando sequência e trajeto pelas ruas…');
-   const matrix=existing?null:await roadMatrix(nodes,{signal});if(!current(run))return;
-   const arranged=existing?existing.points:optimizeStrategy(nodes,matrix,strategy).slice(1).map(i=>nodes[i]);
+   const matrix=existing||destination?null:await roadMatrix(nodes,{signal});if(!current(run))return;
+   const arranged=existing?existing.points:destination?[destination]:optimizeStrategy(nodes,matrix,strategy).slice(1).map(i=>nodes[i]);
    const road=await fetchRoadRoute([start,...arranged],{signal});
    if(!current(run)||snapshot!==signature())return;
    await waitForGeometry(road.geometry,signal);if(!current(run))return;
    lastRoute={start,points:arranged,excluded:[...state.excluded],strategy};showOrder(arranged);renderMarkers();
    window.traxioBeginNavigation?.(arranged,road.geometry);
    const partial=state.excluded.length>0;
-   phase(partial?'partial':'calculated','Trajeto por ruas: '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+' clientes excluídos com sua confirmação. ':'')+(consent?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
+   phase(partial?'partial':'calculated',(destination?'Destino avulso · Trajeto por ruas: ':'Trajeto por ruas: ')+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+' clientes excluídos com sua confirmação. ':'')+(consent?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
    window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:arranged.map(c=>c.name),strategy,at:new Date().toISOString(),excluded:[...state.excluded]};
    window.traxioShowSaveTrip?.();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});
   }catch(e){
@@ -204,7 +205,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  // Manual stop ordering invalidates street geometry until explicitly retraced.
  const originalSwap=swapStops;
  swapStops=function(a,b){originalSwap(a,b);window.traxioResetNavigation?.();el('liveNavigation').hidden=true;phase('awaiting-origin','Ordem ajustada. Toque em Traçar pelas ruas para confirmar o novo itinerário.');};
- window.TraxioRouteUI={calculate,retrace:()=>{const existing=lastRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};
+ window.TraxioRouteUI={calculate,cancel,adHoc:destination=>calculate('avulso',{destination:{...destination}}),retrace:()=>{const existing=lastRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};
  // Keep keyboard-driven fields visible for any browser implementing VisualViewport.
  let viewportFrame=0;
  function viewportChanged(){cancelAnimationFrame(viewportFrame);viewportFrame=requestAnimationFrame(()=>{const viewport=window.visualViewport;document.documentElement.style.setProperty('--route-visible-height',(viewport?.height||innerHeight)+'px');const focused=document.activeElement;if(focused?.matches('#mapa input,#mapa select'))focused.scrollIntoView({block:'nearest',inline:'nearest'});map?.resize();});}

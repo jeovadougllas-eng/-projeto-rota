@@ -14,3 +14,8 @@ test('explicit region correction overrides original import fields without modify
  const c={address:'Rua Exata, 10',importFields:fields,geocodingRegionOverride:{city:'Natal',district:'Tirol',state:'RN'}};
  const point=globalThis.TraxioGeo.parse(c);assert.equal(point.city,'Natal');assert.equal(point.district,'Tirol');assert.equal(point.state,'RN');assert.equal(fields[0].value,'Cidade incorreta');
 });
+
+test('cities named São Paulo and Rio de Janeiro are not discarded as states',async()=>{
+ await import('../assets/traxio-geolocation.js');
+ for(const [city,state] of [['São Paulo','SP'],['Rio de Janeiro','RJ']])assert.equal(globalThis.TraxioGeo.parse({address:'Rua Exata, 10',city,state}).city,city);
+});

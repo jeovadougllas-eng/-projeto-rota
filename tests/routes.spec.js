@@ -106,3 +106,11 @@ test('correct city, district and state, geocode again and preserve original comm
  const c=await page.evaluate(()=>clients.find(c=>String(c.id)==='1'));
  expect(c.geocodingRegionOverride).toEqual({city:'Natal',district:'Tirol',state:'RN'});expect(c.originalRegion.city).toBe('São Paulo');expect(c.importFields).toEqual(rows[0].importFields);expect(c.locationEvidence.query.city).toBe('Natal');
 });
+
+test('ad hoc navigation remains available without selecting or adding clients and clear cancels it',async({page},info)=>{
+ await setup(page,info.project.metadata.theme);await services(page);await page.locator('#adHocDisclosure summary').click();
+ await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada');
+ await expect(page.locator('#routeResult')).toContainText('Destino avulso');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);expect(await page.evaluate(()=>clients.length)).toBe(7);expect(await page.evaluate(()=>selectedIds.size)).toBe(0);
+ let release;const hold=new Promise(r=>release=r);await services(page,{hold});await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Calculando rota');await page.locator('#clearRoute').click();release();await page.waitForTimeout(100);
+ expect(await page.evaluate(()=>routeGeo)).toBeNull();await expect(page.locator('#liveNavigation')).toBeHidden();expect(await page.evaluate(()=>clients.length)).toBe(7);
+});
