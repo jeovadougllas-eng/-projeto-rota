@@ -60,8 +60,10 @@ try{
  await page.screenshot({path:dir+'/android-tablet-landscape-route.png',fullPage:true});evidence.checks.push('Landscape rotation keeps the itinerary and selection without overflow');
  const href=await page.locator('#openGoogleMaps').getAttribute('href');if(!href?.includes('destination='))throw Error('Missing external navigation destination.');
  await page.locator('#openGoogleMaps').click();
- await expect.poll(async()=>String(await device.shell('dumpsys activity activities')),{timeout:15000}).toContain('com.android.chrome');
- evidence.externalNavigation={href,openedAndroidBrowser:true};evidence.checks.push('Native AppLauncher hands the next destination to an external Android navigation URL');
+ let openedPackage=null;
+ await expect.poll(async()=>{const activities=String(await device.shell('dumpsys activity activities'));openedPackage=activities.match(/topResumedActivity=.*?\s(com\.google\.android\.apps\.maps|com\.android\.chrome)\//)?.[1]||null;return openedPackage;},{timeout:15000}).not.toBeNull();
+ await writeFile(dir+'/android-google-maps.png',execFileSync('adb',['exec-out','screencap','-p']));
+ evidence.externalNavigation={href,openedPackage};evidence.checks.push('Native AppLauncher opens the next destination in '+openedPackage);
  await device.shell('am start -n app.traxio.mobile/.MainActivity');
  await page.locator('#clearRoute').click();await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Clear stops GPS and preserves selected customers');
  await page.locator('#selectNoClients').click();await page.locator('#adHocDisclosure summary').click();await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:45000});await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);if(await page.evaluate(()=>clients.length)!==7)throw Error('Ad hoc navigation changed customer records.');evidence.checks.push('Ad hoc GPS route works without selected customers or database changes');
