@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.pin}</svg>`;
   };
-  const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/visual-kit/assets/logo_dark_background.png" alt="Traxio — Planeje melhor. Vá mais longe." width="497" height="141"></span>`;
+  const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/visual-kit/assets/logo_dark_background.png" alt="Logotipo original Traxio — substituição por Traxelo.IA pendente" width="497" height="141"></span>`;
   // Display unmodified original pixels from the supplied reference crops.
   const glyph=(source,sourceWidth,sourceHeight,x,y,w,h,className='')=>`<span class="kit-glyph ${className}" aria-hidden="true" style="aspect-ratio:${w}/${h}"><img src="assets/visual-kit/assets/${source}" alt="" width="${sourceWidth}" height="${sourceHeight}" style="width:${100*sourceWidth/w}%;height:${100*sourceHeight/h}%;left:${-100*x/w}%;top:${-100*y/h}%"></span>`;
   // Key only the crop background, then intersect with source alpha. The final
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Login uses the existing forms and their original event handlers.
   const authBrand = node('div', 'auth-brand-panel');
-  authBrand.innerHTML = '<span class="brand-crop auth-original-logo"><img src="assets/visual-kit/assets/login_hero_reference.png" alt="Traxio — Planeje melhor. Vá mais longe." width="354" height="632"></span>' + `<div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
+  authBrand.innerHTML = '<span class="brand-crop auth-original-logo"><img src="assets/visual-kit/assets/login_hero_reference.png" alt="Identidade visual anterior — substituição por Traxelo.IA pendente" width="354" height="632"></span>' + `<div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
   el('authScreen').prepend(authBrand);
   const approvedScene = node('div','auth-approved-scene'); approvedScene.setAttribute('aria-hidden','true');
   approvedScene.innerHTML='<img class="reconstructed-login-plate" src="assets/reconstructed/login-background.png" alt=""><img class="original-login-art" src="assets/visual-kit/assets/login_hero_reference.png" alt="" width="354" height="632">';
