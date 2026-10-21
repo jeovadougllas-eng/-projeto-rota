@@ -2,8 +2,24 @@
   "appId": "app.traxio.mobile",
   "appName": "Traxelo.IA",
   "webDir": "www",
-  "server": { "androidScheme": "https" },
-  "ios": { "contentInset": "automatic" },
-  "android": { "allowMixedContent": false },
-  "plugins": { "Geolocation": { "permissions": ["location", "coarseLocation"] } }
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "automatic"
+  },
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "Geolocation": {
+      "permissions": [
+        "location",
+        "coarseLocation"
+      ]
+    },
+    "Keyboard": {
+      "resizeOnFullScreen": true
+    }
+  }
 }

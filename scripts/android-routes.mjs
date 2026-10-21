@@ -39,12 +39,15 @@ try{
  await page.locator('#traxioNavClose').click();
  await page.locator('#regionPicker summary').click();await page.locator('#regionCity').selectOption('parnamirim');await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Selection survives city filtering');
  await device.shell('settings put secure show_ime_with_hard_keyboard 1');
+ await page.evaluate(()=>Capacitor.registerPlugin('Keyboard').hide());
  const before=await page.evaluate(()=>({height:visualViewport?.height||innerHeight}));
  await page.locator('#mapClientSearch').fill('Visita');
  const dump=String(await device.shell('uiautomator dump /sdcard/traxelo-window.xml && cat /sdcard/traxelo-window.xml'));
  const webview=dump.match(/<node[^>]*class="android.webkit.WebView"[^>]*>/)?.[0],bounds=webview?.match(/bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/);
  const touch=await page.locator('#mapClientSearch').evaluate((n,b)=>{const r=n.getBoundingClientRect(),scale=b?(b[2]-b[0])/innerWidth:devicePixelRatio;return {x:Math.round((b?.[0]||0)+(r.x+r.width/2)*scale),y:Math.round((b?.[1]||0)+(r.y+r.height/2)*scale)};},bounds?bounds.slice(1).map(Number):null);
- await device.shell('input tap '+touch.x+' '+touch.y);
+ evidence.keyboardTouch={touch,bounds:bounds?.slice(1)};
+ await device.shell('input tap '+touch.x+' '+touch.y);await page.locator('#mapClientSearch').focus();await page.evaluate(()=>Capacitor.registerPlugin('Keyboard').show());
+ const imeState=String(await device.shell('dumpsys input_method'));evidence.ime=imeState.split('\n').filter(line=>/mInputShown|mShowRequested|mIsInputViewShown|mCurMethodId/.test(line));console.log(JSON.stringify({stage:'native keyboard requested',ime:evidence.ime,touch}));
  await expect.poll(()=>page.evaluate(()=>({height:visualViewport?.height||innerHeight})),{timeout:10000}).not.toEqual(before);
  const keyboard=await page.evaluate(()=>{const r=document.activeElement.getBoundingClientRect(),v=visualViewport;return {visibleHeight:v?.height||innerHeight,top:r.top,bottom:r.bottom,value:document.activeElement.value,width:document.documentElement.scrollWidth,innerWidth};});
  if(keyboard.bottom>keyboard.visibleHeight+5||keyboard.top<0)throw Error('Focused field is obscured by the Android keyboard.');
@@ -64,5 +67,5 @@ try{
  await page.locator('#selectNoClients').click();await page.locator('#adHocDisclosure summary').click();await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:45000});await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);if(await page.evaluate(()=>clients.length)!==7)throw Error('Ad hoc navigation changed customer records.');evidence.checks.push('Ad hoc GPS route works without selected customers or database changes');
  await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
  console.log(JSON.stringify(evidence,null,2));
-}catch(error){evidence.error=error.stack;evidence.url=page?.url();evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
+}catch(error){await writeFile(dir+'/android-device-failure.png',execFileSync('adb',['exec-out','screencap','-p'])).catch(()=>{});evidence.error=error.stack;evidence.url=page?.url();evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
 finally{clearInterval(timer);await device.close();}

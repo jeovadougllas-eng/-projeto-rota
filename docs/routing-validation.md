@@ -47,7 +47,7 @@ A matriz final, a validação Android e a verificação pública são registrada
 - assets/traxio-geolocation.js: repetição limitada de falhas transitórias.
 - tests/routes.spec.js, routes-live.spec.js, routes-before.spec.js, fixtures/routing.js e test-unit/planner.test.mjs: regressão e evidências.
 - tests/geolocation.spec.js e fixtures/browser.js: adaptações explícitas dos testes para validar renderização e WebView, sem modo de teste no produto.
-- mobile/capacitor.config.json, AndroidManifest.xml e strings.xml: somente nome visível oficial e ajuste do teclado. Package ID e retorno OAuth permanecem app.traxio.mobile.
+- mobile/capacitor.config.json, AndroidManifest.xml, runtime-entry.js e strings.xml: nome visível oficial e teclado Android com o plugin oficial Capacitor Keyboard, resizeOnFullScreen e reposicionamento do campo em foco. Package ID e retorno OAuth permanecem app.traxio.mobile.
 - scripts/android-routes.mjs e workflows route-repair.yml / android-routes.yml: testes de navegador e APK.
 
 ## Reprodução
