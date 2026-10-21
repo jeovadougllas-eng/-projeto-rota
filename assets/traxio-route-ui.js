@@ -18,7 +18,12 @@ document.addEventListener('DOMContentLoaded',()=>{
  const review=node('details','locationReview'),reviewSummary=node('summary',null,'Revisar localizações'),reviewList=node('div','locationReviewList');
  const retry=node('button','retrySelectedLocations','Tentar localizar pendentes novamente');retry.type='button';retry.className='secondary';
  review.append(reviewSummary,reviewList,retry);side.append(review);
- const secondary=node('details','adHocDisclosure'),adHocSummary=node('summary',null,'Destino avulso');secondary.append(adHocSummary);el('traxioAvulso').before(secondary);secondary.append(el('traxioAvulso'));
+ const secondary=node('details','adHocDisclosure'),adHocSummary=node('summary',null,'Destino avulso');secondary.append(adHocSummary,el('traxioAvulso'));planner.append(secondary);
+ const routeOrderDisclosure=node('details','routeOrderDisclosure');routeOrderDisclosure.append(node('summary',null,'Conferir e ajustar sequência'),el('routeOrder'));document.querySelector('.route-summary').append(routeOrderDisclosure);
+ const stopsDisclosure=node('details','navigationStopDisclosure');stopsDisclosure.append(node('summary',null,'Paradas e visitas'),el('liveStopList'));el('liveNextStop').after(stopsDisclosure);
+ document.querySelector('.route-summary').append(el('liveNavigation'));
+ const actionBar=document.querySelector('.planner-main>.row');actionBar.id='routeActionBar';actionBar.append(el('liveStart'));panel.append(actionBar);el('liveStart').hidden=true;
+ new MutationObserver(()=>{el('liveStart').hidden=el('liveNavigation').hidden;}).observe(el('liveNavigation'),{attributes:true,attributeFilter:['hidden']});
  el('traxioAvulso').querySelector('h3').textContent='Destino avulso';
  const trace=document.querySelector('.approved-trace-route');
  if(trace){trace.onclick=()=>{el('calcRoute').click();};trace.hidden=true;}
@@ -182,7 +187,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    const partial=state.excluded.length>0;
    phase(partial?'partial':'calculated','Trajeto por ruas: '+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+' clientes excluídos com sua confirmação. ':'')+(consent?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
    window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:arranged.map(c=>c.name),strategy,at:new Date().toISOString(),excluded:[...state.excluded]};
-   window.traxioShowSaveTrip?.();map?.resize();mapPanel.scrollIntoView({block:'nearest',behavior:'smooth'});
+   window.traxioShowSaveTrip?.();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});
   }catch(e){
    if(!current(run)||signal.aborted)return;
    window.traxioResetNavigation?.();lastRoute=null;clearRouteVisual();el('routeOrder').replaceChildren();

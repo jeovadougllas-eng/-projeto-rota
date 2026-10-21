@@ -24,9 +24,9 @@ jobs:
       - run: npm run check
       - run: npm run test:geolocation
       - name: Route transaction acceptance tests across desktop and tablet
-        run: npm test -- tests/routes.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark
+        run: npm test -- tests/routes.spec.js
       - name: Existing functional regression
-        run: npm test -- tests/auth.spec.js tests/flows.spec.js tests/geolocation.spec.js tests/native-bridge.spec.js --project=desktop-light
+        run: npm test -- tests/auth.spec.js tests/flows.spec.js tests/geolocation.spec.js tests/native-bridge.spec.js
       - name: Reproduce the baseline and capture before screens
         run: |
           git fetch --depth=1 origin f9305d71c24830e3252c437420e1aa58383ce34c

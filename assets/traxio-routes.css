@@ -65,3 +65,22 @@ body[data-screen="mapa"] main{padding:16px;min-width:0}
 #mapa .planner-main>.row{position:static}
 #routePlannerPanel{scroll-padding-top:80px;scroll-padding-bottom:20px}
 #mapa input,#mapa select,#mapa button{scroll-margin-top:90px;scroll-margin-bottom:20px}
+
+/* Keep the single planning command and GPS action accessible without covering fields. */
+#routeActionBar{display:flex;flex-wrap:wrap;gap:8px;background:var(--panel);border-top:1px solid var(--line);padding:12px 16px}
+#mapa #routeActionBar button{flex:1;min-width:120px}
+#mapa .workspace-side>.row{flex-wrap:wrap}
+#mapa .workspace-side>.row button{flex:1 1 120px}
+#mapa .live-navigation{margin:12px 0;padding:12px}
+#mapa .live-stop-list{max-height:240px;overflow:auto}
+#mapa .route-order{max-height:360px;overflow:auto}
+#mapa .route-stop .name{font-size:15px;overflow-wrap:anywhere}
+#mapa .route-stop .num{font-size:14px;min-width:28px;min-height:28px}
+#mapa .workspace-map{top:0}
+@media(max-width:1100px){
+ body[data-screen="mapa"] .tabs>button{font-size:13px;white-space:normal;flex-direction:column;line-height:1.2;justify-content:center;gap:6px;padding:10px 3px;min-height:72px;text-align:center}
+ #routeActionBar{position:fixed;bottom:0;left:var(--sidebar-w);right:0;z-index:30;padding:10px 12px max(10px,env(safe-area-inset-bottom));box-shadow:0 -6px 20px #00253020}
+ #mapa .workspace{padding-bottom:140px}
+ #routePlannerPanel{scroll-padding-bottom:150px}
+ #mapa :is(input,select,button){scroll-margin-bottom:150px}
+}

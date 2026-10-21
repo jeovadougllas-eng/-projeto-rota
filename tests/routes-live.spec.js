@@ -19,5 +19,5 @@ test('seven clients: real OSRM matrix and street route rendered by real MapLibre
  await page.locator('#regionPicker').evaluate(n=>n.open=false);await page.locator('#mapClientListDisclosure').evaluate(n=>n.open=false);
  await page.waitForTimeout(1500);
  const dir='docs/captures/routes-after';await mkdir(dir,{recursive:true});const path=dir+'/'+info.project.name+'.png';
- await page.screenshot({path,fullPage:true});await writeFile(dir+'/'+info.project.name+'.json',JSON.stringify({syntheticClients:true,realServices:true,calls,result},null,2));await info.attach('Rota real por ruas, sete clientes sintéticos',{path,contentType:'image/png'});
+ await page.screenshot({path,fullPage:true});await page.screenshot({path:dir+'/'+info.project.name+'.jpg',type:'jpeg',quality:80,fullPage:true});await writeFile(dir+'/'+info.project.name+'.json',JSON.stringify({syntheticClients:true,realServices:true,calls,result},null,2));await info.attach('Rota real por ruas, sete clientes sintéticos',{path,contentType:'image/png'});
 });

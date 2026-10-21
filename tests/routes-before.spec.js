@@ -11,5 +11,5 @@ test('before: reproduce filtered-selection replacement and capture tablet layout
  await expect(page.locator('#selectedCount')).toContainText('1 selecionado');
  const before={confirmed:'Selecting filtered city results replaces seven previously selected IDs with one',selected:await page.locator('#selectedCount').textContent(),viewport:page.viewportSize()};
  await page.locator('#regionCity').selectOption('all');await page.locator('#selectAllClients').click();await page.locator('#regionPicker').evaluate(n=>n.open=false);
- const dir='docs/captures/routes-before';await mkdir(dir,{recursive:true});await page.screenshot({path:dir+'/'+info.project.name+'.png',fullPage:true});await writeFile(dir+'/'+info.project.name+'.json',JSON.stringify(before,null,2));
+ const dir='docs/captures/routes-before';await mkdir(dir,{recursive:true});await page.screenshot({path:dir+'/'+info.project.name+'.png',fullPage:true});await page.screenshot({path:dir+'/'+info.project.name+'.jpg',type:'jpeg',quality:80,fullPage:true});await writeFile(dir+'/'+info.project.name+'.json',JSON.stringify(before,null,2));
 });
