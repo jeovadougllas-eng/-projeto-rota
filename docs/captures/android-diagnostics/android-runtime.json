@@ -1,0 +1,16 @@
+{
+  "native": {
+    "native": true,
+    "platform": "android",
+    "geo": true,
+    "launcher": true,
+    "browser": true,
+    "redirect": "app.traxio.mobile://auth/callback"
+  },
+  "position": {
+    "lat": -5.7949983,
+    "lon": -35.2109983,
+    "accuracy": 5
+  },
+  "simulated": true
+}
