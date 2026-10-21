@@ -64,7 +64,15 @@ A captura CDP do canvas acelerado não registrava o desenho WebGL. A conferênci
 Ocorreram falhas do ambiente/teste durante as iterações: alteração de densidade com WebView já aberto, emulador offline e expectativa incorreta de abrir Chrome quando Google Maps estava instalado. Foram isoladas das falhas do produto. A execução aprovada iniciou a tela de tablet antes do aplicativo e separou o emulador dos processos de compilação.
 
 ## Publicação e acesso
-A prévia de testes é https://traxio-preview.vercel.app/; o APK é servido em /downloads/traxio-android-testes.apk. A verificação pública confere HTTP, SHA-256, igualdade entre arquivos web/APK e o fluxo de sete clientes no navegador publicado.
+A prévia de testes é https://traxio-preview.vercel.app/; o APK é servido em /downloads/traxio-android-testes.apk.
+
+Publicação verificada: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39661371569
+- Website, APK, relatório e capturas públicos com HTTP 200.
+- Download completo do APK: 12.711.200 bytes e SHA-256 esperado; tipo Android e cabeçalho de download corretos.
+- HTML e módulos servidos correspondem ao código versionado; os módulos compartilhados no APK correspondem à versão web.
+- Três testes Playwright no site publicado passaram: desktop, tablet vertical e tablet horizontal escuro; cada um selecionou sete clientes sintéticos e apresentou rota real de 4,7 km, oito minutos e sete paradas, sem gravação no banco real.
+- Retornos Google web/Android e rejeição de URL não autorizada aprovados no mesmo workflow.
+- Código publicado na validação: 18cf1f52f496dec7f0cca07168a2f08e49c81291; commits posteriores deste relatório e dos testes não alteram os módulos do aplicativo.
 
 Configuração externa corrigida pelo proprietário: https://traxio-preview.vercel.app/ foi adicionada aos Redirect URLs do Supabase. O reteste aprovou os retornos Google para a prévia e app.traxio.mobile://auth/callback, e rejeitou uma URL de controle não autorizada. Execução 39653886884, tentativa 2. Esses testes usam cancelamento controlado, sem login pessoal ou gravação de clientes.
 
