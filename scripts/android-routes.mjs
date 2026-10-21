@@ -31,10 +31,14 @@ try{
  evidence.checks.push('Seven selected clients produce a rendered street route from native GPS with matching numbered markers');
  evidence.route=await page.evaluate(()=>({coordinates:routeGeo.coordinates.length,stops:lastRoute.points.map(c=>c.id),summary:document.getElementById('routeResult').textContent,viewport:{width:innerWidth,height:innerHeight}}));
  if(evidence.route.coordinates<=8)throw Error('Expected street geometry with more than stop coordinates.');
- await page.screenshot({path:dir+'/android-tablet-portrait-route.png',fullPage:true});
+ await expect.poll(()=>page.evaluate(()=>map.isSourceLoaded('route')&&!map.isMoving()&&map.queryRenderedFeatures({layers:['route-line']}).length>0),{timeout:30000}).toBe(true);
+ await page.waitForTimeout(1000);
+ await page.screenshot({path:dir+'/android-tablet-portrait-webview.png',fullPage:true});
+ await writeFile(dir+'/android-tablet-portrait-route.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ evidence.renderedRouteFeatures=await page.evaluate(()=>map.queryRenderedFeatures({layers:['route-line']}).length);
  await page.locator('#liveStart').click();await expect(page.locator('#liveGPSState')).not.toContainText('GPS desligado',{timeout:30000});evidence.checks.push('Native foreground GPS navigation starts');
  gpsFix.lat=-5.84;gpsFix.lon=-35.218;emit();await expect.poll(()=>page.evaluate(()=>routeGeo?.coordinates?.[0]?.[1]||0),{timeout:45000}).toBeLessThan(-5.835);evidence.checks.push('Sustained native GPS deviation recalculates the remaining street route');
- await page.screenshot({path:dir+'/android-navigation.png'});
+ await page.waitForTimeout(1000);await writeFile(dir+'/android-navigation.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
  // Close the navigation overlay while retaining the route.
  await page.locator('#traxioNavClose').click();
  await page.locator('#regionPicker summary').click();await page.locator('#regionCity').selectOption('parnamirim');await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Selection survives city filtering');
@@ -51,18 +55,18 @@ try{
  await expect.poll(()=>page.evaluate(()=>({height:visualViewport?.height||innerHeight})),{timeout:10000}).not.toEqual(before);
  const keyboard=await page.evaluate(()=>{const r=document.activeElement.getBoundingClientRect(),v=visualViewport;return {visibleHeight:v?.height||innerHeight,top:r.top,bottom:r.bottom,value:document.activeElement.value,width:document.documentElement.scrollWidth,innerWidth};});
  if(keyboard.bottom>keyboard.visibleHeight+5||keyboard.top<0)throw Error('Focused field is obscured by the Android keyboard.');
- evidence.keyboard={before,...keyboard};await page.screenshot({path:dir+'/android-tablet-keyboard.png'});
+ evidence.keyboard={before,...keyboard};await writeFile(dir+'/android-tablet-keyboard.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
  await device.shell('input keyevent 4');await expect.poll(()=>page.evaluate(()=>visualViewport?.height||innerHeight),{timeout:15000}).toBeGreaterThanOrEqual(before.height-4);await expect(page.locator('#mapClientSearch')).toHaveValue('Visita');evidence.checks.push('Real Android IME resizes viewport, field remains visible and text survives dismissal');
  await device.shell('settings put system accelerometer_rotation 0');await device.shell('cmd window user-rotation lock 1');
  await expect.poll(()=>page.evaluate(()=>innerWidth>innerHeight),{timeout:15000}).toBe(true);
  await expect(page.locator('#map')).toBeVisible();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');
  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Horizontal overflow on landscape tablet.');
- await page.screenshot({path:dir+'/android-tablet-landscape-route.png',fullPage:true});evidence.checks.push('Landscape rotation keeps the itinerary and selection without overflow');
+ await page.waitForTimeout(1000);await writeFile(dir+'/android-tablet-landscape-route.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));evidence.checks.push('Landscape rotation keeps the itinerary and selection without overflow');
  const href=await page.locator('#openGoogleMaps').getAttribute('href');if(!href?.includes('destination='))throw Error('Missing external navigation destination.');
  await page.locator('#openGoogleMaps').click();
  let openedPackage=null;
  await expect.poll(async()=>{const activities=String(await device.shell('dumpsys activity activities'));openedPackage=activities.match(/topResumedActivity=.*?\s(com\.google\.android\.apps\.maps|com\.android\.chrome)\//)?.[1]||null;return openedPackage;},{timeout:15000}).not.toBeNull();
- await writeFile(dir+'/android-google-maps.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ await page.waitForTimeout(4000);await writeFile(dir+'/android-google-maps.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
  evidence.externalNavigation={href,openedPackage};evidence.checks.push('Native AppLauncher opens the next destination in '+openedPackage);
  await device.shell('am start -n app.traxio.mobile/.MainActivity');
  await page.locator('#clearRoute').click();await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Clear stops GPS and preserves selected customers');
