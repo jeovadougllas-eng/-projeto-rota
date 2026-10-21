@@ -115,9 +115,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  el('confirmPartialRoute').onclick=()=>{const done=consentResolve;consentResolve=null;dialog.close();done?.(true);};
  el('cancelPartialRoute').onclick=()=>{const done=consentResolve;consentResolve=null;dialog.close();review.open=true;done?.(false);review.scrollIntoView({block:'nearest'});};
- function manualChanged(){manualOrigin=null;manualDraft=null;el('confirmRouteOrigin').hidden=true;cancel('Confirme a nova origem e calcule novamente.');lastSignature=signature();}
+ function manualChanged(){window.traxioPickingOrigin=false;originMarker?.remove();manualOrigin=null;manualDraft=null;el('confirmRouteOrigin').hidden=true;cancel('Confirme a nova origem e calcule novamente.');lastSignature=signature();}
  el('routeOriginAddress').oninput=manualChanged;
- el('origin').addEventListener('change',()=>{originForm.hidden=el('origin').value!=='manual';cancel('Origem alterada. Confira os dados e calcule novamente.');lastSignature=signature();});
+ el('origin').addEventListener('change',()=>{window.traxioPickingOrigin=false;if(el('origin').value!=='manual')originMarker?.remove();originForm.hidden=el('origin').value!=='manual';cancel('Origem alterada. Confira os dados e calcule novamente.');lastSignature=signature();});
  el('findRouteOrigin').onclick=async()=>{
   manualChanged();const q=el('routeOriginAddress').value.trim();if(q.length<8){el('routeOriginStatus').textContent='Informe rua, número, cidade e UF.';return;}
   el('routeOriginStatus').textContent='Buscando a origem…';const text=q,run=generation;

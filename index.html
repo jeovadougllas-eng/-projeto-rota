@@ -145,7 +145,11 @@ function renderMarkers(){
  const chosen=clients.filter(c=>selectedIds.has(c.id)&&valid(c.lat,c.lon)&&!window.traxioVisitedIds?.has(String(c.id))).sort((a,b)=>(routeOrderIds.get(String(a.id))??0)-(routeOrderIds.get(String(b.id))??0));
  chosen.forEach((c,i)=>{
   const el=document.createElement('div');el.className='traxio-route-pin';el.textContent=String(i+1);
-  el.title=c.name;el.setAttribute('aria-label','Parada '+(i+1)+': '+c.name);
+  const planned=lastRoute&&routeGeo,originPoint=planned&&lastRoute.start.id!==undefined&&String(lastRoute.start.id)===String(c.id),stopNumber=planned?routeOrderIds.get(String(c.id)):i+1;
+  el.textContent=originPoint?'O':String(stopNumber??'?');
+  if(planned&&!originPoint&&!stopNumber){el.classList.add('traxio-unplanned-pin');el.style.background='#8b958f';el.style.border='3px dashed #fff';}
+  el.title=(originPoint?'Origem: ':stopNumber?'Parada '+stopNumber+': ':'Fora do itinerário: ')+c.name;
+  el.setAttribute('aria-label',el.title);
   const marker=new maplibregl.Marker({element:el}).setLngLat([c.lon,c.lat])
    .setPopup(new maplibregl.Popup({offset:22}).setText(c.name+' — '+(c.address||'Sem endereço'))).addTo(map);
   markers.push(marker);

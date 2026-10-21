@@ -69,3 +69,11 @@ test('tablet controls, collapsing planner and reduced viewport retain values and
  await page.setViewportSize(original);await page.locator('#routePlannerPanel>summary').click();await expect(page.locator('#map')).toBeVisible();await page.locator('#routePlannerPanel>summary').click();await expect(page.locator('#mapClientSearch')).toHaveValue('teste');
  await page.screenshot({path:info.outputPath('tablet-after.png'),fullPage:true});
 });
+
+test('selected customer used as origin is labeled separately from numbered route stops',async({page},info)=>{
+ await setup(page,info.project.metadata.theme);await services(page);await select(page);await page.locator('#calcRoute').click();
+ await expect(page.locator('#plannerState')).toHaveText('Rota calculada');
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(6);
+ const labels=await page.evaluate(()=>markers.map(m=>m.getElement().textContent));
+ expect(labels).toEqual(['O','1','2','3','4','5','6']);
+});
