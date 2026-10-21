@@ -1,6 +1,7 @@
 {
+  "allOrNothingBlockConfirmed": true,
   "confirmed": "Selecting filtered city results replaces seven previously selected IDs with one",
-  "selected": "1 selecionado",
+  "selected": "7 selecionados · 1 sem localização",
   "viewport": {
     "width": 1440,
     "height": 1000
