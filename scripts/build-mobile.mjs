@@ -1,0 +1,12 @@
+import {cp,mkdir,readFile,writeFile,rm} from 'node:fs/promises';
+import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
+const target=new URL('../mobile/www/',import.meta.url);
+await rm(target,{recursive:true,force:true});await mkdir(target,{recursive:true});
+await cp(new URL('../assets/',import.meta.url),new URL('assets/',target),{recursive:true});
+const esbuild=createRequire(new URL('../mobile/package.json',import.meta.url))('esbuild');
+await esbuild.build({entryPoints:[fileURLToPath(new URL('../mobile/runtime-entry.js',import.meta.url))],bundle:true,platform:'browser',format:'iife',outfile:fileURLToPath(new URL('assets/capacitor-runtime.js',target))});
+let html=await readFile(new URL('../index.html',import.meta.url),'utf8');
+html=html.replace('<script src="assets/traxio-native.js"></script>','<script src="assets/capacitor-runtime.js"></script><script src="assets/traxio-native.js"></script>');
+await writeFile(new URL('index.html',target),html);
+console.log('Bundled the approved Traxio interface and original visual assets for native apps.');

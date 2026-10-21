@@ -1,0 +1,46 @@
+{
+  "reference": {
+    "id": "painel",
+    "file": "dashboard_mockup_reference.png",
+    "x": 678,
+    "y": 0,
+    "w": 858,
+    "h": 635,
+    "theme": "light"
+  },
+  "viewport": {
+    "width": 1716,
+    "height": 1270
+  },
+  "geometry": {
+    "header": {
+      "x": 0,
+      "y": 0,
+      "w": 1716,
+      "h": 140.671875
+    },
+    "sidebar": {
+      "x": 0,
+      "y": 140.671875,
+      "w": 312.609375,
+      "h": 1129.328125
+    },
+    "login": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "hero": {
+      "x": 336.046875,
+      "y": 160.203125,
+      "w": 1356.515625,
+      "h": 256.4375
+    }
+  },
+  "metrics": {
+    "meanAbsoluteRGBError": 20.63108416080857,
+    "pixelsDifferingOver24": 0.1901285722151864,
+    "identical": false
+  }
+}

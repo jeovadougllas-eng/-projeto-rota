@@ -1,0 +1,77 @@
+{
+  "reference": "Unmodified crops from the supplied Traxio visual kit",
+  "previousCommit": "666c21a59af996b8e94b5a8faf130529d763b6c5",
+  "note": "Negative changes mean lower RGB error. Values include text, account data, and live map differences; they are not fidelity percentages.",
+  "screens": [
+    {
+      "screen": "login",
+      "before": {
+        "meanAbsoluteRGBError": 12.993702338167846,
+        "pixelsDifferingOver24": 0.11138824596703846,
+        "identical": false
+      },
+      "after": {
+        "meanAbsoluteRGBError": 11.49806968368245,
+        "pixelsDifferingOver24": 0.09784540411030601,
+        "identical": false
+      },
+      "meanRGBErrorChange": -1.4956326544853962
+    },
+    {
+      "screen": "painel",
+      "before": {
+        "meanAbsoluteRGBError": 20.63108416080857,
+        "pixelsDifferingOver24": 0.1901285722151864,
+        "identical": false
+      },
+      "after": {
+        "meanAbsoluteRGBError": 21.18861678566403,
+        "pixelsDifferingOver24": 0.1971307563827249,
+        "identical": false
+      },
+      "meanRGBErrorChange": 0.5575326248554617
+    },
+    {
+      "screen": "clientes",
+      "before": {
+        "meanAbsoluteRGBError": 18.99333318127908,
+        "pixelsDifferingOver24": 0.15936502143964967,
+        "identical": false
+      },
+      "after": {
+        "meanAbsoluteRGBError": 19.133567496882886,
+        "pixelsDifferingOver24": 0.16062631146793177,
+        "identical": false
+      },
+      "meanRGBErrorChange": 0.14023431560380573
+    },
+    {
+      "screen": "mapa",
+      "before": {
+        "meanAbsoluteRGBError": 33.10330083523312,
+        "pixelsDifferingOver24": 0.27447949240422054,
+        "identical": false
+      },
+      "after": {
+        "meanAbsoluteRGBError": 31.847796501032274,
+        "pixelsDifferingOver24": 0.2684787762019085,
+        "identical": false
+      },
+      "meanRGBErrorChange": -1.2555043342008467
+    },
+    {
+      "screen": "dados",
+      "before": {
+        "meanAbsoluteRGBError": 18.77602783280061,
+        "pixelsDifferingOver24": 0.1607124769279251,
+        "identical": false
+      },
+      "after": {
+        "meanAbsoluteRGBError": 18.41339155749636,
+        "pixelsDifferingOver24": 0.1536375095664701,
+        "identical": false
+      },
+      "meanRGBErrorChange": -0.3626362753042507
+    }
+  ]
+}

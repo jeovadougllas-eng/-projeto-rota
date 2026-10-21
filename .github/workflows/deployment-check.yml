@@ -1,0 +1,37 @@
+name: Traxio published preview check
+on:
+  push:
+    branches: [dev/traxio-mockup-fidelity]
+    paths: ['.github/workflows/deployment-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  published-files:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify the public website and download the tested APK
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {readFile} from 'node:fs/promises';
+          import {createHash} from 'node:crypto';
+          const base='https://traxio-preview.vercel.app';
+          const expected=(await readFile('downloads/traxio-android-testes.sha256','utf8')).split(/\s+/)[0];
+          const request=path=>fetch(base+path,{signal:AbortSignal.timeout(60000)});
+          const home=await request('/');assert.equal(home.status,200);
+          const html=await home.text();assert.ok(html.includes('assets/traxio-geolocation.js'));assert.ok(html.includes('openGoogleMaps'));assert.ok(html.includes('openWaze'));
+          const sdk=await request('/assets/traxio-geolocation.js');assert.equal(sdk.status,200);assert.ok((await sdk.text()).includes('digits(clean(c.cep)||field'));
+          const apk=await request('/downloads/traxio-android-testes.apk');assert.equal(apk.status,200);
+          assert.ok(apk.headers.get('content-type').includes('application/vnd.android.package-archive'));assert.ok(apk.headers.get('content-disposition').includes('attachment'));assert.ok(apk.headers.get('cache-control').includes('no-store'));
+          const bytes=Buffer.from(await apk.arrayBuffer());assert.ok(bytes.length>1000000);
+          const sha=createHash('sha256').update(bytes).digest('hex');assert.equal(sha,expected);
+          const manifest=await request('/downloads/traxio-android-testes.sha256');assert.equal(manifest.status,200);assert.ok((await manifest.text()).startsWith(expected));
+          const api=await request('/api/geocode');assert.equal(api.status,405);
+          console.log(JSON.stringify({website:200,geocoderSDK:200,apk:200,apkBytes:bytes.length,sha256:sha,serverEndpoint:405,publicAccess:true}));
+          NODE

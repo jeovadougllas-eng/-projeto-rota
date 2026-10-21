@@ -1,0 +1,19 @@
+name: Traxio native authentication return check
+on:
+  push:
+    branches: [dev/traxio-mockup-fidelity]
+    paths: ['scripts/check-native-auth-redirect.mjs', '.github/workflows/native-auth-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-return:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify native redirects with controlled provider cancellation
+        run: node scripts/check-native-auth-redirect.mjs

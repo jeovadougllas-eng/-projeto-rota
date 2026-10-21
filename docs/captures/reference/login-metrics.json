@@ -1,0 +1,46 @@
+{
+  "reference": {
+    "id": "login",
+    "file": "login_mockup_reference.png",
+    "x": 0,
+    "y": 0,
+    "w": 677,
+    "h": 635,
+    "theme": "light"
+  },
+  "viewport": {
+    "width": 1354,
+    "height": 1270
+  },
+  "geometry": {
+    "header": {
+      "x": 0,
+      "y": 0,
+      "w": 1354,
+      "h": 138.71875
+    },
+    "sidebar": {
+      "x": 0,
+      "y": 138.71875,
+      "w": 306.75,
+      "h": 1131.28125
+    },
+    "login": {
+      "x": 710,
+      "y": 141.984375,
+      "w": 600,
+      "h": 875.578125
+    },
+    "hero": {
+      "x": 330.1875,
+      "y": 158.25,
+      "w": 1000.375,
+      "h": 189.296875
+    }
+  },
+  "metrics": {
+    "meanAbsoluteRGBError": 11.49806968368245,
+    "pixelsDifferingOver24": 0.09784540411030601,
+    "identical": false
+  }
+}

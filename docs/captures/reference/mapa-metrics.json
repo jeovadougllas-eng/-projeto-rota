@@ -1,0 +1,46 @@
+{
+  "reference": {
+    "id": "mapa",
+    "file": "routes_mockup_reference.png",
+    "x": 566,
+    "y": 636,
+    "w": 511,
+    "h": 388,
+    "theme": "dark"
+  },
+  "viewport": {
+    "width": 1022,
+    "height": 776
+  },
+  "geometry": {
+    "header": {
+      "x": 0,
+      "y": 0,
+      "w": 1022,
+      "h": 82.375
+    },
+    "sidebar": {
+      "x": 0,
+      "y": 82.375,
+      "w": 188.625,
+      "h": 693.625
+    },
+    "login": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    }
+  },
+  "metrics": {
+    "meanAbsoluteRGBError": 31.847796501032274,
+    "pixelsDifferingOver24": 0.2684787762019085,
+    "identical": false
+  }
+}
