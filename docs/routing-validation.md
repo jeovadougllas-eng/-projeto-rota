@@ -46,7 +46,7 @@ Execução web: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/
 - Uma consulta real ao Photon para endereço brasileiro, mantendo resultados aproximados pendentes de revisão.
 
 ## APK instalado e validado no emulador
-Execução aprovada: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39659119847
+Execução aprovada, incluindo capturas pelo compositor Android (ADB): https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39660329344
 APK compilado na execução 39656428669, com fonte 1ae259c1c91608cdd70905b7c7e6186f96824b3f; reutilizado sem recompilar na validação isolada. Um verificador comparou o HTML e cinco módulos do APK com a fonte atual antes da instalação.
 - Android API 35; tela 1200 × 1920 físicos (800 × 1280 CSS), com rotação para horizontal.
 - Sete clientes de teste, sete marcadores numerados, sete paradas, 4,7 km, oito minutos e 160 coordenadas de ruas.
@@ -60,12 +60,13 @@ APK compilado na execução 39656428669, com fonte 1ae259c1c91608cdd70905b7c7e61
 APK: 12.711.200 bytes.
 SHA-256: bc433fa0a52edcdc907c51b750893d04be20bdeae3af83cf92dae90b935c18d7.
 Evidências: docs/captures/android/android-routes.json e android-candidate.json.
+A captura CDP do canvas acelerado não registrava o desenho WebGL. A conferência pelo compositor Android (`adb exec-out screencap -p`) confirmou ruas, linha azul e sete paradas; os PNGs principais e suas prévias JPEG são dessa captura da tela. O teste aguarda a fonte carregada e uma feição da camada route-line visível antes da captura. O Google Maps abriu sua tela inicial de primeiro uso; não foi validada uma viagem guiada nesse aplicativo.
 Ocorreram falhas do ambiente/teste durante as iterações: alteração de densidade com WebView já aberto, emulador offline e expectativa incorreta de abrir Chrome quando Google Maps estava instalado. Foram isoladas das falhas do produto. A execução aprovada iniciou a tela de tablet antes do aplicativo e separou o emulador dos processos de compilação.
 
 ## Publicação e acesso
 A prévia de testes é https://traxio-preview.vercel.app/; o APK é servido em /downloads/traxio-android-testes.apk. A verificação pública confere HTTP, SHA-256, igualdade entre arquivos web/APK e o fluxo de sete clientes no navegador publicado.
 
-Bloqueio confirmado de configuração externa: o Google está habilitado, mas o Supabase ainda redireciona a prévia web para https://jeovadougllas-eng.github.io/-projeto-rota/. É necessário adicionar https://traxio-preview.vercel.app/ em Authentication → URL Configuration → Redirect URLs, sem remover os retornos existentes. Foi solicitado ao proprietário. O retorno nativo app.traxio.mobile://auth/callback permanece autorizado. Esses testes usam cancelamento controlado, sem login pessoal ou gravação de clientes.
+Configuração externa corrigida pelo proprietário: https://traxio-preview.vercel.app/ foi adicionada aos Redirect URLs do Supabase. O reteste aprovou os retornos Google para a prévia e app.traxio.mobile://auth/callback, e rejeitou uma URL de controle não autorizada. Execução 39653886884, tentativa 2. Esses testes usam cancelamento controlado, sem login pessoal ou gravação de clientes.
 
 ## Arquivos principais
 - index.html: ID da seleção, compatibilidade numérica, cancelamento da matriz, preservação do endereço e marcadores.
