@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
   clientSection.prepend(title('Clientes','Gerencie sua carteira e planeje suas visitas.'));
   const sectionActions = node('div','section-title'); sectionActions.append(node('h2','','Minha carteira'),button('+ Novo cliente',() => {
     editingClientId = null;
-    for(const id of ['name','address','houseNumber','complement','cep','lat','lon']) el(id).value = '';
+    for(const id of ['name','address','houseNumber','complement','cep','lat','lon','clientCity','clientNeighborhood','clientState']) el(id).value = '';
     el('priority').value='2'; el('saveStatus').textContent=''; editorTitle.textContent='Cadastrar cliente'; editor.showModal();
   },'')); clientSection.append(sectionActions);
   sectionActions.classList.add('registry-title-actions');sectionActions.querySelector('h2').remove();

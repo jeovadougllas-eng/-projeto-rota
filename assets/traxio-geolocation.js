@@ -11,10 +11,11 @@ function field(c,aliases){return clean((c.importFields||[]).find(f=>aliases.incl
 function parse(c){
  const company=Object.fromEntries((c.companyData?.fields||[]).map(([k,v])=>[norm(k),v]));
  const raw=clean(c.geocodingAddressOverride)||field(c,['endereco','logradouro','rua'])||clean(c.address);
- const cityValue=field(c,['cidade','municipio','localidade'])||clean(c.city)||clean(company.municipio);
+ const regionOverride=c.geocodingRegionOverride;
+ const cityValue=regionOverride?clean(regionOverride.city):field(c,['cidade','municipio','localidade'])||clean(c.city)||clean(company.municipio);
  const embedded=cityValue.match(/^(.+?)\s*[-/]\s*([A-Za-z]{2})$/);const city=embedded?clean(embedded[1]):cityValue;
- const district=field(c,['bairro','distrito','neighborhood'])||clean(c.neighborhood)||clean(company.bairro);
- const state=stateCode(field(c,['uf','estado'])||c.state||c.uf||company.uf||embedded?.[2])||stateCode(raw.split(',').map(clean).find(v=>stateCode(v)))||'';
+ const district=regionOverride?clean(regionOverride.district):field(c,['bairro','distrito','neighborhood'])||clean(c.neighborhood)||clean(company.bairro);
+ const state=stateCode(regionOverride?regionOverride.state:field(c,['uf','estado'])||c.state||c.uf||company.uf||embedded?.[2])||stateCode(raw.split(',').map(clean).find(v=>stateCode(v)))||'';
  let street=raw.split(/[,·]/)[0].trim();
  const found=raw.match(/(?:^|[,·])\s*(?:n[º°o.]?\s*)?(\d{1,6}\s*[a-z]?)\b/i)||raw.match(/\bn[º°o.]\s*(\d{1,6}\s*[a-z]?)\b/i);
  const house=(c.geocodingAddressOverride?clean(c.houseNumber):field(c,['numero','numerodologradouro','numerodoimovel','nro','num'])||clean(c.houseNumber))||clean(found?.[1]);

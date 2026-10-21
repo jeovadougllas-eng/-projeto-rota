@@ -95,3 +95,14 @@ test('route waits for style.load and clearing while the style loads cancels draw
  await page.locator('#clearRoute').click();await page.evaluate(()=>{map.isStyleLoaded=()=>false;});await page.locator('#calcRoute').click();await expect.poll(()=>page.evaluate(()=>!!window.__styleEvents['style.load'])).toBe(true);
  await page.locator('#clearRoute').click();expect(await page.evaluate(()=>lastRoute)).toBeNull();expect(await page.evaluate(()=>routeGeo)).toBeNull();
 });
+
+test('correct city, district and state, geocode again and preserve original commercial fields',async({page},info)=>{
+ const rows=records.map((c,i)=>i?c:{...c,city:'São Paulo',neighborhood:'Bairro antigo',state:'SP',importFields:[{label:'Cidade',value:'São Paulo'},{label:'Bairro',value:'Bairro antigo'},{label:'UF',value:'SP'},{label:'CNPJ',value:'00.000.000/0001-00'}]});
+ await setup(page,info.project.metadata.theme,rows);await select(page);
+ await page.evaluate(()=>{TraxioGeo.locate=async c=>({status:'matched',query:TraxioGeo.parse(c),best:{lat:-5.81,lon:-35.21,provider:'photon_osm',confidence:'address'},candidates:[]});openClientLocation(1);});
+ await expect(page.locator('#clientEditDialog')).toBeVisible();await page.locator('#clientRegionCorrection summary').click();
+ await page.locator('#clientCity').fill('Natal');await page.locator('#clientNeighborhood').fill('Tirol');await page.locator('#clientState').fill('RN');await page.locator('#saveClient').click();
+ await expect.poll(()=>page.evaluate(()=>clients.find(c=>String(c.id)==='1').locationVerification)).toBe('automatic_housenumber');
+ const c=await page.evaluate(()=>clients.find(c=>String(c.id)==='1'));
+ expect(c.geocodingRegionOverride).toEqual({city:'Natal',district:'Tirol',state:'RN'});expect(c.originalRegion.city).toBe('São Paulo');expect(c.importFields).toEqual(rows[0].importFields);expect(c.locationEvidence.query.city).toBe('Natal');
+});
