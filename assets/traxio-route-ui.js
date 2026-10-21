@@ -57,7 +57,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(Array.isArray(stored)){selectedIds=new P.IdSet(stored);selectionInitialized=true;syncRouteChoices();renderWorkspace();}
   lastSignature=signature();refresh();
  }
- const authObserver=new MutationObserver(()=>{if(document.body.classList.contains('auth-locked')){selectionKey=null;selectedIds.clear();cancel('Entre na sua conta para planejar as visitas.');}else hydrate().catch(()=>{});});
+ let wasLocked=document.body.classList.contains('auth-locked');
+ const authObserver=new MutationObserver(()=>{const locked=document.body.classList.contains('auth-locked');if(locked===wasLocked)return;wasLocked=locked;if(locked){selectionKey=null;selectedIds.clear();cancel('Entre na sua conta para planejar as visitas.');}else hydrate().catch(()=>{});});
  authObserver.observe(document.body,{attributes:true,attributeFilter:['class']});hydrate().catch(()=>{});
  function refresh(){
   const fingerprint=signature();
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const result=P.partition(clients,selectedIds);
   readiness.textContent=result.total+' selecionados · '+result.ready.length+' aptos · '+result.unverified.length+' não verificados · '+result.blocked.length+' pendentes'+(result.unloaded.length?' · '+result.unloaded.length+' aguardando sincronização':'');
   summary.textContent='Planejar visitas · '+result.total+' selecionados · '+result.ready.length+' aptos';
-  const shouldBuild=JSON.stringify([...result.blocked,...result.unverified].map(c=>[c.id,c.locationCandidate?.error,geoCandidates.get(c.id)?.error,c.locationVerification]));
+  const shouldBuild=JSON.stringify([result.unloaded,[...result.blocked,...result.unverified].map(c=>[c.id,c.locationCandidate?.error,geoCandidates.get(c.id)?.error,c.locationVerification])]);
   if(reviewList.dataset.content!==shouldBuild){
    reviewList.dataset.content=shouldBuild;reviewList.replaceChildren();
    for(const c of [...result.blocked,...result.unverified]){
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(checking)return;checking=true;const ids=P.partition(clients,selectedIds).blocked.map(c=>c.id);
   for(const id of ids){geoCandidates.delete(id);const c=clients.find(c=>String(c.id)===String(id));if(c)delete c.locationCandidate;}
   phase('checking-locations','Consultando CEP, logradouro e número. As buscas respeitam os limites do serviço.');
-  refresh();try{await queueClientGeocode(ids);}finally{checking=false;phase('review','Verificação terminada. Confira os aptos e as pendências antes de calcular.');refresh();}
+  refresh();try{await queueClientGeocode(ids,{force:true});}finally{checking=false;phase('review','Verificação terminada. Confira os aptos e as pendências antes de calcular.');refresh();}
  };
  const dialog=node('dialog','partialRouteDialog');dialog.setAttribute('aria-labelledby','partialRouteTitle');
  dialog.innerHTML='<h2 id="partialRouteTitle">Conferir clientes da rota</h2><p id="partialRouteMessage"></p><ul id="partialRouteClients"></ul><div class="row"><button type="button" id="confirmPartialRoute">Calcular com os clientes indicados</button><button type="button" id="cancelPartialRoute" class="secondary">Corrigir localizações</button></div>';
@@ -197,7 +198,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  // Keep keyboard-driven fields visible for any browser implementing VisualViewport.
  let viewportFrame=0;
  function viewportChanged(){cancelAnimationFrame(viewportFrame);viewportFrame=requestAnimationFrame(()=>{const viewport=window.visualViewport;document.documentElement.style.setProperty('--route-visible-height',(viewport?.height||innerHeight)+'px');const focused=document.activeElement;if(focused?.matches('#mapa input,#mapa select'))focused.scrollIntoView({block:'nearest',inline:'nearest'});map?.resize();});}
- visualViewport?.addEventListener('resize',viewportChanged);visualViewport?.addEventListener('scroll',viewportChanged);
+ window.visualViewport?.addEventListener('resize',viewportChanged);visualViewport?.addEventListener('scroll',viewportChanged);
  document.querySelector('#mapa').addEventListener('focusin',viewportChanged);window.addEventListener('resize',viewportChanged);
  panel.addEventListener('toggle',()=>map?.resize());viewportChanged();lastSignature=signature();refresh();
 });

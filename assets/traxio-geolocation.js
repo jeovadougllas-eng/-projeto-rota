@@ -53,7 +53,17 @@ function ensureAttribution(){
 }
 const cache=new Map(),postalCache=new Map();let queue=Promise.resolve(),lastCall=0,additionalProvider=true;
 async function getJSON(url,signal){
- const work=queue.catch(()=>{}).then(async()=>{const wait=Math.max(0,1600-(Date.now()-lastCall));if(wait)await new Promise(r=>setTimeout(r,wait));signal?.throwIfAborted();lastCall=Date.now();const r=await fetch(url,{signal:signal?AbortSignal.any([signal,AbortSignal.timeout(14000)]):AbortSignal.timeout(14000)});if(!r.ok)throw Error('Busca indisponível (HTTP '+r.status+')');return r.json();});
+ const work=queue.catch(()=>{}).then(async()=>{
+  for(let attempt=0;attempt<2;attempt++){
+   const wait=Math.max(0,1600-(Date.now()-lastCall));if(wait)await new Promise(r=>setTimeout(r,wait));
+   signal?.throwIfAborted();lastCall=Date.now();
+   try{
+    const response=await fetch(url,{signal:signal?AbortSignal.any([signal,AbortSignal.timeout(14000)]):AbortSignal.timeout(14000)});
+    if(!response.ok){const error=Error('Busca indisponível (HTTP '+response.status+')');error.retryable=response.status===429||response.status>=500;throw error;}
+    return await response.json();
+   }catch(error){if(signal?.aborted||attempt>0||!(error.retryable||error instanceof TypeError||error.name==='TimeoutError'))throw error;}
+  }
+ });
  queue=work.catch(()=>{});return work;
 }
 async function locate(client,{signal,token}={}){

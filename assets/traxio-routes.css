@@ -60,3 +60,8 @@ body[data-screen="mapa"] main{padding:16px;min-width:0}
  #mapa .workspace-map>.row{padding:8px}#mapa .workspace-map>p:last-child{display:none}
 }
 @media(max-width:650px){body[data-screen="mapa"]{--sidebar-w:64px;--header-h:62px}#mapa .workspace-map #map{height:320px}#mapa .workspace-side,#mapa .workspace-route{padding:12px}}
+
+#mapa .workspace-side,#mapa .workspace-route{position:static;inset:auto;float:none;width:auto;transform:none}
+#mapa .planner-main>.row{position:static}
+#routePlannerPanel{scroll-padding-top:80px;scroll-padding-bottom:20px}
+#mapa input,#mapa select,#mapa button{scroll-margin-top:90px;scroll-margin-bottom:20px}
