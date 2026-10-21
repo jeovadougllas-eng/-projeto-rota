@@ -24,7 +24,7 @@ jobs:
       - run: npm run check
       - run: npm run test:geolocation
       - name: Route transaction acceptance tests across desktop and tablet
-        run: npm test -- tests/routes.spec.js
+        run: npm test -- tests/routes.spec.js --output=test-results-routes
       - name: Existing functional regression
         run: npm test -- tests/auth.spec.js tests/flows.spec.js tests/geolocation.spec.js tests/native-bridge.spec.js
       - name: Reproduce the baseline and capture before screens
@@ -38,6 +38,8 @@ jobs:
           TRAXIO_CAPTURE_BEFORE=1 npm test -- tests/routes-before.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark
       - name: Prove real street routing and capture after screens
         run: npm test -- tests/routes-live.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark --workers=1
+      - name: Verify the live Brazilian address provider
+        run: npm test -- tests/live-geocoding.spec.js --project=desktop-light
       - name: Preserve reproducible before and after evidence
         if: success()
         run: |
@@ -57,5 +59,6 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            test-results-routes/
             docs/captures/routes-before/
             docs/captures/routes-after/

@@ -25,7 +25,7 @@ try{
  await page.locator('#selectEntirePortfolio').click();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');
  await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
  await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
- await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect(page.locator('#map .traxio-route-pin')).toHaveCount(7);
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect.poll(()=>page.evaluate(()=>map.queryRenderedFeatures().filter(f=>f.source!=='route').length),{timeout:45000}).toBeGreaterThan(10);await expect(page.locator('#map .traxio-route-pin')).toHaveCount(7);
  expect(await page.locator('#map .traxio-route-pin').allTextContents()).toEqual(['1','2','3','4','5','6','7']);
  evidence.checks.push('Seven selected clients produce a rendered street route from native GPS with matching numbered markers');
  evidence.route=await page.evaluate(()=>({coordinates:routeGeo.coordinates.length,stops:lastRoute.points.map(c=>c.id),summary:document.getElementById('routeResult').textContent,viewport:{width:innerWidth,height:innerHeight}}));
@@ -63,5 +63,5 @@ try{
  await page.locator('#selectNoClients').click();await page.locator('#adHocDisclosure summary').click();await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:45000});await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);if(await page.evaluate(()=>clients.length)!==7)throw Error('Ad hoc navigation changed customer records.');evidence.checks.push('Ad hoc GPS route works without selected customers or database changes');
  await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
  console.log(JSON.stringify(evidence,null,2));
-}catch(error){evidence.error=error.stack;evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
+}catch(error){evidence.error=error.stack;evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
 finally{clearInterval(timer);await device.close();}

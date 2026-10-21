@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  };
  async function waitForGeometry(geometry,signal){
   initMap();if(!map||!window.maplibregl)throw Error('Mapa indisponível. Confira a conexão e tente novamente.');
-  if(!map.isStyleLoaded())await new Promise((resolve,reject)=>{
+  if(!map.isStyleLoaded()&&!map.getStyle()?.layers?.length)await new Promise((resolve,reject)=>{
    const timeout=setTimeout(()=>finish(Error('O mapa não terminou de carregar.')),20000);
    function ready(){finish();}function aborted(){finish(new DOMException('Cancelado','AbortError'));}
    function finish(error){clearTimeout(timeout);map.off?.('style.load',ready);map.off?.('load',ready);signal.removeEventListener('abort',aborted);error?reject(error):resolve();}

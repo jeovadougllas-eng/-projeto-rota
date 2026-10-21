@@ -29,7 +29,7 @@ test('select filtered results respects text and adds instead of losing other cit
 test('missing coordinates require explicit partial confirmation and remain unchanged',async({page},info)=>{
  const rows=records.map((c,i)=>i===6?{...c,lat:null,lon:null}:c);
  await setup(page,info.project.metadata.theme,rows);await services(page);await select(page);await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
- await expect(page.locator('#partialRouteDialog')).toBeVisible();await expect(page.locator('#routeReadiness')).toContainText('6 aptos');
+ await expect(page.locator('#partialRouteDialog')).toBeVisible();await page.screenshot({path:info.outputPath('location-review.png')});await expect(page.locator('#routeReadiness')).toContainText('6 aptos');
  await page.locator('#confirmPartialRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota parcialmente calculada');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(6);
  expect(await page.evaluate(()=>clients.find(c=>String(c.id)==='7').lat)).toBeNull();await expect(page.locator('#routeResult')).toContainText('1 clientes excluídos');
 });
@@ -130,4 +130,22 @@ test('selected client geocoding is prioritized ahead of the rest of the imported
  await page.evaluate(()=>{window.__geoOrder=[];TraxioGeo.locate=async c=>{window.__geoOrder.push(String(c.id));if(String(c.id)==='1')await new Promise(resolve=>window.__releaseFirstGeo=resolve);return {status:'not_found',reason:'Número não cadastrado no teste',candidates:[]};};queueClientGeocode(clients.map(c=>c.id));});
  await expect.poll(()=>page.evaluate(()=>window.__geoOrder.length)).toBe(1);
  await page.evaluate(()=>{selectedIds.add(7);queueSelectedGeocode();window.__releaseFirstGeo();});await expect.poll(()=>page.evaluate(()=>window.__geoOrder[1])).toBe('7');
+});
+
+test('a parsed map style remains usable while viewport tiles are loading',async({page},info)=>{
+ await setup(page,info.project.metadata.theme);await services(page);await select(page);await page.locator('#origin').selectOption('gps');
+ await page.evaluate(()=>{map.isStyleLoaded=()=>false;map.getStyle=()=>({layers:[{id:'background',type:'background'}]});});
+ await page.locator('#calcRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada');expect(await page.evaluate(()=>!!map.getSource('route'))).toBe(true);
+});
+test('GPS origin rejects coarse or stale fixes instead of routing from an unreliable position',async({page},info)=>{
+ await setup(page,info.project.metadata.theme);await select(page);await page.locator('#origin').selectOption('gps');
+ await page.evaluate(()=>navigator.geolocation.getCurrentPosition=ok=>ok({coords:{latitude:-5.8,longitude:-35.22,accuracy:350},timestamp:Date.now()}));await page.locator('#calcRoute').click();await expect(page.locator('#routeResult')).toContainText('GPS impreciso');
+ await page.evaluate(()=>navigator.geolocation.getCurrentPosition=ok=>ok({coords:{latitude:-5.8,longitude:-35.22,accuracy:10},timestamp:Date.now()-60000}));await page.locator('#calcRoute').click();await expect(page.locator('#routeResult')).toContainText('GPS antigo');expect(await page.evaluate(()=>lastRoute)).toBeNull();
+});
+
+test('large Android portrait viewport uses map-first layout and keeps the single action bar visible',async({page},info)=>{
+ await page.setViewportSize({width:1200,height:1920});await setup(page,info.project.metadata.theme);
+ const mapBox=await page.locator('.workspace-map').boundingBox(),planBox=await page.locator('#routePlannerPanel').boundingBox();expect(mapBox.y).toBeLessThan(planBox.y);
+ const action=await page.locator('#routeActionBar').boundingBox();expect(action.y+action.height).toBeLessThanOrEqual(1921);
+ await page.setViewportSize({width:1920,height:1200});const landscapeMap=await page.locator('.workspace-map').boundingBox(),landscapePlan=await page.locator('#routePlannerPanel').boundingBox();expect(landscapeMap.x).toBeGreaterThan(landscapePlan.x);
 });
