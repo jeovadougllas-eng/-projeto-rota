@@ -1,11 +1,10 @@
-name: Read Android route failure evidence
+name: Compress installed Android visual evidence
 on:
   push:
     branches: [dev/traxelo-android-routes]
     paths: ['.github/workflows/android-diagnostics.yml']
 permissions:
   contents: write
-  actions: read
 jobs:
   inspect:
     runs-on: ubuntu-latest
@@ -14,26 +13,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Retrieve the failed Android test evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p docs/captures/android-diagnostics-webview81
-          gh run download 39652000670 --name traxio-android-runtime-evidence --dir docs/captures/android-diagnostics-webview81
-          cat docs/captures/android-diagnostics-webview81/android-routes.json
       - run: npm ci --prefix mobile --ignore-scripts
-      - name: Produce a small readable preview of the failure
+      - name: Produce readable previews of real ADB compositor screenshots
         run: |
           node --input-type=module <<'NODE'
           import {createRequire} from 'node:module';
           const sharp=createRequire(new URL('./mobile/package.json',import.meta.url))('sharp');
-          await sharp('docs/captures/android-diagnostics-webview81/android-route-failure.png').resize({width:1200,withoutEnlargement:true}).jpeg({quality:80}).toFile('docs/captures/android-diagnostics-webview81/failure-preview.jpg').catch(error=>console.log(error.message));
+          for(const name of ['android-tablet-portrait-route','android-tablet-landscape-route','android-tablet-keyboard','android-google-maps']){
+            await sharp('docs/captures/android/'+name+'.png').resize({width:1200,withoutEnlargement:true}).jpeg({quality:82}).toFile('docs/captures/android/'+name+'.jpg');
+          }
           NODE
-      - name: Preserve diagnostic evidence
+      - name: Preserve visual evidence
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/captures/android-diagnostics-webview81/
-          git commit -m "test: retain Android communication failure diagnostics [skip ci]"
+          git add docs/captures/android/*.jpg
+          git commit -m "test: retain real Android compositor previews [skip ci]"
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
