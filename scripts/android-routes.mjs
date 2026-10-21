@@ -24,7 +24,8 @@ try{
  await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
  await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
  await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect(page.locator('#map .traxio-route-pin')).toHaveCount(7);
- evidence.checks.push('Seven selected clients produce a rendered street route from native GPS');
+ expect(await page.locator('#map .traxio-route-pin').allTextContents()).toEqual(['1','2','3','4','5','6','7']);
+ evidence.checks.push('Seven selected clients produce a rendered street route from native GPS with matching numbered markers');
  evidence.route=await page.evaluate(()=>({coordinates:routeGeo.coordinates.length,stops:lastRoute.points.map(c=>c.id),summary:document.getElementById('routeResult').textContent,viewport:{width:innerWidth,height:innerHeight}}));
  if(evidence.route.coordinates<=8)throw Error('Expected street geometry with more than stop coordinates.');
  await page.screenshot({path:dir+'/android-tablet-portrait-route.png',fullPage:true});

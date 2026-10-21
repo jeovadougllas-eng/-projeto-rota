@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const el=id=>document.getElementById(id), P=TraxioPlanner;
  let generation=0,controller=null,manualOrigin=null,manualDraft=null,checking=false,selectionKey=null,lastSignature='',consentResolve=null;
  const state={phase:'awaiting-selection',excluded:[]};
- const labels={'awaiting-selection':'Aguardando seleção','awaiting-origin':'Aguardando origem','checking-locations':'Verificando localizações','calculating':'Calculando rota','calculated':'Rota calculada','partial':'Rota parcialmente calculada','location-error':'Falha de localização','communication-error':'Falha de comunicação','impossible':'Nenhuma rota possível','review':'Revisão necessária'};
+ const labels={'ready':'Pronto para calcular','awaiting-selection':'Aguardando seleção','awaiting-origin':'Aguardando origem','checking-locations':'Verificando localizações','calculating':'Calculando rota','calculated':'Rota calculada','partial':'Rota parcialmente calculada','location-error':'Falha de localização','communication-error':'Falha de comunicação','impossible':'Nenhuma rota possível','review':'Revisão necessária'};
  function node(tag,id,text){const n=document.createElement(tag);if(id)n.id=id;if(text)n.textContent=text;return n;}
  const workspace=document.querySelector('#mapa .workspace'),side=document.querySelector('.workspace-side'),planner=document.querySelector('.workspace-route'),mapPanel=document.querySelector('.workspace-map');
  const panel=node('details','routePlannerPanel'),summary=node('summary',null,'Planejar visitas');panel.open=true;panel.append(summary,side,planner);workspace.prepend(panel);
@@ -37,7 +37,8 @@ document.addEventListener('DOMContentLoaded',()=>{
  function applyRegionSearch(){const cq=norm(citySearch.value),dq=norm(districtSearch.value);for(const o of el('regionCity').options)o.hidden=o.value!=='all'&&o.value!==el('regionCity').value&&!norm(o.textContent).includes(cq);for(const label of el('regionNeighborhoods').children)label.hidden=!norm(label.textContent).includes(dq);}
  citySearch.oninput=applyRegionSearch;districtSearch.oninput=applyRegionSearch;
  new MutationObserver(applyRegionSearch).observe(el('regionNeighborhoods'),{childList:true});
- function originSignature(){return JSON.stringify([el('origin').value,manualOrigin]);}
+ function originSignature(){return JSON.stringify([el('origin').value,manualOrigin,document.querySelector('input[name="routeStrategy"]:checked')?.value||'distance']);}
+ function restingPhase(){return !selectedIds.size?'awaiting-selection':el('origin').value==='manual'&&!manualOrigin?'awaiting-origin':'ready';}
  function signature(){return P.signature(clients,selectedIds,originSignature());}
  function current(run){return run===generation&&!controller?.signal.aborted;}
  function phase(name,message){state.phase=name;badge.textContent=labels[name]||name;badge.dataset.phase=name;el('mapa').dataset.routeState=name;if(message)el('routeResult').textContent=message;const busy=['calculating','checking-locations'].includes(name);el('calcRoute').disabled=busy;el('generateSuggestion').disabled=busy;el('roadRoute').disabled=busy||!lastRoute;planner.setAttribute('aria-busy',String(busy));}
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(consentResolve){consentResolve(false);consentResolve=null;}if(dialog.open)dialog.close();
   window.traxioResetNavigation?.();lastRoute=null;window.traxioPendingTrip=null;
   el('saveCompletedRoute')?.remove();clearRouteVisual();el('routeOrder').replaceChildren();
-  phase(selectedIds.size?'awaiting-origin':'awaiting-selection',message||'Planejamento alterado. Confira a origem e calcule novamente.');
+  phase(restingPhase(),message||'Planejamento alterado. Confira a origem e calcule novamente.');
  }
  function selectedInOrder(){const byId=new Map(clients.map(c=>[String(c.id),c]));return [...selectedIds].map(id=>byId.get(String(id))).filter(Boolean);}
  function persist(){
@@ -85,6 +86,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   reviewSummary.textContent='Revisar localizações ('+(result.blocked.length+result.unverified.length+result.unloaded.length)+')';
   retry.disabled=checking||!result.blocked.length;
   if(!selectedIds.size&&!routeBusy&&!lastRoute)phase('awaiting-selection','Selecione clientes para começar.');
+  else if(selectedIds.size&&!routeBusy&&!lastRoute&&state.phase==='awaiting-selection')phase(restingPhase(),'Confira a origem e escolha o critério para organizar as visitas.');
   renderMarkers();
  }
  new MutationObserver(refresh).observe(el('selectedCount'),{childList:true,characterData:true,subtree:true});
@@ -195,6 +197,9 @@ document.addEventListener('DOMContentLoaded',()=>{
    phase(impossible?'impossible':'communication-error','Rota não calculada: '+e.message+'. Confira a conexão e tente novamente. Nenhum itinerário foi confirmado.');
   }finally{if(current(run)){routeBusy=false;controller=null;el('calcRoute').disabled=false;el('generateSuggestion').disabled=false;el('roadRoute').disabled=!lastRoute;}}
  }
+ el('suggestToggle').setAttribute('aria-controls','strategyPanel');el('suggestToggle').setAttribute('aria-expanded','false');
+ el('suggestToggle').onclick=()=>{const strategies=el('strategyPanel');strategies.hidden=!strategies.hidden;el('suggestToggle').setAttribute('aria-expanded',String(!strategies.hidden));if(!strategies.hidden){el('routeResult').textContent='Escolha o critério e toque em Gerar sugestão agora.';strategies.scrollIntoView({block:'center',behavior:'smooth'});}};
+ document.querySelectorAll('input[name="routeStrategy"]').forEach(input=>input.addEventListener('change',()=>{cancel('Critério alterado. Organize as visitas para atualizar o percurso.');lastSignature=signature();}));
  el('clearRoute').onclick=()=>{cancel('Trajeto limpo. A seleção de clientes foi preservada.');lastSignature=signature();};
  // Manual stop ordering invalidates street geometry until explicitly retraced.
  const originalSwap=swapStops;

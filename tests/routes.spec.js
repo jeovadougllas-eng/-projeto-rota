@@ -77,3 +77,21 @@ test('selected customer used as origin is labeled separately from numbered route
  const labels=await page.evaluate(()=>markers.map(m=>m.getElement().textContent));
  expect(labels).toEqual(['O','1','2','3','4','5','6']);
 });
+
+test('suggestion exposes criteria and both planning commands honor the chosen criterion',async({page},info)=>{
+ await setup(page,info.project.metadata.theme);await services(page);await select(page);await page.locator('#origin').selectOption('gps');
+ await page.locator('#suggestToggle').click();await expect(page.locator('#strategyPanel')).toBeVisible();await expect(page.locator('#suggestToggle')).toHaveAttribute('aria-expanded','true');
+ await page.locator('input[name="routeStrategy"][value="priority"]').check();await page.locator('#generateSuggestion').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada');
+ const priorities=await page.evaluate(()=>lastRoute.points.map(c=>c.priority));expect(priorities).toEqual([...priorities].sort((a,b)=>b-a));
+ await page.locator('input[name="routeStrategy"][value="balanced"]').check();expect(await page.evaluate(()=>lastRoute)).toBeNull();
+ await page.locator('#calcRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada');expect(await page.evaluate(()=>lastRoute.strategy)).toBe('balanced');
+});
+test('route waits for style.load and clearing while the style loads cancels drawing',async({page},info)=>{
+ await setup(page,info.project.metadata.theme);await services(page);await select(page);await page.locator('#origin').selectOption('gps');
+ await page.evaluate(()=>{window.__styleEvents={};map.isStyleLoaded=()=>false;map.once=(event,fn)=>window.__styleEvents[event]=fn;map.off=(event,fn)=>{if(window.__styleEvents[event]===fn)delete window.__styleEvents[event];};});
+ await page.locator('#calcRoute').click();await expect.poll(()=>page.evaluate(()=>!!window.__styleEvents['style.load'])).toBe(true);
+ await page.evaluate(()=>{map.isStyleLoaded=()=>true;window.__styleEvents['style.load']();});
+ await expect(page.locator('#plannerState')).toHaveText('Rota calculada');
+ await page.locator('#clearRoute').click();await page.evaluate(()=>{map.isStyleLoaded=()=>false;});await page.locator('#calcRoute').click();await expect.poll(()=>page.evaluate(()=>!!window.__styleEvents['style.load'])).toBe(true);
+ await page.locator('#clearRoute').click();expect(await page.evaluate(()=>lastRoute)).toBeNull();expect(await page.evaluate(()=>routeGeo)).toBeNull();
+});
