@@ -1,0 +1,58 @@
+import {_android as android} from 'playwright';
+import {expect} from 'playwright/test';
+import {prepare} from '../tests/fixtures/browser.js';
+import {records} from '../tests/fixtures/routing.js';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+const [device]=await android.devices();if(!device)throw Error('No emulator connected.');
+const dir='mobile/evidence';await mkdir(dir,{recursive:true});
+const emit=()=>execFileSync('adb',['emu','geo','fix','-35.22','-5.8'],{stdio:'ignore'});
+emit();const timer=setInterval(emit,2000);
+let page;
+const evidence={syntheticClients:true,realAndroidWebView:true,realRoutingService:true,simulatedGPS:true,physicalDevice:false,checks:[],calls:[]};
+try{
+ await device.shell('wm size 1200x1920');await device.shell('wm density 240');await device.shell('settings put system accelerometer_rotation 0');await device.shell('settings put system user_rotation 0');
+ await device.shell('am start -n app.traxio.mobile/.MainActivity');
+ const view=await device.webView({pkg:'app.traxio.mobile'});page=await view.page();
+ await prepare(page,{records,liveMaps:true});
+ await page.route('https://router.project-osrm.org/**',r=>r.continue());
+ page.on('response',r=>{if(r.url().startsWith('https://router.project-osrm.org/'))evidence.calls.push({url:r.url(),status:r.status()});});
+ await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
+ await page.locator('.tabs [data-tab="mapa"]').click();
+ await expect.poll(()=>page.evaluate(()=>!!map?.isStyleLoaded()),{timeout:60000}).toBe(true);
+ await page.locator('#selectEntirePortfolio').click();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');
+ await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
+ await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect(page.locator('#map .traxio-route-pin')).toHaveCount(7);
+ evidence.checks.push('Seven selected clients produce a rendered street route from native GPS');
+ evidence.route=await page.evaluate(()=>({coordinates:routeGeo.coordinates.length,stops:lastRoute.points.map(c=>c.id),summary:document.getElementById('routeResult').textContent,viewport:{width:innerWidth,height:innerHeight}}));
+ if(evidence.route.coordinates<=8)throw Error('Expected street geometry with more than stop coordinates.');
+ await page.screenshot({path:dir+'/android-tablet-portrait-route.png',fullPage:true});
+ await page.locator('#liveStart').click();await expect(page.locator('#liveGPSState')).not.toContainText('GPS desligado',{timeout:30000});evidence.checks.push('Native foreground GPS navigation starts');
+ await page.screenshot({path:dir+'/android-navigation.png'});
+ // Close the navigation overlay while retaining the route.
+ await page.locator('#traxioNavClose').click();
+ await page.locator('#regionPicker summary').click();await page.locator('#regionCity').selectOption('parnamirim');await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Selection survives city filtering');
+ await device.shell('settings put secure show_ime_with_hard_keyboard 1');
+ const before=await page.evaluate(()=>({height:visualViewport?.height||innerHeight}));
+ await page.locator('#mapClientSearch').fill('Visita');await page.locator('#mapClientSearch').tap();
+ await expect.poll(()=>page.evaluate(()=>({height:visualViewport?.height||innerHeight})),{timeout:10000}).not.toEqual(before);
+ const keyboard=await page.evaluate(()=>{const r=document.activeElement.getBoundingClientRect(),v=visualViewport;return {visibleHeight:v?.height||innerHeight,top:r.top,bottom:r.bottom,value:document.activeElement.value,width:document.documentElement.scrollWidth,innerWidth};});
+ if(keyboard.bottom>keyboard.visibleHeight+5||keyboard.top<0)throw Error('Focused field is obscured by the Android keyboard.');
+ evidence.keyboard={before,...keyboard};await page.screenshot({path:dir+'/android-tablet-keyboard.png'});
+ await device.shell('input keyevent 4');await expect(page.locator('#mapClientSearch')).toHaveValue('Visita');evidence.checks.push('Real Android IME resizes viewport, field remains visible and text survives dismissal');
+ await device.shell('settings put system user_rotation 1');
+ await expect.poll(()=>page.evaluate(()=>innerWidth>innerHeight),{timeout:15000}).toBe(true);
+ await expect(page.locator('#map')).toBeVisible();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');
+ if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Horizontal overflow on landscape tablet.');
+ await page.screenshot({path:dir+'/android-tablet-landscape-route.png',fullPage:true});evidence.checks.push('Landscape rotation keeps the itinerary and selection without overflow');
+ const href=await page.locator('#openGoogleMaps').getAttribute('href');if(!href?.includes('destination='))throw Error('Missing external navigation destination.');
+ await page.locator('#openGoogleMaps').click();
+ await expect.poll(async()=>String(await device.shell('dumpsys activity activities')),{timeout:15000}).toContain('com.android.chrome');
+ evidence.externalNavigation={href,openedAndroidBrowser:true};evidence.checks.push('Native AppLauncher hands the next destination to an external Android navigation URL');
+ await device.shell('am start -n app.traxio.mobile/.MainActivity');
+ await page.locator('#clearRoute').click();await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Clear stops GPS and preserves selected customers');
+ await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
+ console.log(JSON.stringify(evidence,null,2));
+}catch(error){evidence.error=error.stack;await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
+finally{clearInterval(timer);await device.close();}

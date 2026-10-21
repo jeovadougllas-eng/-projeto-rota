@@ -1,6 +1,6 @@
 {
   "appId": "app.traxio.mobile",
-  "appName": "Traxio",
+  "appName": "Traxelo.IA",
   "webDir": "www",
   "server": { "androidScheme": "https" },
   "ios": { "contentInset": "automatic" },
