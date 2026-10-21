@@ -1,0 +1,72 @@
+name: Traxelo Android isolated candidate retest
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/android-candidate-retest.yml', 'scripts/verify-android-candidate.mjs']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: traxelo-candidate-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Reuse the exact compiled APK without a Gradle process on this runner
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 39656428669 --name traxelo-compiled-candidate-apk --dir candidate
+      - run: node scripts/verify-android-candidate.mjs
+      - run: npm ci
+      - run: sudo chmod a+rw /dev/kvm
+      - name: Exercise the APK with native GPS, IME, rotation and Maps
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -memory 3072 -cores 2 -feature -Vulkan
+          script: |
+            adb install -r candidate/app-debug.apk
+            adb shell settings put secure location_mode 3
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb shell settings put system accelerometer_rotation 0
+            adb shell settings put system user_rotation 0
+            adb emu geo fix -35.211 -5.795
+            node scripts/android-smoke.mjs
+            node scripts/android-routes.mjs
+      - name: Publish only after the complete installed-APK acceptance test passes
+        run: |
+          mkdir -p downloads docs/captures/android
+          cp candidate/app-debug.apk downloads/traxio-android-testes.apk
+          sha256sum downloads/traxio-android-testes.apk > downloads/traxio-android-testes.sha256
+          cp mobile/evidence/* docs/captures/android/
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/ scripts/build-mobile.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/ docs/captures/android/
+          git commit -m "build: publish installed and tablet-tested Android candidate [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: traxelo-isolated-android-evidence
+          retention-days: 30
+          path: mobile/evidence/
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: traxelo-verified-android-apk
+          retention-days: 30
+          path: candidate/app-debug.apk
