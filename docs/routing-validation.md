@@ -37,7 +37,35 @@ Rodada seguinte: 36/36 testes de planejamento, 20/20 testes funcionais existente
 Nessa rodada, os três testes com MapLibre e OSRM reais passaram: sete clientes sintéticos geraram rota rodoviária de 4,7 km, aproximadamente oito minutos e 160 coordenadas, com sete marcadores e sete paradas.
 Execução: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39646518689
 
-A matriz final, a validação Android e a verificação pública são registradas abaixo após sua conclusão; compilação isolada não significa aceite.
+## Matriz final aprovada
+Execução web: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39652000825
+- 22 testes unitários aprovados.
+- 184 cenários de planejamento aprovados: desktop, tablet vertical, tablet horizontal e telefone, nos modos claro e escuro.
+- 160 regressões aprovadas de autenticação (contratos), cadastro, importação/exportação, histórico, filtros, diálogos, GPS e integração nativa.
+- Três reproduções antes da correção e três rotas reais OSRM/MapLibre após a correção, com capturas desktop e tablet.
+- Uma consulta real ao Photon para endereço brasileiro, mantendo resultados aproximados pendentes de revisão.
+
+## APK instalado e validado no emulador
+Execução aprovada: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39659119847
+APK compilado na execução 39656428669, com fonte 1ae259c1c91608cdd70905b7c7e6186f96824b3f; reutilizado sem recompilar na validação isolada. Um verificador comparou o HTML e cinco módulos do APK com a fonte atual antes da instalação.
+- Android API 35; tela 1200 × 1920 físicos (800 × 1280 CSS), com rotação para horizontal.
+- Sete clientes de teste, sete marcadores numerados, sete paradas, 4,7 km, oito minutos e 160 coordenadas de ruas.
+- GPS nativo simulado: um desvio sustentado solicitou e desenhou um novo trajeto real OSRM, mantendo a sequência.
+- Teclado Android real aberto: altura visível de 1280 → 904 CSS; campo entre 434 e 478 CSS, sem ficar encoberto; texto mantido ao fechar.
+- Seleção mantida ao filtrar cidade e girar o tablet.
+- AppLauncher abriu o pacote instalado com.google.android.apps.maps com a próxima parada correta.
+- Limpar interrompeu GPS sem apagar seleção; rota avulsa funcionou sem selecionar nem adicionar clientes.
+- As quatro chamadas rodoviárias (matriz, roteiro, recálculo e avulsa) responderam HTTP 200. Cancelamentos de tiles registrados como ERR_ABORTED ocorreram durante mudanças de câmera, não como falhas do itinerário.
+
+APK: 12.711.200 bytes.
+SHA-256: bc433fa0a52edcdc907c51b750893d04be20bdeae3af83cf92dae90b935c18d7.
+Evidências: docs/captures/android/android-routes.json e android-candidate.json.
+Ocorreram falhas do ambiente/teste durante as iterações: alteração de densidade com WebView já aberto, emulador offline e expectativa incorreta de abrir Chrome quando Google Maps estava instalado. Foram isoladas das falhas do produto. A execução aprovada iniciou a tela de tablet antes do aplicativo e separou o emulador dos processos de compilação.
+
+## Publicação e acesso
+A prévia de testes é https://traxio-preview.vercel.app/; o APK é servido em /downloads/traxio-android-testes.apk. A verificação pública confere HTTP, SHA-256, igualdade entre arquivos web/APK e o fluxo de sete clientes no navegador publicado.
+
+Bloqueio confirmado de configuração externa: o Google está habilitado, mas o Supabase ainda redireciona a prévia web para https://jeovadougllas-eng.github.io/-projeto-rota/. É necessário adicionar https://traxio-preview.vercel.app/ em Authentication → URL Configuration → Redirect URLs, sem remover os retornos existentes. Foi solicitado ao proprietário. O retorno nativo app.traxio.mobile://auth/callback permanece autorizado. Esses testes usam cancelamento controlado, sem login pessoal ou gravação de clientes.
 
 ## Arquivos principais
 - index.html: ID da seleção, compatibilidade numérica, cancelamento da matriz, preservação do endereço e marcadores.
@@ -64,6 +92,7 @@ Os testes autenticados usam dados sintéticos injetados somente pelo Playwright;
 
 ## Limitações / validação pendente
 - Não há acesso autorizado nesta sessão à carteira real do Supabase: a consulta agregada somente de leitura foi recusada pelo conector. Os 157 clientes reais não foram alterados. Não foi declarado que todos tenham localização exata.
+- Google Maps foi aberto no emulador, mas isso não comprova uma viagem física guiada; Waze foi validado por contrato de URL/launcher, sem teste com o aplicativo Waze instalado.
 - Testes em emulador não substituem o Galaxy Tab A11+ físico. Falta teste de campo com representante, endereços reais e desvios GPS reais.
 - O serviço público demonstrativo OSRM não oferece SLA ou trânsito em tempo real.
 - Google/Microsoft OAuth e Supabase mantêm seus identificadores. Os testes de contrato não representam login real em conta pessoal. Microsoft/Azure estava desabilitado na configuração Supabase em diagnóstico anterior; isso não foi alterado.
