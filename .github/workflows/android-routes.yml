@@ -2,7 +2,7 @@ name: Traxelo Android route validation
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['mobile/**', 'scripts/android-routes.mjs', '.github/workflows/android-routes.yml']
+    paths: ['mobile/**']
   workflow_dispatch:
 permissions:
   contents: write

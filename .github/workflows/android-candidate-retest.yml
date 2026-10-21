@@ -2,7 +2,7 @@ name: Traxelo Android isolated candidate retest
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['.github/workflows/android-candidate-retest.yml', 'scripts/verify-android-candidate.mjs']
+    paths: ['.github/workflows/android-candidate-retest.yml', 'scripts/verify-android-candidate.mjs', 'scripts/android-routes.mjs']
   workflow_dispatch:
 permissions:
   contents: write

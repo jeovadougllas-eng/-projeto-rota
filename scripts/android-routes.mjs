@@ -52,8 +52,8 @@ try{
  const keyboard=await page.evaluate(()=>{const r=document.activeElement.getBoundingClientRect(),v=visualViewport;return {visibleHeight:v?.height||innerHeight,top:r.top,bottom:r.bottom,value:document.activeElement.value,width:document.documentElement.scrollWidth,innerWidth};});
  if(keyboard.bottom>keyboard.visibleHeight+5||keyboard.top<0)throw Error('Focused field is obscured by the Android keyboard.');
  evidence.keyboard={before,...keyboard};await page.screenshot({path:dir+'/android-tablet-keyboard.png'});
- await device.shell('input keyevent 4');await expect(page.locator('#mapClientSearch')).toHaveValue('Visita');evidence.checks.push('Real Android IME resizes viewport, field remains visible and text survives dismissal');
- await device.shell('settings put system user_rotation 1');
+ await device.shell('input keyevent 4');await expect.poll(()=>page.evaluate(()=>visualViewport?.height||innerHeight),{timeout:15000}).toBeGreaterThanOrEqual(before.height-4);await expect(page.locator('#mapClientSearch')).toHaveValue('Visita');evidence.checks.push('Real Android IME resizes viewport, field remains visible and text survives dismissal');
+ await device.shell('settings put system accelerometer_rotation 0');await device.shell('cmd window user-rotation lock 1');
  await expect.poll(()=>page.evaluate(()=>innerWidth>innerHeight),{timeout:15000}).toBe(true);
  await expect(page.locator('#map')).toBeVisible();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');
  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Horizontal overflow on landscape tablet.');
@@ -62,12 +62,12 @@ try{
  await page.locator('#openGoogleMaps').click();
  let openedPackage=null;
  await expect.poll(async()=>{const activities=String(await device.shell('dumpsys activity activities'));openedPackage=activities.match(/topResumedActivity=.*?\s(com\.google\.android\.apps\.maps|com\.android\.chrome)\//)?.[1]||null;return openedPackage;},{timeout:15000}).not.toBeNull();
- await writeFile(dir+'/android-google-maps.png',execFileSync('adb',['exec-out','screencap','-p']));
+ await writeFile(dir+'/android-google-maps.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
  evidence.externalNavigation={href,openedPackage};evidence.checks.push('Native AppLauncher opens the next destination in '+openedPackage);
  await device.shell('am start -n app.traxio.mobile/.MainActivity');
  await page.locator('#clearRoute').click();await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Clear stops GPS and preserves selected customers');
  await page.locator('#selectNoClients').click();await page.locator('#adHocDisclosure summary').click();await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:45000});await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);if(await page.evaluate(()=>clients.length)!==7)throw Error('Ad hoc navigation changed customer records.');evidence.checks.push('Ad hoc GPS route works without selected customers or database changes');
  await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
  console.log(JSON.stringify(evidence,null,2));
-}catch(error){await writeFile(dir+'/android-device-failure.png',execFileSync('adb',['exec-out','screencap','-p'])).catch(()=>{});evidence.error=error.stack;evidence.url=page?.url();evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
+}catch(error){try{await writeFile(dir+'/android-device-failure.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));}catch{}evidence.error=error.stack;evidence.url=page?.url();evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({width:innerWidth,height:innerHeight,screenWidth:screen.width,screenHeight:screen.height,angle:screen.orientation?.angle,style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
 finally{clearInterval(timer);await device.close();}
