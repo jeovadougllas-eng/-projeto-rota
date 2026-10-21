@@ -12,14 +12,15 @@ emit();const timer=setInterval(emit,2000);
 let page;
 const evidence={plannerGeneration:'selected-priority-and-partial-confirmation',syntheticClients:true,realAndroidWebView:true,realRoutingService:true,simulatedGPS:true,physicalDevice:false,checks:[],calls:[],failures:[]};
 try{
- await device.shell('wm size 1200x1920');await device.shell('wm density 240');await device.shell('settings put system accelerometer_rotation 0');await device.shell('settings put system user_rotation 0');
+ await device.shell('am force-stop app.traxio.mobile');
  await device.shell('am start -n app.traxio.mobile/.MainActivity');
  const view=await device.webView({pkg:'app.traxio.mobile'});page=await view.page();
  await prepare(page,{records,liveMaps:true});
  await page.route('https://router.project-osrm.org/**',r=>r.continue());
  page.on('requestfailed',r=>evidence.failures.push({url:r.url(),error:r.failure()}));
  page.on('response',r=>{if(r.url().startsWith('https://router.project-osrm.org/'))evidence.calls.push({url:r.url(),status:r.status()});});
- await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
+ await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});await expect(page.locator('body')).not.toHaveClass(/auth-locked/,{timeout:15000});
+ evidence.initialViewport=await page.evaluate(()=>({width:innerWidth,height:innerHeight,dpr:devicePixelRatio,screenWidth:screen.width,screenHeight:screen.height,locked:document.body.classList.contains('auth-locked')}));console.log(JSON.stringify({stage:'authenticated Android WebView ready',...evidence.initialViewport}));
  await page.locator('.tabs [data-tab="mapa"]').click();
  await expect.poll(()=>page.evaluate(()=>!!map?.isStyleLoaded()),{timeout:60000}).toBe(true);
  await page.locator('#selectEntirePortfolio').click();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');
@@ -63,5 +64,5 @@ try{
  await page.locator('#selectNoClients').click();await page.locator('#adHocDisclosure summary').click();await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:45000});await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);if(await page.evaluate(()=>clients.length)!==7)throw Error('Ad hoc navigation changed customer records.');evidence.checks.push('Ad hoc GPS route works without selected customers or database changes');
  await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
  console.log(JSON.stringify(evidence,null,2));
-}catch(error){evidence.error=error.stack;evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
+}catch(error){evidence.error=error.stack;evidence.url=page?.url();evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
 finally{clearInterval(timer);await device.close();}

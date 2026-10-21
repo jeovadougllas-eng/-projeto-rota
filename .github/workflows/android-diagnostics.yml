@@ -2,7 +2,7 @@ name: Read Android route failure evidence
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['.github/workflows/android-diagnostics-webview81.yml']
+    paths: ['.github/workflows/android-diagnostics.yml']
 permissions:
   contents: write
   actions: read

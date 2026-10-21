@@ -75,6 +75,10 @@ jobs:
             adb install -r mobile/android/app/build/outputs/apk/debug/app-debug.apk
             adb shell settings put secure location_mode 3
             adb emu geo fix -35.211 -5.795
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb shell settings put system accelerometer_rotation 0
+            adb shell settings put system user_rotation 0
             node scripts/android-smoke.mjs
             node scripts/android-routes.mjs
       - name: Preserve the tested APK and runtime evidence on the development branch
