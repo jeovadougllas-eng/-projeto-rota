@@ -11,3 +11,5 @@ if(new Set(ids).size !== ids.length) throw Error('Duplicate IDs in HTML');
 for(const source of ['https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js','https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js']) if(!html.includes(source)) throw Error('Missing existing dependency: '+source);
 for(const provider of ["data-provider=\"google\"", "data-provider=\"azure\"", "flowType:'pkce'", "KEY='projeto_rota_mapa_v1'", "storageKey:'traxio-auth-v3'"]) if(!html.includes(provider)) throw Error('Existing integration changed: '+provider);
 console.log(`Validated ${scripts.length} inline scripts, the presentation adapter, unique HTML IDs and existing integration identifiers.`);
+
+for(const file of ['traxio-planner.js','traxio-route-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});

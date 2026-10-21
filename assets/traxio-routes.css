@@ -1,0 +1,62 @@
+/* Routing workspace: preserve approved artwork and palette, size controls for touch. */
+body[data-screen="mapa"]{--sidebar-w:150px;--header-h:68px}
+body[data-screen="mapa"] main{padding:16px;min-width:0}
+#mapa{font-size:16px;line-height:1.45}
+#mapa .workspace{display:grid;grid-template-columns:minmax(310px,360px) minmax(0,1fr);gap:16px;align-items:start}
+#routePlannerPanel{grid-column:1;grid-row:1;min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--panel);max-height:calc(var(--route-visible-height,100dvh) - 160px);overflow:auto;scroll-padding:16px;overscroll-behavior:contain}
+#routePlannerPanel>summary{position:sticky;top:0;z-index:3;background:var(--panel);padding:14px 16px;cursor:pointer;font-size:16px;font-weight:700;border-bottom:1px solid var(--line)}
+#routeSteps{padding:0 16px;font-size:13px}
+#mapa .workspace-side,#mapa .workspace-route{max-height:none;min-height:0;padding:16px;margin:0;border:0;border-radius:0;overflow:visible}
+#mapa .workspace-map{grid-column:2;grid-row:1;min-width:0;padding:0;position:sticky;top:calc(var(--header-h) + 16px)}
+#mapa .workspace-map #map{height:max(360px,calc(var(--route-visible-height,100dvh) - 250px));min-height:320px;max-height:760px}
+#mapa .workspace-map>.row{position:static;display:flex;flex-wrap:wrap;gap:8px;padding:10px;pointer-events:auto}
+#mapa .workspace-map>#mapStatus,#mapa .workspace-map>#mapSelectionStatus{font-size:13px;padding:4px 12px;margin:0}
+#mapa .workspace-map>p:last-child{font-size:12px;padding:8px 12px}
+#mapa :is(input:not([type=checkbox]):not([type=radio]),select,button,a.secondary){font-size:16px;min-height:44px;line-height:1.25;padding:10px 12px;max-width:100%;box-sizing:border-box}
+#mapa :is(input[type=checkbox],input[type=radio]){width:22px;height:22px;flex:0 0 22px}
+#mapa button{white-space:normal}
+#mapa h2{font-size:20px;margin:0 0 12px}
+#mapa h3{font-size:18px}
+#mapa :is(.muted,.tile-address,.section-kicker,.route-hint,.route-result,.region-picker summary){font-size:14px}
+#mapa .workspace-side .search-inline{height:44px;font-size:16px}
+#mapa .workspace-side .filter-row button,#mapa .workspace-side>.row button{min-height:44px;font-size:14px}
+#mapa .filter-row{display:flex;flex-wrap:wrap;gap:6px}
+#mapa .planner-grid{display:block}
+#mapa .route-top{display:block}
+#mapa .route-counter{font-size:15px;display:block;margin-bottom:8px}
+#routeReadiness{font-size:14px;border-left:3px solid #00c496;padding:8px 12px;margin:8px 0 16px;background:color-mix(in srgb,var(--panel),#00c496 8%)}
+#mapa .row{gap:8px;flex-wrap:wrap}
+#mapa .planner-main>.row{position:sticky;bottom:0;background:var(--panel);padding:10px 0;z-index:2}
+#calcRoute{flex:1;min-width:150px}
+#mapa .route-summary{margin-top:14px;min-width:0}
+#plannerState{font-weight:700;font-size:15px;color:var(--text);margin:12px 0 4px}
+#plannerState[data-phase$="error"],#plannerState[data-phase="impossible"]{color:#ce5f56}
+#mapa .client-tile{font-size:15px;padding:12px 0;border-bottom:1px solid var(--line)}
+#mapa .client-tile-top{gap:10px}
+#mapa .client-tile:has(input:checked){border-left:3px solid #00c496;padding-left:8px}
+#mapa #mapClientList{max-height:360px;overflow:auto;overscroll-behavior:contain}
+#mapa .region-neighborhoods{max-height:220px;overflow:auto}
+#mapa .region-neighborhoods label{font-size:15px;min-height:44px;display:flex;align-items:center;gap:8px}
+#mapa [hidden]{display:none!important}
+#mapa summary{min-height:44px;padding:12px 0;cursor:pointer;overflow-wrap:anywhere}
+#mapa .location-review-row{margin:12px 0;padding-bottom:12px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+#mapa .location-review-row p{font-size:14px}
+#manualOriginFields{margin:12px 0}
+#routeOriginAddress{width:100%;flex:1 1 100%;min-width:0}
+#regionCitySearch,#regionNeighborhoodSearch{width:100%;margin:6px 0}
+#mapa .map-layer-switch{position:static;display:flex;padding:4px 10px;gap:8px}
+#mapa .maplibregl-ctrl-group button{width:44px;height:44px;min-height:44px}
+#partialRouteDialog{background:var(--panel,#fff);color:var(--text,#10313d);border:1px solid var(--line,#aac8c4);border-radius:16px;width:min(580px,calc(100vw - 32px));max-height:80dvh;overflow:auto;padding:24px}
+#partialRouteDialog::backdrop{background:#001923b8}
+#partialRouteDialog button{min-height:44px;font-size:16px}
+#partialRouteDialog li{margin:10px 0;overflow-wrap:anywhere}
+@media(max-width:1100px){body[data-screen="mapa"]{--sidebar-w:110px}#mapa .workspace{grid-template-columns:minmax(290px,330px) minmax(0,1fr)}#mapa .tabs button{font-size:14px}}
+@media(max-width:850px),(orientation:portrait) and (max-width:1100px){
+ body[data-screen="mapa"]{--sidebar-w:84px}body[data-screen="mapa"] main{padding:12px}
+ #mapa .workspace{grid-template-columns:minmax(0,1fr);gap:12px}
+ #mapa .workspace-map{grid-column:1;grid-row:1;position:static}
+ #mapa .workspace-map #map{height:clamp(280px,40dvh,440px);max-height:none;min-height:280px}
+ #routePlannerPanel{grid-column:1;grid-row:2;max-height:none;overflow:visible}
+ #mapa .workspace-map>.row{padding:8px}#mapa .workspace-map>p:last-child{display:none}
+}
+@media(max-width:650px){body[data-screen="mapa"]{--sidebar-w:64px;--header-h:62px}#mapa .workspace-map #map{height:320px}#mapa .workspace-side,#mapa .workspace-route{padding:12px}}

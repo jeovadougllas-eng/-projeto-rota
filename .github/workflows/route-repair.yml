@@ -1,0 +1,37 @@
+name: Traxelo route repair
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['index.html', 'assets/**', 'tests/**', 'test-unit/**', 'scripts/check*', 'playwright*.js', '.github/workflows/route-repair.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: traxelo-routes-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  routes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run check
+      - run: npm run test:geolocation
+      - name: Route transaction acceptance tests across desktop and tablet
+        run: npm test -- tests/routes.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark
+      - name: Existing functional regression
+        run: npm test -- tests/auth.spec.js tests/flows.spec.js tests/geolocation.spec.js tests/native-bridge.spec.js --project=desktop-light
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: traxelo-route-browser-evidence
+          retention-days: 30
+          path: |
+            playwright-report/
+            test-results/
