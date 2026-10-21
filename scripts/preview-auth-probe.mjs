@@ -31,8 +31,10 @@ async function check(provider,redirectTo,allowed){
 }
 const settings=await request(new URL('settings',authBase));
 if(settings.ok){const data=await settings.json();console.log(JSON.stringify({publicAuthSettings:{google:data.external?.google,azure:data.external?.azure}}));}
-await check('google',appReturn,true);
-await check('google','app.traxio.mobile://auth/callback',true);
-await check('google',rejectedReturn,false);
+const failures=[];
+for(const args of [['google',appReturn,true],['google','app.traxio.mobile://auth/callback',true],['google',rejectedReturn,false]]){
+ try{await check(...args);}catch(error){failures.push({provider:args[0],redirect:args[1],message:error.message});console.log(JSON.stringify(failures.at(-1)));}
+}
 console.log(JSON.stringify({azurePersonalLogin:'not-tested',note:'Provider configuration was not changed.'}));
-console.log(JSON.stringify({passed:true,checks:results,personalLogin:false,customerWrites:false}));
+if(failures.length){console.log(JSON.stringify({passed:false,checks:results,failures,personalLogin:false,customerWrites:false}));process.exitCode=1;}
+else console.log(JSON.stringify({passed:true,checks:results,personalLogin:false,customerWrites:false}));
