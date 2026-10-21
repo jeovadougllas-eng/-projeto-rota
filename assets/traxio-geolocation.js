@@ -67,7 +67,7 @@ async function getJSON(url,signal){
  });
  queue=work.catch(()=>{});return work;
 }
-async function locate(client,{signal,token}={}){
+async function locate(client,{signal,token,refresh=false}={}){
  let q=parse(client);
  if(q.street.length<3)throw Error('Informe o logradouro do cliente.');
  // CEP verifies postal street/locality only; its centroid never becomes the client point.
@@ -93,7 +93,7 @@ async function locate(client,{signal,token}={}){
   }
  }
  if(!q.city)throw Error('Informe cidade e UF ou um CEP válido para localizar este endereço.');
- const key=JSON.stringify(q),saved=cache.get(key);if(saved&&Date.now()-saved.at<600000)return saved.result;
+ const key=JSON.stringify(q);if(refresh)cache.delete(key);const saved=cache.get(key);if(saved&&Date.now()-saved.at<600000)return saved.result;
  let result,commercial=[];
  if(token&&additionalProvider){
   try{const r=await fetch((root.TraxioNative?.apiBase||'')+'/api/geocode',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(16000)]):AbortSignal.timeout(16000)});if(r.status===503||r.status===404)additionalProvider=false;if(r.ok){ensureAttribution();commercial=geoapify(await r.json());result=rank(commercial,q);if(result.status==='matched'){cache.set(key,{at:Date.now(),result});return result;}}}catch(e){if(signal?.aborted)throw e;}

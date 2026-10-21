@@ -6,16 +6,18 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 const [device]=await android.devices();if(!device)throw Error('No emulator connected.');
 const dir='mobile/evidence';await mkdir(dir,{recursive:true});
-const emit=()=>{try{execFileSync('adb',['emu','geo','fix','-35.22','-5.8'],{stdio:'ignore'});}catch(error){console.warn('ADB GPS injection interrupted:',error.message);}};
+const gpsFix={lat:-5.8,lon:-35.22};
+const emit=()=>{try{execFileSync('adb',['emu','geo','fix',String(gpsFix.lon),String(gpsFix.lat)],{stdio:'ignore'});}catch(error){console.warn('ADB GPS injection interrupted:',error.message);}};
 emit();const timer=setInterval(emit,2000);
 let page;
-const evidence={syntheticClients:true,realAndroidWebView:true,realRoutingService:true,simulatedGPS:true,physicalDevice:false,checks:[],calls:[]};
+const evidence={plannerGeneration:'selected-priority-and-partial-confirmation',syntheticClients:true,realAndroidWebView:true,realRoutingService:true,simulatedGPS:true,physicalDevice:false,checks:[],calls:[],failures:[]};
 try{
  await device.shell('wm size 1200x1920');await device.shell('wm density 240');await device.shell('settings put system accelerometer_rotation 0');await device.shell('settings put system user_rotation 0');
  await device.shell('am start -n app.traxio.mobile/.MainActivity');
  const view=await device.webView({pkg:'app.traxio.mobile'});page=await view.page();
  await prepare(page,{records,liveMaps:true});
  await page.route('https://router.project-osrm.org/**',r=>r.continue());
+ page.on('requestfailed',r=>evidence.failures.push({url:r.url(),error:r.failure()}));
  page.on('response',r=>{if(r.url().startsWith('https://router.project-osrm.org/'))evidence.calls.push({url:r.url(),status:r.status()});});
  await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
  await page.locator('.tabs [data-tab="mapa"]').click();
@@ -30,6 +32,7 @@ try{
  if(evidence.route.coordinates<=8)throw Error('Expected street geometry with more than stop coordinates.');
  await page.screenshot({path:dir+'/android-tablet-portrait-route.png',fullPage:true});
  await page.locator('#liveStart').click();await expect(page.locator('#liveGPSState')).not.toContainText('GPS desligado',{timeout:30000});evidence.checks.push('Native foreground GPS navigation starts');
+ gpsFix.lat=-5.84;gpsFix.lon=-35.218;emit();await expect.poll(()=>page.evaluate(()=>routeGeo?.coordinates?.[0]?.[1]||0),{timeout:45000}).toBeLessThan(-5.835);evidence.checks.push('Sustained native GPS deviation recalculates the remaining street route');
  await page.screenshot({path:dir+'/android-navigation.png'});
  // Close the navigation overlay while retaining the route.
  await page.locator('#traxioNavClose').click();
@@ -60,5 +63,5 @@ try{
  await page.locator('#selectNoClients').click();await page.locator('#adHocDisclosure summary').click();await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:45000});await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);if(await page.evaluate(()=>clients.length)!==7)throw Error('Ad hoc navigation changed customer records.');evidence.checks.push('Ad hoc GPS route works without selected customers or database changes');
  await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
  console.log(JSON.stringify(evidence,null,2));
-}catch(error){evidence.error=error.stack;await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
+}catch(error){evidence.error=error.stack;evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
 finally{clearInterval(timer);await device.close();}

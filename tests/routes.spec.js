@@ -35,7 +35,7 @@ test('missing coordinates require explicit partial confirmation and remain uncha
 });
 test('unverified coordinates are distinguished and need consent',async({page},info)=>{
  await setup(page,info.project.metadata.theme,records.map(c=>({...c,locationVerification:'imported_coordinates'})));await services(page);await select(page);await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
- await expect(page.locator('#partialRouteMessage')).toContainText('7 com coordenadas não verificadas');await page.locator('#confirmPartialRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada');await expect(page.locator('#routeResult')).toContainText('não verificadas');
+ await expect(page.locator('#partialRouteMessage')).toContainText('7 com coordenadas não verificadas');await expect(page.locator('#confirmPartialRoute')).toBeDisabled();await page.locator('#includeUnverifiedLocations').check();await page.locator('#confirmPartialRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada');await expect(page.locator('#routeResult')).toContainText('não verificadas');
 });
 test('GPS denial reports an actionable origin error',async({page},info)=>{
  await setup(page,info.project.metadata.theme);await select(page);await page.evaluate(()=>navigator.geolocation.getCurrentPosition=(ok,fail)=>fail({message:'Permissão negada'}));await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
@@ -113,4 +113,21 @@ test('ad hoc navigation remains available without selecting or adding clients an
  await expect(page.locator('#routeResult')).toContainText('Destino avulso');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);expect(await page.evaluate(()=>clients.length)).toBe(7);expect(await page.evaluate(()=>selectedIds.size)).toBe(0);
  let release;const hold=new Promise(r=>release=r);await services(page,{hold});await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Calculando rota');await page.locator('#clearRoute').click();release();await page.waitForTimeout(100);
  expect(await page.evaluate(()=>routeGeo)).toBeNull();await expect(page.locator('#liveNavigation')).toBeHidden();expect(await page.evaluate(()=>clients.length)).toBe(7);
+});
+
+test('partial route excludes unverified coordinates by default and only includes confirmed clients',async({page},info)=>{
+ await setup(page,info.project.metadata.theme,records.map((c,i)=>i===6?{...c,locationVerification:'unverified'}:c));await services(page);await select(page);await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
+ await expect(page.locator('#includeUnverifiedLocations')).not.toBeChecked();await page.locator('#confirmPartialRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota parcialmente calculada');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(6);await expect(page.locator('#routeResult')).not.toContainText('Coordenadas não verificadas incluídas');
+});
+
+test('a late location update of an excluded client preserves the confirmed partial itinerary',async({page},info)=>{
+ await setup(page,info.project.metadata.theme,records.map((c,i)=>i===6?{...c,lat:null,lon:null}:c));await page.evaluate(()=>TraxioGeo.locate=()=>new Promise(()=>{}));await services(page);await select(page);await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();await page.locator('#confirmPartialRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota parcialmente calculada');
+ await page.evaluate(()=>{const c=clients.find(c=>String(c.id)==='7');c.lat=-5.81;c.lon=-35.21;c.locationVerification='automatic_housenumber';render();});
+ await expect(page.locator('#plannerState')).toHaveText('Rota parcialmente calculada');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(6);expect(await page.evaluate(()=>routeGeo!==null)).toBe(true);await expect(page.locator('#routeReadiness')).toContainText('7 aptos');
+});
+test('selected client geocoding is prioritized ahead of the rest of the imported portfolio',async({page},info)=>{
+ await setup(page,info.project.metadata.theme,records.map(c=>({...c,lat:null,lon:null})));
+ await page.evaluate(()=>{window.__geoOrder=[];TraxioGeo.locate=async c=>{window.__geoOrder.push(String(c.id));if(String(c.id)==='1')await new Promise(resolve=>window.__releaseFirstGeo=resolve);return {status:'not_found',reason:'Número não cadastrado no teste',candidates:[]};};queueClientGeocode(clients.map(c=>c.id));});
+ await expect.poll(()=>page.evaluate(()=>window.__geoOrder.length)).toBe(1);
+ await page.evaluate(()=>{selectedIds.add(7);queueSelectedGeocode();window.__releaseFirstGeo();});await expect.poll(()=>page.evaluate(()=>window.__geoOrder[1])).toBe('7');
 });

@@ -4,6 +4,7 @@ Branch de trabalho: `dev/traxelo-android-routes`. Base: `f9305d71c24830e3252c437
 ## Falhas confirmadas e correções
 | Problema | Causa | Correção / comprovação |
 |---|---|---|
+| Selecionados aguardam toda a carteira importada | A fila global era aguardada integralmente, sem prioridade | Fila por cliente, prioridade para selecionados e promessas limitadas aos solicitados; uma pendência excluída atualizada em segundo plano mantém o itinerário já confirmado. |
 | Sete selecionados não resultam em itinerário quando um está pendente | O cálculo aguardava a fila global e abandonava todos os pontos se sobrasse um sem coordenadas | Classificação antes de calcular; revisão individual; rota com aptos somente após confirmação explícita. Teste de seis aptos + um pendente. |
 | Seleções desaparecem com filtros / sincronização | Comparações estritas entre IDs numéricos e strings; selecionar todos substituía o conjunto; render removia IDs temporariamente ausentes | IDs canônicos apenas no conjunto da seleção, sem mudar registros; seleção cumulativa que respeita busca/região; armazenamento separado por usuário; IDs não carregados são preservados e identificados. |
 | Critério escolhido não afeta Organizar visitas | O botão chamava sempre distance | Os comandos usam o mesmo controlador e o critério escolhido; trocar critério invalida o trajeto anterior. |
@@ -13,13 +14,15 @@ Branch de trabalho: `dev/traxelo-android-routes`. Base: `f9305d71c24830e3252c437
 | Marcadores não correspondem à sequência | Numeração seguia a ordem dos cadastros | Numeração acompanha itinerário; origem de cliente usa O; pontos selecionados fora da rota usam ?. |
 | Estilo do mapa demora a carregar | Desenho aguardava load, insuficiente após mudanças de estilo | Aguarda style.load/load com timeout e cancelamento; valida fonte e camada antes de anunciar sucesso. |
 | Tablet comprimido, mapa deslocado e controles sobrepostos | Escala do desktop; painel sticky antigo; listas e destino avulso abertos sob mapa | Grade própria para tablet, planejamento recolhível, mapa em destaque, controles com 44 px, listas secundárias expansíveis e barra de ações acessível. |
-| São Paulo / Rio de Janeiro descartados como município | O validador rejeitava qualquer nome reconhecido como estado | Nomes completos de municípios são mantidos; apenas siglas UF não são inferidas como cidade; testes específicos para SP e RJ. |\n| Cidade ou bairro incorreto continua impedindo a busca | As colunas originais prevaleciam mesmo após editar o endereço | Campos explícitos de cidade/bairro/UF e geocodingRegionOverride; preservação de originalRegion e importFields; nova geocodificação do cliente selecionado após salvar a correção. |\n| Endereço corrigido perde texto anterior | Edição substituía address, embora campos da planilha fossem preservados | Guarda originalAddress na primeira correção, preservando importFields e dados comerciais. |
+| São Paulo / Rio de Janeiro descartados como município | O validador rejeitava qualquer nome reconhecido como estado | Nomes completos de municípios são mantidos; apenas siglas UF não são inferidas como cidade; testes específicos para SP e RJ. |
+| Cidade ou bairro incorreto continua impedindo a busca | As colunas originais prevaleciam mesmo após editar o endereço | Campos explícitos de cidade/bairro/UF e geocodingRegionOverride; preservação de originalRegion e importFields; nova geocodificação do cliente selecionado após salvar a correção. |
+| Endereço corrigido perde texto anterior | Edição substituía address, embora campos da planilha fossem preservados | Guarda originalAddress na primeira correção, preservando importFields e dados comerciais. |
 
 Os caminhos foram inspecionados e receberam testes reproduzíveis. A ocorrência exata da gravação não foi reconstituída com os sete registros reais: o vídeo não faz parte do ambiente, conforme instrução, e o conector Supabase negou a consulta somente de leitura. Não foram modificados dados reais para produzir evidências.
 
 ## Localizações e limites de precisão
 - Número de imóvel confirmado automaticamente ou ponto revisto manualmente: apto.
-- Coordenadas importadas/legadas sem comprovação: não verificadas, uso somente após confirmação explícita; essa confirmação de uso não promove o cadastro a localização exata.
+- Coordenadas importadas/legadas sem comprovação: não verificadas, excluídas da rota por padrão; inclusão apenas mediante opção e confirmação explícitas; essa confirmação de uso não promove o cadastro a localização exata.
 - Coordenadas de rua/cidade ou candidatas: aproximadas, pendentes de correção/confirmação.
 - Valores ausentes, vazios, fora do planeta ou 0,0: indisponíveis.
 - CEP valida logradouro/cidade/UF; nunca fornece silenciosamente o ponto do cliente.

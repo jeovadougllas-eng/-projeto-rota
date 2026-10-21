@@ -103,7 +103,7 @@ $('adjustPin').onclick=()=>{
 };
 $('backToClient').onclick=()=>{if(valid(num($('lat').value),num($('lon').value)))selectedPrecision='manual';adjustingPin=false;document.body.classList.remove('pin-mode');switchTab('clientes');$('saveStatus').textContent='Ponto confirmado no mapa. Confira os dados e salve o cliente.'};
 // Busca assistida: pontos candidatos NÃO são gravados nem usados na rota sem confirmação.
-const geoCandidates=new Map(),geoInFlight=new Set(),geoScheduled=new Set();
+const geoCandidates=new Map(),geoInFlight=new TraxioPlanner.IdSet(),geoScheduled=new TraxioPlanner.IdSet();
 let geoQueue=Promise.resolve();
 for(const c of clients)if(c.locationCandidate&&c.locationCandidate.fingerprint===JSON.stringify(TraxioGeo.parse(c)))geoCandidates.set(c.id,c.locationCandidate);
 function clientGeoQuery(c){return TraxioGeo.parse(c)}
@@ -114,8 +114,8 @@ async function geocodeOneSelected(c,{force=false}={}){
  geoInFlight.add(c.id);updateMapSelection();
  const fingerprint=JSON.stringify(TraxioGeo.parse(c));
  try{
-  const result=await TraxioGeo.locate(c,{token:await geoToken()});
-  const current=clients.find(x=>x.id===c.id);
+  const result=await TraxioGeo.locate(c,{token:await geoToken(),refresh:force});
+  const current=clients.find(x=>String(x.id)===String(c.id));
   // Editing or deleting a client while a lookup runs invalidates its result.
   if(!current||(valid(current.lat,current.lon)&&!force)||JSON.stringify(TraxioGeo.parse(current))!==fingerprint)return;
   if(result.status==='matched'){
@@ -130,11 +130,29 @@ async function geocodeOneSelected(c,{force=false}={}){
  }catch(e){geoCandidates.set(c.id,{error:e.message||'Busca indisponível',fingerprint});}
  finally{geoInFlight.delete(c.id);geoScheduled.delete(c.id);updateMapSelection();renderWorkspace()}
 }
+const geoJobs=new Map();let geoWorkerRunning=false;
 function queueClientGeocode(ids,{force=false}={}){
- restoreGeoCandidates();const requested=new TraxioPlanner.IdSet(ids);
- const pending=clients.filter(c=>requested.has(c.id)&&(!valid(c.lat,c.lon)||force)&&!geoCandidates.has(c.id)&&!geoInFlight.has(c.id)&&!geoScheduled.has(c.id));
- for(const c of pending){geoScheduled.add(c.id);geoQueue=geoQueue.then(()=>geocodeOneSelected(c,{force})).catch(()=>{}).finally(()=>geoScheduled.delete(c.id));}
- return geoQueue;
+ restoreGeoCandidates();const requested=new TraxioPlanner.IdSet(ids),waits=[];
+ for(const c of clients){
+  if(!requested.has(c.id)||(!force&&(valid(c.lat,c.lon)||geoCandidates.has(c.id))))continue;
+  const id=String(c.id);let job=geoJobs.get(id);
+  if(!job){let resolve;const promise=new Promise(done=>resolve=done);job={id,force,priority:selectedIds.has(c.id),promise,resolve};geoJobs.set(id,job);geoScheduled.add(c.id);}
+  else{job.force=job.force||force;job.priority=job.priority||selectedIds.has(c.id);}
+  waits.push(job.promise);
+ }
+ if(!geoWorkerRunning&&geoJobs.size){
+  geoWorkerRunning=true;
+  geoQueue=(async()=>{
+   try{while(geoJobs.size){
+    const job=[...geoJobs.values()].find(j=>j.priority)||geoJobs.values().next().value;
+    const c=clients.find(c=>String(c.id)===job.id);
+    try{if(c)await geocodeOneSelected(c,{force:job.force});}
+    catch(error){console.warn('Falha ao verificar localização:',error.message);}
+    finally{geoJobs.delete(job.id);geoScheduled.delete(job.id);job.resolve();}
+   }}finally{geoWorkerRunning=false;}
+  })();
+ }
+ return Promise.all(waits);
 }
 function queueSelectedGeocode(){return queueClientGeocode(selectedIds)}
 function renderMarkers(){
@@ -151,7 +169,7 @@ function renderMarkers(){
   el.title=(originPoint?'Origem: ':stopNumber?'Parada '+stopNumber+': ':'Fora do itinerário: ')+c.name;
   el.setAttribute('aria-label',el.title);
   const marker=new maplibregl.Marker({element:el}).setLngLat([c.lon,c.lat])
-   .setPopup(new maplibregl.Popup({offset:22}).setText(c.name+' — '+(c.address||'Sem endereço'))).addTo(map);
+   .setPopup(new maplibregl.Popup({offset:22}).setText(el.title+' — '+(c.address||'Sem endereço'))).addTo(map);
   markers.push(marker);
  });
  // Candidatos em laranja: pontos sugeridos, não confirmados.
