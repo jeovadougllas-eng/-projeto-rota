@@ -13,6 +13,7 @@ async function check(provider,redirectTo,allowed){
  const authorize=new URL('authorize',authBase);
  for(const [key,value] of Object.entries({provider,redirect_to:redirectTo,code_challenge:challenge,code_challenge_method:'s256',...(provider==='azure'?{scopes:'email openid profile'}:{})}))authorize.searchParams.set(key,value);
  const start=await request(authorize);
+ if(start.status!==302){const data=await start.json().catch(()=>({}));console.log(JSON.stringify({provider,stage:'authorize',status:start.status,errorCode:data.error_code||data.code,message:data.msg||data.error_description||data.error||'Provider did not start'}));}
  assert.equal(start.status,302,provider+': Supabase did not start the provider redirect.');
  const location=new URL(start.headers.get('location'));
  assert.ok(provider==='google'?location.hostname==='accounts.google.com':location.hostname==='login.microsoftonline.com',provider+': Unexpected identity provider.');
@@ -26,9 +27,11 @@ async function check(provider,redirectTo,allowed){
  assert.ok(!target.searchParams.has('code')&&!target.hash.includes('access_token='),'Cancellation must not generate a session.');
  if(allowed)assert.equal(actual,appReturn,provider+': The return URL was not accepted; check Supabase Redirect URLs.');
  else{assert.notEqual(actual,rejectedReturn,'An unapproved redirect was accepted.');assert.notEqual(actual,appReturn,'The default Site URL appears to have been changed to the native return.');}
- results.push({provider,allowed,authorizeStatus:start.status,callbackStatus:returned.status,returnedTo:actual,cancellationOnly:true});
+ const evidence={provider,allowed,authorizeStatus:start.status,callbackStatus:returned.status,returnedTo:actual,cancellationOnly:true};results.push(evidence);console.log(JSON.stringify(evidence));
 }
+const settings=await request(new URL('settings',authBase));
+if(settings.ok){const data=await settings.json();console.log(JSON.stringify({publicAuthSettings:{google:data.external?.google,azure:data.external?.azure}}));}
 await check('google',appReturn,true);
-await check('azure',appReturn,true);
 await check('google',rejectedReturn,false);
+await check('azure',appReturn,true);
 console.log(JSON.stringify({passed:true,checks:results,personalLogin:false,customerWrites:false}));
