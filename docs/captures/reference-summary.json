@@ -48,8 +48,8 @@
     {
       "screen": "mapa",
       "before": {
-        "meanAbsoluteRGBError": 33.10330083523312,
-        "pixelsDifferingOver24": 0.27447949240422054,
+        "meanAbsoluteRGBError": 33.10317642450286,
+        "pixelsDifferingOver24": 0.27448075332378397,
         "identical": false
       },
       "after": {
@@ -57,7 +57,7 @@
         "pixelsDifferingOver24": 0.2684787762019085,
         "identical": false
       },
-      "meanRGBErrorChange": -1.2555043342008467
+      "meanRGBErrorChange": -1.2553799234705885
     },
     {
       "screen": "dados",
