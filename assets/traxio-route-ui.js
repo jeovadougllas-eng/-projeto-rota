@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded',()=>{
  const el=id=>document.getElementById(id), P=TraxioPlanner;
  let generation=0,controller=null,manualOrigin=null,manualDraft=null,checking=false,selectionKey=null,lastSignature='',activeFingerprint='',activeSelection='',consentResolve=null;
+ let preparedRoute=null,calculationPlan=null,dialogPlanSignature='';
  const state={phase:'awaiting-selection',excluded:[]};
  const labels={'ready':'Pronto para calcular','awaiting-selection':'Aguardando seleção','awaiting-origin':'Aguardando origem','checking-locations':'Verificando localizações','calculating':'Calculando rota','calculated':'Rota calculada','partial':'Rota parcialmente calculada','location-error':'Falha de localização','communication-error':'Falha de comunicação','impossible':'Nenhuma rota possível','review':'Revisão necessária'};
  function node(tag,id,text){const n=document.createElement(tag);if(id)n.id=id;if(text)n.textContent=text;return n;}
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const all=node('button','selectEntirePortfolio','Selecionar toda a carteira');all.type='button';all.className='secondary';el('selectNoClients').after(all);
  all.onclick=()=>{for(const c of clients)selectedIds.add(c.id);syncRouteChoices();renderWorkspace();refresh();};
  const readiness=node('div','routeReadiness');readiness.setAttribute('role','status');el('selectedCount').after(readiness);
+ const confirmedOnly=node('button','routeConfirmedOnly');confirmedOnly.type='button';confirmedOnly.hidden=true;readiness.after(confirmedOnly);confirmedOnly.onclick=()=>calculate(document.querySelector('input[name="routeStrategy"]:checked')?.value||'distance');
  const review=node('details','locationReview'),reviewSummary=node('summary',null,'Revisar localizações'),reviewList=node('div','locationReviewList');
  const retry=node('button','retrySelectedLocations','Tentar localizar pendentes novamente');retry.type='button';retry.className='secondary';
  review.append(reviewSummary,reviewList,retry);side.append(review);
@@ -41,11 +43,18 @@ document.addEventListener('DOMContentLoaded',()=>{
  function restingPhase(){return !selectedIds.size?'awaiting-selection':el('origin').value==='manual'&&!manualOrigin?'awaiting-origin':'ready';}
  function signature(){return P.signature(clients,selectedIds,originSignature());}
  function current(run){return run===generation&&!controller?.signal.aborted;}
- function phase(name,message){state.phase=name;badge.textContent=labels[name]||name;badge.dataset.phase=name;el('mapa').dataset.routeState=name;if(message)el('routeResult').textContent=message;const busy=['calculating','checking-locations'].includes(name);el('calcRoute').disabled=busy;el('generateSuggestion').disabled=busy;el('roadRoute').disabled=busy||!lastRoute;planner.setAttribute('aria-busy',String(busy));}
+ function updateButtons(){
+  const busy=routeBusy;
+  el('calcRoute').disabled=busy;el('generateSuggestion').disabled=busy;
+  el('roadRoute').disabled=busy||!(lastRoute||preparedRoute);confirmedOnly.disabled=busy;
+  planner.setAttribute('aria-busy',String(busy));
+ }
+ function phase(name,message){state.phase=name;badge.textContent=labels[name]||name;badge.dataset.phase=name;el('mapa').dataset.routeState=name;if(message)el('routeResult').textContent=message;updateButtons();}
+
  function cancel(message){
   generation++;controller?.abort();controller=null;routeBusy=false;routeLookupBusy=false;
   if(consentResolve){consentResolve(false);consentResolve=null;}if(dialog.open)dialog.close();
-  window.traxioResetNavigation?.();lastRoute=null;activeFingerprint='';activeSelection='';window.traxioPendingTrip=null;
+  window.traxioResetNavigation?.();lastRoute=null;preparedRoute=null;calculationPlan=null;activeFingerprint='';activeSelection='';window.traxioPendingTrip=null;
   el('saveCompletedRoute')?.remove();clearRouteVisual();el('routeOrder').replaceChildren();
   phase(restingPhase(),message||'Planejamento alterado. Confira a origem e calcule novamente.');
  }
@@ -69,14 +78,18 @@ document.addEventListener('DOMContentLoaded',()=>{
  function refresh(){
   const fingerprint=signature();
   if(lastSignature&&fingerprint!==lastSignature){
-   const routeIds=lastRoute?[...lastRoute.points.map(c=>c.id),...(lastRoute.start.id!==undefined?[lastRoute.start.id]:[])]:[];
-   const changedPlan=lastRoute&&(activeSelection!==JSON.stringify([...selectedIds].sort())||activeFingerprint!==P.signature(clients,routeIds,originSignature()));
-   if(routeBusy||dialog.open||changedPlan)cancel('Seleção, endereço ou origem alterados. Calcule o trajeto atualizado.');
+   const plan=lastRoute||preparedRoute||calculationPlan;
+   const planIds=plan?[...plan.points.map(c=>c.id),...(plan.start?.id!==undefined?[plan.start.id]:[])]:[];
+   const changedPlan=plan&&(activeSelection!==JSON.stringify([...selectedIds].sort())||activeFingerprint!==P.signature(clients,planIds,originSignature()));
+   const changedReview=dialog.open&&dialogPlanSignature!==JSON.stringify([[...selectedIds].sort(),originSignature()]);
+   if(changedReview||changedPlan||routeBusy&&!plan&&!dialog.open)cancel('Seleção, endereço ou origem alterados. Calcule o trajeto atualizado.');
   }
   lastSignature=fingerprint;persist();
   const result=P.partition(clients,selectedIds);
   readiness.textContent=result.total+' selecionados · '+result.ready.length+' aptos · '+result.unverified.length+' não verificados · '+result.blocked.length+' pendentes'+(result.unloaded.length?' · '+result.unloaded.length+' aguardando sincronização':'');
   summary.textContent='Planejar visitas · '+result.total+' selecionados · '+result.ready.length+' aptos';
+  const pending=result.blocked.length+result.unverified.length+result.unloaded.length;
+  confirmedOnly.hidden=!result.ready.length||!pending||!!lastRoute;confirmedOnly.textContent='Calcular rota com '+result.ready.length+' confirmado(s) · '+pending+' pendente(s) ficam de fora';updateButtons();
   const shouldBuild=JSON.stringify([result.unloaded,[...result.blocked,...result.unverified].map(c=>[c.id,c.locationCandidate?.error,geoCandidates.get(c.id)?.error,c.locationVerification])]);
   if(reviewList.dataset.content!==shouldBuild){
    reviewList.dataset.content=shouldBuild;reviewList.replaceChildren();
@@ -103,7 +116,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(checking)return;checking=true;const ids=P.partition(clients,selectedIds).blocked.map(c=>c.id);
   for(const id of ids){geoCandidates.delete(id);const c=clients.find(c=>String(c.id)===String(id));if(c)delete c.locationCandidate;}
   phase('checking-locations','Consultando CEP, logradouro e número. As buscas respeitam os limites do serviço.');
-  refresh();try{await queueClientGeocode(ids,{force:true});}finally{checking=false;phase('review','Verificação terminada. Confira os aptos e as pendências antes de calcular.');refresh();}
+  refresh();try{await queueClientGeocode(ids,{force:true});}finally{checking=false;if(!routeBusy&&!lastRoute&&!preparedRoute)phase('review','Verificação terminada. Você pode calcular com os confirmados e revisar os demais depois.');refresh();}
  };
  const dialog=node('dialog','partialRouteDialog');dialog.setAttribute('aria-labelledby','partialRouteTitle');
  dialog.innerHTML='<h2 id="partialRouteTitle">Conferir clientes da rota</h2><p id="partialRouteMessage"></p><ul id="partialRouteClients"></ul><label id="unverifiedConsentLabel"><input type="checkbox" id="includeUnverifiedLocations"> Incluir também as coordenadas não verificadas, ciente de que podem estar incorretas.</label><div class="row"><button type="button" id="confirmPartialRoute">Calcular com os clientes indicados</button><button type="button" id="cancelPartialRoute" class="secondary">Corrigir localizações</button></div>';
@@ -118,8 +131,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   el('includeUnverifiedLocations').checked=false;el('unverifiedConsentLabel').hidden=!report.unverified.length;
   function updateConsent(){const count=report.ready.length+(el('includeUnverifiedLocations').checked?report.unverified.length:0);el('confirmPartialRoute').disabled=!count;el('confirmPartialRoute').textContent='Calcular com '+count+' cliente(s) indicado(s)';}
   el('includeUnverifiedLocations').onchange=updateConsent;updateConsent();
-  dialog.showModal();
-  return new Promise(resolve=>{consentResolve=resolve;});
+  dialogPlanSignature=JSON.stringify([[...selectedIds].sort(),originSignature()]);dialog.showModal();
+  return new Promise(resolve=>{consentResolve=choice=>resolve(choice?{...choice,approvedIds:[...report.ready,...(choice.allowUnverified?report.unverified:[])].map(c=>c.id)}:false);});
  }
  el('confirmPartialRoute').onclick=()=>{const done=consentResolve;consentResolve=null;dialog.close();done?.({allowUnverified:el('includeUnverifiedLocations').checked});};
  el('cancelPartialRoute').onclick=()=>{const done=consentResolve;consentResolve=null;dialog.close();review.open=true;done?.(false);review.scrollIntoView({block:'nearest'});};
@@ -164,35 +177,40 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(!map.getSource('route')||!map.getLayer('route-line'))throw Error('Não foi possível renderizar o itinerário no mapa.');
  }
  async function calculate(strategy='distance',{existing=null,destination=null}={}){
-  if(routeBusy||checking){el('mapStatus').textContent='Já há uma operação em andamento. Aguarde ou limpe o trajeto para cancelar.';return;}
+  if(routeBusy){el('mapStatus').textContent='Já há uma operação em andamento. Aguarde ou limpe o trajeto para cancelar.';return;}
   cancel('Verificando os clientes selecionados…');const run=generation;controller=new AbortController();const signal=controller.signal;
   routeBusy=true;phase('checking-locations','Verificando as localizações antes de calcular…');
   try{
-   let report=destination?{ready:[destination],blocked:[],unverified:[],unloaded:[],total:1}:P.partition(selectedInOrder(),selectedIds);
+   let report=destination?{ready:[destination],blocked:[],unverified:[],unloaded:[],total:1}:existing?P.partition(existing.points,existing.points.map(c=>c.id),{allowUnverified:existing.allowUnverified}):P.partition(selectedInOrder(),selectedIds);
    if(!report.total){phase('awaiting-selection','Selecione pelo menos um cliente.');return;}
    let consent=false;
-   if(report.blocked.length||report.unverified.length||report.unloaded.length){consent=await confirmSubset(report);if(!current(run))return;if(!consent){phase('location-error','Corrija as localizações indicadas ou confirme uma rota com os clientes aptos.');return;}}
-   const allowUnverified=!!consent?.allowUnverified;
-   if(!destination)report=P.partition(selectedInOrder(),selectedIds,{allowUnverified});
+   if(!existing&&(report.blocked.length||report.unverified.length||report.unloaded.length)){consent=await confirmSubset(report);if(!current(run))return;if(!consent){phase('location-error','Corrija as localizações indicadas ou confirme uma rota com os clientes aptos.');return;}}
+   const allowUnverified=!!(existing?.allowUnverified||consent?.allowUnverified);
+   if(!destination&&!existing)report=P.partition(selectedInOrder(),consent?consent.approvedIds:selectedIds,{allowUnverified});
+   if(existing&&report.ready.length!==existing.points.length){phase('location-error','As localizações da sequência mudaram. Organize as visitas novamente.');return;}
    const points=report.ready;
    if(!points.length){review.open=true;phase('location-error','Nenhum cliente selecionado possui localização utilizável. Corrija os endereços ou confirme os pontos no mapa.');return;}
-   state.excluded=[...report.blocked.map(c=>String(c.id)),...report.unverified.map(c=>String(c.id)),...report.unloaded];
-   const snapshot=signature();let start;phase('awaiting-origin','Verificando a origem da rota…');
+   const approved=new P.IdSet(points.map(c=>c.id));
+   state.excluded=existing?[...existing.excluded]:destination?[]:[...selectedIds].filter(id=>!approved.has(id)).map(String);
+   calculationPlan={points,start:existing?.start};activeSelection=JSON.stringify([...selectedIds].sort());
+   const planSignature=()=>P.signature(clients,[...points.map(c=>c.id),...(existing?.start?.id!==undefined?[existing.start.id]:[])],originSignature());
+   const snapshot=planSignature();activeFingerprint=snapshot;let start;phase('awaiting-origin','Verificando a origem da rota…');
    if(destination){if(!valid(destination.lat,destination.lon)){phase('location-error','Confirme um destino com coordenadas válidas.');return;}try{start=await requestGPS();}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message);return;}}
    else if(existing)start=existing.start;
    else if(el('origin').value==='manual'){if(!manualOrigin){phase('awaiting-origin','Busque e confirme o endereço ou marque a origem no mapa.');return;}start={...manualOrigin};}
    else if(el('origin').value==='gps'){try{start=await requestGPS();}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');return;}}
    else start=points[0];
-   if(!current(run)||snapshot!==signature())return;
+   if(!current(run)||snapshot!==planSignature())return;
    const nodes=existing?[start,...existing.points]:[start,...points.filter(c=>!(start.id!==undefined&&String(c.id)===String(start.id)))];
    if(nodes.length<2){phase('impossible','A origem já é o único cliente selecionado. Escolha GPS ou uma origem manual para traçar o percurso.');return;}
    phase('calculating','Calculando sequência e trajeto pelas ruas…');
    const matrix=existing||destination?null:await roadMatrix(nodes,{signal});if(!current(run))return;
    const arranged=existing?existing.points:destination?[destination]:optimizeStrategy(nodes,matrix,strategy).slice(1).map(i=>nodes[i]);
+   preparedRoute={start,points:arranged,excluded:[...state.excluded],strategy,allowUnverified};
    const road=await fetchRoadRoute([start,...arranged],{signal});
-   if(!current(run)||snapshot!==signature())return;
+   if(!current(run)||snapshot!==planSignature())return;
    await waitForGeometry(road.geometry,signal);if(!current(run))return;
-   lastRoute={start,points:arranged,excluded:[...state.excluded],strategy};activeSelection=JSON.stringify([...selectedIds].sort());activeFingerprint=P.signature(clients,[...arranged.map(c=>c.id),...(start.id!==undefined?[start.id]:[])],originSignature());showOrder(arranged);renderMarkers();
+   lastRoute={...preparedRoute};preparedRoute=null;calculationPlan=null;activeSelection=JSON.stringify([...selectedIds].sort());activeFingerprint=P.signature(clients,[...arranged.map(c=>c.id),...(start.id!==undefined?[start.id]:[])],originSignature());showOrder(arranged);renderMarkers();
    window.traxioBeginNavigation?.(arranged,road.geometry);
    const partial=state.excluded.length>0;
    phase(partial?'partial':'calculated',(destination?'Destino avulso · Trajeto por ruas: ':'Trajeto por ruas: ')+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+' clientes excluídos com sua confirmação. ':'')+(allowUnverified?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
@@ -200,19 +218,24 @@ document.addEventListener('DOMContentLoaded',()=>{
    window.traxioShowSaveTrip?.();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});
   }catch(e){
    if(!current(run)||signal.aborted)return;
-   window.traxioResetNavigation?.();lastRoute=null;clearRouteVisual();el('routeOrder').replaceChildren();
+   window.traxioResetNavigation?.();lastRoute=null;calculationPlan=null;clearRouteVisual();if(preparedRoute)showOrder(preparedRoute.points);else el('routeOrder').replaceChildren();
    const impossible=/ligação|ligacao|rodoviário não encontrado|rodoviario|origem e um destino/i.test(e.message);
-   phase(impossible?'impossible':'communication-error','Rota não calculada: '+e.message+'. Confira a conexão e tente novamente. Nenhum itinerário foi confirmado.');
-  }finally{if(current(run)){routeBusy=false;controller=null;el('calcRoute').disabled=false;el('generateSuggestion').disabled=false;el('roadRoute').disabled=!lastRoute;}}
+   phase(impossible?'impossible':'communication-error','Rota não calculada: '+e.message+'. '+(preparedRoute?'A sequência está pronta. Toque em Traçar pelas ruas para tentar novamente. ':'Confira a conexão e tente novamente. ')+'Nenhum itinerário foi confirmado.');
+  }finally{if(current(run)){routeBusy=false;controller=null;calculationPlan=null;updateButtons();}}
  }
  el('suggestToggle').setAttribute('aria-controls','strategyPanel');el('suggestToggle').setAttribute('aria-expanded','false');
  el('suggestToggle').onclick=()=>{const strategies=el('strategyPanel');strategies.hidden=!strategies.hidden;el('suggestToggle').setAttribute('aria-expanded',String(!strategies.hidden));if(!strategies.hidden){el('routeResult').textContent='Escolha o critério e toque em Gerar sugestão agora.';strategies.scrollIntoView({block:'center',behavior:'smooth'});}};
  document.querySelectorAll('input[name="routeStrategy"]').forEach(input=>input.addEventListener('change',()=>{cancel('Critério alterado. Organize as visitas para atualizar o percurso.');lastSignature=signature();}));
  el('clearRoute').onclick=()=>{cancel('Trajeto limpo. A seleção de clientes foi preservada.');lastSignature=signature();};
  // Manual stop ordering invalidates street geometry until explicitly retraced.
- const originalSwap=swapStops;
- swapStops=function(a,b){originalSwap(a,b);window.traxioResetNavigation?.();el('liveNavigation').hidden=true;phase('awaiting-origin','Ordem ajustada. Toque em Traçar pelas ruas para confirmar o novo itinerário.');};
- window.TraxioRouteUI={calculate,cancel,adHoc:destination=>calculate('avulso',{destination:{...destination}}),retrace:()=>{const existing=lastRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};
+ swapStops=function(a,b){
+  const plan=lastRoute||preparedRoute;if(!plan||!plan.points[a]||!plan.points[b])return;
+  [plan.points[a],plan.points[b]]=[plan.points[b],plan.points[a]];preparedRoute={...plan};lastRoute=null;
+  window.traxioResetNavigation?.();window.traxioPendingTrip=null;el('saveCompletedRoute')?.remove();el('liveNavigation').hidden=true;
+  clearRouteVisual();showOrder(plan.points);phase('ready','Ordem ajustada. Toque em Traçar pelas ruas para confirmar o novo itinerário.');
+ };
+
+ window.TraxioRouteUI={calculate,cancel,adHoc:destination=>calculate('avulso',{destination:{...destination}}),retrace:()=>{const existing=lastRoute||preparedRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};
  // Keep keyboard-driven fields visible for any browser implementing VisualViewport.
  let viewportFrame=0;
  function viewportChanged(){cancelAnimationFrame(viewportFrame);viewportFrame=requestAnimationFrame(()=>{const viewport=window.visualViewport;document.documentElement.style.setProperty('--route-visible-height',(viewport?.height||innerHeight)+'px');const focused=document.activeElement;if(focused?.matches('#mapa input,#mapa select'))focused.scrollIntoView({block:'nearest',inline:'nearest'});map?.resize();});}
@@ -220,3 +243,4 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.querySelector('#mapa').addEventListener('focusin',viewportChanged);window.addEventListener('resize',viewportChanged);
  panel.addEventListener('toggle',()=>map?.resize());viewportChanged();lastSignature=signature();refresh();
 });
+

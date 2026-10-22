@@ -1,0 +1,31 @@
+name: Confirmed locations and usable partial routes
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/confirmed-locations.yml', 'tests/confirmed-locations.spec.js', 'assets/traxio-route-ui.js', 'index.html']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run check
+      - run: npm run test:geolocation
+      - name: Confirmed point persistence, safe sync, partial routes and street retry
+        run: npx playwright test tests/confirmed-locations.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: confirmed-locations-browser
+          retention-days: 30
+          path: |
+            test-results/
+            playwright-report/
