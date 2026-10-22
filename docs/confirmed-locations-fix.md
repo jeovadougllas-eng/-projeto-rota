@@ -36,9 +36,27 @@ Se o armazenamento local falhar, a confirmação não é anunciada como salva e 
 Resultados web desta rodada (22/10/2026):
 - [27 testes dos novos fluxos e 22 unitários aprovados](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39711387806).
 - [184 cenários de planejamento, 160 regressões, três reproduções anteriores, três trajetos OSRM/MapLibre reais e uma consulta de endereço ao Photon aprovados](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39711387815).
-- [Compilação Android aprovada; validação do APK instalado em andamento](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39711387834).
+- [12 verificações aprovadas no APK Android instalado](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39711387834).
 
-As capturas Android usam o compositor do sistema via ADB, pois a captura do canvas acelerado pelo CDP pode omitir WebGL.
+Android API 35, emulador com GPS nativo simulado:
+- Sete clientes produziram uma rota real de 4,7 km, oito minutos e 160 coordenadas.
+- Seis confirmados e um pendente produziram uma rota real de 7,1 km, 11 minutos e 199 coordenadas, com o pendente explicitamente excluído.
+- Confirmar ponto salvou o cadastro sem outro clique em Salvar. O ponto continuou confirmado depois de recarregar e de solicitar busca forçada; a rota seguinte de sete clientes usou as coordenadas salvas.
+- O recálculo por desvio, teclado Android real, rotação, abertura do Google Maps, limpeza e destino avulso continuaram funcionando. Oito chamadas rodoviárias retornaram HTTP 200.
+
+APK: 12.712.640 bytes. SHA-256: `f9b9c95ebf9d1bea5faaaa66c44aebfecaf73b9729fe2f21c1e8509d5b0c576f`. Fonte compilada: `bf8c33bf7c122919c3752d9e98f817f1b42c256e`. O verificador comparou HTML e cinco módulos com a fonte antes da instalação. O APK permanece com package ID `app.traxio.mobile`.
+
+Registros: [testes Android](captures/android/android-routes.json) e [integridade do APK](captures/android/android-candidate.json). As capturas Android usam o compositor do sistema via ADB, pois a captura do canvas acelerado pelo CDP pode omitir WebGL. A captura parcial precisa aguardar o término da câmera e a composição da tela; o quadro inicial durante a animação não foi tratado como comprovação visual.
+
+## Acesso à versão de testes
+
+- Site: https://traxio-preview.vercel.app/
+- APK: https://traxio-preview.vercel.app/downloads/traxio-android-testes.apk
+- Capturas: https://traxio-preview.vercel.app/docs/routing-review.html
+
+A publicação e a conferência final dos links seguem a aprovação dos testes. O download público é conferido integralmente por SHA-256; os arquivos compartilhados precisam coincidir entre o APK e a versão web.
+
+O APK utiliza assinatura de testes. Se o Android recusar uma atualização por diferença de assinatura, preserve o aplicativo instalado e seus dados; não o desinstale antes de ter a sincronização ou um backup confirmado.
 
 Os testes usam clientes sintéticos. A renderização de mapa e as chamadas rodoviárias da validação Android permanecem reais; o deslocamento GPS é simulado. O teste de sincronização usa um servidor simulado que implementa o contrato do RPC por revisão, sem gravar na carteira real. A permissão para consultar a carteira real foi recusada anteriormente pelo conector. O emulador não substitui uma validação em tablet físico.
 
