@@ -88,3 +88,9 @@ test('tracing after manually reordering stops produces a road route and re-enabl
  await expect(page.locator('#roadRoute')).toBeEnabled();await expect(page.locator('#liveNavigation')).toBeHidden();expect(await page.evaluate(()=>lastRoute)).toBeNull();
  await page.locator('#roadRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada');await expect(page.locator('#liveStart')).toBeEnabled();
 });
+
+test('background lookup saves cannot postpone uploading a confirmed pin',async({page},info)=>{
+ await setup(page,info);await installCloudDouble(page);
+ await page.evaluate(()=>{openClientLocation(1);setDraft(-5.812345,-35.212345);selectedPrecision='manual';saveClientRecord({keepForm:true});save();});
+ await expect.poll(()=>page.evaluate(()=>window.__serverRows[0].data.lat),{timeout:1500}).toBe(-5.812345);
+});
