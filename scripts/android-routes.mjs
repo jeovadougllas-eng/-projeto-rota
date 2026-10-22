@@ -71,7 +71,38 @@ try{
  await device.shell('am start -n app.traxio.mobile/.MainActivity');
  await page.locator('#clearRoute').click();await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Clear stops GPS and preserves selected customers');
  await page.locator('#selectNoClients').click();await page.locator('#adHocDisclosure summary').click();await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:45000});await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);if(await page.evaluate(()=>clients.length)!==7)throw Error('Ad hoc navigation changed customer records.');evidence.checks.push('Ad hoc GPS route works without selected customers or database changes');
+ // Regression from the reported tablet session: pending customers must not block confirmed stops.
+ await page.locator('#clearRoute').click();
+ await page.evaluate(()=>{
+  const c=clients.find(c=>String(c.id)==='7');c.lat=null;c.lon=null;c.locationVerification='pending';
+  c.locationCandidate={lat:-5.812345,lon:-35.212345,error:'Confirmar entrada',fingerprint:JSON.stringify(TraxioGeo.parse(c))};
+  geoCandidates.set(c.id,c.locationCandidate);save();
+ });
+ await page.locator('#selectEntirePortfolio').click();await page.locator('#origin').selectOption('gps');
+ await page.locator('#routeConfirmedOnly').click();await expect(page.locator('#partialRouteDialog')).toBeVisible();await page.locator('#confirmPartialRoute').click();
+ await expect(page.locator('#plannerState')).toHaveText('Rota parcialmente calculada',{timeout:60000});await expect(page.locator('#routeOrder .route-stop')).toHaveCount(6);await expect(page.locator('#roadRoute')).toBeEnabled();await expect(page.locator('#liveStart')).toBeEnabled();
+ await expect.poll(()=>page.evaluate(()=>map.isSourceLoaded('route')&&map.queryRenderedFeatures({layers:['route-line']}).length>0),{timeout:30000}).toBe(true);
+ await writeFile(dir+'/android-partial-confirmed-route.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ evidence.partialRoute=await page.evaluate(()=>({summary:document.getElementById('routeResult').textContent,stops:lastRoute.points.map(c=>c.id),excluded:lastRoute.excluded,streetCoordinates:routeGeo.coordinates.length}));
+ evidence.checks.push('Six confirmed clients produce a real street itinerary while one selected client still awaits confirmation');
+ await page.locator('#liveStart').click();await expect(page.locator('#liveGPSState')).not.toContainText('GPS desligado',{timeout:30000});await page.locator('#traxioNavClose').click();await page.locator('#clearRoute').click();
+ await page.evaluate(()=>openClientLocation(7,clients.find(c=>String(c.id)==='7').locationCandidate));await page.locator('#adjustPin').click();await page.locator('#backToClient').click();
+ const confirmed=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1')).find(c=>String(c.id)==='7'));
+ expect(confirmed.lat).toBe(-5.812345);expect(confirmed.lon).toBe(-35.212345);expect(confirmed.locationVerification).toBe('manual_reviewed');expect(confirmed.locationConfirmedAt).toBeTruthy();
+ await page.locator('#clientEditDialog').getByRole('button',{name:'Fechar cadastro'}).click();
+ await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
+ expect(await page.evaluate(()=>clients.find(c=>String(c.id)==='7').lat)).toBe(-5.812345);
+ await page.evaluate(async()=>{TraxioGeo.locate=async()=>({status:'matched',best:{lat:-6,lon:-36,provider:'test'},candidates:[]});await queueClientGeocode([7],{force:true});});
+ expect(await page.evaluate(()=>clients.find(c=>String(c.id)==='7').lat)).toBe(-5.812345);
+ evidence.savedLocation={lat:confirmed.lat,lon:confirmed.lon,verification:confirmed.locationVerification,confirmedAt:confirmed.locationConfirmedAt,survivesReload:true,forcedLookupPreservesPin:true};
+ evidence.checks.push('Confirm point saves immediately without another Save; reload and forced geocoding preserve the confirmed pin');
+ await page.locator('.tabs [data-tab="mapa"]').click();await expect.poll(()=>page.evaluate(()=>!!map?.isStyleLoaded()),{timeout:60000}).toBe(true);
+ await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);expect(await page.evaluate(()=>lastRoute.points.find(c=>String(c.id)==='7').lat)).toBe(-5.812345);
+ evidence.checks.push('The next seven-stop street route actually uses the saved confirmed coordinates after reload');
+
  await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
  console.log(JSON.stringify(evidence,null,2));
 }catch(error){try{await writeFile(dir+'/android-device-failure.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));}catch{}evidence.error=error.stack;evidence.url=page?.url();evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({width:innerWidth,height:innerHeight,screenWidth:screen.width,screenHeight:screen.height,angle:screen.orientation?.angle,style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
 finally{clearInterval(timer);await device.close();}
+

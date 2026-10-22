@@ -14,5 +14,6 @@ assert.equal(hash(html),hash(expected),'APK HTML source mismatch');
 const config=JSON.parse(execFileSync('unzip',['-p',apk,'assets/capacitor.config.json'],{encoding:'utf8'}));
 assert.equal(config.appId,'app.traxio.mobile');assert.equal(config.plugins.Keyboard.resizeOnFullScreen,true);
 await mkdir('mobile/evidence',{recursive:true});
-const evidence={compiledRun:39656428669,compiledSource:'1ae259c1c91608cdd70905b7c7e6186f96824b3f',sha256:hash(bytes),apkBytes:bytes.length,files,html:hash(html),packageId:config.appId,keyboardResizeOnFullScreen:true};
+const evidence={compiledRun:Number(process.env.TRAXELO_COMPILED_RUN||39656428669),compiledSource:process.env.TRAXELO_COMPILED_SOURCE||'1ae259c1c91608cdd70905b7c7e6186f96824b3f',sha256:hash(bytes),apkBytes:bytes.length,files,html:hash(html),packageId:config.appId,keyboardResizeOnFullScreen:true};
 await writeFile('mobile/evidence/android-candidate.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence));
+
