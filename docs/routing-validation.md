@@ -1,4 +1,6 @@
 # Traxelo.IA — validação de Mapa e Rotas
+
+Atualização de 22/10/2026: consulte [confirmação permanente do ponto e rotas com clientes aptos](confirmed-locations-fix.md) para os resultados e APK da nova rodada. Os resultados abaixo documentam a rodada anterior.
 Branch de trabalho: `dev/traxelo-android-routes`. Base: `f9305d71c24830e3252c437420e1aa58383ce34c`. A main não foi alterada.
 
 ## Falhas confirmadas e correções
@@ -107,3 +109,4 @@ Os testes autenticados usam dados sintéticos injetados somente pelo Playwright;
 - Google/Microsoft OAuth e Supabase mantêm seus identificadores. Os testes de contrato não representam login real em conta pessoal. Microsoft/Azure estava desabilitado na configuração Supabase em diagnóstico anterior; isso não foi alterado.
 - Os rasters existentes da marca foram preservados. A substituição gráfica Traxio → Traxelo.IA continua dependente dos originais aprovados da nova marca, que não constam no repositório de base.
 - APK de testes com assinatura debug. A compatibilidade de atualização com APKs antigos depende da chave de assinatura; nenhum procedimento que apague dados não sincronizados foi executado.
+
