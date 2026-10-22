@@ -1,4 +1,4 @@
-name: Traxelo published routes and APK check
+name: Traxelo published confirmed points and routes check
 on:
   push:
     branches: [dev/traxelo-android-routes]
@@ -33,7 +33,7 @@ jobs:
             const served=Buffer.from(await response.arrayBuffer()),local=await readFile(path);
             assert.equal(createHash('sha256').update(served).digest('hex'),createHash('sha256').update(local).digest('hex'),'Published file mismatch: '+path);
           }
-          for(const path of ['/docs/routing-review.html','/docs/captures/routes-after/tablet-portrait-light.png','/docs/captures/android/android-routes.json']){
+          for(const path of ['/docs/confirmed-locations-fix.md','/docs/routing-review.html','/docs/captures/routes-after/tablet-portrait-light.png','/docs/captures/android/android-routes.json']){
             const response=await request(path);assert.equal(response.status,200);
           }
           const apk=await request('/downloads/traxio-android-testes.apk');assert.equal(apk.status,200);
@@ -52,7 +52,7 @@ jobs:
           const api=await request('/api/geocode');assert.equal(api.status,405);
           console.log(JSON.stringify({website:200,geocoderSDK:200,apk:200,apkBytes:bytes.length,sha256:sha,serverEndpoint:405,publicAccess:true,apkAndWebAssetsMatch:true}));
           NODE
-      - run: npm ci
+      - run: npm ci --fetch-retries=1 --fetch-timeout=30000
       - run: npx playwright install --with-deps chromium
       - name: Verify the published tablet and desktop route flow in the browser
         run: TRAXIO_PUBLISHED=1 npx playwright test --config=playwright.published.config.js
