@@ -1,16 +1,16 @@
 {
-  "compiledRun": 39656428669,
-  "compiledSource": "1ae259c1c91608cdd70905b7c7e6186f96824b3f",
-  "sha256": "bc433fa0a52edcdc907c51b750893d04be20bdeae3af83cf92dae90b935c18d7",
-  "apkBytes": 12711200,
+  "compiledRun": 39711387834,
+  "compiledSource": "bf8c33bf7c122919c3752d9e98f817f1b42c256e",
+  "sha256": "f9b9c95ebf9d1bea5faaaa66c44aebfecaf73b9729fe2f21c1e8509d5b0c576f",
+  "apkBytes": 12712640,
   "files": {
-    "traxio-route-ui.js": "d72e5e0d4393d20cf6462faafeedd0f13763f975b6d20775c16e43c9a8d3c344",
+    "traxio-route-ui.js": "414f5c369a99e561e89168feb6e1493e899b5e6dcb135d09511c48b3a2e14da7",
     "traxio-planner.js": "b0be16fd855a3f7f7312500b0d11aef81c529d4018e83e12ce31f7e3d0035214",
     "traxio-geolocation.js": "0c5d539226dc3675da5af972eb98056e673c083df760d10430828fa1ae0154e2",
     "traxio-routes.css": "f20cb08bca3f3b28cd117c7bf226f21a2663a7917fb05cf4b61ffa618137a6f8",
     "traxio-native.js": "5e3b460a10a70836c19d20a309e6c180de869d9a6de1fbbcd4c148922676ed04"
   },
-  "html": "8747a0180e3d62080a290e80d14dd046e7560cb77b8f4351df447df437e3d246",
+  "html": "106d9816f8a804d456df2a2ca4d476f10c5595907bbe957fbc3a36779e5a91ea",
   "packageId": "app.traxio.mobile",
   "keyboardResizeOnFullScreen": true
 }

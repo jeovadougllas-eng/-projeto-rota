@@ -14,7 +14,10 @@
     "Landscape rotation keeps the itinerary and selection without overflow",
     "Native AppLauncher opens the next destination in com.google.android.apps.maps",
     "Clear stops GPS and preserves selected customers",
-    "Ad hoc GPS route works without selected customers or database changes"
+    "Ad hoc GPS route works without selected customers or database changes",
+    "Six confirmed clients produce a real street itinerary while one selected client still awaits confirmation",
+    "Confirm point saves immediately without another Save; reload and forced geocoding preserve the confirmed pin",
+    "The next seven-stop street route actually uses the saved confirmed coordinates after reload"
   ],
   "calls": [
     {
@@ -31,6 +34,22 @@
     },
     {
       "url": "https://router.project-osrm.org/route/v1/driving/-35.218,-5.8399983;-35.21,-5.81?overview=full&geometries=geojson",
+      "status": 200
+    },
+    {
+      "url": "https://router.project-osrm.org/table/v1/driving/-35.218,-5.8399983;-35.208,-5.805;-35.208999999999996,-5.806;-35.21,-5.8069999999999995;-35.211,-5.808;-35.211999999999996,-5.808999999999999;-35.213,-5.81?annotations=distance&sources=0;1;2;3;4;5;6&destinations=0;1;2;3;4;5;6",
+      "status": 200
+    },
+    {
+      "url": "https://router.project-osrm.org/route/v1/driving/-35.218,-5.8399983;-35.211,-5.808;-35.21,-5.8069999999999995;-35.208999999999996,-5.806;-35.208,-5.805;-35.211999999999996,-5.808999999999999;-35.213,-5.81?overview=full&geometries=geojson",
+      "status": 200
+    },
+    {
+      "url": "https://router.project-osrm.org/table/v1/driving/-35.218,-5.8399983;-35.208,-5.805;-35.208999999999996,-5.806;-35.21,-5.8069999999999995;-35.211,-5.808;-35.211999999999996,-5.808999999999999;-35.213,-5.81;-35.212345,-5.812345?annotations=distance&sources=0;1;2;3;4;5;6;7&destinations=0;1;2;3;4;5;6;7",
+      "status": 200
+    },
+    {
+      "url": "https://router.project-osrm.org/route/v1/driving/-35.218,-5.8399983;-35.212345,-5.812345;-35.211,-5.808;-35.21,-5.8069999999999995;-35.208999999999996,-5.806;-35.208,-5.805;-35.211999999999996,-5.808999999999999;-35.213,-5.81?overview=full&geometries=geojson",
       "status": 200
     }
   ],
@@ -60,30 +79,6 @@
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4227.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4227.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4228.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4228.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
       "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8458.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
@@ -91,42 +86,6 @@
     },
     {
       "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6588/8458.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8458.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6588/8458.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4228.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4229.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4228.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4229.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
@@ -189,5 +148,28 @@
   "externalNavigation": {
     "href": "https://www.google.com/maps/dir/?api=1&destination=-5.808999999999999%2C-35.211999999999996&travelmode=driving&dir_action=navigate",
     "openedPackage": "com.google.android.apps.maps"
+  },
+  "partialRoute": {
+    "summary": "Trajeto por ruas: 7.1 km · 11 min estimados · 6 paradas. 1 clientes excluídos com sua confirmação. Sem trânsito em tempo real.",
+    "stops": [
+      4,
+      3,
+      2,
+      1,
+      5,
+      6
+    ],
+    "excluded": [
+      "7"
+    ],
+    "streetCoordinates": 199
+  },
+  "savedLocation": {
+    "lat": -5.812345,
+    "lon": -35.212345,
+    "verification": "manual_reviewed",
+    "confirmedAt": "2026-10-22T02:38:22.322Z",
+    "survivesReload": true,
+    "forcedLookupPreservesPin": true
   }
 }
