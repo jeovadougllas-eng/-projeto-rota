@@ -54,7 +54,14 @@ Registros: [testes Android](captures/android/android-routes.json) e [integridade
 - APK: https://traxio-preview.vercel.app/downloads/traxio-android-testes.apk
 - Capturas: https://traxio-preview.vercel.app/docs/routing-review.html
 
-A publicação e a conferência final dos links seguem a aprovação dos testes. O download público é conferido integralmente por SHA-256; os arquivos compartilhados precisam coincidir entre o APK e a versão web.
+[Publicação verificada em 22/10/2026](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39713484027):
+- Site e download do APK públicos, HTTP 200; download completo com os 12.712.640 bytes e SHA-256 esperados.
+- HTML e módulos servidos iguais à fonte; módulos compartilhados do APK iguais à versão web.
+- Três testes no site publicado aprovados: desktop, tablet vertical e tablet horizontal escuro. Cada teste calculou sete paradas, confirmou e salvou um ponto, recarregou a página, manteve o ponto e calculou seis paradas deixando um cliente pendente de fora, com OSRM e MapLibre reais.
+- A rota parcial publicada usou o ponto recém-confirmado. Os testes não gravaram na carteira real.
+- Retornos Google web/Android aprovados por cancelamento controlado; URL não autorizada rejeitada. Isso não representa login pessoal em conta Google.
+
+[Captura Android final aprovada](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39712807220): o mesmo APK foi reutilizado, sem recompilação, para registrar a rota parcial após a câmera e a composição de tela estabilizarem. O [registro visual](captures/android/android-partial-visual.json) confirma estado parcial, seis paradas, um excluído, 199 coordenadas e camada de ruas renderizada. [Ver captura](captures/android/android-partial-confirmed-route.jpg).
 
 O APK utiliza assinatura de testes. Se o Android recusar uma atualização por diferença de assinatura, preserve o aplicativo instalado e seus dados; não o desinstale antes de ter a sincronização ou um backup confirmado.
 
