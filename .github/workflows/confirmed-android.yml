@@ -2,7 +2,7 @@ name: Confirmed Android points and partial street routes
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['.github/workflows/confirmed-android.yml', 'index.html', 'assets/traxio-route-ui.js']
+    paths: ['.github/workflows/confirmed-android.yml', 'index.html', 'assets/traxio-route-ui.js', 'assets/traxio-ui.js', 'assets/traxelo-shell.css', 'assets/traxelo/**', 'assets/reconstructed/login-art-mask.svg', 'scripts/android-routes.mjs', 'scripts/verify-android-candidate.mjs']
   workflow_dispatch:
 permissions:
   contents: write

@@ -101,6 +101,24 @@ try{
  await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);expect(await page.evaluate(()=>lastRoute.points.find(c=>String(c.id)==='7').lat)).toBe(-5.812345);
  evidence.checks.push('The next seven-stop street route actually uses the saved confirmed coordinates after reload');
 
+ // Shared shell and confirmed-portfolio shortcut in the installed Android WebView.
+ await page.locator('#clearRoute').click();
+ let shell;
+ for(const tab of ['painel','clientes','mapa','historico','dados']){
+  await page.locator(`.tabs [data-tab="${tab}"]`).click();
+  const rect=await page.locator('.tabs').boundingBox();if(!shell)shell=rect;expect(rect).toEqual(shell);
+  await expect(page.locator('.nav-art')).toBeVisible();await expect(page.locator('.nav-art>img')).toBeVisible();
+  await expect(page.locator('.header-brand .traxelo-approved-brand')).toBeVisible();
+  await writeFile(dir+'/android-shell-'+tab+'.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ }
+ evidence.checks.push('All five native screens retain the approved scenic sidebar, logo and identical shell geometry');
+ await page.locator('.tabs [data-tab="painel"]').click();await expect(page.locator('#located')).toHaveText('7');
+ await page.locator('#locatedShortcut').click();await expect(page.locator('#registryLocation')).toHaveValue('confirmed');await expect(page.locator('#registryRows .client-link')).toHaveCount(7);
+ await page.locator('#registrySuggestConfirmed').click();await expect(page.locator('#strategyPanel')).toBeVisible();await page.locator('#origin').selectOption('gps');
+ await page.locator('#generateSuggestion').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect(page.locator('#liveStart')).toBeEnabled();
+ await expect.poll(()=>page.evaluate(()=>map.isSourceLoaded('route')&&map.queryRenderedFeatures({layers:['route-line']}).length>0),{timeout:30000}).toBe(true);
+ evidence.checks.push('Dashboard confirmed shortcut lists eligible clients and produces a suggested seven-stop itinerary on real streets');
  await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
  console.log(JSON.stringify(evidence,null,2));
 }catch(error){try{await writeFile(dir+'/android-device-failure.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));}catch{}evidence.error=error.stack;evidence.url=page?.url();evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({width:innerWidth,height:innerHeight,screenWidth:screen.width,screenHeight:screen.height,angle:screen.orientation?.angle,style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
