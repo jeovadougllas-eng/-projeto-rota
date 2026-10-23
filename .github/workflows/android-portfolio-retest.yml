@@ -1,4 +1,4 @@
-name: Installed approved Android portfolio with bounded emulator memory
+name: Installed approved Android portfolio with Mesa renderer
 on:
   push:
     branches: [dev/traxelo-android-routes]
@@ -11,6 +11,9 @@ jobs:
   installed:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,11 +32,13 @@ jobs:
           TRAXELO_COMPILED_SOURCE: a12bad9564b0890121025e89f177f60a82f568c5
       - run: npm ci
       - run: npm ci --prefix mobile --ignore-scripts
-      - name: Prepare a smaller emulator and retain host memory diagnostics
+      - name: Prepare Mesa software rendering and host diagnostics
         run: |
           sudo chmod a+rw /dev/kvm
           free -h
           df -h /
+          command -v Xvfb || sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-xvfb.log 2>&1 &
           sudo fallocate -l 4G /tmp/traxelo-emulator.swap
           sudo chmod 600 /tmp/traxelo-emulator.swap
           sudo mkswap /tmp/traxelo-emulator.swap
@@ -46,7 +51,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
           script: |
             adb install -r candidate/app-debug.apk
             adb shell settings put secure location_mode 3
