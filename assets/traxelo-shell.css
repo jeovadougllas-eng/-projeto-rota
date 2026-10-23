@@ -17,7 +17,7 @@ body.traxio-ui-ready[data-screen] .nav-pattern{display:none}
 /* Crop the supplied raster symbol and white lettering, excluding the old slogan. */
 body .brand-crop.traxelo-approved-brand{aspect-ratio:600/150;overflow:hidden;mask-image:none}
 .traxelo-approved-brand .traxelo-brand-symbol{position:absolute;left:0;top:0;width:25%;height:100%;overflow:hidden}
-body .traxelo-approved-brand .traxelo-brand-symbol img{position:static;display:block;width:100%;height:100%;object-fit:contain;transform:none}
+body .traxelo-approved-brand .traxelo-brand-symbol img{position:absolute;display:block;width:466.6667%;height:136.6667%;left:-50%;top:-24%;object-fit:fill;transform:none}
 .traxelo-approved-brand .traxelo-brand-wordmark{position:absolute;left:26%;top:17%;width:74%;height:auto;aspect-ratio:427/80;overflow:hidden}
 body .traxelo-approved-brand .traxelo-brand-wordmark img{position:absolute;width:163.9344%;height:256.25%;left:-54.5667%;top:-75%;object-fit:fill;transform:none}
 .traxelo-brand-tagline{position:absolute;left:26%;right:0;top:77%;font:700 clamp(5px,.48vw,8px)/1.2 Arial,sans-serif;letter-spacing:.1em;color:#fff;white-space:nowrap;text-align:center}
