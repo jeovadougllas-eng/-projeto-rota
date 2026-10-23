@@ -77,6 +77,30 @@
       }
     },
     {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/12/1646/2114.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/12/1646/2113.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4227.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4227.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
       "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4228.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
@@ -90,12 +114,6 @@
     },
     {
       "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4228.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4228.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
@@ -113,7 +131,7 @@
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8457.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4229.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
@@ -125,19 +143,13 @@
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8457.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4228.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8456.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8457.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4228.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
@@ -220,7 +232,7 @@
     "lat": -5.812345,
     "lon": -35.212345,
     "verification": "manual_reviewed",
-    "confirmedAt": "2026-10-23T01:24:26.198Z",
+    "confirmedAt": "2026-10-23T01:33:30.489Z",
     "survivesReload": true,
     "forcedLookupPreservesPin": true
   }
