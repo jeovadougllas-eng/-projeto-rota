@@ -1,0 +1,27 @@
+name: Published confirmed portfolio on real streets
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/published-portfolio.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Published confirmed shortcut, saved coordinates and real full and partial road itineraries
+        run: TRAXIO_PUBLISHED=1 npx playwright test --config=playwright.published.config.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-portfolio-evidence
+          retention-days: 30
+          path: test-results-published/
