@@ -2,7 +2,7 @@ name: Confirmed locations and usable partial routes
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['.github/workflows/confirmed-locations.yml', 'tests/confirmed-locations.spec.js', 'assets/traxio-route-ui.js', 'index.html']
+    paths: ['.github/workflows/confirmed-locations.yml', 'tests/confirmed-locations.spec.js', 'assets/traxio-route-ui.js', 'assets/traxio-ui.js', 'assets/traxelo-shell.css', 'index.html']
   workflow_dispatch:
 permissions:
   contents: read
