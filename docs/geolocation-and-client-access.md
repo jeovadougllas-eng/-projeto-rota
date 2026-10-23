@@ -10,7 +10,7 @@ O mapa exibido atualmente usa MapLibre/OpenFreeMap; a conversão de endereço em
 
 A sugestão de sequência usa uma matriz de distâncias viárias e os critérios comerciais do planejador; ela depende de localizações utilizáveis, mas não é o serviço que descobre os endereços.
 
-O código já preserva as colunas da planilha, identifica número/CEP/cidade/UF, tenta consultas estruturadas e textuais e rejeita resultados que representam apenas uma rua ou município. Esse controle evita apresentar um centro de cidade como se fosse a entrada de um cliente. A integração adicional Geoapify já existe no backend, condicionada a `GEOAPIFY_API_KEY`, sem chave secreta no navegador. Não foi ativada nenhuma cobrança nem substituído o fornecedor nesta revisão.
+O código já preserva as colunas da planilha, identifica número/CEP/cidade/UF, tenta consultas estruturadas e textuais e rejeita resultados que representam apenas uma rua ou município. Esse controle evita apresentar um centro de cidade como se fosse a entrada de um cliente. A integração adicional Geoapify já existe no backend, condicionada a `GEOAPIFY_API_KEY`, sem chave secreta no navegador. Não foi ativada nenhuma cobrança nem substituído o fornecedor nesta revisão. A verificação da prévia publicada confirmou HTTP 503 para o provedor adicional: Geoapify ainda não está configurado nessa hospedagem.
 
 O número “20” da captura não comprova vinte entradas verificadas: a implementação anterior contava qualquer par de coordenadas válido. O contador agora usa a mesma regra do planejamento: ponto confirmado manualmente ou correspondência automática no número do imóvel. Coordenadas importadas sem verificação, aproximações e ausência de coordenadas ficam em “A confirmar”. O novo atalho abre a lista correspondente. Contadores não criam coordenadas nem convertem os 137 pendentes em localizações exatas.
 
@@ -46,7 +46,7 @@ Esta migração **ainda não está implementada nem ativada**. As correções de
 
 ## Conta própria da cliente
 
-A cliente terá carteira própria, conforme solicitado. Ela não precisa de acesso ao GitHub, Supabase administrativo nem à sua conta.
+A cliente terá carteira própria, conforme solicitado. Ela não precisa de acesso ao GitHub, Supabase administrativo nem à sua conta. A leitura das configurações públicas do Supabase confirmou cadastro de novos usuários habilitado e login Google ativo. O provedor Microsoft/Azure está desativado no projeto; essa configuração existente não foi alterada.
 
 1. Enviar a URL da versão web de testes ou o APK de testes verificado. Para iniciar o teste, prefira o site no dispositivo pessoal dela.
 2. Para o primeiro teste, recomendo **Entrar com Google**, usando a conta pessoal dela. O cadastro por e-mail também está disponível em **Criar conta**, com confirmação quando solicitada; a entrega desse e-mail depende da configuração SMTP e não foi validada com o endereço real da cliente. O botão Microsoft é preservado, mas sua disponibilidade depende da configuração Azure no Supabase; não foi ativado um provedor novo nesta revisão.

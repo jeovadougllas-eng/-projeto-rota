@@ -48,7 +48,7 @@ Os 17 arquivos originais do kit anterior mantêm seus hashes. Oito arquivos do k
 | Geocodificação, classificação e regras unitárias | 22 aprovados | `npm run test:geolocation` |
 | Carteira confirmada, filtros, seleção, atalhos, marca e geometria das cinco abas | 56 aprovados em oito perfis | [CI carteira](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39884055218) |
 | Reprodução histórica do cenário oculto em quatro abas | 3 aprovados, com 15 capturas anteriores | Mesmo workflow da carteira |
-| Confirmação persistida, sincronização segura, busca concorrente e rota parcial | 27 aprovados em desktop/tablet | [CI confirmações](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39882085367) |
+| Confirmação persistida, sincronização segura, busca concorrente e rota parcial | 27 aprovados em desktop/tablet | [CI confirmações](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39885392269) |
 | Seleção, origem GPS/manual, cidades, geometria, erros, concorrência e navegação | 184 aprovados | [CI rotas](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39884055494) |
 | Autenticação, importação/exportação, dados completos, diálogos, tema, teclado e ponte nativa | 160 aprovados | Mesmo workflow de rotas |
 | Reprodução da versão histórica do planejamento | 3 aprovados | Mesmo workflow de rotas |
@@ -56,7 +56,7 @@ Os 17 arquivos originais do kit anterior mantêm seus hashes. Oito arquivos do k
 | Consulta real ao Photon com endereço público de teste | 1 aprovado | Mesmo workflow de rotas |
 | APK instalado, GPS e recálculo, teclado nativo, rotação, confirmação e novo atalho | 14 verificações aprovadas | [CI Android](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39884055223) |
 | Atalho na URL publicada, confirmação persistida e trajetos completos/parciais com mapa e OSRM reais | 3 aprovados | [CI site publicado](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39884349393) |
-| Identidade entre arquivos web e APK, download público e retorno OAuth | Em verificação após a publicação final | Resultado registrado no workflow de publicação |
+| Identidade entre arquivos web e APK, download público e retorno OAuth | Aprovado: HTTP 200, SHA-256 idêntico, 8 originais novos íntegros, URLs de retorno aceitas e URL não autorizada recusada | [CI publicação](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/39885087725) |
 
 Perfis da carteira/regressão: desktop 1440×1000, tablet horizontal 1024×768, tablet vertical 768×1024 e celular 390×844, todos nos temas claro e escuro. Foram inspecionadas visualmente capturas do login, painel, carteira e mapa após as correções, inclusive para detectar e corrigir o símbolo truncado do kit.
 
@@ -81,6 +81,6 @@ As capturas da suíte de carteira usam registros e serviços isolados para testa
 
 Não houve auditoria independente dos 157 clientes: a consulta agregada de leitura ao Supabase foi recusada pelo conector por falta de permissão. Não é possível afirmar que os “20” da captura representam vinte entradas corretas sem verificar seus registros e evidências de localização. Os demais clientes não foram convertidos artificialmente em confirmados.
 
-A base atual não garante localizar o número de todos os imóveis. Google Geocoding + Google Maps é a migração recomendada para avaliar a cobertura observada pelo proprietário, mas ainda depende de projeto Google Cloud, configuração de faturamento/cotas, integração e avaliação real dos resultados. Nenhuma cobrança foi ativada. Nenhum fornecedor garante 100% de precisão em qualquer planilha. Os detalhes e as fontes de preços/licenciamento estão no documento técnico vinculado acima.
+A verificação pública confirmou que o provedor adicional Geoapify ainda não está configurado (HTTP 503). A base atual não garante localizar o número de todos os imóveis. Google Geocoding + Google Maps é a migração recomendada para avaliar a cobertura observada pelo proprietário, mas ainda depende de projeto Google Cloud, configuração de faturamento/cotas, integração e avaliação real dos resultados. Nenhuma cobrança foi ativada. Nenhum fornecedor garante 100% de precisão em qualquer planilha. Os detalhes e as fontes de preços/licenciamento estão no documento técnico vinculado acima.
 
 Não houve teste em tablet físico. Os testes Android usam emulador com GPS simulado, teclado real do sistema e APK instalado. O teste de OAuth verifica redirecionamento e cancelamento controlado; não faz login pessoal em contas Google/Microsoft nem cria uma conta real para a cliente. A carteira da testadora deve usar sua própria conta e dispositivo/perfil de navegador.
