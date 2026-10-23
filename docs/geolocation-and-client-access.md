@@ -4,7 +4,11 @@ Revisão técnica em 23/10/2026. Esta nota distingue mudanças implementadas de 
 
 ## Por que o Google encontra um endereço que a busca atual não encontra?
 
+O login Google existente usa OAuth e não habilita a API de endereços do Google Maps Platform.
+
 O mapa exibido atualmente usa MapLibre/OpenFreeMap; a conversão de endereço em coordenadas usa Photon/OpenStreetMap e ViaCEP para dados postais. A existência de uma rua no mapa não significa que seus números de imóveis estejam mapeados. O Google mantém uma base diferente de endereços e estabelecimentos. Encontrar uma farmácia pelo nome no aplicativo Google Maps também não demonstra, por si só, que a API Geocoding encontrará o mesmo estabelecimento usando somente o texto do endereço: isso precisa ser medido pela API escolhida.
+
+A sugestão de sequência usa uma matriz de distâncias viárias e os critérios comerciais do planejador; ela depende de localizações utilizáveis, mas não é o serviço que descobre os endereços.
 
 O código já preserva as colunas da planilha, identifica número/CEP/cidade/UF, tenta consultas estruturadas e textuais e rejeita resultados que representam apenas uma rua ou município. Esse controle evita apresentar um centro de cidade como se fosse a entrada de um cliente. A integração adicional Geoapify já existe no backend, condicionada a `GEOAPIFY_API_KEY`, sem chave secreta no navegador. Não foi ativada nenhuma cobrança nem substituído o fornecedor nesta revisão.
 
@@ -45,7 +49,7 @@ Esta migração **ainda não está implementada nem ativada**. As correções de
 A cliente terá carteira própria, conforme solicitado. Ela não precisa de acesso ao GitHub, Supabase administrativo nem à sua conta.
 
 1. Enviar a URL da versão web de testes ou o APK de testes verificado. Para iniciar o teste, prefira o site no dispositivo pessoal dela.
-2. Ela toca em **Criar conta**, preenche seus dados e confirma o e-mail quando solicitado. Também pode usar o login Google já disponível. O botão Microsoft é preservado, mas sua disponibilidade depende da configuração Azure no Supabase; não foi ativado um provedor novo nesta revisão.
+2. Para o primeiro teste, recomendo **Entrar com Google**, usando a conta pessoal dela. O cadastro por e-mail também está disponível em **Criar conta**, com confirmação quando solicitada; a entrega desse e-mail depende da configuração SMTP e não foi validada com o endereço real da cliente. O botão Microsoft é preservado, mas sua disponibilidade depende da configuração Azure no Supabase; não foi ativado um provedor novo nesta revisão.
 3. Entrar e confirmar que a carteira está vazia. Importar uma planilha própria, aguardar as localizações e verificar a sincronização em **Planilhas → Verificar agora**.
 4. Selecionar os clientes confirmados pelo atalho, definir a origem, escolher o critério, calcular e conferir as paradas antes de iniciar a navegação.
 
