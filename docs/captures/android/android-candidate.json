@@ -1,16 +1,19 @@
 {
-  "compiledRun": 39711387834,
-  "compiledSource": "bf8c33bf7c122919c3752d9e98f817f1b42c256e",
-  "sha256": "f9b9c95ebf9d1bea5faaaa66c44aebfecaf73b9729fe2f21c1e8509d5b0c576f",
-  "apkBytes": 12712640,
+  "compiledRun": 39881857799,
+  "compiledSource": "a12bad9564b0890121025e89f177f60a82f568c5",
+  "sha256": "fa38a6e0adc0813ea513dc32561684d8e02cf36c0a491bf459418c9fd93ac34c",
+  "apkBytes": 14774211,
   "files": {
     "traxio-route-ui.js": "414f5c369a99e561e89168feb6e1493e899b5e6dcb135d09511c48b3a2e14da7",
     "traxio-planner.js": "b0be16fd855a3f7f7312500b0d11aef81c529d4018e83e12ce31f7e3d0035214",
     "traxio-geolocation.js": "0c5d539226dc3675da5af972eb98056e673c083df760d10430828fa1ae0154e2",
     "traxio-routes.css": "f20cb08bca3f3b28cd117c7bf226f21a2663a7917fb05cf4b61ffa618137a6f8",
-    "traxio-native.js": "5e3b460a10a70836c19d20a309e6c180de869d9a6de1fbbcd4c148922676ed04"
+    "traxio-native.js": "5e3b460a10a70836c19d20a309e6c180de869d9a6de1fbbcd4c148922676ed04",
+    "traxio-ui.js": "7face5a2fd95bf92e8d730ea6ad7afc0369e505cb84dbee4cc66dec6bb453345",
+    "traxelo-shell.css": "142c36283c99a43761c2aa5dc2a29e6c909733c1b1f4ad53416f36c0f8fc482a",
+    "traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png": "bbc2281e98056626c9246f09da7dae022bfaf7a35a24cf6e2e600197b37ba401"
   },
-  "html": "106d9816f8a804d456df2a2ca4d476f10c5595907bbe957fbc3a36779e5a91ea",
+  "html": "ab1b6d07f37bfcff182565a10823eac116ef94c53819c03bb0d2b9a9fbd8efcc",
   "packageId": "app.traxio.mobile",
   "keyboardResizeOnFullScreen": true
 }

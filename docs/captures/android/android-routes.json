@@ -17,7 +17,9 @@
     "Ad hoc GPS route works without selected customers or database changes",
     "Six confirmed clients produce a real street itinerary while one selected client still awaits confirmation",
     "Confirm point saves immediately without another Save; reload and forced geocoding preserve the confirmed pin",
-    "The next seven-stop street route actually uses the saved confirmed coordinates after reload"
+    "The next seven-stop street route actually uses the saved confirmed coordinates after reload",
+    "All five native screens retain the approved scenic sidebar, logo and identical shell geometry",
+    "Dashboard confirmed shortcut lists eligible clients and produces a suggested seven-stop itinerary on real streets"
   ],
   "calls": [
     {
@@ -51,6 +53,14 @@
     {
       "url": "https://router.project-osrm.org/route/v1/driving/-35.218,-5.8399983;-35.212345,-5.812345;-35.211,-5.808;-35.21,-5.8069999999999995;-35.208999999999996,-5.806;-35.208,-5.805;-35.211999999999996,-5.808999999999999;-35.213,-5.81?overview=full&geometries=geojson",
       "status": 200
+    },
+    {
+      "url": "https://router.project-osrm.org/table/v1/driving/-35.218,-5.8399983;-35.208,-5.805;-35.208999999999996,-5.806;-35.21,-5.8069999999999995;-35.211,-5.808;-35.211999999999996,-5.808999999999999;-35.213,-5.81;-35.212345,-5.812345?annotations=distance&sources=0;1;2;3;4;5;6;7&destinations=0;1;2;3;4;5;6;7",
+      "status": 200
+    },
+    {
+      "url": "https://router.project-osrm.org/route/v1/driving/-35.218,-5.8399983;-35.212345,-5.812345;-35.211,-5.808;-35.21,-5.8069999999999995;-35.208999999999996,-5.806;-35.208,-5.805;-35.211999999999996,-5.808999999999999;-35.213,-5.81?overview=full&geometries=geojson",
+      "status": 200
     }
   ],
   "failures": [
@@ -67,13 +77,25 @@
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/12/1646/2114.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4228.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/12/1646/2113.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4228.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4228.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4228.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
@@ -85,7 +107,37 @@
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6588/8458.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4229.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8457.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8456.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8457.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8456.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8457.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
@@ -119,8 +171,8 @@
   "renderedRouteFeatures": 1,
   "keyboardTouch": {
     "touch": {
-      "x": 663,
-      "y": 1505
+      "x": 713,
+      "y": 1533
     },
     "bounds": [
       "0",
@@ -139,8 +191,8 @@
       "height": 1280
     },
     "visibleHeight": 904,
-    "top": 434.0520935058594,
-    "bottom": 478.0520935058594,
+    "top": 434.22918701171875,
+    "bottom": 478.22918701171875,
     "value": "Visita",
     "width": 800,
     "innerWidth": 800
@@ -168,7 +220,7 @@
     "lat": -5.812345,
     "lon": -35.212345,
     "verification": "manual_reviewed",
-    "confirmedAt": "2026-10-22T02:38:22.322Z",
+    "confirmedAt": "2026-10-23T01:24:26.198Z",
     "survivesReload": true,
     "forcedLookupPreservesPin": true
   }
