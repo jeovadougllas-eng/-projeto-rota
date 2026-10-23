@@ -1,5 +1,6 @@
 import {test,expect} from 'playwright/test';
 import {prepare,ready} from './fixtures/browser.js';
+import {fakeMap} from './fixtures/routing.js';
 
 const geometry={type:'LineString',coordinates:[[-35.22,-5.81],[-35.21,-5.81],[-35.20,-5.81]]};
 const stops=[{id:'a',name:'Cliente A',lat:-5.81,lon:-35.21},{id:'b',name:'Cliente B',lat:-5.81,lon:-35.20}];
@@ -55,7 +56,7 @@ test('CSV import geocodes a numbered address and keeps an approximate street pen
   if(u.pathname.includes('/table/'))await route.fulfill({json:{code:'Ok',distances:coords.map((_,i)=>coords.map((_,j)=>i===j?0:1000))}});
   else await route.fulfill({json:routeReply(coords)});
  });
- await page.locator('#calcRoute').click();await expect(page.locator('#routeResult')).toContainText('Trajeto por ruas');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(2);
+ await fakeMap(page);await page.locator('#calcRoute').click();await expect(page.locator('#routeResult')).toContainText('Trajeto por ruas');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(2);
  const path=info.outputPath('importacao-localizacao-rota.png');await page.screenshot({path});await info.attach('Importação, confirmação e rota',{path,contentType:'image/png'});
 });
 

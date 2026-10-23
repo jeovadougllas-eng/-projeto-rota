@@ -1,0 +1,116 @@
+name: Confirmed Android points and partial street routes
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/confirmed-android.yml', 'index.html', 'assets/traxio-route-ui.js', 'assets/traxio-ui.js', 'assets/traxelo-shell.css', 'assets/traxelo/**', 'assets/reconstructed/login-art-mask.svg', 'scripts/android-routes.mjs', 'scripts/verify-android-candidate.mjs']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: confirmed-android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: traxelo-test-debug-signing-v1
+      - run: npm ci --prefix mobile --ignore-scripts
+      - run: node scripts/build-mobile.mjs
+      - run: npx cap sync android
+        working-directory: mobile
+      - run: bash gradlew assembleDebug --no-daemon
+        working-directory: mobile/android
+      - run: |
+          mkdir -p candidate
+          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk candidate/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: confirmed-android-candidate
+          retention-days: 30
+          path: candidate/
+  installed:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: confirmed-android-candidate
+          path: candidate
+      - run: node scripts/verify-android-candidate.mjs
+        env:
+          TRAXELO_COMPILED_RUN: ${{ github.run_id }}
+          TRAXELO_COMPILED_SOURCE: ${{ github.sha }}
+      - run: npm ci
+      - run: npm ci --prefix mobile --ignore-scripts
+      - name: Stable Mesa renderer for the Android emulator
+        run: |
+          sudo chmod a+rw /dev/kvm
+          command -v Xvfb || sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-xvfb.log 2>&1 &
+      - name: Installed APK with real roads, native GPS, persisted confirmation and partial route
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb install -r candidate/app-debug.apk
+            adb shell settings put secure location_mode 3
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb shell settings put system accelerometer_rotation 0
+            adb shell settings put system user_rotation 0
+            adb emu geo fix -35.211 -5.795
+            node scripts/android-smoke.mjs
+            node scripts/android-routes.mjs
+      - name: Produce readable previews from Android compositor captures
+        run: |
+          node --input-type=module <<'NODE'
+          import {createRequire} from 'node:module';
+          const sharp=createRequire(new URL('./mobile/package.json',import.meta.url))('sharp');
+          for(const name of ['android-tablet-portrait-route','android-tablet-landscape-route','android-tablet-keyboard','android-google-maps','android-partial-confirmed-route']){
+            await sharp('mobile/evidence/'+name+'.png').resize({width:1200,withoutEnlargement:true}).jpeg({quality:82}).toFile('mobile/evidence/'+name+'.jpg');
+          }
+          NODE
+      - name: Publish only the installed and verified APK on the development branch
+        run: |
+          mkdir -p downloads docs/captures/android
+          cp candidate/app-debug.apk downloads/traxio-android-testes.apk
+          sha256sum downloads/traxio-android-testes.apk > downloads/traxio-android-testes.sha256
+          cp mobile/evidence/* docs/captures/android/
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/ scripts/build-mobile.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/ docs/captures/android/
+          git commit -m "build: publish Android with persisted pins and confirmed partial routes [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: confirmed-android-evidence
+          retention-days: 30
+          path: mobile/evidence/

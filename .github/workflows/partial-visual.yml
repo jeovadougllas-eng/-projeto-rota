@@ -1,0 +1,65 @@
+name: Capture confirmed partial itinerary on Android
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/partial-visual.yml']
+permissions:
+  contents: write
+  actions: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Reuse the APK that already passed all twelve installed checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 39711387834 --name confirmed-android-candidate --dir candidate
+      - run: node scripts/verify-android-candidate.mjs
+        env:
+          TRAXELO_COMPILED_RUN: '39711387834'
+          TRAXELO_COMPILED_SOURCE: bf8c33bf7c122919c3752d9e98f817f1b42c256e
+      - run: npm ci
+      - run: npm ci --prefix mobile --ignore-scripts
+      - run: sudo chmod a+rw /dev/kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -memory 3072 -cores 2 -feature -Vulkan
+          script: |
+            adb install -r candidate/app-debug.apk
+            adb shell settings put secure location_mode 3
+            adb shell wm size 1920x1200
+            adb shell wm density 240
+            adb shell settings put system accelerometer_rotation 0
+            adb shell settings put system user_rotation 0
+            adb emu geo fix -35.218 -5.84
+            node scripts/android-smoke.mjs
+            node scripts/android-partial-visual.mjs
+      - name: Preserve the settled compositor capture without changing the tested APK
+        run: |
+          node --input-type=module <<'NODE'
+          import {createRequire} from 'node:module';
+          const sharp=createRequire(new URL('./mobile/package.json',import.meta.url))('sharp');
+          await sharp('mobile/evidence/android-partial-confirmed-route.png').resize({width:1200,withoutEnlargement:true}).jpeg({quality:82}).toFile('mobile/evidence/android-partial-confirmed-route.jpg');
+          NODE
+          cp mobile/evidence/android-partial-confirmed-route.* docs/captures/android/
+          cp mobile/evidence/android-partial-visual.json docs/captures/android/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/captures/android/android-partial-*
+          git commit -m "test: capture partial street itinerary after Android compositor settles [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-partial-visual
+          path: mobile/evidence/

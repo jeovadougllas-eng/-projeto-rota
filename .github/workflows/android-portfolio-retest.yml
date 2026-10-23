@@ -1,0 +1,98 @@
+name: Installed approved Android portfolio with Mesa renderer
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/android-portfolio-retest.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  installed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: confirmed-android-candidate
+          run-id: 39881857799
+          github-token: ${{ github.token }}
+          path: candidate
+      - name: Verify the previously compiled APK against this exact application source
+        run: node scripts/verify-android-candidate.mjs
+        env:
+          TRAXELO_COMPILED_RUN: '39881857799'
+          TRAXELO_COMPILED_SOURCE: a12bad9564b0890121025e89f177f60a82f568c5
+      - run: npm ci
+      - run: npm ci --prefix mobile --ignore-scripts
+      - name: Prepare Mesa software rendering and host diagnostics
+        run: |
+          sudo chmod a+rw /dev/kvm
+          free -h
+          df -h /
+          command -v Xvfb || sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-xvfb.log 2>&1 &
+          sudo fallocate -l 4G /tmp/traxelo-emulator.swap
+          sudo chmod 600 /tmp/traxelo-emulator.swap
+          sudo mkswap /tmp/traxelo-emulator.swap
+          sudo swapon /tmp/traxelo-emulator.swap
+          free -h
+      - name: Installed APK, real street services, Android keyboard and confirmed-client shortcut
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb install -r candidate/app-debug.apk
+            adb shell settings put secure location_mode 3
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb shell settings put system accelerometer_rotation 0
+            adb shell settings put system user_rotation 0
+            adb emu geo fix -35.211 -5.795
+            node scripts/android-smoke.mjs
+            node scripts/android-routes.mjs
+      - name: Readable previews
+        run: |
+          node --input-type=module <<'NODE'
+          import {createRequire} from 'node:module';
+          const sharp=createRequire(new URL('./mobile/package.json',import.meta.url))('sharp');
+          for(const name of ['android-tablet-portrait-route','android-tablet-landscape-route','android-tablet-keyboard','android-google-maps','android-partial-confirmed-route']){
+            await sharp('mobile/evidence/'+name+'.png').resize({width:1200,withoutEnlargement:true}).jpeg({quality:82}).toFile('mobile/evidence/'+name+'.jpg');
+          }
+          NODE
+      - name: Preserve only the installed and tested candidate
+        run: |
+          mkdir -p downloads docs/captures/android
+          cp candidate/app-debug.apk downloads/traxio-android-testes.apk
+          sha256sum downloads/traxio-android-testes.apk > downloads/traxio-android-testes.sha256
+          cp mobile/evidence/* docs/captures/android/
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/ scripts/build-mobile.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/ docs/captures/android/
+          git commit -m "build: publish installed Android with approved brand and confirmed portfolio [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - name: Host diagnostics for infrastructure failures
+        if: failure()
+        run: |
+          free -h
+          sudo dmesg -T | tail -100
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-portfolio-retest-evidence
+          retention-days: 30
+          path: mobile/evidence/

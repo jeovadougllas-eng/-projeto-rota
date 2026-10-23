@@ -1,0 +1,35 @@
+import {test,expect} from 'playwright/test';
+import {prepare,ready} from './fixtures/browser.js';
+import {records} from './fixtures/routing.js';
+test('published app: seven selected clients yield a real street route without production database writes',async({page},info)=>{
+ test.skip(!process.env.TRAXIO_PUBLISHED);
+ await prepare(page,{records,theme:info.project.metadata.theme||'light',liveMaps:true});
+ await page.route('https://traxio-preview.vercel.app/**',r=>r.continue());
+ await page.route('https://router.project-osrm.org/**',r=>r.continue());
+ await page.addInitScript(()=>Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition:ok=>ok({coords:{latitude:-5.8,longitude:-35.22,accuracy:8}}),watchPosition:()=>1,clearWatch(){}}}));
+ await ready(page);await expect(page).toHaveTitle(/Traxelo.IA/);
+ await expect(page.locator('#located')).toHaveText('7');await page.locator('#locatedShortcut').click();
+ await expect(page.locator('#registryLocation')).toHaveValue('confirmed');await expect(page.locator('#registryRows .client-link')).toHaveCount(7);
+ await page.locator('#registrySuggestConfirmed').click();await expect(page.locator('#strategyPanel')).toBeVisible();
+ await expect(page.locator('.nav-art>img')).toBeVisible();await expect(page.locator('.header-brand .traxelo-approved-brand')).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>!!map?.isStyleLoaded()),{timeout:45000}).toBe(true);
+ await page.locator('#origin').selectOption('gps');await page.locator('#generateSuggestion').click();
+ await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect(page.locator('#map .traxio-route-pin')).toHaveCount(7);
+ expect(await page.evaluate(()=>routeGeo.coordinates.length)).toBeGreaterThan(8);expect(await page.evaluate(()=>!!map.getLayer('route-line'))).toBe(true);
+ await page.screenshot({path:info.outputPath('public-route.png'),fullPage:true});
+ const fullSummary=await page.locator('#routeResult').textContent();
+ await page.locator('#clearRoute').click();
+ await page.evaluate(()=>{openClientLocation(1);setDraft(-5.812345,-35.212345);});
+ await page.locator('#adjustPin').click();await page.locator('#backToClient').click();
+ expect(await page.evaluate(()=>clients.find(c=>String(c.id)==='1').lat)).toBe(-5.812345);
+ await page.reload();await page.locator('body.traxio-ui-ready').waitFor();expect(await page.evaluate(()=>clients.find(c=>String(c.id)==='1').lat)).toBe(-5.812345);
+ await page.locator('.tabs [data-tab="mapa"]').click();await expect.poll(()=>page.evaluate(()=>!!map?.isStyleLoaded()),{timeout:45000}).toBe(true);
+ await page.evaluate(()=>{const c=clients.find(c=>String(c.id)==='7');c.lat=null;c.lon=null;c.locationVerification='pending';c.locationCandidate={lat:-5.82,lon:-35.22,error:'Confirme a entrada',fingerprint:JSON.stringify(TraxioGeo.parse(c))};geoCandidates.set(c.id,c.locationCandidate);save();});
+ await page.locator('#origin').selectOption('gps');await page.locator('#routeConfirmedOnly').click();await page.locator('#confirmPartialRoute').click();
+ await expect(page.locator('#plannerState')).toHaveText('Rota parcialmente calculada',{timeout:60000});await expect(page.locator('#routeOrder .route-stop')).toHaveCount(6);await expect(page.locator('#roadRoute')).toBeEnabled();await expect(page.locator('#liveStart')).toBeEnabled();
+ expect(await page.evaluate(()=>lastRoute.points.find(c=>String(c.id)==='1').lat)).toBe(-5.812345);expect(await page.evaluate(()=>routeGeo.coordinates.length)).toBeGreaterThan(8);
+ await expect.poll(()=>page.evaluate(()=>map.queryRenderedFeatures({layers:['route-line']}).length),{timeout:30000}).toBeGreaterThan(0);
+ await page.screenshot({path:info.outputPath('public-partial-confirmed-route.png'),fullPage:true});
+ console.log(JSON.stringify({project:info.project.name,url:page.url(),summary:fullSummary,partialSummary:await page.locator('#routeResult').textContent(),confirmedShortcutUsesRealRoads:true,confirmationSurvivesReload:true,savedPinUsedInRoute:true,syntheticClients:true,realMap:true,realRouter:true,productionWrites:false}));
+});
+

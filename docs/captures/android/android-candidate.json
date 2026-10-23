@@ -1,0 +1,19 @@
+{
+  "compiledRun": 39884055223,
+  "compiledSource": "84856d61a98554f13823910254f23e032d0d181b",
+  "sha256": "7433061fab8c9346a75fdab13309198aee604e996a2e87386def97a44d504415",
+  "apkBytes": 14774215,
+  "files": {
+    "traxio-route-ui.js": "414f5c369a99e561e89168feb6e1493e899b5e6dcb135d09511c48b3a2e14da7",
+    "traxio-planner.js": "b0be16fd855a3f7f7312500b0d11aef81c529d4018e83e12ce31f7e3d0035214",
+    "traxio-geolocation.js": "0c5d539226dc3675da5af972eb98056e673c083df760d10430828fa1ae0154e2",
+    "traxio-routes.css": "f20cb08bca3f3b28cd117c7bf226f21a2663a7917fb05cf4b61ffa618137a6f8",
+    "traxio-native.js": "5e3b460a10a70836c19d20a309e6c180de869d9a6de1fbbcd4c148922676ed04",
+    "traxio-ui.js": "7face5a2fd95bf92e8d730ea6ad7afc0369e505cb84dbee4cc66dec6bb453345",
+    "traxelo-shell.css": "2d9086dd13caeb81cdd7941e32a83242894ab484ebef44be1c1b41a82abbfaa2",
+    "traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png": "bbc2281e98056626c9246f09da7dae022bfaf7a35a24cf6e2e600197b37ba401"
+  },
+  "html": "ab1b6d07f37bfcff182565a10823eac116ef94c53819c03bb0d2b9a9fbd8efcc",
+  "packageId": "app.traxio.mobile",
+  "keyboardResizeOnFullScreen": true
+}

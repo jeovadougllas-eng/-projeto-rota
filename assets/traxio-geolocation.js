@@ -11,10 +11,11 @@ function field(c,aliases){return clean((c.importFields||[]).find(f=>aliases.incl
 function parse(c){
  const company=Object.fromEntries((c.companyData?.fields||[]).map(([k,v])=>[norm(k),v]));
  const raw=clean(c.geocodingAddressOverride)||field(c,['endereco','logradouro','rua'])||clean(c.address);
- const cityValue=field(c,['cidade','municipio','localidade'])||clean(c.city)||clean(company.municipio);
+ const regionOverride=c.geocodingRegionOverride;
+ const cityValue=regionOverride?clean(regionOverride.city):field(c,['cidade','municipio','localidade'])||clean(c.city)||clean(company.municipio);
  const embedded=cityValue.match(/^(.+?)\s*[-/]\s*([A-Za-z]{2})$/);const city=embedded?clean(embedded[1]):cityValue;
- const district=field(c,['bairro','distrito','neighborhood'])||clean(c.neighborhood)||clean(company.bairro);
- const state=stateCode(field(c,['uf','estado'])||c.state||c.uf||company.uf||embedded?.[2])||stateCode(raw.split(',').map(clean).find(v=>stateCode(v)))||'';
+ const district=regionOverride?clean(regionOverride.district):field(c,['bairro','distrito','neighborhood'])||clean(c.neighborhood)||clean(company.bairro);
+ const state=stateCode(regionOverride?regionOverride.state:field(c,['uf','estado'])||c.state||c.uf||company.uf||embedded?.[2])||stateCode(raw.split(',').map(clean).find(v=>stateCode(v)))||'';
  let street=raw.split(/[,·]/)[0].trim();
  const found=raw.match(/(?:^|[,·])\s*(?:n[º°o.]?\s*)?(\d{1,6}\s*[a-z]?)\b/i)||raw.match(/\bn[º°o.]\s*(\d{1,6}\s*[a-z]?)\b/i);
  const house=(c.geocodingAddressOverride?clean(c.houseNumber):field(c,['numero','numerodologradouro','numerodoimovel','nro','num'])||clean(c.houseNumber))||clean(found?.[1]);
@@ -22,7 +23,7 @@ function parse(c){
  const inferredCity=city||raw.split(',').slice(1).map(clean).reverse().find(v=>regionName(v)&&!/^\d/.test(v))||'';
  return {street,house:/^(s\/?n|semnumero)$/i.test(norm(house))?'':house,city:regionName(inferredCity)?inferredCity:'',district,state,zip:digits(clean(c.cep)||field(c,['cep','codigopostal'])||c.zip_code||company.cep),country:'BR'};
 }
-function regionName(v){return /[A-Za-zÀ-ÿ]{2}/.test(v)&&!/^\d/.test(v)&&!stateCode(v)&&!/^brasil$/i.test(v);}
+function regionName(v){return /[A-Za-zÀ-ÿ]{2}/.test(v)&&!/^\d/.test(v)&&!(/^[A-Za-z]{2}$/.test(clean(v))&&stateCode(v))&&!/^brasil$/i.test(v);}
 function streetKey(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\bdr\.?\b/g,'doutor').replace(/\bdra\.?\b/g,'doutora').replace(/\bprof\.?\b/g,'professor').replace(/^(?:rua|r\.?|avenida|av\.?|travessa|tv\.?|praca|rodovia|estrada)\s+/,'').replace(/[^a-z0-9]/g,'');}
 const houseKey=v=>norm(v).replace(/^0+(?=\d)/,'');
 function meters(a,b){const r=Math.PI/180,x=(a.lon-b.lon)*r*Math.cos((a.lat+b.lat)*r/2),y=(a.lat-b.lat)*r;return Math.hypot(x,y)*6371000;}
@@ -53,10 +54,20 @@ function ensureAttribution(){
 }
 const cache=new Map(),postalCache=new Map();let queue=Promise.resolve(),lastCall=0,additionalProvider=true;
 async function getJSON(url,signal){
- const work=queue.catch(()=>{}).then(async()=>{const wait=Math.max(0,1600-(Date.now()-lastCall));if(wait)await new Promise(r=>setTimeout(r,wait));signal?.throwIfAborted();lastCall=Date.now();const r=await fetch(url,{signal:signal?AbortSignal.any([signal,AbortSignal.timeout(14000)]):AbortSignal.timeout(14000)});if(!r.ok)throw Error('Busca indisponível (HTTP '+r.status+')');return r.json();});
+ const work=queue.catch(()=>{}).then(async()=>{
+  for(let attempt=0;attempt<2;attempt++){
+   const wait=Math.max(0,1600-(Date.now()-lastCall));if(wait)await new Promise(r=>setTimeout(r,wait));
+   signal?.throwIfAborted();lastCall=Date.now();
+   try{
+    const response=await fetch(url,{signal:signal?AbortSignal.any([signal,AbortSignal.timeout(14000)]):AbortSignal.timeout(14000)});
+    if(!response.ok){const error=Error('Busca indisponível (HTTP '+response.status+')');error.retryable=response.status===429||response.status>=500;throw error;}
+    return await response.json();
+   }catch(error){if(signal?.aborted||attempt>0||!(error.retryable||error instanceof TypeError||error.name==='TimeoutError'))throw error;}
+  }
+ });
  queue=work.catch(()=>{});return work;
 }
-async function locate(client,{signal,token}={}){
+async function locate(client,{signal,token,refresh=false}={}){
  let q=parse(client);
  if(q.street.length<3)throw Error('Informe o logradouro do cliente.');
  // CEP verifies postal street/locality only; its centroid never becomes the client point.
@@ -82,7 +93,7 @@ async function locate(client,{signal,token}={}){
   }
  }
  if(!q.city)throw Error('Informe cidade e UF ou um CEP válido para localizar este endereço.');
- const key=JSON.stringify(q),saved=cache.get(key);if(saved&&Date.now()-saved.at<600000)return saved.result;
+ const key=JSON.stringify(q);if(refresh)cache.delete(key);const saved=cache.get(key);if(saved&&Date.now()-saved.at<600000)return saved.result;
  let result,commercial=[];
  if(token&&additionalProvider){
   try{const r=await fetch((root.TraxioNative?.apiBase||'')+'/api/geocode',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(16000)]):AbortSignal.timeout(16000)});if(r.status===503||r.status===404)additionalProvider=false;if(r.ok){ensureAttribution();commercial=geoapify(await r.json());result=rank(commercial,q);if(result.status==='matched'){cache.set(key,{at:Date.now(),result});return result;}}}catch(e){if(signal?.aborted)throw e;}

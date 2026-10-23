@@ -1,0 +1,23 @@
+import {test,expect} from 'playwright/test';
+import {prepare,ready} from './fixtures/browser.js';
+import {records} from './fixtures/routing.js';
+import {mkdir,writeFile} from 'node:fs/promises';
+test('seven clients: real OSRM matrix and street route rendered by real MapLibre',async({page},info)=>{
+ test.setTimeout(120000);
+ await prepare(page,{records,liveMaps:true,theme:info.project.metadata.theme});
+ await page.addInitScript(()=>Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition:ok=>ok({coords:{latitude:-5.8,longitude:-35.22,accuracy:8}}),watchPosition:()=>1,clearWatch(){}}}));
+ const calls=[];await page.route('https://router.project-osrm.org/**',r=>r.continue());
+ page.on('response',r=>{if(r.url().startsWith('https://router.project-osrm.org/'))calls.push({url:r.url(),status:r.status()});});
+ await ready(page);await page.locator('.tabs [data-tab="mapa"]').click();
+ await expect.poll(()=>page.evaluate(()=>!!map?.isStyleLoaded()),{timeout:45000}).toBe(true);
+ await page.locator('#selectEntirePortfolio').click();await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
+ await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect(page.locator('#map .traxio-route-pin')).toHaveCount(7);
+ const result=await page.evaluate(()=>({coordinates:routeGeo.coordinates.length,line:!!map.getLayer('route-line'),source:map.getSource('route')._data,stopIds:lastRoute.points.map(c=>c.id),summary:document.getElementById('routeResult').textContent}));
+ expect(result.coordinates).toBeGreaterThan(8);expect(result.line).toBe(true);expect(new Set(result.stopIds).size).toBe(7);
+ expect(calls.some(c=>c.url.includes('/table/')&&c.status===200)).toBe(true);expect(calls.some(c=>c.url.includes('/route/')&&c.status===200)).toBe(true);
+ await page.locator('#regionPicker').evaluate(n=>n.open=false);await page.locator('#mapClientListDisclosure').evaluate(n=>n.open=false);
+ await page.waitForTimeout(1500);
+ const dir='docs/captures/routes-after';await mkdir(dir,{recursive:true});const path=dir+'/'+info.project.name+'.png';
+ await page.screenshot({path,fullPage:true});await page.screenshot({path:dir+'/'+info.project.name+'.jpg',type:'jpeg',quality:80,fullPage:true});await writeFile(dir+'/'+info.project.name+'.json',JSON.stringify({syntheticClients:true,realServices:true,calls,result},null,2));await info.attach('Rota real por ruas, sete clientes sintéticos',{path,contentType:'image/png'});
+});

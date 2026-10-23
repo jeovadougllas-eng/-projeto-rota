@@ -27,7 +27,7 @@ export async function prepare(page, {authenticated=true, theme='light', records=
     },from:query})};
   },{authenticated,theme,records});
   // Block all external services so no real account, client record, geocoder, or provider is touched.
-  await page.route(/^https?:\/\/(?!127\.0\.0\.1(?::|\/))/,async route=>{
+  await page.route(/^https?:\/\/(?!(?:127\.0\.0\.1|localhost)(?::|\/))/,async route=>{
     const url=route.request().url();
     if(liveMaps && (/^https:\/\/unpkg\.com\/maplibre-gl@/.test(url) || /^https:\/\/[^/]*openfreemap\.org\//.test(url) || /^https:\/\/server\.arcgisonline\.com\//.test(url))) { await route.continue(); return; }
     if(/\.(js|css)(\?|$)/.test(url))await route.fulfill({status:200,contentType:url.includes('.css')?'text/css':'application/javascript',body:''});

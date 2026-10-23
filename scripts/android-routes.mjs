@@ -1,0 +1,126 @@
+import {_android as android} from 'playwright';
+import {expect} from 'playwright/test';
+import {prepare} from '../tests/fixtures/browser.js';
+import {records} from '../tests/fixtures/routing.js';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+const [device]=await android.devices();if(!device)throw Error('No emulator connected.');
+const dir='mobile/evidence';await mkdir(dir,{recursive:true});
+const gpsFix={lat:-5.8,lon:-35.22};
+const emit=()=>{try{execFileSync('adb',['emu','geo','fix',String(gpsFix.lon),String(gpsFix.lat)],{stdio:'ignore'});}catch(error){console.warn('ADB GPS injection interrupted:',error.message);}};
+emit();const timer=setInterval(emit,2000);
+let page;
+const evidence={plannerGeneration:'selected-priority-and-partial-confirmation',syntheticClients:true,realAndroidWebView:true,realRoutingService:true,simulatedGPS:true,physicalDevice:false,checks:[],calls:[],failures:[]};
+try{
+ await device.shell('am force-stop app.traxio.mobile');
+ await device.shell('am start -n app.traxio.mobile/.MainActivity');
+ const view=await device.webView({pkg:'app.traxio.mobile'});page=await view.page();
+ await prepare(page,{records,liveMaps:true});
+ await page.route('https://router.project-osrm.org/**',r=>r.continue());
+ page.on('requestfailed',r=>evidence.failures.push({url:r.url(),error:r.failure()}));
+ page.on('response',r=>{if(r.url().startsWith('https://router.project-osrm.org/'))evidence.calls.push({url:r.url(),status:r.status()});});
+ await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});await expect(page.locator('body')).not.toHaveClass(/auth-locked/,{timeout:15000});
+ evidence.initialViewport=await page.evaluate(()=>({width:innerWidth,height:innerHeight,dpr:devicePixelRatio,screenWidth:screen.width,screenHeight:screen.height,locked:document.body.classList.contains('auth-locked')}));console.log(JSON.stringify({stage:'authenticated Android WebView ready',...evidence.initialViewport}));
+ await page.locator('.tabs [data-tab="mapa"]').click();
+ await expect.poll(()=>page.evaluate(()=>!!map?.isStyleLoaded()),{timeout:60000}).toBe(true);
+ await page.locator('#selectEntirePortfolio').click();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');
+ await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();
+ await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect.poll(()=>page.evaluate(()=>map.queryRenderedFeatures().filter(f=>f.source!=='route').length),{timeout:45000}).toBeGreaterThan(10);await expect(page.locator('#map .traxio-route-pin')).toHaveCount(7);
+ expect(await page.locator('#map .traxio-route-pin').allTextContents()).toEqual(['1','2','3','4','5','6','7']);
+ evidence.checks.push('Seven selected clients produce a rendered street route from native GPS with matching numbered markers');
+ evidence.route=await page.evaluate(()=>({coordinates:routeGeo.coordinates.length,stops:lastRoute.points.map(c=>c.id),summary:document.getElementById('routeResult').textContent,viewport:{width:innerWidth,height:innerHeight}}));
+ if(evidence.route.coordinates<=8)throw Error('Expected street geometry with more than stop coordinates.');
+ await expect.poll(()=>page.evaluate(()=>map.isSourceLoaded('route')&&!map.isMoving()&&map.queryRenderedFeatures({layers:['route-line']}).length>0),{timeout:30000}).toBe(true);
+ await page.waitForTimeout(1000);
+ await page.screenshot({path:dir+'/android-tablet-portrait-webview.png',fullPage:true});
+ await writeFile(dir+'/android-tablet-portrait-route.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ evidence.renderedRouteFeatures=await page.evaluate(()=>map.queryRenderedFeatures({layers:['route-line']}).length);
+ await page.locator('#liveStart').click();await expect(page.locator('#liveGPSState')).not.toContainText('GPS desligado',{timeout:30000});evidence.checks.push('Native foreground GPS navigation starts');
+ gpsFix.lat=-5.84;gpsFix.lon=-35.218;emit();await expect.poll(()=>page.evaluate(()=>routeGeo?.coordinates?.[0]?.[1]||0),{timeout:45000}).toBeLessThan(-5.835);evidence.checks.push('Sustained native GPS deviation recalculates the remaining street route');
+ await page.waitForTimeout(1000);await writeFile(dir+'/android-navigation.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ // Close the navigation overlay while retaining the route.
+ await page.locator('#traxioNavClose').click();
+ await page.locator('#regionPicker summary').click();await page.locator('#regionCity').selectOption('parnamirim');await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Selection survives city filtering');
+ await device.shell('settings put secure show_ime_with_hard_keyboard 1');
+ await page.evaluate(()=>Capacitor.registerPlugin('Keyboard').hide());
+ const before=await page.evaluate(()=>({height:visualViewport?.height||innerHeight}));
+ await page.locator('#mapClientSearch').fill('Visita');
+ const dump=String(await device.shell('uiautomator dump /sdcard/traxelo-window.xml && cat /sdcard/traxelo-window.xml'));
+ const webview=dump.match(/<node[^>]*class="android.webkit.WebView"[^>]*>/)?.[0],bounds=webview?.match(/bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/);
+ const touch=await page.locator('#mapClientSearch').evaluate((n,b)=>{const r=n.getBoundingClientRect(),scale=b?(b[2]-b[0])/innerWidth:devicePixelRatio;return {x:Math.round((b?.[0]||0)+(r.x+r.width/2)*scale),y:Math.round((b?.[1]||0)+(r.y+r.height/2)*scale)};},bounds?bounds.slice(1).map(Number):null);
+ evidence.keyboardTouch={touch,bounds:bounds?.slice(1)};
+ await device.shell('input tap '+touch.x+' '+touch.y);await page.locator('#mapClientSearch').focus();await page.evaluate(()=>Capacitor.registerPlugin('Keyboard').show());
+ const imeState=String(await device.shell('dumpsys input_method'));evidence.ime=imeState.split('\n').filter(line=>/mInputShown|mShowRequested|mIsInputViewShown|mCurMethodId/.test(line));console.log(JSON.stringify({stage:'native keyboard requested',ime:evidence.ime,touch}));
+ await expect.poll(()=>page.evaluate(()=>({height:visualViewport?.height||innerHeight})),{timeout:10000}).not.toEqual(before);
+ const keyboard=await page.evaluate(()=>{const r=document.activeElement.getBoundingClientRect(),v=visualViewport;return {visibleHeight:v?.height||innerHeight,top:r.top,bottom:r.bottom,value:document.activeElement.value,width:document.documentElement.scrollWidth,innerWidth};});
+ if(keyboard.bottom>keyboard.visibleHeight+5||keyboard.top<0)throw Error('Focused field is obscured by the Android keyboard.');
+ evidence.keyboard={before,...keyboard};await writeFile(dir+'/android-tablet-keyboard.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ await device.shell('input keyevent 4');await expect.poll(()=>page.evaluate(()=>visualViewport?.height||innerHeight),{timeout:15000}).toBeGreaterThanOrEqual(before.height-4);await expect(page.locator('#mapClientSearch')).toHaveValue('Visita');evidence.checks.push('Real Android IME resizes viewport, field remains visible and text survives dismissal');
+ await device.shell('settings put system accelerometer_rotation 0');await device.shell('cmd window user-rotation lock 1');
+ await expect.poll(()=>page.evaluate(()=>innerWidth>innerHeight),{timeout:15000}).toBe(true);
+ await expect(page.locator('#map')).toBeVisible();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');
+ if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Horizontal overflow on landscape tablet.');
+ await page.waitForTimeout(1000);await writeFile(dir+'/android-tablet-landscape-route.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));evidence.checks.push('Landscape rotation keeps the itinerary and selection without overflow');
+ const href=await page.locator('#openGoogleMaps').getAttribute('href');if(!href?.includes('destination='))throw Error('Missing external navigation destination.');
+ await page.locator('#openGoogleMaps').click();
+ let openedPackage=null;
+ await expect.poll(async()=>{const activities=String(await device.shell('dumpsys activity activities'));openedPackage=activities.match(/topResumedActivity=.*?\s(com\.google\.android\.apps\.maps|com\.android\.chrome)\//)?.[1]||null;return openedPackage;},{timeout:15000}).not.toBeNull();
+ await page.waitForTimeout(4000);await writeFile(dir+'/android-google-maps.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ evidence.externalNavigation={href,openedPackage};evidence.checks.push('Native AppLauncher opens the next destination in '+openedPackage);
+ await device.shell('am start -n app.traxio.mobile/.MainActivity');
+ await page.locator('#clearRoute').click();await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');evidence.checks.push('Clear stops GPS and preserves selected customers');
+ await page.locator('#selectNoClients').click();await page.locator('#adHocDisclosure summary').click();await page.evaluate(()=>window.traxioAvulsoSet(-5.81,-35.21));await page.locator('#avulsoRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:45000});await expect(page.locator('#liveStopList .live-stop')).toHaveCount(1);if(await page.evaluate(()=>clients.length)!==7)throw Error('Ad hoc navigation changed customer records.');evidence.checks.push('Ad hoc GPS route works without selected customers or database changes');
+ // Regression from the reported tablet session: pending customers must not block confirmed stops.
+ await page.locator('#clearRoute').click();
+ await page.evaluate(()=>{
+  const c=clients.find(c=>String(c.id)==='7');c.lat=null;c.lon=null;c.locationVerification='pending';
+  c.locationCandidate={lat:-5.812345,lon:-35.212345,error:'Confirmar entrada',fingerprint:JSON.stringify(TraxioGeo.parse(c))};
+  geoCandidates.set(c.id,c.locationCandidate);save();
+ });
+ await page.locator('#selectEntirePortfolio').click();await page.locator('#origin').selectOption('gps');
+ await page.locator('#routeConfirmedOnly').click();await expect(page.locator('#partialRouteDialog')).toBeVisible();await page.locator('#confirmPartialRoute').click();
+ await expect(page.locator('#plannerState')).toHaveText('Rota parcialmente calculada',{timeout:60000});await expect(page.locator('#routeOrder .route-stop')).toHaveCount(6);await expect(page.locator('#roadRoute')).toBeEnabled();await expect(page.locator('#liveStart')).toBeEnabled();
+ await expect.poll(()=>page.evaluate(()=>map.isSourceLoaded('route')&&map.queryRenderedFeatures({layers:['route-line']}).length>0),{timeout:30000}).toBe(true);
+ await writeFile(dir+'/android-partial-confirmed-route.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ evidence.partialRoute=await page.evaluate(()=>({summary:document.getElementById('routeResult').textContent,stops:lastRoute.points.map(c=>c.id),excluded:lastRoute.excluded,streetCoordinates:routeGeo.coordinates.length}));
+ evidence.checks.push('Six confirmed clients produce a real street itinerary while one selected client still awaits confirmation');
+ await page.locator('#liveStart').click();await expect(page.locator('#liveGPSState')).not.toContainText('GPS desligado',{timeout:30000});await page.locator('#traxioNavClose').click();await page.locator('#clearRoute').click();
+ await page.evaluate(()=>openClientLocation(7,clients.find(c=>String(c.id)==='7').locationCandidate));await page.locator('#adjustPin').click();await page.locator('#backToClient').click();
+ const confirmed=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1')).find(c=>String(c.id)==='7'));
+ expect(confirmed.lat).toBe(-5.812345);expect(confirmed.lon).toBe(-35.212345);expect(confirmed.locationVerification).toBe('manual_reviewed');expect(confirmed.locationConfirmedAt).toBeTruthy();
+ await page.locator('#clientEditDialog').getByRole('button',{name:'Fechar cadastro'}).click();
+ await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
+ expect(await page.evaluate(()=>clients.find(c=>String(c.id)==='7').lat)).toBe(-5.812345);
+ await page.evaluate(async()=>{TraxioGeo.locate=async()=>({status:'matched',best:{lat:-6,lon:-36,provider:'test'},candidates:[]});await queueClientGeocode([7],{force:true});});
+ expect(await page.evaluate(()=>clients.find(c=>String(c.id)==='7').lat)).toBe(-5.812345);
+ evidence.savedLocation={lat:confirmed.lat,lon:confirmed.lon,verification:confirmed.locationVerification,confirmedAt:confirmed.locationConfirmedAt,survivesReload:true,forcedLookupPreservesPin:true};
+ evidence.checks.push('Confirm point saves immediately without another Save; reload and forced geocoding preserve the confirmed pin');
+ await page.locator('.tabs [data-tab="mapa"]').click();await expect.poll(()=>page.evaluate(()=>!!map?.isStyleLoaded()),{timeout:60000}).toBe(true);
+ await page.locator('#origin').selectOption('gps');await page.locator('#calcRoute').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);expect(await page.evaluate(()=>lastRoute.points.find(c=>String(c.id)==='7').lat)).toBe(-5.812345);
+ evidence.checks.push('The next seven-stop street route actually uses the saved confirmed coordinates after reload');
+
+ // Shared shell and confirmed-portfolio shortcut in the installed Android WebView.
+ await page.locator('#clearRoute').click();
+ let shell;
+ for(const tab of ['painel','clientes','mapa','historico','dados']){
+  await page.locator(`.tabs [data-tab="${tab}"]`).click();
+  const rect=await page.locator('.tabs').boundingBox();if(!shell)shell=rect;expect(rect).toEqual(shell);
+  await expect(page.locator('.nav-art')).toBeVisible();await expect(page.locator('.nav-art>img')).toBeVisible();
+  await expect(page.locator('.header-brand .traxelo-approved-brand')).toBeVisible();
+  await writeFile(dir+'/android-shell-'+tab+'.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
+ }
+ evidence.checks.push('All five native screens retain the approved scenic sidebar, logo and identical shell geometry');
+ await page.locator('.tabs [data-tab="painel"]').click();await expect(page.locator('#located')).toHaveText('7');
+ await page.locator('#locatedShortcut').click();await expect(page.locator('#registryLocation')).toHaveValue('confirmed');await expect(page.locator('#registryRows .client-link')).toHaveCount(7);
+ await page.locator('#registrySuggestConfirmed').click();await expect(page.locator('#strategyPanel')).toBeVisible();await page.locator('#origin').selectOption('gps');
+ await page.locator('#generateSuggestion').click();await expect(page.locator('#plannerState')).toHaveText('Rota calculada',{timeout:60000});
+ await expect(page.locator('#routeOrder .route-stop')).toHaveCount(7);await expect(page.locator('#liveStart')).toBeEnabled();
+ await expect.poll(()=>page.evaluate(()=>map.isSourceLoaded('route')&&map.queryRenderedFeatures({layers:['route-line']}).length>0),{timeout:30000}).toBe(true);
+ evidence.checks.push('Dashboard confirmed shortcut lists eligible clients and produces a suggested seven-stop itinerary on real streets');
+ await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));
+ console.log(JSON.stringify(evidence,null,2));
+}catch(error){try{await writeFile(dir+'/android-device-failure.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));}catch{}evidence.error=error.stack;evidence.url=page?.url();evidence.routeError=await page?.locator('#routeResult').textContent().catch(()=>null);evidence.map=await page?.evaluate(()=>({width:innerWidth,height:innerHeight,screenWidth:screen.width,screenHeight:screen.height,angle:screen.orientation?.angle,style:map?.isStyleLoaded(),tiles:map?.areTilesLoaded(),layers:map?.getStyle()?.layers?.length,features:map?.queryRenderedFeatures()?.length,status:document.getElementById('mapStatus').textContent})).catch(()=>null);console.error(JSON.stringify(evidence,null,2));await writeFile(dir+'/android-routes.json',JSON.stringify(evidence,null,2));await page?.screenshot({path:dir+'/android-route-failure.png',fullPage:true}).catch(()=>{});throw error;}
+finally{clearInterval(timer);await device.close();}
+
