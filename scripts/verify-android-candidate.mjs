@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 const apk='candidate/app-debug.apk',hash=b=>createHash('sha256').update(b).digest('hex');
 const bytes=await readFile(apk),files={};
-for(const file of ['traxio-route-ui.js','traxio-planner.js','traxio-geolocation.js','traxio-routes.css','traxio-native.js']){
+for(const file of ['traxio-route-ui.js','traxio-planner.js','traxio-geolocation.js','traxio-routes.css','traxio-native.js','traxio-ui.js','traxelo-shell.css','traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png']){
  const bundled=execFileSync('unzip',['-p',apk,'assets/public/assets/'+file],{maxBuffer:2000000}),source=await readFile('assets/'+file);
  assert.equal(hash(bundled),hash(source),'APK source mismatch: '+file);files[file]=hash(bundled);
 }

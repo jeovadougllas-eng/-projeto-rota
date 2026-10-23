@@ -11,7 +11,10 @@ test('Traxelo.IA title and slogan are present in the visible shell', () => {
   assert.match(ui, /SUA ROTA<br>COM INTELIGÊNCIA\./);
 });
 
-test('legacy logo raster is explicitly marked pending replacement', () => {
-  assert.match(ui, /substituição por Traxelo\.IA pendente/);
-  assert.match(ui, /assets\/visual-kit\/assets\/logo_dark_background\.png/);
+test('approved raster lettering replaces the legacy logo without generic font reconstruction', () => {
+  assert.match(ui, /assets\/traxelo\/approved\/visual\/assets\/branding\/logo_horizontal_fundo_escuro\.png/);
+  assert.doesNotMatch(ui, /substituição por Traxelo\.IA pendente/);
+  assert.doesNotMatch(ui, /assets\/visual-kit\/assets\/logo_dark_background\.png/);
+  const manifest=JSON.parse(readFileSync(new URL('../assets/traxelo/approved/visual/manifest.json',import.meta.url),'utf8'));
+  assert.equal(manifest.project,'Traxelo.IA');
 });

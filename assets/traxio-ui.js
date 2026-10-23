@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.pin}</svg>`;
   };
-  const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/visual-kit/assets/logo_dark_background.png" alt="Logotipo original Traxio — substituição por Traxelo.IA pendente" width="497" height="141"></span>`;
+  const brand = className => `<span class="brand-crop traxelo-approved-brand ${className || ''}" role="img" aria-label="Traxelo.IA — Sua rota com inteligência."><span class="traxelo-brand-symbol"><img src="assets/traxelo/approved/vector/png_transparente/simbolo_estrada_pin.png" alt=""></span><span class="traxelo-brand-wordmark"><img src="assets/traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png" alt="" width="700" height="205"></span><span class="traxelo-brand-tagline" aria-hidden="true">SUA ROTA COM INTELIGÊNCIA.</span></span>`;
   // Display unmodified original pixels from the supplied reference crops.
   const glyph=(source,sourceWidth,sourceHeight,x,y,w,h,className='')=>`<span class="kit-glyph ${className}" aria-hidden="true" style="aspect-ratio:${w}/${h}"><img src="assets/visual-kit/assets/${source}" alt="" width="${sourceWidth}" height="${sourceHeight}" style="width:${100*sourceWidth/w}%;height:${100*sourceHeight/h}%;left:${-100*x/w}%;top:${-100*y/h}%"></span>`;
   // Key only the crop background, then intersect with source alpha. The final
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Login uses the existing forms and their original event handlers.
   const authBrand = node('div', 'auth-brand-panel');
-  authBrand.innerHTML = '<span class="brand-crop auth-original-logo"><img src="assets/visual-kit/assets/login_hero_reference.png" alt="Identidade visual anterior — substituição por Traxelo.IA pendente" width="354" height="632"></span>' + `<div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
+  authBrand.innerHTML = brand('auth-original-logo') + `<div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
   el('authScreen').prepend(authBrand);
   const approvedScene = node('div','auth-approved-scene'); approvedScene.setAttribute('aria-hidden','true');
   approvedScene.innerHTML='<img class="reconstructed-login-plate" src="assets/reconstructed/login-background.png" alt=""><img class="original-login-art" src="assets/visual-kit/assets/login_hero_reference.png" alt="" width="354" height="632">';
@@ -165,14 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
   },'')); clientSection.append(sectionActions);
   sectionActions.classList.add('registry-title-actions');sectionActions.querySelector('h2').remove();
   const registry = node('div','card registry-card');
-  registry.innerHTML = `<div class="registry-controls"><div class="registry-search-row"><div class="search-field">${icon('search')}<input id="registrySearch" type="search" placeholder="Buscar cliente por nome, cidade, bairro ou endereço..." aria-label="Buscar clientes"></div><button type="button" id="registryFilterToggle" class="secondary icon-button" aria-label="Mostrar ou ocultar filtros" aria-expanded="true" aria-controls="registryFilters">${icon('filter')}</button></div><div class="registry-filters" id="registryFilters"><select id="registryCity" aria-label="Filtrar por cidade"><option value="">Todas as cidades</option></select><select id="registryNeighborhood" aria-label="Filtrar por bairro"><option value="">Todos os bairros</option></select><select id="registryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select><button type="button" id="registryClear" class="secondary">Limpar filtros</button></div><p class="registry-count" id="registryCount" aria-live="polite"></p></div><div class="table-scroll"><table class="client-table"><thead><tr><th><input id="registrySelectAll" type="checkbox" aria-label="Selecionar todos os clientes filtrados"></th><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Bairro</th><th scope="col">Categoria</th><th scope="col">Prioridade</th></tr></thead><tbody id="registryRows"></tbody></table></div><div class="registry-footer"><span id="registrySelection" aria-live="polite"></span><button type="button" id="registryPlan" class="secondary">Planejar visitas selecionadas →</button></div>`;
+  registry.innerHTML = `<div class="registry-controls"><div class="registry-search-row"><div class="search-field">${icon('search')}<input id="registrySearch" type="search" placeholder="Buscar cliente por nome, cidade, bairro ou endereço..." aria-label="Buscar clientes"></div><button type="button" id="registryFilterToggle" class="secondary icon-button" aria-label="Mostrar ou ocultar filtros" aria-expanded="true" aria-controls="registryFilters">${icon('filter')}</button></div><div class="registry-filters" id="registryFilters"><select id="registryCity" aria-label="Filtrar por cidade"><option value="">Todas as cidades</option></select><select id="registryNeighborhood" aria-label="Filtrar por bairro"><option value="">Todos os bairros</option></select><select id="registryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select><button type="button" id="registryClear" class="secondary">Limpar filtros</button></div><div class="registry-location-tools"><label for="registryLocation">Localização</label><select id="registryLocation"><option value="">Todos os clientes</option><option value="confirmed">Localização confirmada</option><option value="review">Aguardando confirmação</option></select><div id="confirmedPortfolioActions" hidden><button type="button" id="registryPlanConfirmed">Criar rota com estes confirmados</button><button type="button" id="registrySuggestConfirmed" class="secondary">Sugerir rota com estes confirmados</button></div></div><p class="registry-count" id="registryCount" aria-live="polite"></p></div><div class="table-scroll"><table class="client-table"><thead><tr><th><input id="registrySelectAll" type="checkbox" aria-label="Selecionar todos os clientes filtrados"></th><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Bairro</th><th scope="col">Categoria</th><th scope="col">Prioridade</th></tr></thead><tbody id="registryRows"></tbody></table></div><div class="registry-footer"><span id="registrySelection" aria-live="polite"></span><button type="button" id="registryPlan" class="secondary">Planejar visitas selecionadas →</button></div>`;
   clientSection.append(registry);
   const category = c => regionField(c,['categoria','segmento','ramo','atividade']) || c.category || '—';
   const filteredClients = () => {
     const q = norm(el('registrySearch').value), city = el('registryCity').value, district = el('registryNeighborhood').value, cat = el('registryCategory').value;
     return clients.filter(c => {
-      const r = regionParts(c);
-      return (!q || norm([c.name,c.address,r.city,r.district,category(c)].join(' ')).includes(q)) && (!city || r.city === city) && (!district || r.district === district) && (!cat || category(c) === cat);
+      const r = regionParts(c), location = el('registryLocation').value, ready = TraxioPlanner.location(c).ready;
+      return (!location || (location === 'confirmed' ? ready : !ready)) && (!q || norm([c.name,c.address,r.city,r.district,category(c)].join(' ')).includes(q)) && (!city || r.city === city) && (!district || r.district === district) && (!cat || category(c) === cat);
     });
   };
   function updateOptions(id, values, initial) {
@@ -191,22 +191,49 @@ document.addEventListener('DOMContentLoaded', () => {
     if(refreshOptions) { updateOptions('registryCity',clients.map(c=>regionParts(c).city),'Todas as cidades'); updateOptions('registryCategory',clients.map(category),'Todas as categorias'); }
     updateOptions('registryNeighborhood',clients.filter(c=>!el('registryCity').value || regionParts(c).city === el('registryCity').value).map(c=>regionParts(c).district),'Todos os bairros');
     const filtered = filteredClients(), root = el('registryRows'); root.replaceChildren();
+    const confirmed = clients.filter(c=>TraxioPlanner.location(c).ready).length;
+    el('locatedShortcut').setAttribute('aria-label',`Ver ${confirmed} clientes com localização confirmada`);
+    el('pendingShortcut').setAttribute('aria-label',`Ver ${clients.length-confirmed} clientes aguardando confirmação`);
+    el('confirmedPortfolioActions').hidden = el('registryLocation').value !== 'confirmed';
+    for(const id of ['registryPlanConfirmed','registrySuggestConfirmed'])el(id).disabled = !filtered.length;
     el('registryCount').textContent = `${filtered.length} cliente${filtered.length === 1 ? '' : 's'}${filtered.length !== clients.length ? ' de ' + clients.length : ''}`;
     for(const c of filtered) {
       const row = node('tr'), checkCell = node('td'), check = node('input'); check.type='checkbox'; check.checked=selectedIds.has(c.id); check.setAttribute('aria-label','Selecionar '+c.name);
       check.addEventListener('change',()=>{ if(check.checked) selectedIds.add(c.id); else selectedIds.delete(c.id); updateSelectedCount(); renderWorkspace(); registrySelection(); }); checkCell.append(check); row.append(checkCell);
-      const nameCell = node('td'); nameCell.append(button(c.name,()=>viewClient(c.id),'client-link')); row.append(nameCell);
+      const nameCell = node('td'); nameCell.append(button(c.name,()=>viewClient(c.id),'client-link')); const point=TraxioPlanner.location(c); nameCell.append(node('small','registry-location-status',point.ready?'Localização confirmada':point.kind==='unavailable'?'Sem localização':point.kind==='approximate'?'Localização aproximada · confirmar':'Coordenadas não verificadas')); row.append(nameCell);
       const r = regionParts(c); [r.city || '—',r.district || '—',category(c)].forEach(v=>row.append(node('td','',v)));
       const p = node('td'); p.append(makePriority(c.priority)); row.append(p); root.append(row);
     }
     if(!filtered.length) { const row=node('tr'), cell=node('td','empty-state',clients.length?'Nenhum cliente corresponde aos filtros.':'Sua carteira está vazia. Importe uma planilha ou cadastre um cliente.'); cell.colSpan=6; row.append(cell);root.append(row); }
     registrySelection();
   }
-  ['registrySearch','registryCity','registryNeighborhood','registryCategory'].forEach(id=>el(id).addEventListener(id==='registrySearch'?'input':'change',()=>renderRegistry()));
-  el('registryClear').addEventListener('click',()=>{ for(const id of ['registrySearch','registryCity','registryNeighborhood','registryCategory']) el(id).value=''; renderRegistry(); });
+  ['registrySearch','registryCity','registryNeighborhood','registryCategory','registryLocation'].forEach(id=>el(id).addEventListener(id==='registrySearch'?'input':'change',()=>renderRegistry()));
+  el('registryClear').addEventListener('click',()=>{ for(const id of ['registrySearch','registryCity','registryNeighborhood','registryCategory','registryLocation']) el(id).value=''; renderRegistry(); });
   el('registryFilterToggle').addEventListener('click',()=>{ const hidden=el('registryFilters').hidden=!el('registryFilters').hidden; el('registryFilterToggle').setAttribute('aria-expanded',String(!hidden)); });
   el('registrySelectAll').addEventListener('change',()=>{ for(const c of filteredClients()) { if(el('registrySelectAll').checked) selectedIds.add(c.id); else selectedIds.delete(c.id); } renderRegistry(); updateSelectedCount(); renderWorkspace(); });
   el('registryPlan').addEventListener('click',()=>switchTab('mapa'));
+  function showLocationClients(mode) {
+    for(const id of ['registrySearch','registryCity','registryNeighborhood','registryCategory'])el(id).value='';
+    el('registryLocation').value=mode;el('registryFilters').hidden=false;
+    el('registryFilterToggle').setAttribute('aria-expanded','true');
+    renderRegistry();switchTab('clientes');el('registryLocation').focus({preventScroll:true});
+  }
+  for(const [metric,id,mode] of [['located','locatedShortcut','confirmed'],['pending','pendingShortcut','review']]){
+    const shortcut=el(metric).closest('.stat');shortcut.id=id;shortcut.setAttribute('role','button');shortcut.tabIndex=0;
+    shortcut.title='Clique para visualizar estes clientes';
+    shortcut.addEventListener('click',()=>showLocationClients(mode));
+    shortcut.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();showLocationClients(mode);}});
+  }
+  function planConfirmed(suggest) {
+    const confirmed=filteredClients().filter(c=>TraxioPlanner.location(c).ready);if(!confirmed.length)return;
+    selectedIds=new TraxioPlanner.IdSet(confirmed.map(c=>c.id));selectionInitialized=true;
+    updateSelectedCount();renderWorkspace();registrySelection();switchTab('mapa');
+    const disclosure=el('routePlannerPanel');if(disclosure)disclosure.open=true;
+    if(suggest&&el('strategyPanel').hidden)el('suggestToggle').click();
+    if(!suggest)el('origin').focus({preventScroll:true});
+  }
+  el('registryPlanConfirmed').addEventListener('click',()=>planConfirmed(false));
+  el('registrySuggestConfirmed').addEventListener('click',()=>planConfirmed(true));
   el('detailEdit').addEventListener('click',()=>{ editorTitle.textContent='Editar cliente'; editor.showModal(); });
   el('saveClient').addEventListener('click',()=>{ if(el('saveStatus').textContent === 'Cliente salvo.') editor.close(); });
   el('adjustPin').addEventListener('click',()=>{if(adjustingPin)editor.close();});
@@ -328,3 +355,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.body.classList.add('traxio-ui-ready');
 });
+
