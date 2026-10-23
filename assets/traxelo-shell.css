@@ -18,8 +18,8 @@ body.traxio-ui-ready[data-screen] .nav-pattern{display:none}
 body .brand-crop.traxelo-approved-brand{aspect-ratio:600/150;overflow:hidden;mask-image:none}
 .traxelo-approved-brand .traxelo-brand-symbol{position:absolute;left:0;top:0;width:25%;height:100%;overflow:hidden}
 body .traxelo-approved-brand .traxelo-brand-symbol img{position:absolute;display:block;width:466.6667%;height:136.6667%;left:-50%;top:-24%;object-fit:fill;transform:none}
-.traxelo-approved-brand .traxelo-brand-wordmark{position:absolute;left:26%;top:17%;width:74%;height:auto;aspect-ratio:427/80;overflow:hidden}
-body .traxelo-approved-brand .traxelo-brand-wordmark img{position:absolute;width:163.9344%;height:256.25%;left:-54.5667%;top:-75%;object-fit:fill;transform:none}
+.traxelo-approved-brand .traxelo-brand-wordmark{position:absolute;left:26%;top:17%;width:74%;height:auto;aspect-ratio:450/90;overflow:hidden}
+body .traxelo-approved-brand .traxelo-brand-wordmark img{position:absolute;width:155.5556%;height:227.7778%;left:-51.1111%;top:-61.1111%;object-fit:fill;transform:none}
 .traxelo-brand-tagline{position:absolute;left:26%;right:0;top:77%;font:700 clamp(5px,.48vw,8px)/1.2 Arial,sans-serif;letter-spacing:.1em;color:#fff;white-space:nowrap;text-align:center}
 body .auth-brand-panel>.auth-original-logo.traxelo-approved-brand{left:calc(20 * var(--au));top:calc(45 * var(--au));width:calc(260 * var(--au));aspect-ratio:600/150}
 .auth-original-logo .traxelo-brand-tagline{font-size:calc(8 * var(--au));letter-spacing:.06em}

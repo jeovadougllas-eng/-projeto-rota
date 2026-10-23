@@ -44,6 +44,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -59,7 +62,11 @@ jobs:
           TRAXELO_COMPILED_SOURCE: ${{ github.sha }}
       - run: npm ci
       - run: npm ci --prefix mobile --ignore-scripts
-      - run: sudo chmod a+rw /dev/kvm
+      - name: Stable Mesa renderer for the Android emulator
+        run: |
+          sudo chmod a+rw /dev/kvm
+          command -v Xvfb || sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-xvfb.log 2>&1 &
       - name: Installed APK with real roads, native GPS, persisted confirmation and partial route
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -67,7 +74,7 @@ jobs:
           target: google_apis
           arch: x86_64
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -memory 3072 -cores 2 -feature -Vulkan
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
           script: |
             adb install -r candidate/app-debug.apk
             adb shell settings put secure location_mode 3
