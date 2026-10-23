@@ -30,7 +30,7 @@ async function check(provider,redirectTo,allowed){
  const evidence={provider,allowed,authorizeStatus:start.status,callbackStatus:returned.status,returnedTo:actual,cancellationOnly:true};results.push(evidence);console.log(JSON.stringify(evidence));
 }
 const settings=await request(new URL('settings',authBase));
-if(settings.ok){const data=await settings.json();console.log(JSON.stringify({publicAuthSettings:{google:data.external?.google,azure:data.external?.azure}}));}
+if(settings.ok){const data=await settings.json();console.log(JSON.stringify({publicAuthSettings:{google:data.external?.google,azure:data.external?.azure,email:data.external?.email,signupEnabled:typeof data.disable_signup==='boolean'?!data.disable_signup:'not-reported'}}));}
 const failures=[];
 for(const args of [['google',appReturn,true],['google','app.traxio.mobile://auth/callback',true],['google',rejectedReturn,false]]){
  try{await check(...args);}catch(error){failures.push({provider:args[0],redirect:args[1],message:error.message});console.log(JSON.stringify(failures.at(-1)));}
@@ -38,3 +38,4 @@ for(const args of [['google',appReturn,true],['google','app.traxio.mobile://auth
 console.log(JSON.stringify({azurePersonalLogin:'not-tested',note:'Provider configuration was not changed.'}));
 if(failures.length){console.log(JSON.stringify({passed:false,checks:results,failures,personalLogin:false,customerWrites:false}));process.exitCode=1;}
 else console.log(JSON.stringify({passed:true,checks:results,personalLogin:false,customerWrites:false}));
+

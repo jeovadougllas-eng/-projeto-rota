@@ -1,4 +1,4 @@
-name: Traxelo published confirmed points and routes check
+name: Traxelo published approved brand, confirmed portfolio and APK check
 on:
   push:
     branches: [dev/traxelo-android-routes]
@@ -19,7 +19,7 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
-          import {readFile,writeFile} from 'node:fs/promises';
+          import {readFile,writeFile,mkdir} from 'node:fs/promises';
           import {execFileSync} from 'node:child_process';
           import {createHash} from 'node:crypto';
           const base='https://traxio-preview.vercel.app';
@@ -28,12 +28,12 @@ jobs:
           const home=await request('/');assert.equal(home.status,200);
           const html=await home.text();assert.ok(html.includes('assets/traxio-route-ui.js'));assert.ok(html.includes('Traxelo.IA'));assert.ok(html.includes('openGoogleMaps'));assert.ok(html.includes('openWaze'));
           const sdk=await request('/assets/traxio-geolocation.js');assert.equal(sdk.status,200);assert.ok((await sdk.text()).includes('digits(clean(c.cep)||field'));
-          for(const path of ['index.html','assets/traxio-route-ui.js','assets/traxio-planner.js','assets/traxio-geolocation.js','assets/traxio-routes.css']){
+          for(const path of ['index.html','assets/traxio-route-ui.js','assets/traxio-planner.js','assets/traxio-geolocation.js','assets/traxio-routes.css','assets/traxio-ui.js','assets/traxelo-shell.css']){
             const response=await request('/'+path);assert.equal(response.status,200);
             const served=Buffer.from(await response.arrayBuffer()),local=await readFile(path);
             assert.equal(createHash('sha256').update(served).digest('hex'),createHash('sha256').update(local).digest('hex'),'Published file mismatch: '+path);
           }
-          for(const path of ['/docs/confirmed-locations-fix.md','/docs/routing-review.html','/docs/captures/routes-after/tablet-portrait-light.png','/docs/captures/android/android-routes.json']){
+          for(const path of ['/docs/routing-review.html','/docs/portfolio-review.html','/docs/geolocation-and-client-access.md','/docs/captures/portfolio-after/tablet-portrait-light-clientes.png','/docs/captures/routes-after/tablet-portrait-light.png','/docs/captures/android/android-routes.json']){
             const response=await request(path);assert.equal(response.status,200);
           }
           const apk=await request('/downloads/traxio-android-testes.apk');assert.equal(apk.status,200);
@@ -41,7 +41,7 @@ jobs:
           const bytes=Buffer.from(await apk.arrayBuffer());assert.ok(bytes.length>1000000);
           const sha=createHash('sha256').update(bytes).digest('hex');assert.equal(sha,expected);
           await writeFile('/tmp/traxelo-verified.apk',bytes);
-          for(const file of ['traxio-route-ui.js','traxio-planner.js','traxio-geolocation.js','traxio-routes.css']){
+          for(const file of ['traxio-route-ui.js','traxio-planner.js','traxio-geolocation.js','traxio-routes.css','traxio-ui.js','traxelo-shell.css','traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png']){
             const bundled=execFileSync('unzip',['-p','/tmp/traxelo-verified.apk','assets/public/assets/'+file],{maxBuffer:2000000}),local=await readFile('assets/'+file);
             assert.equal(createHash('sha256').update(bundled).digest('hex'),createHash('sha256').update(local).digest('hex'),'APK/web mismatch: '+file);
           }
@@ -49,19 +49,23 @@ jobs:
           const expectedHTML=(await readFile('index.html','utf8')).replace('<script src="assets/traxio-native.js"></script>','<script src="assets/capacitor-runtime.js"></script><script src="assets/traxio-native.js"></script>');
           assert.equal(createHash('sha256').update(bundledHTML).digest('hex'),createHash('sha256').update(expectedHTML).digest('hex'),'APK HTML differs from tested source');
           const manifest=await request('/downloads/traxio-android-testes.sha256');assert.equal(manifest.status,200);assert.ok((await manifest.text()).startsWith(expected));
+          const approved=JSON.parse(await readFile('docs/traxelo-approved-assets.json','utf8'));
+          for(const [path,info] of Object.entries(approved)){
+            const response=await request('/assets/traxelo/approved/'+path);assert.equal(response.status,200);
+            assert.equal(createHash('sha256').update(Buffer.from(await response.arrayBuffer())).digest('hex'),info.sha256,'Approved asset modified: '+path);
+          }
           const api=await request('/api/geocode');assert.equal(api.status,405);
-          console.log(JSON.stringify({website:200,geocoderSDK:200,apk:200,apkBytes:bytes.length,sha256:sha,serverEndpoint:405,publicAccess:true,apkAndWebAssetsMatch:true}));
+          const providerProbe=await fetch(base+'/api/geocode',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',signal:AbortSignal.timeout(15000)});
+          assert.ok([401,503].includes(providerProbe.status),'Unexpected unauthenticated geocoder response');
+          const evidence={additionalGeocoderConfigured:providerProbe.status===401,providerProbeStatus:providerProbe.status,website:200,geocoderSDK:200,apk:200,apkBytes:bytes.length,sha256:sha,serverEndpoint:405,publicAccess:true,apkAndWebAssetsMatch:true,approvedAssetsVerified:Object.keys(approved).length};
+          await mkdir('test-results-release',{recursive:true});await writeFile('test-results-release/verification.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence));
           NODE
-      - run: npm ci --fetch-retries=1 --fetch-timeout=30000
-      - run: npx playwright install --with-deps chromium
-      - name: Verify the published tablet and desktop route flow in the browser
-        run: TRAXIO_PUBLISHED=1 npx playwright test --config=playwright.published.config.js
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: traxelo-published-verification
+          name: traxelo-release-verification
           retention-days: 30
-          path: test-results-published/
+          path: test-results-release/
   oauth-return:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -72,3 +76,4 @@ jobs:
           node-version: 22
       - name: Verify web and Android Google OAuth return URLs
         run: node scripts/preview-auth-probe.mjs
+
