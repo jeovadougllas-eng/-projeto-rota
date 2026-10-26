@@ -71,3 +71,13 @@ Capturas reais do emulador, com dados sintéticos:
 - `/docs/captures/location-android/android-updates.json` contém os resultados estruturados.
 
 Para receber no APK que já possui o atualizador: abra conectado à internet, aguarde o aviso de atualização pronta em Planilhas, feche o aplicativo completamente e reabra. O download não reinicia uma navegação ativa. No navegador, basta recarregar o site. O APK anterior sem atualizador continua exigindo a migração segura já documentada; não o desinstale sem backup.
+
+## Regressão completa e integridade final
+
+- **184 testes de transações de rota passaram** na versão final do código do aplicativo (mesmos `index.html` e assets da versão publicada). A primeira regressão seguinte parou porque um teste ainda procurava o comando antigo “Conferir pin sugerido” e exigia passar pelo cadastro. O teste foi atualizado para o fluxo solicitado: abrir diretamente o mapa, confirmar uma vez e verificar que endereço e colunas importadas permanecem intactos. Não foi removida a verificação de persistência.
+- **160 testes funcionais passaram**, cobrindo Google/Microsoft por doubles de OAuth, formulários, importação/exportação/backup, geocodificação de endereço numerado, confirmação de aproximação, GPS/recalculo e ponte nativa. **3 testes com roteirização real em ruas passaram**, além de **1 consulta pública de endereço de teste** no provedor atual (não Geoapify/TomTom e não a carteira real).
+  https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40374382915
+- **Integridade pública aprovada**: HTTP 200 do site, APK original de 16.171.451 bytes com SHA preservado, ZIP de atualização com SHA correto, todos os **57 arquivos internos do ZIP** conferidos e **2 capturas Android** disponíveis. Os recursos exclusivos do runtime nativo são verificados dentro do ZIP; não se espera que existam como arquivos da página web. O verificador inicial que procurava o runtime no diretório web foi corrigido.
+  https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40374586604
+
+As consultas Geoapify/TomTom em clientes reais continuam dependendo da sessão do usuário. Nenhum teste sintético, de integridade ou do endereço público foi apresentado como cobertura dos 157 clientes.
