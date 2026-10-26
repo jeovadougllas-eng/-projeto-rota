@@ -8,7 +8,7 @@ await mkdir('mobile/evidence',{recursive:true});
 const manifest=JSON.parse(await readFile('candidate/update-manifest.json','utf8'));
 const [device]=await android.devices();if(!device)throw Error('No Android device');
 const evidence={physicalDevice:false,realHTTPSDownload:true,checks:[],expected:manifest.version};
-let page;
+let page,visitSnapshot=null;
 async function attach(){
  let lastError;
  for(let attempt=0;attempt<20;attempt++){
@@ -53,6 +53,7 @@ try{
  await restart();expect(await page.locator('meta[name=traxelo-release]').getAttribute('content')).toBe(manifest.version);
  expect((await status()).failed).toBe('');evidence.checks.push('Healthy startup acknowledgement keeps the release on subsequent launches');
  if(process.env.TRAXELO_LOCATION_PROOF==='1'){const {verifyLocations}=await import('./android-location-checks.mjs');before=await verifyLocations({page,device,evidence});}
+ if(process.env.TRAXELO_VISITS_PROOF==='1'){const {verifyVisits}=await import('./android-visit-checks.mjs');visitSnapshot=await verifyVisits({page,evidence});}
  // Corrupt a downloaded file only inside this isolated emulator, then prove the native loader refuses it.
  await device.shell('am force-stop app.traxio.mobile');
  await device.shell("run-as app.traxio.mobile sh -c 'echo corrupted > files/traxelo-web-releases/"+manifest.version+"/index.html'");
@@ -60,6 +61,7 @@ try{
  expect(await page.locator('meta[name=traxelo-release]').getAttribute('content')).toBe(bundled);
  expect((await status()).failed).toBe(manifest.version);
  expect(await page.evaluate(()=>localStorage.getItem('projeto_rota_mapa_v1'))).toBe(before);
+ if(visitSnapshot)expect(await page.evaluate(k=>localStorage.getItem(k),visitSnapshot.key)).toBe(visitSnapshot.value);
  evidence.checks.push('A corrupted downloaded release is rejected on startup and falls back to the bundled interface without losing customer data');
  await page.evaluate(()=>Capacitor.registerPlugin('TraxeloUpdates').check());expect((await status()).pending).toBe('');
  evidence.checks.push('A failed release is quarantined rather than reinstalled in a restart loop');
