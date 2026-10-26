@@ -1,4 +1,4 @@
-name: Verify staged location update, tablet rotation and original Android APK
+name: Verify location update and preserve deliberate pin edits across Android recovery
 on:
   push:
     branches: [dev/traxelo-android-routes]

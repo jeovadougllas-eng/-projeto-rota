@@ -33,7 +33,7 @@ try{
  await device.shell('am start -n app.traxio.mobile/.MainActivity');await attach();
  const bundled=await page.locator('meta[name=traxelo-release]').getAttribute('content');evidence.bundled=bundled;expect(bundled).not.toBe(manifest.version);
  await page.evaluate(()=>localStorage.setItem('traxelo.update-test.persisted','kept'));
- const before=await page.evaluate(()=>localStorage.getItem('projeto_rota_mapa_v1'));
+ let before=await page.evaluate(()=>localStorage.getItem('projeto_rota_mapa_v1'));
  console.log(JSON.stringify({stage:'OTA download waiting for published candidate',expected:manifest.version}));
  let staged;
  for(let attempt=0;attempt<36;attempt++){
@@ -52,7 +52,7 @@ try{
  await writeFile('mobile/evidence/android-updated-dashboard.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
  await restart();expect(await page.locator('meta[name=traxelo-release]').getAttribute('content')).toBe(manifest.version);
  expect((await status()).failed).toBe('');evidence.checks.push('Healthy startup acknowledgement keeps the release on subsequent launches');
- if(process.env.TRAXELO_LOCATION_PROOF==='1'){const {verifyLocations}=await import('./android-location-checks.mjs');await verifyLocations({page,device,evidence});}
+ if(process.env.TRAXELO_LOCATION_PROOF==='1'){const {verifyLocations}=await import('./android-location-checks.mjs');before=await verifyLocations({page,device,evidence});}
  // Corrupt a downloaded file only inside this isolated emulator, then prove the native loader refuses it.
  await device.shell('am force-stop app.traxio.mobile');
  await device.shell("run-as app.traxio.mobile sh -c 'echo corrupted > files/traxelo-web-releases/"+manifest.version+"/index.html'");

@@ -25,5 +25,7 @@ export async function verifyLocations({page,device,evidence}){
  await writeFile('mobile/evidence/android-location-landscape-menu.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));
  evidence.checks.push('Real Android tablet rotation preserves the confirmed point and clickable navigation across screens; phone expansion is covered separately in Chromium and WebKit');
  await device.shell('cmd window user-rotation lock 0');await expect.poll(()=>page.evaluate(()=>innerWidth<innerHeight),{timeout:15000}).toBe(true);
- await page.evaluate(original=>{localStorage.setItem('projeto_rota_mapa_v1',original);clients=JSON.parse(original);render();},original);
+ expect(await page.evaluate(()=>clients[0].address)).toBe(JSON.parse(original)[0].address);
+ // The user deliberately confirmed a new point. Recovery must retain that new value.
+ return page.evaluate(()=>localStorage.getItem('projeto_rota_mapa_v1'));
 }
