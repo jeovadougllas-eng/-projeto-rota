@@ -27,7 +27,7 @@ jobs:
           else
             npx playwright install chromium
           fi
-      - run: npx playwright test --config=playwright.visits.config.js
+      - run: npx playwright test --config=playwright.visits.config.js --project=desktop --project=tablet --project=phone
       - name: Validate actual Excel package and editable charts
         run: |
           python -m pip install --quiet openpyxl==3.1.5

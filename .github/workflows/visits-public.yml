@@ -1,0 +1,66 @@
+name: Published visit reports and saved-pin recovery on Safari engine and Chrome
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/visits-public.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  public-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      TRAXELO_VISITS_BASE: https://traxio-preview.vercel.app
+      TRAXELO_RECOVERY_BASE: https://traxio-preview.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Verify exact published application sources and preserve original APK
+        run: |
+          node --input-type=module <<'JS'
+          import {readFile} from 'node:fs/promises';import {createHash} from 'node:crypto';import assert from 'node:assert/strict';
+          const base='https://traxio-preview.vercel.app',hash=b=>createHash('sha256').update(b).digest('hex');
+          for(const path of ['index.html','assets/traxelo-geo-recovery.js','assets/traxelo-location-ui.js','assets/traxelo-visits-model.js','assets/traxelo-visits-ui.js','assets/traxelo-visit-store.js','assets/traxelo-visit-report.js','assets/traxelo-glass.css']){const r=await fetch(base+'/'+(path==='index.html'?'':path));assert.equal(r.status,200);assert.equal(hash(Buffer.from(await r.arrayBuffer())),hash(await readFile(path)),path);}
+          const api=base+'/api/geolocation-benchmark',flags=await fetch(api);assert.deepEqual((await flags.json()).configured,{geoapify:true,tomtom:true});const auth=await fetch(api,{method:'POST',headers:{Origin:'https://localhost','Content-Type':'application/json'},body:'{}'});assert.equal(auth.status,401);assert.equal(auth.headers.get('Access-Control-Allow-Origin'),'https://localhost');const failure=await auth.json();assert.equal(failure.code,'session');assert.ok(failure.requestId);
+          const apk=await fetch(base+'/downloads/traxio-android-testes.apk');assert.equal(hash(Buffer.from(await apk.arrayBuffer())),'6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2');
+          console.log('Public sources match the tested code. APK unchanged. Native CORS and session error identifiers verified. No real customer queries or visits.');
+          JS
+      - name: Use installed Chrome; install WebKit with a bounded dependency step
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"; else npx playwright install chromium; fi
+          timeout 180s npx playwright install --with-deps webkit
+      - run: npx playwright test --config=playwright.visits.config.js
+      - run: npx playwright test --config=playwright.recovery.config.js
+      - name: Preserve screenshots from passing public checks only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          root=Path('docs/captures/visits');root.mkdir(parents=True,exist_ok=True)
+          for source in [Path('test-results-visits'),Path('test-results-recovery')]:
+            for image in source.rglob('*.png'):
+              if image.name in ('visit-dashboard.png','sequential-pin-review.png'):
+                device=next((x for x in ['webkit-phone','desktop','tablet','phone'] if image.parent.name.endswith(x)),None)
+                if device:shutil.copyfile(image,root/(device+'-'+image.name))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/captures/visits/
+          if ! git diff --cached --quiet; then
+            git commit -m "test: capture public visit reports and sequential pin review on phone, tablet and Safari engine [skip ci]"
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-visits-and-pin-review-evidence
+          retention-days: 30
+          path: |
+            test-results-visits/
+            test-results-recovery/
