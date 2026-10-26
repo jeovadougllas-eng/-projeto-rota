@@ -34,7 +34,7 @@ jobs:
         working-directory: mobile
       - run: |
           mkdir -p app/src/test/java/app/traxio/mobile
-          cp ../../native-tests/UpdateBundleTest.java app/src/test/java/app/traxio/mobile/
+          cp ../native-tests/UpdateBundleTest.java app/src/test/java/app/traxio/mobile/
           bash gradlew testDebugUnitTest assembleDebug --no-daemon
         working-directory: mobile/android
       - run: |
