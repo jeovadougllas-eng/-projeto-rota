@@ -74,5 +74,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/geolocation-benchmark.js": {
+      "maxDuration": 45
+    }
+  }
 }

@@ -179,7 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
     el('registrySelectAll').checked = !!filtered.length && count === filtered.length;
     el('registrySelectAll').indeterminate = count > 0 && count < filtered.length;
     el('registrySelection').textContent = `${selectedIds.size} cliente${selectedIds.size === 1 ? '' : 's'} selecionado${selectedIds.size === 1 ? '' : 's'}`;
-    el('registryPlan').disabled = !selectedIds.size;
+    const reviewMode=['saved','review'].includes(el('registryLocation').value);
+    const reviewCount=clients.filter(c=>selectedIds.has(c.id)&&!TraxioPlanner.location(c).ready&&TraxioPlanner.hasSavedPoint(c)).length;
+    el('registryPlan').textContent=reviewMode?'Confirmar pontos no mapa'+(reviewCount?' ('+reviewCount+')':''):'Planejar visitas selecionadas →';
+    el('registryPlan').disabled = reviewMode?!reviewCount:!selectedIds.size;
   }
   function renderRegistry(refreshOptions = false) {
     if(refreshOptions) { updateOptions('registryCity',clients.map(c=>regionParts(c).city),'Todas as cidades'); updateOptions('registryCategory',clients.map(category),'Todas as categorias'); }
@@ -208,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
   el('registryClear').addEventListener('click',()=>{ for(const id of ['registrySearch','registryCity','registryNeighborhood','registryCategory','registryLocation']) el(id).value=''; renderRegistry(); });
   el('registryFilterToggle').addEventListener('click',()=>{ const hidden=el('registryFilters').hidden=!el('registryFilters').hidden; el('registryFilterToggle').setAttribute('aria-expanded',String(!hidden)); });
   el('registrySelectAll').addEventListener('change',()=>{ for(const c of filteredClients()) { if(el('registrySelectAll').checked) selectedIds.add(c.id); else selectedIds.delete(c.id); } renderRegistry(); updateSelectedCount(); renderWorkspace(); });
-  el('registryPlan').addEventListener('click',()=>switchTab('mapa'));
+  el('registryPlan').addEventListener('click',()=>{if(['saved','review'].includes(el('registryLocation').value)&&window.TraxeloLocations?.beginReview)window.TraxeloLocations.beginReview([...selectedIds]);else switchTab('mapa');});
   function showLocationClients(mode) {
     for(const id of ['registrySearch','registryCity','registryNeighborhood','registryCategory'])el(id).value='';
     el('registryLocation').value=mode;el('registryFilters').hidden=false;

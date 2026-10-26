@@ -213,3 +213,8 @@ body.traxio-ui-ready [hidden]{display:none!important}
 .visit-entry-dialog #visitEntryError{color:#ffd0b5}
 body.auth-locked #visitEntryDialog{display:none!important}
 @media(max-width:650px){.visit-report-panel{padding:14px!important}.visit-report-controls{display:block}.visit-report-controls label{margin-bottom:12px}.visit-metrics{grid-template-columns:1fr 1fr;gap:8px}.visit-metrics>div{padding:12px}.visit-metrics strong{font-size:26px}.visit-report-panel>.row>button{width:100%}.visit-entry-dialog{padding:16px}.visit-chart{padding:6px}}
+body.pin-review-active #mapa :is(#routePlannerPanel,#clientLocationSearch,.route-mode-tabs,#routeActionBar){display:none!important}
+body.pin-review-active #mapa .workspace-map{grid-column:1/-1;grid-row:1}
+body.pin-review-active #mapa .workspace{padding-bottom:210px}
+#pinClientAddress{font-size:13px;line-height:1.4;color:#d6ebe7;margin:4px 0}
+#pinReviewNext,#pinReviewSkip{min-height:44px}

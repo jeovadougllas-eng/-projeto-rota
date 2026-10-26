@@ -119,27 +119,33 @@ function clientGeoQuery(c){return TraxioGeo.parse(c)}
 function restoreGeoCandidates(){for(const c of clients){const fingerprint=JSON.stringify(TraxioGeo.parse(c)),cached=geoCandidates.get(c.id);if(cached?.fingerprint&&cached.fingerprint!==fingerprint)geoCandidates.delete(c.id);if(!geoCandidates.has(c.id)&&c.locationCandidate?.fingerprint===fingerprint)geoCandidates.set(c.id,c.locationCandidate)}}
 async function geoToken(){try{return (await authClient?.auth.getSession())?.data?.session?.access_token}catch{return null}}
 async function geocodeOneSelected(c,{force=false,lookup=null}={}){
- if((valid(c.lat,c.lon)&&(TraxioPlanner.location(c).kind==='confirmed'||!force))||(!force&&geoCandidates.has(c.id))||geoInFlight.has(c.id))return;
+ if((valid(c.lat,c.lon)&&(TraxioPlanner.location(c).kind==='confirmed'||!force))||(!force&&geoCandidates.has(c.id))||geoInFlight.has(c.id))return {status:'skipped'};
  const lookupController=new AbortController();geocodeControllers.set(String(c.id),lookupController);
  geoInFlight.add(c.id);updateMapSelection();
- const fingerprint=JSON.stringify(TraxioGeo.parse(c));
+ const fingerprint=JSON.stringify(TraxioGeo.parse(c));let outcome;
  try{
+  const session=(await authClient?.auth.getSession())?.data?.session,owner=session?.user?.id;
   const result=await (lookup||TraxioGeo.locate)(c,{token:await geoToken(),refresh:force,signal:lookupController.signal});
   lookupController.signal.throwIfAborted();
+  const activeOwner=(await authClient?.auth.getSession())?.data?.session?.user?.id;
+  if(owner!==activeOwner||document.body.classList.contains('auth-locked'))return {status:'stale'};
   const current=clients.find(x=>String(x.id)===String(c.id));
-  // Editing or deleting a client while a lookup runs invalidates its result.
-  if(!current||(valid(current.lat,current.lon)&&(TraxioPlanner.location(current).kind==='confirmed'||!force))||JSON.stringify(TraxioGeo.parse(current))!==fingerprint)return;
+  // Editing, confirming or deleting a client invalidates an outstanding result.
+  if(!current||(valid(current.lat,current.lon)&&(TraxioPlanner.location(current).kind==='confirmed'||!force))||JSON.stringify(TraxioGeo.parse(current))!==fingerprint)return {status:'stale'};
+  let record=null,candidate=null;
   if(result.status==='matched'){
-   const point=result.best;current.lat=point.lat;current.lon=point.lon;
-   current.locationVerification='automatic_housenumber';current.locationSource=point.provider;
-   current.locationMatchedAt=new Date().toISOString();current.locationEvidence={...point,query:result.query};
-   delete current.locationCandidate;geoCandidates.delete(c.id);save();
-  }else if(result.best){
-   const candidate={...result.best,error:result.reason,query:result.query,fingerprint};
-   current.locationCandidate=candidate;geoCandidates.set(c.id,candidate);save();
-  }else{geoCandidates.set(c.id,{error:result.reason||'Endereço não encontrado após as buscas automáticas. Confira CEP, rua e número.',fingerprint})}
- }catch(e){if(!lookupController.signal.aborted)geoCandidates.set(c.id,{error:e.message||'Busca indisponível',fingerprint});}
- finally{geocodeControllers.delete(String(c.id));geoInFlight.delete(c.id);geoScheduled.delete(c.id);updateMapSelection();renderWorkspace()}
+   const point=result.best;if(!valid(point?.lat,point?.lon))throw Error('O serviço não retornou uma posição válida.');
+   record={...current,lat:point.lat,lon:point.lon,locationVerification:'automatic_housenumber',locationSource:point.provider,locationMatchedAt:new Date().toISOString(),locationEvidence:{...point,query:result.query}};delete record.locationCandidate;
+  }else if(result.best){candidate={...result.best,error:result.reason,query:result.query,fingerprint};record={...current,locationCandidate:candidate};}
+  if(record){
+   const next=clients.map(x=>String(x.id)===String(c.id)?record:x);
+   try{localStorage.setItem(KEY,JSON.stringify(next));}catch{throw new TraxeloGeoRecovery.SearchFailure('A posição recebida não pôde ser salva neste aparelho. Libere espaço e retome a busca.',{code:'local_storage'});}
+   clients=next;if(candidate)geoCandidates.set(c.id,candidate);else geoCandidates.delete(c.id);traxioScheduleSync(200);render();
+  }else geoCandidates.set(c.id,{error:result.reason||'Endereço não encontrado. Confira CEP, rua e número.',fingerprint});
+  outcome={status:result.status};
+ }catch(e){if(!lookupController.signal.aborted){geoCandidates.set(c.id,{error:e.message||'Busca indisponível',fingerprint});outcome={status:'error',error:e};}else outcome={status:'cancelled'};}
+ finally{geocodeControllers.delete(String(c.id));geoInFlight.delete(c.id);geoScheduled.delete(c.id);updateMapSelection();renderWorkspace();}
+ return outcome;
 }
 const geoJobs=new Map();let geoWorkerRunning=false;
 function queueClientGeocode(ids,{force=false,lookup=null}={}){
@@ -157,9 +163,9 @@ function queueClientGeocode(ids,{force=false,lookup=null}={}){
    try{while(geoJobs.size){
     const job=[...geoJobs.values()].find(j=>j.priority)||geoJobs.values().next().value;
     const c=clients.find(c=>String(c.id)===job.id);
-    try{if(c)await geocodeOneSelected(c,{force:job.force,lookup:job.lookup});}
-    catch(error){console.warn('Falha ao verificar localização:',error.message);}
-    finally{geoJobs.delete(job.id);geoScheduled.delete(job.id);job.resolve();}
+    let outcome;try{if(c)outcome=await geocodeOneSelected(c,{force:job.force,lookup:job.lookup});}
+    catch(error){outcome={status:'error',error};}
+    finally{geoJobs.delete(job.id);geoScheduled.delete(job.id);job.resolve(outcome);}
    }}finally{geoWorkerRunning=false;}
   })();
  }
@@ -1098,5 +1104,6 @@ document.getElementById('traxioResetForm').addEventListener('submit',async e=>{
 e.preventDefault();const form=e.currentTarget,b=form.querySelector('[type=submit]'),msg=document.getElementById('traxioResetMessage');b.disabled=true;
 try{const {error}=await authClient.auth.updateUser({password:new FormData(form).get('password')});if(error)throw error;msg.textContent='Senha atualizada com sucesso.';setTimeout(()=>{document.getElementById('traxioResetPanel').hidden=true;form.reset()},1000)}catch(err){msg.textContent='Não foi possível atualizar: '+err.message}finally{b.disabled=false}
 });
-</script><nav id="traxio-legal-links" aria-label="Documentos legais"><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a><a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de Serviço</a></nav><script src="assets/traxio-ui.js"></script><script src="assets/traxelo-updates.js"></script><script src="assets/traxio-route-ui.js"></script><script src="assets/traxelo-location-ui.js"></script><script src="assets/traxelo-visits-model.js"></script><script src="assets/traxelo-visit-store.js"></script><script src="assets/traxelo-visit-report.js"></script><script src="assets/traxelo-visits-ui.js"></script></body></html>
+</script><nav id="traxio-legal-links" aria-label="Documentos legais"><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a><a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de Serviço</a></nav><script src="assets/traxio-ui.js"></script><script src="assets/traxelo-updates.js"></script><script src="assets/traxio-route-ui.js"></script><script src="assets/traxelo-geo-recovery.js"></script>
+<script src="assets/traxelo-location-ui.js"></script><script src="assets/traxelo-visits-model.js"></script><script src="assets/traxelo-visit-store.js"></script><script src="assets/traxelo-visit-report.js"></script><script src="assets/traxelo-visits-ui.js"></script></body></html>
 
