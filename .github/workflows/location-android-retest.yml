@@ -1,4 +1,4 @@
-name: Retest staged location update on the original Android APK
+name: Verify staged location update, tablet rotation and original Android APK
 on:
   push:
     branches: [dev/traxelo-android-routes]
