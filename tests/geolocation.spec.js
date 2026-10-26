@@ -44,10 +44,10 @@ test('CSV import geocodes a numbered address and keeps an approximate street pen
  expect(queries.every(u=>u.searchParams.get('lang')==='default')).toBe(true);expect(queries.some(u=>(u.searchParams.get('q')||u.searchParams.get('housenumber')||'').includes('10'))).toBe(true);
  await page.reload();await page.locator('body.traxio-ui-ready').waitFor();
  await page.locator('.tabs [data-tab="mapa"]').click();await page.locator('#mapClientListDisclosure summary').click();
- await page.getByRole('button',{name:'Conferir pin sugerido',exact:true}).click();
- await expect(page.locator('#clientEditDialog')).toBeVisible();await expect(page.locator('#lat')).toHaveValue('-5.810000');
- await page.locator('#adjustPin').click();await page.locator('#backToClient').click();await page.locator('#saveClient').click();
- const confirmed=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1'))[1]);expect(confirmed.locationVerification).toBe('manual_reviewed');expect(confirmed.lat).toBe(-5.81);expect(confirmed.locationCandidate).toBeUndefined();
+ await page.locator('#mapClientList .client-tile').filter({hasText:'CLIENTE REVISAR'}).getByRole('button',{name:'Confirmar pin no mapa',exact:true}).first().click();
+ await expect(page.locator('#clientEditDialog')).not.toBeVisible();await expect(page.locator('#pinConfirmPanel')).toBeVisible();await expect(page.locator('#lat')).toHaveValue('-5.810000');
+ await page.locator('#backToClient').click();await expect(page.locator('#pinConfirmPanel')).toBeHidden();
+ const confirmed=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1'))[1]);expect(confirmed.locationVerification).toBe('manual_reviewed');expect(confirmed.lat).toBe(-5.81);expect(confirmed.locationCandidate).toBeUndefined();expect(confirmed.address).toBe(rows[1].address);expect(confirmed.importFields).toEqual(rows[1].importFields);
  await page.locator('.tabs [data-tab="mapa"]').click();
  await page.locator('#mapClientList input[type="checkbox"]').nth(0).check();await page.locator('#mapClientList input[type="checkbox"]').nth(1).check();
  await page.locator('#origin').selectOption('gps');
@@ -109,3 +109,4 @@ test('Apple Maps handoff sends exact coordinates, keeps Traxio open and advances
  page.once('dialog',d=>d.accept());await page.locator('#confirmVisit').click();await expect(page.locator('#liveStopList .visited')).toHaveCount(1);
  url=new URL(await link.getAttribute('href'));expect(url.searchParams.get('daddr')).toBe('-5.81,-35.2');await expect(page.locator('#liveNextStop')).toContainText('Cliente B');expect(new URL(await page.locator('#openGoogleMaps').getAttribute('href')).searchParams.get('destination')).toBe('-5.81,-35.2');expect(new URL(await page.locator('#openWaze').getAttribute('href')).searchParams.get('ll')).toBe('-5.81,-35.2');
 });
+
