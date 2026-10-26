@@ -2,7 +2,7 @@ import {test,expect} from 'playwright/test';
 import {prepare,ready} from './fixtures/browser.js';
 import {records,fakeMap} from './fixtures/routing.js';
 const rows=records.map((c,i)=>({...c,phone:'0000'+i,address:c.address,importFields:[{label:'Código comercial',value:'PRESERVAR-'+i}],...(i<3?{}:{lat:null,lon:null,locationVerification:'pending'}),...(i===4?{locationCandidate:{lat:-5.814,lon:-35.214,error:'Aproximado; confira a entrada',provider:'fixture'}}:{})}));
-async function setup(page){await prepare(page,{records:rows});await ready(page);await page.locator('#clientLocationSearch').waitFor({state:'attached'});await fakeMap(page);await page.locator('.tabs [data-tab="mapa"]').click();}
+async function setup(page){await prepare(page,{records:rows});if(process.env.TRAXELO_LOCATIONS_BASE)await page.route(process.env.TRAXELO_LOCATIONS_BASE+'/**',r=>r.continue());await ready(page);await page.locator('#clientLocationSearch').waitFor({state:'attached'});await fakeMap(page);await page.locator('.tabs [data-tab="mapa"]').click();}
 async function openPin(page,id=5){await page.evaluate(id=>window.traxeloReviewClient(id),id);await expect(page.locator('#pinConfirmPanel')).toBeVisible();}
 async function cloud(page){await page.evaluate(async()=>{
  window.__rows=clients.map(c=>({local_id:String(c.id),data:structuredClone(c),revision:1,deleted_at:null}));window.__writes=[];

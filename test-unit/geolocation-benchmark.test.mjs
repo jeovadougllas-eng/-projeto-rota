@@ -58,3 +58,9 @@ test('API performs only auth and provider calls; no database writes or original 
   const res=response();await handler({method:'POST',headers:{authorization:'Bearer fake'},body:q},res);assert.equal(res.code,200);assert.equal(res.data.combined,'compatible');assert.equal(calls.length,3);assert.ok(calls.every(c=>!c.url.includes('/rest/v1/')));assert.ok(!JSON.stringify(res.data).includes('geo-test'));
  }finally{globalThis.fetch=oldFetch;for(const [key,value]of [['GEO_BENCH_GEOAPIFY_KEY',a],['GEO_BENCH_TOMTOM_KEY',b]])if(value===undefined)delete process.env[key];else process.env[key]=value;}
 });
+
+test('native Android preflight allows only known local origins and never bypasses authentication',async()=>{
+ let res={...response(),end(){return this;}};await handler({method:'OPTIONS',headers:{origin:'https://localhost'}},res);assert.equal(res.code,204);assert.equal(res.headers['Access-Control-Allow-Origin'],'https://localhost');assert.ok(res.headers['Access-Control-Allow-Headers'].includes('Authorization'));
+ res={...response(),end(){return this;}};await handler({method:'OPTIONS',headers:{origin:'https://evil.example'}},res);assert.equal(res.code,403);assert.equal(res.headers['Access-Control-Allow-Origin'],undefined);
+ res=response();await handler({method:'POST',headers:{origin:'https://localhost'},body:q},res);assert.equal(res.code,401);assert.equal(res.headers['Access-Control-Allow-Origin'],'https://localhost');
+});
