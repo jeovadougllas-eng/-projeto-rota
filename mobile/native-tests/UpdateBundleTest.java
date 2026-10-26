@@ -19,11 +19,11 @@ public class UpdateBundleTest {
   assertEquals(new File(root,"assets/app.js"),UpdateBundle.destination(root,"assets/app.js"));
  }
  static Map<String,String> source(File root) throws Exception {
-  Map<String,String> files=new TreeMap<>();for(String p:List.of("index.html","assets/capacitor-runtime.js")){File f=UpdateBundle.destination(root,p);f.getParentFile().mkdirs();Files.writeString(f.toPath(),"valid "+p);files.put(p,UpdateBundle.hash(f));}return files;
+  Map<String,String> files=new TreeMap<>();for(String p:List.of("index.html","assets/capacitor-runtime.js")){File f=UpdateBundle.destination(root,p);f.getParentFile().mkdirs();Files.write(f.toPath(),("valid "+p).getBytes(java.nio.charset.StandardCharsets.UTF_8));files.put(p,UpdateBundle.hash(f));}return files;
  }
  @Test public void corruptedAndIncompleteFilesRejected() throws Exception {
   File root=Files.createTempDirectory("release-hash").toFile();Map<String,String> files=source(root);UpdateBundle.verify(root,files);
-  Files.writeString(new File(root,"index.html").toPath(),"corrupted");rejects(()->UpdateBundle.verify(root,files));
+  Files.write(new File(root,"index.html").toPath(),"corrupted".getBytes(java.nio.charset.StandardCharsets.UTF_8));rejects(()->UpdateBundle.verify(root,files));
   rejects(()->UpdateBundle.verify(root,Map.of("index.html","a".repeat(64))));
  }
  @Test public void validArchiveIsVerifiedAndUndeclaredEntriesRejected() throws Exception {

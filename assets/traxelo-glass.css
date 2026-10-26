@@ -69,7 +69,7 @@ body.traxio-ui-ready #painel :is(.hero-art,.traxio-hero-symbol){display:none}
 body.traxio-ui-ready #painel .traxio-hero>div:first-child{padding:0;position:static}
 body.traxio-ui-ready #painel .traxio-hero>div:first-child:before{display:none}
 body.traxio-ui-ready #painel .traxio-kicker{font-size:clamp(11px,1.25vw,15px);letter-spacing:1.4px;color:#d6f629;margin:0 0 10px}
-body.traxio-ui-ready #painel .traxio-hero h2{font-size:clamp(32px,4.8vw,64px);line-height:1.03;max-width:850px;margin:0 0 12px;color:#f4fbfa;letter-spacing:-.035em}
+body.traxio-ui-ready #painel .traxio-hero h2{font-family:'Roboto Condensed',Arial,sans-serif;font-size:clamp(32px,4.8vw,64px);line-height:1.03;max-width:850px;margin:0 0 12px;color:#f4fbfa;letter-spacing:-.035em}
 body.traxio-ui-ready #painel .traxio-hero em{font-style:normal;color:#c8f329}
 body.traxio-ui-ready #painel .traxio-hero p{font-size:clamp(15px,1.8vw,22px);max-width:none;margin:0;color:#e2f1ef}
 body.traxio-ui-ready #painel .dashboard-overview{padding:0;border:0;background:none;backdrop-filter:none;box-shadow:none;margin:0 0 22px}
