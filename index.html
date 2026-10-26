@@ -111,6 +111,7 @@ $('backToClient').onclick=()=>{
  $('mapStatus').textContent='Posição de '+record.name+' confirmada e salva.';
 };
 // Busca assistida: pontos candidatos NÃO são gravados nem usados na rota sem confirmação.
+const geocodeControllers=new Map();
 const geoCandidates=new Map(),geoInFlight=new TraxioPlanner.IdSet(),geoScheduled=new TraxioPlanner.IdSet();
 let geoQueue=Promise.resolve();
 for(const c of clients)if(c.locationCandidate&&c.locationCandidate.fingerprint===JSON.stringify(TraxioGeo.parse(c)))geoCandidates.set(c.id,c.locationCandidate);
@@ -119,10 +120,12 @@ function restoreGeoCandidates(){for(const c of clients){const fingerprint=JSON.s
 async function geoToken(){try{return (await authClient?.auth.getSession())?.data?.session?.access_token}catch{return null}}
 async function geocodeOneSelected(c,{force=false,lookup=null}={}){
  if((valid(c.lat,c.lon)&&(TraxioPlanner.location(c).kind==='confirmed'||!force))||(!force&&geoCandidates.has(c.id))||geoInFlight.has(c.id))return;
+ const lookupController=new AbortController();geocodeControllers.set(String(c.id),lookupController);
  geoInFlight.add(c.id);updateMapSelection();
  const fingerprint=JSON.stringify(TraxioGeo.parse(c));
  try{
-  const result=await (lookup||TraxioGeo.locate)(c,{token:await geoToken(),refresh:force});
+  const result=await (lookup||TraxioGeo.locate)(c,{token:await geoToken(),refresh:force,signal:lookupController.signal});
+  lookupController.signal.throwIfAborted();
   const current=clients.find(x=>String(x.id)===String(c.id));
   // Editing or deleting a client while a lookup runs invalidates its result.
   if(!current||(valid(current.lat,current.lon)&&(TraxioPlanner.location(current).kind==='confirmed'||!force))||JSON.stringify(TraxioGeo.parse(current))!==fingerprint)return;
@@ -135,8 +138,8 @@ async function geocodeOneSelected(c,{force=false,lookup=null}={}){
    const candidate={...result.best,error:result.reason,query:result.query,fingerprint};
    current.locationCandidate=candidate;geoCandidates.set(c.id,candidate);save();
   }else{geoCandidates.set(c.id,{error:result.reason||'Endereço não encontrado após as buscas automáticas. Confira CEP, rua e número.',fingerprint})}
- }catch(e){geoCandidates.set(c.id,{error:e.message||'Busca indisponível',fingerprint});}
- finally{geoInFlight.delete(c.id);geoScheduled.delete(c.id);updateMapSelection();renderWorkspace()}
+ }catch(e){if(!lookupController.signal.aborted)geoCandidates.set(c.id,{error:e.message||'Busca indisponível',fingerprint});}
+ finally{geocodeControllers.delete(String(c.id));geoInFlight.delete(c.id);geoScheduled.delete(c.id);updateMapSelection();renderWorkspace()}
 }
 const geoJobs=new Map();let geoWorkerRunning=false;
 function queueClientGeocode(ids,{force=false,lookup=null}={}){

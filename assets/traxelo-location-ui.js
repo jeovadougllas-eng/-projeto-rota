@@ -128,10 +128,10 @@ el('showLocatedClients').onclick=fitConfirmed;
 el('showLocationReviews').onclick=()=>{el('locationSearchReviewList').hidden=false;el('locationSearchReviewList').scrollIntoView({block:'nearest'});};
 el('stopClientLocationSearch').onclick=()=>{stopping=true;el('clientLocationSearchProgress').textContent='Encerrando a consulta em andamento. Os resultados já salvos serão preservados.';};
 class SearchFailure extends Error{}
-async function comparisonLookup(c,{token}={}){
+async function comparisonLookup(c,{token,signal}={}){
  if(!token)throw new SearchFailure('Entre novamente na conta para consultar Geoapify e TomTom.');
  const q={...TraxioGeo.parse(c),name:c.name};delete q.country;
- const r=await fetch((window.TraxioNative?.apiBase||'')+'/api/geolocation-benchmark',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:AbortSignal.timeout(35000)});
+ const r=await fetch((window.TraxioNative?.apiBase||'')+'/api/geolocation-benchmark',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(35000)]):AbortSignal.timeout(35000)});
  const data=await r.json();if(!r.ok)throw new SearchFailure(data.error||'Serviço de busca indisponível.');
  const results=Object.values(data.results||{}),denied=results.find(p=>p.attempts?.some(a=>[401,403,429].includes(a.httpStatus)));
  if(denied)throw new SearchFailure(denied.provider+': chave recusada, permissão ausente ou cota atingida. Confira a configuração ou escolha a busca atual.');
@@ -154,7 +154,7 @@ el('startClientLocationSearch').onclick=async()=>{
   for(const id of ids){
    if(stopping)break;const c=clients.find(c=>String(c.id)===String(id));if(!c||P.location(c).ready)continue;
    el('clientLocationSearchProgress').textContent='Buscando '+(processed+1)+' de '+ids.length+': '+c.name;
-   const existing=geoJobs.get(String(id));if(existing)await existing.promise;
+   const existing=geoJobs.get(String(id));if(existing){el('clientLocationSearchProgress').textContent='Atualizando a busca de '+c.name+'…';if(lookup)geocodeControllers.get(String(id))?.abort();await existing.promise;}
    if(P.location(clients.find(c=>String(c.id)===String(id))||{}).ready)continue;
    let fatal=null;const wrapped=lookup?async(...args)=>{try{return await lookup(...args);}catch(e){if(e instanceof SearchFailure)fatal=e;throw e;}}:null;
    await queueClientGeocode([id],{force:true,lookup:wrapped});processed++;refreshSearch();renderMarkers();
@@ -170,6 +170,6 @@ el('startClientLocationSearch').onclick=async()=>{
  }
 };
 // Changing account ends future batch submissions; existing synchronization guards remain authoritative.
-new MutationObserver(()=>{if(document.body.classList.contains('auth-locked')){stopping=true;cloudSequence++;notice.hidden=true;}}).observe(document.body,{attributes:true,attributeFilter:['class']});
+new MutationObserver(()=>{if(document.body.classList.contains('auth-locked')){stopping=true;for(const controller of geocodeControllers.values())controller.abort();cloudSequence++;notice.hidden=true;}}).observe(document.body,{attributes:true,attributeFilter:['class']});
 refreshSearch();renderWorkspace();
 })();
