@@ -9,12 +9,20 @@ const [device]=await android.devices();if(!device)throw Error('No Android device
 const evidence={physicalDevice:false,realHTTPSDownload:true,checks:[],expected:manifest.version};
 let page;
 async function attach(){
- const view=await device.webView({pkg:'app.traxio.mobile'});page=await view.page();
- await prepare(page,{records,liveMaps:true});await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
- return page;
+ let lastError;
+ for(let attempt=0;attempt<20;attempt++){
+  try{
+   const view=await device.webView({pkg:'app.traxio.mobile'});page=await view.page();
+   if(page.isClosed())throw Error('Waiting for the replacement WebView');
+   await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
+   await prepare(page,{records,liveMaps:true});await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
+   return page;
+  }catch(error){lastError=error;await new Promise(resolve=>setTimeout(resolve,500));}
+ }
+ throw lastError;
 }
 const status=()=>page.evaluate(()=>Capacitor.registerPlugin('TraxeloUpdates').status());
-async function restart(){await device.shell('am force-stop app.traxio.mobile');await device.shell('am start -n app.traxio.mobile/.MainActivity');await attach();}
+async function restart(){const old=page;await device.shell('am force-stop app.traxio.mobile');if(old)await expect.poll(()=>old.isClosed(),{timeout:15000}).toBe(true);await device.shell('am start -n app.traxio.mobile/.MainActivity');await attach();}
 try{
  // Reset only OTA metadata in the synthetic emulator. Never clear WebView/account/client storage.
  await device.shell('am force-stop app.traxio.mobile');
@@ -32,6 +40,7 @@ try{
   staged=await status();if(staged.pending===manifest.version)break;
   await new Promise(resolve=>setTimeout(resolve,5000));
  }
+ evidence.stagedStatus=staged;console.log(JSON.stringify({stage:'staged without reloading',...staged}));
  expect(staged.pending).toBe(manifest.version);expect(await page.locator('meta[name=traxelo-release]').getAttribute('content')).toBe(bundled);
  evidence.checks.push('Native HTTPS download validates a complete bundle and stages it without reloading the running application');
  await restart();await expect(page.locator('meta[name=traxelo-release]')).toHaveAttribute('content',manifest.version);
@@ -53,5 +62,5 @@ try{
  await page.evaluate(()=>Capacitor.registerPlugin('TraxeloUpdates').check());expect((await status()).pending).toBe('');
  evidence.checks.push('A failed release is quarantined rather than reinstalled in a restart loop');
  console.log(JSON.stringify(evidence));
-}catch(error){evidence.error=error.stack;throw error;}
+}catch(error){evidence.error=error.stack;evidence.lastStatus=await status().catch(()=>null);console.error(JSON.stringify(evidence));console.error(String(await device.shell('logcat -d -t 300 AndroidRuntime:E Capacitor/Console:E *:S').catch(()=>'')));throw error;}
 finally{await mkdir('mobile/evidence',{recursive:true});await writeFile('mobile/evidence/android-updates.json',JSON.stringify(evidence,null,2));await device.close();}
