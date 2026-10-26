@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "8e8f93d69949e7e1633176b2491be43be8ee90c6c80ddb95a5fb1e6c15a57cae",
+  "version": "cc6c358d48d27b8b44ba5cfd3343813f0c7907d0982a172dcda59017efcc295b",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -23,10 +23,15 @@
     "assets/scenes/historico.webp": "5abd65817d67843876466688b30e4307cbf50edeecbf3600ff0627be3febe525",
     "assets/scenes/mapa.webp": "ebf85eec05b5a10ba1de970d25789bd5cc41db70e171cdcf810bf139afe67b03",
     "assets/scenes/painel.webp": "7114657883554c88a006a8bd1e98acf3cebc9e7480dcb6e2a62ef10d8328822d",
-    "assets/traxelo-glass.css": "0a7f22fb9ed6ad1f2ef9ad1da009db46d7e2b919c0648e1dc30763a4195e775d",
-    "assets/traxelo-location-ui.js": "faf61b2ea0a63d48955d6dfd6baf2db9ee5ee0259dd2f436cf4c3ab7215dd9da",
+    "assets/traxelo-geo-recovery.js": "be33f457d8ef25ec636ada7048fac319752f3e5d0d50f9439fad96bb486e44e3",
+    "assets/traxelo-glass.css": "7a0438c83e6fd7f395ea978089a2f2d8feb1bc374e1eed3cc4d7e1314e7170f7",
+    "assets/traxelo-location-ui.js": "8e32688c88b2cf97973e266b90d5e8846755a3889af65917b24f29f2e2ca9ec3",
     "assets/traxelo-shell.css": "2d9086dd13caeb81cdd7941e32a83242894ab484ebef44be1c1b41a82abbfaa2",
     "assets/traxelo-updates.js": "4e855cf5af80451e0254728f93b1d55a8af5fb13b13ee4f004310f13e1cd658c",
+    "assets/traxelo-visit-report.js": "793eac538b2f27a361aca2cbf5312646aab527fac5e448243f165f9ace68fd86",
+    "assets/traxelo-visit-store.js": "4af4cc808836e6fef4704eeb8b659d0fd31924333ab1658665c2cdaf89f85e97",
+    "assets/traxelo-visits-model.js": "b25a190d3e07cd826e4a9faebaa608e9ad108e20fff0e91b4d51fbce7522e4e1",
+    "assets/traxelo-visits-ui.js": "26478b8964d076df064c9af07d7b656fce5adba0ad4681d697c44d546496b210",
     "assets/traxelo/approved/vector/README.md": "f40136673131642bd2daf74f0f3d1fa8d45efeb815594975f9213c5f9e409b71",
     "assets/traxelo/approved/vector/manifest.json": "e107b2f9fccf49a293940d786098dfbaaba4a995cd742433b2bce3df6e4cb4d9",
     "assets/traxelo/approved/vector/png_transparente/simbolo_estrada_pin.png": "ebfe996c8d86f616b7ce5668937b04a63a9aa3ace5588c4832d0aead931c7f2d",
@@ -41,7 +46,7 @@
     "assets/traxio-route-scene.svg": "428a7abbba4612536c3c657d559ccf1cf50a2af684f15a4f806401d10db65dac",
     "assets/traxio-route-ui.js": "f77c4bf3c4f2096bd962f663cd924d2f09eae5acf52343b2922bc8116dea1076",
     "assets/traxio-routes.css": "f20cb08bca3f3b28cd117c7bf226f21a2663a7917fb05cf4b61ffa618137a6f8",
-    "assets/traxio-ui.js": "b01fec00d2efa87cd05475bbd0964ed2abe4cfff3fb11637b37eff9c6ded866a",
+    "assets/traxio-ui.js": "d734391f6482248f92d7b7e6c6c0846efc4a56df9b7f84f90e1e6c77f4b069d7",
     "assets/traxio-wordmark-ui.svg": "cb92ddcdb81c7bb0e5ead9963a46ace9a870e22de53f9c5f077e1765ac9b34a9",
     "assets/traxio.css": "a6f8865dc9346597cbb07547a4026bcf5325c2339f571342b8c9d096e48cb8c5",
     "assets/visual-kit/README.md": "b1a68efec1ac748c17e606183d10986fb2ec7cae7597e73e845b72c9bc6f6dd0",
@@ -61,9 +66,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "ecf657b9d75d8a71998c80a2816e19b2a1d927d1eb3e8a67cde239b48f23e1f2"
+    "index.html": "61beef870f59f89418539360252c3366b0919a161e5b0d41c09004ba6fd32731"
   },
-  "bundle": "/updates/android/bundles/8e8f93d69949e7e1633176b2491be43be8ee90c6c80ddb95a5fb1e6c15a57cae.zip",
-  "sha256": "0007c0529871b56c02738364fa35907ad7756026b0a8d45f568c1d490d1dbc92",
-  "bytes": 10613414
+  "bundle": "/updates/android/bundles/cc6c358d48d27b8b44ba5cfd3343813f0c7907d0982a172dcda59017efcc295b.zip",
+  "sha256": "f0f6c13b86ba90b3d51fc733c6ed8488e7d80f9b1a96094e8a1eb6f2b5037bcf",
+  "bytes": 10637533
 }
