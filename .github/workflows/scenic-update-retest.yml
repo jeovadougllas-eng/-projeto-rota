@@ -1,4 +1,4 @@
-name: Verify Android backup migration and automatic web release
+name: Verify complete Android migration and automatic web release
 on:
   push:
     branches: [dev/traxelo-android-routes]

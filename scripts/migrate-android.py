@@ -15,6 +15,7 @@ PACKAGE = 'app.traxio.mobile'
 NEW_SHA256 = '6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2'
 
 def run(*args, **kwargs):
+    kwargs.setdefault('stdin', subprocess.DEVNULL)
     result = subprocess.run(['adb', *args], check=False, stderr=subprocess.PIPE, **kwargs)
     if result.returncode:
         raise RuntimeError('ADB falhou: ' + result.stderr.decode(errors='replace')[:1000])
@@ -85,7 +86,7 @@ def main():
     text('shell', 'am', 'force-stop', PACKAGE)
     directories = []
     for name in ('app_webview', 'shared_prefs', 'files', 'databases'):
-        probe = subprocess.run(['adb', 'shell', 'run-as', PACKAGE, 'test', '-d', name], capture_output=True)
+        probe = subprocess.run(['adb', 'shell', 'run-as', PACKAGE, 'test', '-d', name], capture_output=True, stdin=subprocess.DEVNULL)
         if probe.returncode == 0:
             directories.append(name)
     backup = output / 'private-device-backup.tar'
