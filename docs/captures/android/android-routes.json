@@ -65,30 +65,6 @@
   ],
   "failures": [
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/12/1647/2114.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/12/1647/2113.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/12/1646/2114.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/12/1646/2113.pbf",
-      "error": {
-        "errorText": "net::ERR_ABORTED"
-      }
-    },
-    {
       "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4227.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
@@ -113,13 +89,13 @@
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4228.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8458.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8458.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6588/8458.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
@@ -137,7 +113,13 @@
       }
     },
     {
-      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/14/6589/8456.pbf",
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3294/4228.pbf",
+      "error": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    },
+    {
+      "url": "https://tiles.openfreemap.org/planet/20261018_080001_pt/13/3295/4228.pbf",
       "error": {
         "errorText": "net::ERR_ABORTED"
       }
@@ -184,7 +166,7 @@
   "keyboardTouch": {
     "touch": {
       "x": 713,
-      "y": 1533
+      "y": 1553
     },
     "bounds": [
       "0",
@@ -203,8 +185,8 @@
       "height": 1280
     },
     "visibleHeight": 904,
-    "top": 434.22918701171875,
-    "bottom": 478.22918701171875,
+    "top": 434,
+    "bottom": 478,
     "value": "Visita",
     "width": 800,
     "innerWidth": 800
@@ -232,7 +214,7 @@
     "lat": -5.812345,
     "lon": -35.212345,
     "verification": "manual_reviewed",
-    "confirmedAt": "2026-10-23T01:33:30.489Z",
+    "confirmedAt": "2026-10-26T03:07:20.303Z",
     "survivesReload": true,
     "forcedLookupPreservesPin": true
   }
