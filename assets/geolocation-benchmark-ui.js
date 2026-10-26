@@ -2,10 +2,10 @@
 (async()=>{
 'use strict';
 const $=id=>document.getElementById(id),URL_AUTH='https://ggsptbcgpdakxsdjrldd.supabase.co',KEY_AUTH='sb_publishable_n0MBYWwtja-mxyrzGJ-yVA_otDB8Kwn';
-let auth,userId,clients=[],report=[],running=false,controller,planned=0,configured=false;
+let auth,userId,clients=[],report=[],running=false,loading=false,controller,planned=0,configured=false;
 const text=(id,value)=>$(id).textContent=value;
-function eligible(){return configured&&clients.length&&$('consent').checked&&!running;}
-function buttons(){$('start').disabled=!eligible();$('load').disabled=running||!userId;$('stop').disabled=!running;$('download').disabled=!report.length;$('scope').disabled=running;$('consent').disabled=running;}
+function eligible(){return configured&&clients.length&&$('consent').checked&&!running&&!loading;}
+function buttons(){$('start').disabled=!eligible();$('load').disabled=running||loading||!userId;$('stop').disabled=!running;$('download').disabled=!report.length;$('scope').disabled=running;$('consent').disabled=running;}
 function summary(){
  const count=provider=>report.filter(r=>r.response?.results?.[provider]?.status==='compatible').length;
  const compatible=report.filter(r=>r.response?.combined==='compatible').length,conflicts=report.filter(r=>r.response?.combined==='conflict').length;
@@ -31,6 +31,7 @@ function append(row){
 }
 $('consent').onchange=buttons;
 $('load').onclick=async()=>{
+ if(loading||running)return;loading=true;buttons();
  try{
   $('load').disabled=true;const loadingUser=userId;const identity=await auth.auth.getUser();if(identity.error||identity.data.user?.id!==userId)throw Error('Sua conta mudou. Recarregue a página.');
   let records=[],source;
@@ -53,7 +54,7 @@ $('load').onclick=async()=>{
   const valid=records.filter(c=>c&&typeof c.name==='string');
   clients=JSON.parse(JSON.stringify(valid));report=[];planned=0;$('results').replaceChildren(element('p','Nenhuma consulta realizada.'));text('summary','');
   text('source',`${clients.length} clientes carregados. ${source}`);text('progress',clients.length?'Pronto. Escolha a quantidade e autorize o teste.':'Nenhum cliente encontrado para esta conta.');
- }catch(e){text('progress',e.message);}finally{buttons();}
+ }catch(e){text('progress',e.message);}finally{loading=false;buttons();}
 };
 $('stop').onclick=()=>{controller?.abort();};
 $('start').onclick=async()=>{
@@ -70,6 +71,8 @@ $('start').onclick=async()=>{
     const result=await response.json();if(!response.ok){row.error=result.error||'Falha de comunicação.';row.httpStatus=response.status;}else row.response=result;
    }catch(e){if(signal.aborted)throw e;row.error=e.name==='TimeoutError'?'Prazo da consulta excedido.':e.message;}
    signal.throwIfAborted();report.push(row);append(row);summary();buttons();
+   const providerDenied=Object.entries(row.response?.results||{}).find(([,r])=>r.attempts?.some(a=>[401,403,429].includes(a.httpStatus)));
+   if(providerDenied){text('progress','Teste interrompido: '+providerDenied[0]+' recusou a chave, a permissão ou a cota. Confira o código HTTP nas tentativas.');return;}
    if([401,403,429,503].includes(row.httpStatus)){text('progress','Teste interrompido: '+row.error);return;}
    if(i<chosen.length-1)await new Promise((resolve,reject)=>{const onAbort=()=>{clearTimeout(timer);reject(new DOMException('Interrompido','AbortError'));};const timer=setTimeout(()=>{signal.removeEventListener('abort',onAbort);resolve();},3500);signal.addEventListener('abort',onAbort,{once:true});});
   }

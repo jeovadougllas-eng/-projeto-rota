@@ -37,3 +37,7 @@ test('quota failure stops execution clearly instead of showing successful geoloc
 test('stop and account change cancel pending work without mutating the portfolio',async({page})=>{
  await prepare(page,{wait:true});await page.locator('#load').click();await page.locator('#consent').check();await page.locator('#start').click();await expect(page.locator('#stop')).toBeEnabled();await page.locator('#stop').click();await expect(page.locator('#progress')).toContainText('Interrompido.');await expect(page.locator('#results .row')).toHaveCount(0);await page.evaluate(()=>window.authCallback('SIGNED_OUT',null));await expect(page.locator('#account')).toContainText('Sessão alterada');await expect(page.locator('#load')).toBeDisabled();expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1')))).toEqual(clients);
 });
+
+test('provider permission failure stops even when comparison endpoint itself returns HTTP 200',async({page})=>{
+ await prepare(page,{apiResult:{...result,results:{...result.results,tomtom:{status:'error',reason:'Provedor recusou acesso',requests:1,attempts:[{method:'address',status:'error',httpStatus:403}],candidates:[]}},combined:'compatible'}});await page.locator('#load').click();await page.locator('#consent').check();await page.locator('#start').click();await expect(page.locator('#progress')).toContainText('tomtom recusou');await expect(page.locator('#results .row')).toHaveCount(1);await expect(page.locator('#stop')).toBeDisabled();
+});
