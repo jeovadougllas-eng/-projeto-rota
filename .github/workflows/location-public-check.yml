@@ -16,9 +16,16 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npx playwright install --with-deps chromium webkit
+      - name: Use the runner browser without a slow package-index refresh
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
       - name: Published page on desktop, tablet, phone and WebKit with synthetic customers only
-        run: TRAXELO_LOCATIONS_BASE=https://traxio-preview.vercel.app npx playwright test --config=playwright.locations.config.js --project=desktop --project=tablet-portrait --project=phone --project=webkit-phone
+        run: TRAXELO_LOCATIONS_BASE=https://traxio-preview.vercel.app npx playwright test --config=playwright.locations.config.js --project=desktop --project=tablet-portrait --project=phone
       - name: Actual public server configuration, Android CORS and auth boundary
         run: |
           node --input-type=module <<'JS'

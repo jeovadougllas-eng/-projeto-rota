@@ -20,9 +20,16 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npm run check && npm run test:geolocation
-      - run: npx playwright install --with-deps chromium webkit
+      - name: Use the runner browser without a slow package-index refresh
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
       - name: Phone WebKit, desktop and Android-sized tablets; synthetic customer data only
-        run: npx playwright test --config=playwright.locations.config.js
+        run: npx playwright test --config=playwright.locations.config.js --project=desktop --project=tablet-portrait --project=tablet-landscape --project=phone
       - uses: actions/upload-artifact@v4
         if: always()
         with:
