@@ -2,7 +2,7 @@ name: Scenic Android, persisted routes and automatic web updates
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['.github/workflows/confirmed-android.yml', 'index.html', 'assets/traxio-route-ui.js', 'assets/traxio-ui.js', 'assets/traxelo-shell.css', 'assets/traxelo/**', 'assets/reconstructed/login-art-mask.svg', 'scripts/android-routes.mjs', 'scripts/verify-android-candidate.mjs', 'assets/traxelo-glass.css', 'assets/traxelo-updates.js', 'assets/scenes/**', 'mobile/native/**', 'mobile/native-tests/**', 'scripts/build-android-update.mjs', 'scripts/android-updates.mjs', 'scripts/prepare-native-updates.mjs']
+    paths: ['.github/workflows/confirmed-android.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -11,6 +11,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+    # Web changes ship through the tested updater. Native builds need deliberate dispatch.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
