@@ -131,8 +131,9 @@ class SearchFailure extends Error{}
 async function comparisonLookup(c,{token,signal}={}){
  if(!token)throw new SearchFailure('Entre novamente na conta para consultar Geoapify e TomTom.');
  const q={...TraxioGeo.parse(c),name:c.name};delete q.country;
- const r=await fetch((window.TraxioNative?.apiBase||'')+'/api/geolocation-benchmark',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(35000)]):AbortSignal.timeout(35000)});
- const data=await r.json();if(!r.ok)throw new SearchFailure(data.error||'Serviço de busca indisponível.');
+ let r,data;try{r=await fetch((window.TraxioNative?.apiBase||'')+'/api/geolocation-benchmark',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify(q),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(35000)]):AbortSignal.timeout(35000)});
+ data=await r.json();}catch(e){if(signal?.aborted)throw e;throw new SearchFailure('Falha de comunicação com os serviços de busca. Confira a conexão e tente novamente.');}
+ if(!r.ok)throw new SearchFailure(data.error||'Serviço de busca indisponível.');
  const results=Object.values(data.results||{}),denied=results.find(p=>p.attempts?.some(a=>[401,403,429].includes(a.httpStatus)));
  if(denied)throw new SearchFailure(denied.provider+': chave recusada, permissão ausente ou cota atingida. Confira a configuração ou escolha a busca atual.');
  const geo=data.results?.geoapify;
