@@ -1,4 +1,4 @@
-name: Verify Android in-place upgrade and automatic web release
+name: Verify Android backup migration and automatic web release
 on:
   push:
     branches: [dev/traxelo-android-routes]
@@ -41,7 +41,7 @@ jobs:
         run: |
           sudo chmod a+rw /dev/kvm
           Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-xvfb.log 2>&1 &
-      - name: Preserve data across APK update, then verify automatic web update and corruption recovery
+      - name: Preserve complete device data across the signing transition, then verify web update and recovery
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -54,7 +54,8 @@ jobs:
             adb shell wm density 240
             adb install /tmp/traxelo-prior.apk
             node scripts/android-upgrade-preserve.mjs seed
-            adb install -r candidate/app-debug.apk
+            printf 'MIGRAR\n' | python scripts/migrate-android.py --apk candidate/app-debug.apk --migrate --output /tmp/traxelo-test-backup
+            cp /tmp/traxelo-test-backup/verification.json mobile/evidence/android-migration-files.json
             node scripts/android-upgrade-preserve.mjs verify
             node scripts/android-updates.mjs
       - name: Activate only the tested release and publish the verified APK
@@ -69,7 +70,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads/ docs/captures/android/ updates/android/manifest.json
-          git commit -m "build: publish Android after in-place upgrade and automatic update proof [skip ci]"
+          git commit -m "build: publish Android after verified data migration and automatic update proof [skip ci]"
           for attempt in 1 2 3; do
             git pull --rebase origin "$GITHUB_REF_NAME"
             if git push origin "HEAD:$GITHUB_REF_NAME"; then break; fi
