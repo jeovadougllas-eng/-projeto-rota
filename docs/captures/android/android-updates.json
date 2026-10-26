@@ -1,0 +1,19 @@
+{
+  "physicalDevice": false,
+  "realHTTPSDownload": true,
+  "checks": [
+    "Native HTTPS download validates a complete bundle and stages it without reloading the running application",
+    "Next cold start applies the new web release at the same localhost origin while preserving all customer data",
+    "Healthy startup acknowledgement keeps the release on subsequent launches",
+    "A corrupted downloaded release is rejected on startup and falls back to the bundled interface without losing customer data",
+    "A failed release is quarantined rather than reinstalled in a restart loop"
+  ],
+  "expected": "9c6e912577cdab125760ba296ee29b934540cf13af6eb1b37a7868700110308f",
+  "bundled": "0a362503c95bd40d75d6c3f3db132c6d859fdbb77c755e94a6f1270b463af71b",
+  "stagedStatus": {
+    "active": "0a362503c95bd40d75d6c3f3db132c6d859fdbb77c755e94a6f1270b463af71b",
+    "pending": "9c6e912577cdab125760ba296ee29b934540cf13af6eb1b37a7868700110308f",
+    "failed": "",
+    "runtime": "capacitor8-20261026"
+  }
+}
