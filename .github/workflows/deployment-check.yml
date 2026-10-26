@@ -73,23 +73,21 @@ jobs:
           const evidence={additionalGeocoderConfigured:providerProbe.status===401,providerProbeStatus:providerProbe.status,website:200,geocoderSDK:200,apk:200,apkBytes:bytes.length,sha256:sha,serverEndpoint:405,publicAccess:true,apkAndWebAssetsMatch:true,automaticUpdateVersion:release.version,automaticUpdateFilesVerified:Object.keys(release.files).length,approvedAssetsVerified:Object.keys(approved).length};
           await mkdir('test-results-release',{recursive:true});await writeFile('test-results-release/verification.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence));
           NODE
-      - name: Verify compatibility with the previous Android signing certificate
+      - name: Verify the migration proof matches the old and newly distributed APKs
         run: |
           git fetch --depth=1 origin 967d6f76083f42cea318ea55064c273718786d2e
           git show 967d6f76083f42cea318ea55064c273718786d2e:downloads/traxio-android-testes.apk > /tmp/traxelo-prior.apk
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
-          import {readdir,writeFile} from 'node:fs/promises';
-          import {execFileSync} from 'node:child_process';
-          import {join} from 'node:path';
-          const sdk=process.env.ANDROID_HOME||process.env.ANDROID_SDK_ROOT;
-          const versions=(await readdir(join(sdk,'build-tools'))).sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
-          const signer=join(sdk,'build-tools',versions[0],'apksigner');
-          const certificate=path=>execFileSync(signer,['verify','--print-certs',path],{encoding:'utf8'}).match(/Signer #1 certificate SHA-256 digest: ([a-f0-9]+)/i)?.[1];
-          const previous=certificate('/tmp/traxelo-prior.apk'),current=certificate('/tmp/traxelo-verified.apk');
-          assert.ok(previous);assert.ok(current);const compatible=current===previous;
-          const evidence={previousCertificate:previous,currentCertificate:current,sameSigningCertificate:compatible,packageId:'app.traxio.mobile',oneTimeVerifiedMigrationRequired:!compatible};
-          await writeFile('test-results-release/signing.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence));
+          import {readFile,writeFile} from 'node:fs/promises';
+          import {createHash} from 'node:crypto';
+          const proof=JSON.parse(await readFile('docs/captures/android/android-migration-files.json','utf8'));
+          const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+          assert.equal(hash(await readFile('/tmp/traxelo-prior.apk')),proof.previousApkSha256);
+          assert.equal(hash(await readFile('/tmp/traxelo-verified.apk')),proof.newApkSha256);
+          assert.equal(proof.migrated,true);assert.equal(proof.allOriginalFilesVerified,true);assert.ok(proof.preservedFiles>0);
+          const evidence={oldAndNewAPKBytesMatchTheInstalledMigrationTest:true,allOriginalFilesVerified:true,preservedFiles:proof.preservedFiles,packageId:proof.packageId,oneTimeVerifiedMigrationRequired:true};
+          await writeFile('test-results-release/migration.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence));
           NODE
       - uses: actions/upload-artifact@v4
         if: always()
