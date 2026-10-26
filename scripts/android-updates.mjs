@@ -4,6 +4,7 @@ import {prepare} from '../tests/fixtures/browser.js';
 import {records} from '../tests/fixtures/routing.js';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
+await mkdir('mobile/evidence',{recursive:true});
 const manifest=JSON.parse(await readFile('candidate/update-manifest.json','utf8'));
 const [device]=await android.devices();if(!device)throw Error('No Android device');
 const evidence={physicalDevice:false,realHTTPSDownload:true,checks:[],expected:manifest.version};
