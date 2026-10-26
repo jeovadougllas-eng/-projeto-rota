@@ -1,0 +1,83 @@
+name: Verify Android in-place upgrade and automatic web release
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/scenic-update-retest.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: scenic-update-proof-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  installed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: confirmed-android-candidate
+          run-id: 40261957042
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: candidate
+      - run: node scripts/verify-android-candidate.mjs
+        env:
+          TRAXELO_COMPILED_RUN: 40261957042
+          TRAXELO_COMPILED_SOURCE: d669dc0d3a2e7745e385f58d6f2f65480d1ca1a7
+      - run: npm ci
+      - name: Retrieve the previous distributed APK without rebuilding either binary
+        run: |
+          git fetch --depth=1 origin 967d6f76083f42cea318ea55064c273718786d2e
+          git show 967d6f76083f42cea318ea55064c273718786d2e:downloads/traxio-android-testes.apk > /tmp/traxelo-prior.apk
+      - name: Configure stable software rendering
+        run: |
+          sudo chmod a+rw /dev/kvm
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-xvfb.log 2>&1 &
+      - name: Preserve data across APK update, then verify automatic web update and corruption recovery
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb install /tmp/traxelo-prior.apk
+            node scripts/android-upgrade-preserve.mjs seed
+            adb install -r candidate/app-debug.apk
+            node scripts/android-upgrade-preserve.mjs verify
+            node scripts/android-updates.mjs
+      - name: Activate only the tested release and publish the verified APK
+        run: |
+          mkdir -p downloads docs/captures/android updates/android
+          cp candidate/app-debug.apk downloads/traxio-android-testes.apk
+          sha256sum downloads/traxio-android-testes.apk > downloads/traxio-android-testes.sha256
+          cp candidate/update-manifest.json updates/android/manifest.json
+          cp mobile/evidence/* docs/captures/android/
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json mobile/package.json scripts/build-mobile.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/ docs/captures/android/ updates/android/manifest.json
+          git commit -m "build: publish Android after in-place upgrade and automatic update proof [skip ci]"
+          for attempt in 1 2 3; do
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            if git push origin "HEAD:$GITHUB_REF_NAME"; then break; fi
+            if [ "$attempt" = 3 ]; then exit 1; fi
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scenic-automatic-update-evidence
+          retention-days: 30
+          path: mobile/evidence/
