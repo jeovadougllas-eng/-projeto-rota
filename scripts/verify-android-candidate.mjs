@@ -4,11 +4,12 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 const apk='candidate/app-debug.apk',hash=b=>createHash('sha256').update(b).digest('hex');
 const bytes=await readFile(apk),files={};
-for(const file of ['traxio-route-ui.js','traxio-planner.js','traxio-geolocation.js','traxio-routes.css','traxio-native.js','traxio-ui.js','traxelo-shell.css','traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png']){
+for(const file of ['traxio-route-ui.js','traxio-planner.js','traxio-geolocation.js','traxio-routes.css','traxio-native.js','traxio-ui.js','traxelo-shell.css','traxelo-glass.css','traxelo-updates.js','scenes/painel.webp','traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png']){
  const bundled=execFileSync('unzip',['-p',apk,'assets/public/assets/'+file],{maxBuffer:2000000}),source=await readFile('assets/'+file);
  assert.equal(hash(bundled),hash(source),'APK source mismatch: '+file);files[file]=hash(bundled);
 }
-const html=execFileSync('unzip',['-p',apk,'assets/public/index.html'],{maxBuffer:2000000});
+let html=execFileSync('unzip',['-p',apk,'assets/public/index.html'],{maxBuffer:2000000});
+html=Buffer.from(html.toString().replace(/<meta name="traxelo-release" content="[a-f0-9]{64}">/,''));
 const expected=(await readFile('index.html','utf8')).replace('<script src="assets/traxio-native.js"></script>','<script src="assets/capacitor-runtime.js"></script><script src="assets/traxio-native.js"></script>');
 assert.equal(hash(html),hash(expected),'APK HTML source mismatch');
 const config=JSON.parse(execFileSync('unzip',['-p',apk,'assets/capacitor.config.json'],{encoding:'utf8'}));

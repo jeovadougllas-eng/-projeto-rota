@@ -89,10 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const headerBrand = node('a','header-brand'); headerBrand.href = '#painel';
   headerBrand.innerHTML = brand()+'<span class="header-motto">SUA ROTA<br>COM INTELIGÊNCIA.</span>';
   headerBrand.addEventListener('click', e => { e.preventDefault(); switchTab('painel'); }); header.prepend(headerBrand);
-  const search = node('form','header-search'); search.setAttribute('role','search');
-  search.innerHTML = '<input id="globalSearch" type="search" placeholder="Buscar cliente, endereço ou cidade..." aria-label="Buscar na carteira">' + icon('search');
-  search.addEventListener('submit', e => { e.preventDefault(); switchTab('painel'); el('dashboardSearch').value = el('globalSearch').value; el('dashboardSearch').dispatchEvent(new Event('input')); });
-  header.insertBefore(search, el('accountArea'));
   const theme = button('', () => {
     const dark = document.body.classList.toggle('traxio-dark');
     let prefs = {}; try { prefs = JSON.parse(localStorage.getItem('traxio.account.preferences.v1') || '{}'); } catch {}
@@ -122,32 +118,30 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.tabs [data-tab="painel"]').setAttribute('aria-current','page');
   document.body.dataset.screen='painel';
 
-  // Dashboard: approved hero, three metrics, wallet cards and quick actions.
-  const hero = document.querySelector('.traxio-hero');
-  hero.querySelector('h2').innerHTML = 'Seu território<br>em <em>movimento.</em>';
-  const heroArt = node('div','hero-art'); heroArt.setAttribute('aria-hidden','true');
-  heroArt.innerHTML = '<img class="reconstructed-hero-plate" src="assets/reconstructed/dashboard-background.png" alt=""><img class="original-hero-art" src="assets/visual-kit/assets/dashboard_hero_reference.png" alt="" width="687" height="136">'; hero.append(heroArt);
-  const overview = el('painel').querySelector('.card'); overview.classList.add('dashboard-overview');
-  const stats = overview.querySelector('.row'); stats.className = 'stats-row';
-  stats.querySelectorAll('.stat').forEach((stat,i) => {
-    const wrap = node('div'); while(stat.firstChild) wrap.append(stat.firstChild);
+  // Approved full-screen scenes, with real controls rather than baked-in UI.
+  const scenery = node('div','app-scenery'); scenery.setAttribute('aria-hidden','true');
+  const scene = node('img'); scene.src='assets/scenes/painel.webp'; scene.alt=''; scene.decoding='async'; scenery.append(scene); document.body.prepend(scenery);
+  const updateScene=()=>{const screen=document.body.dataset.screen||'painel';const src='assets/scenes/'+screen+'.webp';if(scene.getAttribute('src')!==src)scene.src=src;};
+  new MutationObserver(updateScene).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
+  const hero=document.querySelector('.traxio-hero');hero.querySelector('h2').innerHTML='Seu território<br>em <em>movimento.</em>';
+  hero.querySelector('p').textContent='Planeje suas visitas com inteligência.';
+  const overview=el('painel').querySelector('.card');overview.classList.add('dashboard-overview');
+  const stats=overview.querySelector('.row');stats.className='stats-row';
+  stats.querySelectorAll('.stat').forEach((stat,i)=>{
+    const wrap=node('div');while(stat.firstChild)wrap.append(stat.firstChild);
     const [x,y,w,h]=[[188,278,35,36],[346,278,32,36],[496,278,32,36]][i];
-    stat.innerHTML = glyph('dashboard_mockup_reference.png',858,635,x,y,w,h,'kit-metric-icon'); stat.append(wrap);
+    stat.innerHTML=glyph('dashboard_mockup_reference.png',858,635,x,y,w,h,'kit-metric-icon');stat.append(wrap);
+    stat.append(node('span','stat-chevron','›'));
   });
-  stats.nextElementSibling.className = 'overview-note';
-  const portfolioHeading = node('div','portfolio-heading');
-  const walletTitle = overview.querySelector('h3'); walletTitle.before(portfolioHeading); portfolioHeading.append(walletTitle, overview.querySelector('.traxio-section-note'));
-  const dashboardSearch = el('dashboardSearch'), dashboardField = dashboardSearch.parentElement; dashboardField.classList.add('search-field'); dashboardField.insertAdjacentHTML('afterbegin',icon('search'));
-  dashboardSearch.setAttribute('aria-label','Buscar cliente no painel');
-  const dashboardLayout = node('div','dashboard-layout'), dashboardMain = node('div','dashboard-main'); overview.before(dashboardLayout); dashboardMain.append(overview); dashboardLayout.append(dashboardMain);
-  const quick = node('aside','card quick-actions'); quick.innerHTML = '<h3>Ações rápidas</h3>';
-  [['Planejar rota','clients','mapa'],['Ver no mapa','map','mapa'],['Importar clientes','upload','dados'],['Sincronizar dados','sync','dados']].forEach(([text,ico,target], i) => {
-    const b = button(text, () => { switchTab(target); if(i === 2) el('sheetFile').focus(); if(i === 3) el('cloudCheck').click(); }); b.setAttribute('aria-label',text); b.insertAdjacentHTML('afterbegin',glyph('dashboard_mockup_reference.png',858,635,668,[266,306,347,389][i],25,25,'kit-quick-icon')); quick.append(b);
+  stats.nextElementSibling.className='overview-note';
+  const quick=node('aside','quick-actions');quick.innerHTML='<h3>Ações rápidas</h3>';
+  [['Planejar rota','Organize suas visitas','mapa'],['Ver no mapa','Explore seus clientes','mapa'],['Importar clientes','Adicione sua planilha','dados'],['Sincronizar dados','Atualize sua carteira','dados']].forEach(([text,description,target],i)=>{
+    const b=button('',()=>{switchTab(target);if(i===2)el('sheetFile').focus();if(i===3)el('cloudCheck').click();},'glass-action');
+    b.setAttribute('aria-label',text);b.insertAdjacentHTML('afterbegin',glyph('dashboard_mockup_reference.png',858,635,668,[266,306,347,389][i],25,25,'kit-quick-icon'));
+    const content=node('span','quick-action-copy');content.append(node('strong','',text),node('small','',description));b.append(content,node('span','action-chevron','›'));quick.append(b);
   });
-  const overviewTop=node('div','overview-top'), overviewSummary=node('div','overview-summary');
-  const walletCards=el('dashboardClients');
-  [...overview.children].forEach(child=>{if(child!==walletCards&&!child.classList.contains('notice'))overviewSummary.append(child);});
-  overviewTop.append(overviewSummary,quick);overview.prepend(overviewTop);
+  overview.after(quick);
+  const serviceNote=overview.querySelector('.notice');serviceNote.classList.add('dashboard-service-note');quick.after(serviceNote);
 
   // Clients: retain the exact original edit form, expose it in a native modal.
   const clientSection = el('clientes'), editCard = clientSection.querySelector('.card');
@@ -165,14 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
   },'')); clientSection.append(sectionActions);
   sectionActions.classList.add('registry-title-actions');sectionActions.querySelector('h2').remove();
   const registry = node('div','card registry-card');
-  registry.innerHTML = `<div class="registry-controls"><div class="registry-search-row"><div class="search-field">${icon('search')}<input id="registrySearch" type="search" placeholder="Buscar cliente por nome, cidade, bairro ou endereço..." aria-label="Buscar clientes"></div><button type="button" id="registryFilterToggle" class="secondary icon-button" aria-label="Mostrar ou ocultar filtros" aria-expanded="true" aria-controls="registryFilters">${icon('filter')}</button></div><div class="registry-filters" id="registryFilters"><select id="registryCity" aria-label="Filtrar por cidade"><option value="">Todas as cidades</option></select><select id="registryNeighborhood" aria-label="Filtrar por bairro"><option value="">Todos os bairros</option></select><select id="registryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select><button type="button" id="registryClear" class="secondary">Limpar filtros</button></div><div class="registry-location-tools"><label for="registryLocation">Localização</label><select id="registryLocation"><option value="">Todos os clientes</option><option value="confirmed">Localização confirmada</option><option value="review">Aguardando confirmação</option></select><div id="confirmedPortfolioActions" hidden><button type="button" id="registryPlanConfirmed">Criar rota com estes confirmados</button><button type="button" id="registrySuggestConfirmed" class="secondary">Sugerir rota com estes confirmados</button></div></div><p class="registry-count" id="registryCount" aria-live="polite"></p></div><div class="table-scroll"><table class="client-table"><thead><tr><th><input id="registrySelectAll" type="checkbox" aria-label="Selecionar todos os clientes filtrados"></th><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Bairro</th><th scope="col">Categoria</th><th scope="col">Prioridade</th></tr></thead><tbody id="registryRows"></tbody></table></div><div class="registry-footer"><span id="registrySelection" aria-live="polite"></span><button type="button" id="registryPlan" class="secondary">Planejar visitas selecionadas →</button></div>`;
+  registry.innerHTML = `<div class="registry-controls"><div class="registry-search-row"><div class="search-field">${icon('search')}<input id="registrySearch" type="search" placeholder="Buscar cliente por nome, cidade, bairro ou endereço..." aria-label="Buscar clientes"></div><button type="button" id="registryFilterToggle" class="secondary icon-button" aria-label="Mostrar ou ocultar filtros" aria-expanded="true" aria-controls="registryFilters">${icon('filter')}</button></div><div class="registry-filters" id="registryFilters"><select id="registryCity" aria-label="Filtrar por cidade"><option value="">Todas as cidades</option></select><select id="registryNeighborhood" aria-label="Filtrar por bairro"><option value="">Todos os bairros</option></select><select id="registryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select><button type="button" id="registryClear" class="secondary">Limpar filtros</button></div><div class="registry-location-tools"><label for="registryLocation">Localização</label><select id="registryLocation"><option value="">Todos os clientes</option><option value="confirmed">Localização confirmada</option><option value="review">Aguardando confirmação</option><option value="saved">Pontos salvos para revisar</option><option value="missing">Sem ponto salvo</option></select><div id="confirmedPortfolioActions" hidden><button type="button" id="registryPlanConfirmed">Criar rota com estes confirmados</button><button type="button" id="registrySuggestConfirmed" class="secondary">Sugerir rota com estes confirmados</button></div></div><p class="registry-count" id="registryCount" aria-live="polite"></p></div><div class="table-scroll"><table class="client-table"><thead><tr><th><input id="registrySelectAll" type="checkbox" aria-label="Selecionar todos os clientes filtrados"></th><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Bairro</th><th scope="col">Categoria</th><th scope="col">Prioridade</th></tr></thead><tbody id="registryRows"></tbody></table></div><div class="registry-footer"><span id="registrySelection" aria-live="polite"></span><button type="button" id="registryPlan" class="secondary">Planejar visitas selecionadas →</button></div>`;
   clientSection.append(registry);
   const category = c => regionField(c,['categoria','segmento','ramo','atividade']) || c.category || '—';
   const filteredClients = () => {
     const q = norm(el('registrySearch').value), city = el('registryCity').value, district = el('registryNeighborhood').value, cat = el('registryCategory').value;
     return clients.filter(c => {
       const r = regionParts(c), location = el('registryLocation').value, ready = TraxioPlanner.location(c).ready;
-      return (!location || (location === 'confirmed' ? ready : !ready)) && (!q || norm([c.name,c.address,r.city,r.district,category(c)].join(' ')).includes(q)) && (!city || r.city === city) && (!district || r.district === district) && (!cat || category(c) === cat);
+      return (!location || (location === 'confirmed' ? ready : location === 'saved' ? !ready && TraxioPlanner.hasSavedPoint(c) : location === 'missing' ? !TraxioPlanner.hasSavedPoint(c) : !ready)) && (!q || norm([c.name,c.address,r.city,r.district,category(c)].join(' ')).includes(q)) && (!city || r.city === city) && (!district || r.district === district) && (!cat || category(c) === cat);
     });
   };
   function updateOptions(id, values, initial) {
@@ -192,6 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateOptions('registryNeighborhood',clients.filter(c=>!el('registryCity').value || regionParts(c).city === el('registryCity').value).map(c=>regionParts(c).district),'Todos os bairros');
     const filtered = filteredClients(), root = el('registryRows'); root.replaceChildren();
     const confirmed = clients.filter(c=>TraxioPlanner.location(c).ready).length;
+    const saved=clients.filter(c=>!TraxioPlanner.location(c).ready&&TraxioPlanner.hasSavedPoint(c)).length;
+    el('locationRecovery').hidden=!saved;
+    el('locationRecoveryText').textContent=saved+' cliente'+(saved===1?' possui ponto salvo':'s possuem pontos salvos')+' para revisar. Esses pontos não foram apagados; precisam de confirmação para entrar na rota.';
     el('locatedShortcut').setAttribute('aria-label',`Ver ${confirmed} clientes com localização confirmada`);
     el('pendingShortcut').setAttribute('aria-label',`Ver ${clients.length-confirmed} clientes aguardando confirmação`);
     el('confirmedPortfolioActions').hidden = el('registryLocation').value !== 'confirmed';
@@ -218,7 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
     el('registryFilterToggle').setAttribute('aria-expanded','true');
     renderRegistry();switchTab('clientes');el('registryLocation').focus({preventScroll:true});
   }
-  for(const [metric,id,mode] of [['located','locatedShortcut','confirmed'],['pending','pendingShortcut','review']]){
+  el('reviewSavedLocations').addEventListener('click',()=>showLocationClients('saved'));
+  for(const [metric,id,mode] of [['total','allClientsShortcut',''],['located','locatedShortcut','confirmed'],['pending','pendingShortcut','review']]){
     const shortcut=el(metric).closest('.stat');shortcut.id=id;shortcut.setAttribute('role','button');shortcut.tabIndex=0;
     shortcut.title='Clique para visualizar estes clientes';
     shortcut.addEventListener('click',()=>showLocationClients(mode));

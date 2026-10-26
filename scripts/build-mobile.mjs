@@ -9,4 +9,7 @@ await esbuild.build({entryPoints:[fileURLToPath(new URL('../mobile/runtime-entry
 let html=await readFile(new URL('../index.html',import.meta.url),'utf8');
 html=html.replace('<script src="assets/traxio-native.js"></script>','<script src="assets/capacitor-runtime.js"></script><script src="assets/traxio-native.js"></script>');
 await writeFile(new URL('index.html',target),html);
+const {execFileSync}=await import('node:child_process');
+execFileSync(process.execPath,[fileURLToPath(new URL('./prepare-native-updates.mjs',import.meta.url))],{stdio:'inherit'});
+execFileSync(process.execPath,[fileURLToPath(new URL('./build-android-update.mjs',import.meta.url))],{stdio:'inherit'});
 console.log('Bundled the approved Traxio interface and original visual assets for native apps.');

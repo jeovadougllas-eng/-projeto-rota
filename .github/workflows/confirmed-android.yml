@@ -1,8 +1,8 @@
-name: Confirmed Android points and partial street routes
+name: Scenic Android, persisted routes and automatic web updates
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['.github/workflows/confirmed-android.yml', 'index.html', 'assets/traxio-route-ui.js', 'assets/traxio-ui.js', 'assets/traxelo-shell.css', 'assets/traxelo/**', 'assets/reconstructed/login-art-mask.svg', 'scripts/android-routes.mjs', 'scripts/verify-android-candidate.mjs']
+    paths: ['.github/workflows/confirmed-android.yml', 'index.html', 'assets/traxio-route-ui.js', 'assets/traxio-ui.js', 'assets/traxelo-shell.css', 'assets/traxelo/**', 'assets/reconstructed/login-art-mask.svg', 'scripts/android-routes.mjs', 'scripts/verify-android-candidate.mjs', 'assets/traxelo-glass.css', 'assets/traxelo-updates.js', 'assets/scenes/**', 'mobile/native/**', 'mobile/native-tests/**', 'scripts/build-android-update.mjs', 'scripts/android-updates.mjs', 'scripts/prepare-native-updates.mjs']
   workflow_dispatch:
 permissions:
   contents: write
@@ -28,13 +28,28 @@ jobs:
           key: traxelo-test-debug-signing-v1
       - run: npm ci --prefix mobile --ignore-scripts
       - run: node scripts/build-mobile.mjs
+        env:
+          TRAXELO_RELEASE_TAG: bundled
       - run: npx cap sync android
         working-directory: mobile
-      - run: bash gradlew assembleDebug --no-daemon
+      - run: |
+          mkdir -p app/src/test/java/app/traxio/mobile
+          cp ../../native-tests/UpdateBundleTest.java app/src/test/java/app/traxio/mobile/
+          bash gradlew testDebugUnitTest assembleDebug --no-daemon
         working-directory: mobile/android
       - run: |
           mkdir -p candidate
           cp mobile/android/app/build/outputs/apk/debug/app-debug.apk candidate/app-debug.apk
+      - name: Build and stage the matching automatic web release
+        run: |
+          TRAXELO_UPDATE_OUTPUT=updates/android node scripts/build-mobile.mjs
+          cp updates/android/manifest.json candidate/update-manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/android/
+          git commit -m "build: stage verified scenic Android web update [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
       - uses: actions/upload-artifact@v4
         with:
           name: confirmed-android-candidate
@@ -43,7 +58,7 @@ jobs:
   installed:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     env:
       DISPLAY: ":99"
       LIBGL_ALWAYS_SOFTWARE: "1"
@@ -85,6 +100,7 @@ jobs:
             adb emu geo fix -35.211 -5.795
             node scripts/android-smoke.mjs
             node scripts/android-routes.mjs
+            node scripts/android-updates.mjs
       - name: Produce readable previews from Android compositor captures
         run: |
           node --input-type=module <<'NODE'
@@ -105,7 +121,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads/ docs/captures/android/
-          git commit -m "build: publish Android with persisted pins and confirmed partial routes [skip ci]"
+          git commit -m "build: publish tested scenic Android with automatic web updates [skip ci]"
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
       - uses: actions/upload-artifact@v4
