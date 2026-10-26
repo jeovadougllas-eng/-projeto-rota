@@ -53,7 +53,7 @@ Os 157 clientes mantiveram exatamente o checksum agregado anterior: `fd75d013e53
 
 No Android, o Excel usa o plugin de navegador que já existe no APK: o arquivo privado é disponibilizado por um link de cinco minutos. É necessária internet para essa exportação. O teste Android simula o upload/assinatura; não utiliza a conta real. A gravação e a sincronização autenticadas em um aparelho físico ainda precisam do teste do usuário.
 
-Os advisors do Supabase não identificaram falha de RLS nas novas estruturas. Houve aviso informativo de índice ainda sem uso, esperado numa tabela nova. Avisos anteriores de proteção contra senhas vazadas e desempenho das políticas de `cnpj_jobs` não foram alterados nesta entrega.
+Os advisors do Supabase não identificaram falha de RLS nas novas estruturas. Houve aviso informativo de índice ainda sem uso, esperado numa tabela nova. Avisos anteriores de [proteção contra senhas vazadas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) e [desempenho das políticas de `cnpj_jobs`](https://supabase.com/docs/guides/database/database-linter?lint=0003_auth_rls_initplan) não foram alterados nesta entrega.
 
 ## Android e iPhone
 
@@ -61,7 +61,7 @@ O APK existente foi preservado, SHA-256 `6d9fe54fc87beac1e1da5200858ab5232468449
 
 Versões antigas sem atualizador dependem da [migração com preservação de dados](android-install.html). Não desinstale o aplicativo para forçar a atualização.
 
-É viável manter o APK Android e preparar uma PWA para iPhone, com acesso HTTPS e atalho na tela inicial sem distribuição pela App Store ou assinatura Apple Developer. A instalação PWA ainda não foi implementada nesta entrega. O GPS web em primeiro plano é possível; rastreamento com tela bloqueada tem limitações no iPhone. Navegação externa pode usar Waze/Google Maps. Ainda falta o link do projeto de orçamentos para comparar a referência específica.
+É viável manter o APK Android e preparar uma PWA para iPhone, com acesso HTTPS e atalho na tela inicial sem distribuição pela App Store ou assinatura Apple Developer. A instalação PWA ainda não foi implementada nesta entrega. O GPS web em primeiro plano é possível; rastreamento com tela bloqueada tem limitações no iPhone. Navegação externa pode usar Waze/Google Maps. A referência foi localizada e confirmada pelo usuário: [OrçaTap — piloto v0.3](https://orcatap-piloto.vercel.app/). A página publicada tem layout responsivo e funciona por link; não foram identificados manifesto PWA ou registro de service worker no HTML. Para o Traxelo, o mesmo acesso web é viável, com instalação PWA como etapa adicional, mantendo o APK e o banco de dados existentes.
 
 ## Evidências
 
@@ -82,3 +82,9 @@ Pacote web aprovado: `cc6c358d48d27b8b44ba5cfd3343813f0c7907d0982a172dcda59017ef
 
 A rodada pública final acrescenta a verificação de que o centro do mapa fica acessível acima dos controles de confirmação, inclusive em celular WebKit:
 https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40390108033
+
+A integridade pública final passou na repetição após a publicação estabilizar: site, manifesto, ZIP e hashes dos 62 arquivos internos, APK original, três capturas Android e Excel de demonstração. A primeira leitura começou durante a troca de versão e recebeu a evidência antiga; foi repetida após confirmar a nova publicação, sem alterar o pacote aprovado:
+https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40390630565
+
+A regressão completa final também passou: transações de rota, fluxos existentes, reprodução da base anterior, roteirização real em ruas e uma consulta pública de endereço de teste no provedor atual. As consultas de comparação Geoapify/TomTom a clientes reais permanecem sob a sessão do usuário:
+https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40390108177
