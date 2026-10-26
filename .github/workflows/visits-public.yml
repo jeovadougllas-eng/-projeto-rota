@@ -1,4 +1,4 @@
-name: Published visit reports and saved-pin recovery on Safari engine and Chrome
+name: Published visits, map-centre reachability and pin recovery on Safari engine and Chrome
 on:
   push:
     branches: [dev/traxelo-android-routes]
