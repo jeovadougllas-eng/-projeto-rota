@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: public-visits-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   public-browser:
     runs-on: ubuntu-latest
