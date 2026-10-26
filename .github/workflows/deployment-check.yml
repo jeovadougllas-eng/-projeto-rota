@@ -1,4 +1,4 @@
-name: Traxelo published approved brand, confirmed portfolio and APK check
+name: Traxelo scenic release, automatic updates and APK integrity
 on:
   push:
     branches: [dev/traxelo-android-routes]
@@ -28,12 +28,12 @@ jobs:
           const home=await request('/');assert.equal(home.status,200);
           const html=await home.text();assert.ok(html.includes('assets/traxio-route-ui.js'));assert.ok(html.includes('Traxelo.IA'));assert.ok(html.includes('openGoogleMaps'));assert.ok(html.includes('openWaze'));
           const sdk=await request('/assets/traxio-geolocation.js');assert.equal(sdk.status,200);assert.ok((await sdk.text()).includes('digits(clean(c.cep)||field'));
-          for(const path of ['index.html','assets/traxio-route-ui.js','assets/traxio-planner.js','assets/traxio-geolocation.js','assets/traxio-routes.css','assets/traxio-ui.js','assets/traxelo-shell.css']){
+          for(const path of ['index.html','assets/traxio-route-ui.js','assets/traxio-planner.js','assets/traxio-geolocation.js','assets/traxio-routes.css','assets/traxio-ui.js','assets/traxelo-shell.css','assets/traxelo-glass.css','assets/traxelo-updates.js','assets/scenes/painel.webp','assets/scenes/clientes.webp','assets/scenes/mapa.webp','assets/scenes/historico.webp','assets/scenes/dados.webp']){
             const response=await request('/'+path);assert.equal(response.status,200);
             const served=Buffer.from(await response.arrayBuffer()),local=await readFile(path);
             assert.equal(createHash('sha256').update(served).digest('hex'),createHash('sha256').update(local).digest('hex'),'Published file mismatch: '+path);
           }
-          for(const path of ['/docs/routing-review.html','/docs/portfolio-review.html','/docs/geolocation-and-client-access.md','/docs/captures/portfolio-after/tablet-portrait-light-clientes.png','/docs/captures/routes-after/tablet-portrait-light.png','/docs/captures/android/android-routes.json']){
+          for(const path of ['/docs/scenic-review.html','/docs/scenic-validation.md','/docs/captures/scenic-after/tablet-portrait-light-painel.png','/docs/routing-review.html','/docs/portfolio-review.html','/docs/geolocation-and-client-access.md','/docs/captures/portfolio-after/tablet-portrait-light-clientes.png','/docs/captures/routes-after/tablet-portrait-light.png','/docs/captures/android/android-routes.json']){
             const response=await request(path);assert.equal(response.status,200);
           }
           const apk=await request('/downloads/traxio-android-testes.apk');assert.equal(apk.status,200);
@@ -41,13 +41,26 @@ jobs:
           const bytes=Buffer.from(await apk.arrayBuffer());assert.ok(bytes.length>1000000);
           const sha=createHash('sha256').update(bytes).digest('hex');assert.equal(sha,expected);
           await writeFile('/tmp/traxelo-verified.apk',bytes);
-          for(const file of ['traxio-route-ui.js','traxio-planner.js','traxio-geolocation.js','traxio-routes.css','traxio-ui.js','traxelo-shell.css','traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png']){
+          for(const file of ['traxio-route-ui.js','traxio-planner.js','traxio-geolocation.js','traxio-routes.css','traxio-ui.js','traxelo-shell.css','traxelo-glass.css','traxelo-updates.js','scenes/painel.webp','traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png']){
             const bundled=execFileSync('unzip',['-p','/tmp/traxelo-verified.apk','assets/public/assets/'+file],{maxBuffer:2000000}),local=await readFile('assets/'+file);
             assert.equal(createHash('sha256').update(bundled).digest('hex'),createHash('sha256').update(local).digest('hex'),'APK/web mismatch: '+file);
           }
-          const bundledHTML=execFileSync('unzip',['-p','/tmp/traxelo-verified.apk','assets/public/index.html'],{maxBuffer:2000000});
+          let bundledHTML=execFileSync('unzip',['-p','/tmp/traxelo-verified.apk','assets/public/index.html'],{maxBuffer:2000000});
+          bundledHTML=Buffer.from(bundledHTML.toString().replace(/<meta name="traxelo-release" content="[a-f0-9]{64}">/,''));
           const expectedHTML=(await readFile('index.html','utf8')).replace('<script src="assets/traxio-native.js"></script>','<script src="assets/capacitor-runtime.js"></script><script src="assets/traxio-native.js"></script>');
           assert.equal(createHash('sha256').update(bundledHTML).digest('hex'),createHash('sha256').update(expectedHTML).digest('hex'),'APK HTML differs from tested source');
+          const updates=await request('/updates/android/manifest.json');assert.equal(updates.status,200);assert.ok(updates.headers.get('cache-control').includes('no-store'));
+          const release=await updates.json();assert.equal(release.nativeVersion,2);assert.equal(release.packageId,'app.traxio.mobile');
+          assert.ok(/^\/updates\/android\/bundles\/[a-f0-9]{64}\.zip$/.test(release.bundle));
+          const archive=await request(release.bundle);assert.equal(archive.status,200);const zipped=Buffer.from(await archive.arrayBuffer());
+          assert.equal(zipped.length,release.bytes);assert.equal(createHash('sha256').update(zipped).digest('hex'),release.sha256);
+          await writeFile('/tmp/traxelo-web-update.zip',zipped);
+          for(const [file,hash]of Object.entries(release.files)){
+            const content=execFileSync('unzip',['-p','/tmp/traxelo-web-update.zip',file],{maxBuffer:4000000});
+            assert.equal(createHash('sha256').update(content).digest('hex'),hash,'Update package file mismatch: '+file);
+          }
+          const nativeConfig=JSON.parse(execFileSync('unzip',['-p','/tmp/traxelo-verified.apk','assets/capacitor.config.json'],{encoding:'utf8'}));
+          assert.equal(nativeConfig.appId,'app.traxio.mobile');assert.equal(nativeConfig.server.androidScheme,'https');assert.equal(nativeConfig.server.url,undefined);
           const manifest=await request('/downloads/traxio-android-testes.sha256');assert.equal(manifest.status,200);assert.ok((await manifest.text()).startsWith(expected));
           const approved=JSON.parse(await readFile('docs/traxelo-approved-assets.json','utf8'));
           for(const [path,info] of Object.entries(approved)){
@@ -57,8 +70,26 @@ jobs:
           const api=await request('/api/geocode');assert.equal(api.status,405);
           const providerProbe=await fetch(base+'/api/geocode',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',signal:AbortSignal.timeout(15000)});
           assert.ok([401,503].includes(providerProbe.status),'Unexpected unauthenticated geocoder response');
-          const evidence={additionalGeocoderConfigured:providerProbe.status===401,providerProbeStatus:providerProbe.status,website:200,geocoderSDK:200,apk:200,apkBytes:bytes.length,sha256:sha,serverEndpoint:405,publicAccess:true,apkAndWebAssetsMatch:true,approvedAssetsVerified:Object.keys(approved).length};
+          const evidence={additionalGeocoderConfigured:providerProbe.status===401,providerProbeStatus:providerProbe.status,website:200,geocoderSDK:200,apk:200,apkBytes:bytes.length,sha256:sha,serverEndpoint:405,publicAccess:true,apkAndWebAssetsMatch:true,automaticUpdateVersion:release.version,automaticUpdateFilesVerified:Object.keys(release.files).length,approvedAssetsVerified:Object.keys(approved).length};
           await mkdir('test-results-release',{recursive:true});await writeFile('test-results-release/verification.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence));
+          NODE
+      - name: Verify compatibility with the previous Android signing certificate
+        run: |
+          git fetch --depth=1 origin 967d6f76083f42cea318ea55064c273718786d2e
+          git show 967d6f76083f42cea318ea55064c273718786d2e:downloads/traxio-android-testes.apk > /tmp/traxelo-prior.apk
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import {readdir,writeFile} from 'node:fs/promises';
+          import {execFileSync} from 'node:child_process';
+          import {join} from 'node:path';
+          const sdk=process.env.ANDROID_HOME||process.env.ANDROID_SDK_ROOT;
+          const versions=(await readdir(join(sdk,'build-tools'))).sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+          const signer=join(sdk,'build-tools',versions[0],'apksigner');
+          const certificate=path=>execFileSync(signer,['verify','--print-certs',path],{encoding:'utf8'}).match(/Signer #1 certificate SHA-256 digest: ([a-f0-9]+)/i)?.[1];
+          const previous=certificate('/tmp/traxelo-prior.apk'),current=certificate('/tmp/traxelo-verified.apk');
+          assert.ok(previous);assert.ok(current);const compatible=current===previous;
+          const evidence={previousCertificate:previous,currentCertificate:current,sameSigningCertificate:compatible,packageId:'app.traxio.mobile',oneTimeVerifiedMigrationRequired:!compatible};
+          await writeFile('test-results-release/signing.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence));
           NODE
       - uses: actions/upload-artifact@v4
         if: always()
