@@ -42,8 +42,11 @@ jobs:
           cp mobile/android/app/build/outputs/apk/debug/app-debug.apk candidate/app-debug.apk
       - name: Build and stage the matching automatic web release
         run: |
-          TRAXELO_UPDATE_OUTPUT=updates/android node scripts/build-mobile.mjs
-          cp updates/android/manifest.json candidate/update-manifest.json
+          TRAXELO_UPDATE_OUTPUT=candidate/updateweb node scripts/build-mobile.mjs
+          mkdir -p updates/android/bundles
+          cp candidate/updateweb/bundles/* updates/android/bundles/
+          cp candidate/updateweb/manifest.json updates/android/candidate.json
+          cp candidate/updateweb/manifest.json candidate/update-manifest.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add updates/android/
@@ -114,13 +117,14 @@ jobs:
         run: |
           mkdir -p downloads docs/captures/android
           cp candidate/app-debug.apk downloads/traxio-android-testes.apk
+          cp candidate/update-manifest.json updates/android/manifest.json
           sha256sum downloads/traxio-android-testes.apk > downloads/traxio-android-testes.sha256
           cp mobile/evidence/* docs/captures/android/
           git fetch origin "$GITHUB_REF_NAME"
           git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/ scripts/build-mobile.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add downloads/ docs/captures/android/
+          git add downloads/ docs/captures/android/ updates/android/manifest.json
           git commit -m "build: publish tested scenic Android with automatic web updates [skip ci]"
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"

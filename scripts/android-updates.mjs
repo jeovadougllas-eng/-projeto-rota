@@ -18,7 +18,9 @@ async function restart(){await device.shell('am force-stop app.traxio.mobile');a
 try{
  // Reset only OTA metadata in the synthetic emulator. Never clear WebView/account/client storage.
  await device.shell('am force-stop app.traxio.mobile');
- await device.shell('run-as app.traxio.mobile rm -f shared_prefs/traxelo_web_releases_v1.xml');
+ await writeFile('candidate/ota-qa-prefs.xml','<?xml version="1.0" encoding="utf-8"?><map><int name="native" value="2"/><boolean name="qa" value="true"/></map>');
+ execFileSync('adb',['push','candidate/ota-qa-prefs.xml','/data/local/tmp/traxelo-ota-qa.xml']);
+ await device.shell('run-as app.traxio.mobile cp /data/local/tmp/traxelo-ota-qa.xml shared_prefs/traxelo_web_releases_v1.xml');
  await device.shell('am start -n app.traxio.mobile/.MainActivity');await attach();
  const bundled=await page.locator('meta[name=traxelo-release]').getAttribute('content');evidence.bundled=bundled;expect(bundled).not.toBe(manifest.version);
  await page.evaluate(()=>localStorage.setItem('traxelo.update-test.persisted','kept'));

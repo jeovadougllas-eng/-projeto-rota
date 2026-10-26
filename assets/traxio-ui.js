@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   new MutationObserver(updateAvatar).observe(el('authIdentity'),{childList:true,characterData:true,subtree:true}); updateAvatar();
   const nav = document.querySelector('.tabs'); nav.setAttribute('aria-label','Navegação principal');
   const navArt = node('div','nav-art'); navArt.setAttribute('aria-hidden','true');
-  navArt.innerHTML = '<img src="assets/visual-kit/assets/dashboard_mockup_reference.png" alt="" width="858" height="635"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
+  navArt.innerHTML = '<img src="assets/scenes/painel.webp" alt="" width="1024" height="1536"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
   const navPattern=node('div','nav-pattern');navPattern.setAttribute('aria-hidden','true');navPattern.innerHTML='<img src="assets/visual-kit/reference/1411.png" alt="" width="1536" height="1024">';nav.append(navPattern);
   [...nav.querySelectorAll(':scope>button')].forEach((b,i)=>{b.querySelector('svg')?.remove();const [x,y]=[[19,90],[19,134],[19,177],[19,220],[19,261]][i];b.insertAdjacentHTML('afterbegin',i===0?glyph('clients_mockup_reference.png',565,388,15,53,18,19,'kit-nav-icon'):glyph('dashboard_mockup_reference.png',858,635,x,y,24,25,'kit-nav-icon'));});
   const originalSwitch = switchTab;
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Approved full-screen scenes, with real controls rather than baked-in UI.
   const scenery = node('div','app-scenery'); scenery.setAttribute('aria-hidden','true');
   const scene = node('img'); scene.src='assets/scenes/painel.webp'; scene.alt=''; scene.decoding='async'; scenery.append(scene); document.body.prepend(scenery);
-  const updateScene=()=>{const screen=document.body.dataset.screen||'painel';const src='assets/scenes/'+screen+'.webp';if(scene.getAttribute('src')!==src)scene.src=src;};
+  const updateScene=()=>{const screen=document.body.dataset.screen||'painel';const src='assets/scenes/'+screen+'.webp';if(scene.getAttribute('src')!==src)scene.src=src;navArt.querySelector('img').src=src;};
   new MutationObserver(updateScene).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
   const hero=document.querySelector('.traxio-hero');hero.querySelector('h2').innerHTML='Seu território<br>em <em>movimento.</em>';
   hero.querySelector('p').textContent='Planeje suas visitas com inteligência.';

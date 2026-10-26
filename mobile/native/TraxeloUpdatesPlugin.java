@@ -73,7 +73,8 @@ public class TraxeloUpdatesPlugin extends Plugin {
   WORKER.execute(()->{
    File archive=null,staging=null;
    try{
-    HttpsURLConnection response=connect(UpdateBundle.ORIGIN+"/updates/android/manifest.json");byte[] raw;
+    boolean qa=(getContext().getApplicationInfo().flags&android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE)!=0&&prefs(getContext()).getBoolean("qa",false);
+    HttpsURLConnection response=connect(UpdateBundle.ORIGIN+(qa?"/updates/android/candidate.json":"/updates/android/manifest.json"));byte[] raw;
     try(InputStream in=response.getInputStream()){raw=read(in,256*1024);}finally{response.disconnect();}
     if(raw.length>256*1024)throw new IOException("Oversized manifest");JSONObject release=new JSONObject(new String(raw,StandardCharsets.UTF_8));
     if(release.getInt("schema")!=1||!"app.traxio.mobile".equals(release.getString("packageId")))throw new IOException("Invalid release identity");

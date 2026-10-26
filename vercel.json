@@ -47,6 +47,15 @@
           "value": "no-cache"
         }
       ]
+    },
+    {
+      "source": "/updates/android/candidate.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ]
 }

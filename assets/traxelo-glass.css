@@ -1,5 +1,6 @@
 /* Approved scenic pages. Icons and application actions remain the existing controls. */
 body.traxio-ui-ready{
+ --ink:#f1faf9;--panel:rgba(3,42,55,.9);--soft:rgba(6,58,70,.8);
  --text:#f1faf9;--muted:#c2d9da;--bg:#042b37;--card:#063340db;--line:#70c8cd55;
  --glass:rgba(3,42,55,.78);--glass-soft:rgba(6,58,70,.72);--glass-border:rgba(123,223,224,.46);
  color:var(--text);background:#042b37;
