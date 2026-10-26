@@ -1,0 +1,22 @@
+{
+  "physicalDevice": false,
+  "realHTTPSDownload": true,
+  "checks": [
+    "Native HTTPS download validates a complete bundle and stages it without reloading the running application",
+    "Next cold start applies the new web release at the same localhost origin while preserving all customer data",
+    "Healthy startup acknowledgement keeps the release on subsequent launches",
+    "Updated Android WebView renders confirmed portfolio markers without selecting a route",
+    "Android direct approximate-pin confirmation handles a simulated MapLibre drag event, saves immediately and exercises revision-safe sync against an isolated database double",
+    "Real Android tablet rotation preserves the confirmed point and clickable navigation across screens; phone expansion is covered separately in Chromium and WebKit",
+    "A corrupted downloaded release is rejected on startup and falls back to the bundled interface without losing customer data",
+    "A failed release is quarantined rather than reinstalled in a restart loop"
+  ],
+  "expected": "8e8f93d69949e7e1633176b2491be43be8ee90c6c80ddb95a5fb1e6c15a57cae",
+  "bundled": "0a362503c95bd40d75d6c3f3db132c6d859fdbb77c755e94a6f1270b463af71b",
+  "stagedStatus": {
+    "active": "0a362503c95bd40d75d6c3f3db132c6d859fdbb77c755e94a6f1270b463af71b",
+    "pending": "8e8f93d69949e7e1633176b2491be43be8ee90c6c80ddb95a5fb1e6c15a57cae",
+    "failed": "",
+    "runtime": "capacitor8-20261026"
+  }
+}
