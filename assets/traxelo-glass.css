@@ -185,3 +185,31 @@ body.traxio-ui-ready [hidden]{display:none!important}
  .pin-confirm-panel button{flex-basis:100%;min-height:44px;font-size:14px;padding:10px}
  body.pin-mode #mapa .workspace{padding-bottom:230px}
 }
+/* Visit coverage reports retain the approved scenes, logo and palette. */
+.visit-report-panel{margin-bottom:24px!important}
+.visit-report-controls{display:flex;flex-wrap:wrap;gap:14px;align-items:end}
+.visit-report-controls label{flex:1 1 180px;display:flex;flex-direction:column;gap:6px}
+.visit-report-panel label{font-size:15px}
+.visit-report-panel details{margin:14px 0}
+.visit-report-panel summary{cursor:pointer;min-height:44px;padding:10px 0}
+.visit-working-days{display:flex;flex-wrap:wrap;gap:12px}
+.visit-working-days label,.visit-confirm-check{display:flex;align-items:center;gap:8px;min-height:44px}
+.visit-working-days input,.visit-confirm-check input{width:22px;height:22px}
+.visit-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:18px 0}
+.visit-metrics>div{padding:16px;background:#063c49bf;border:1px solid #80c5c455;border-radius:12px}
+.visit-metrics strong{font-size:30px;display:block;color:#d4f566}
+.visit-metrics span{display:block;font-size:14px;line-height:1.4;color:#deefed}
+.visit-chart{margin:20px 0;padding:14px;background:#042d39a6;border:1px solid #84c9c344;border-radius:12px}
+.visit-chart svg{display:block;width:100%;height:auto;max-height:280px;color:#e6f2ef}
+.visit-chart h3{font-size:18px;margin:0 0 8px}
+.visit-review-item{padding:14px 0;border-top:1px solid #8ac3c544}
+.visit-review-item button{margin:6px 8px 0 0}
+.visit-entry-dialog{width:min(560px,calc(100vw - 24px));max-height:90dvh;overflow:auto;padding:24px}
+.visit-entry-dialog label{display:flex;flex-direction:column;gap:6px;margin:12px 0}
+.visit-entry-dialog .visit-confirm-check{flex-direction:row}
+.visit-entry-dialog :is(input,select,textarea,button){font-size:16px;min-height:44px;max-width:100%;width:100%;box-sizing:border-box}
+.visit-entry-dialog input[type=checkbox]{width:22px;min-height:22px;flex:none}
+.visit-entry-dialog .row{display:flex;gap:10px;flex-wrap:wrap}
+.visit-entry-dialog #visitEntryError{color:#ffd0b5}
+body.auth-locked #visitEntryDialog{display:none!important}
+@media(max-width:650px){.visit-report-panel{padding:14px!important}.visit-report-controls{display:block}.visit-report-controls label{margin-bottom:12px}.visit-metrics{grid-template-columns:1fr 1fr;gap:8px}.visit-metrics>div{padding:12px}.visit-metrics strong{font-size:26px}.visit-report-panel>.row>button{width:100%}.visit-entry-dialog{padding:16px}.visit-chart{padding:6px}}

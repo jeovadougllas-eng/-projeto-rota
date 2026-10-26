@@ -959,7 +959,9 @@ renderMarkers();
 }
 $('confirmVisit').addEventListener('click',()=>{const stop=next();if(stop&&confirm('Confirmar que a visita a '+stop.name+' foi realizada?'))arrived(stop,'manual');});
 function arrived(stop,source='gps'){
-rerouteController?.abort();rerouteController=null;rerouteBusy=false;stop.visited=true;stop.arrivalSource=source;stop.arrivalTime=new Date().toISOString();window.traxioVisitedIds.add(String(stop.id));arrivedSince=0;render();
+const arrivalTime=new Date().toISOString();
+try{window.TraxeloVisits?.recordArrival(stop,source,arrivalTime,route?.id);}catch(e){status('Visita não registrada: '+e.message);return;}
+rerouteController?.abort();rerouteController=null;rerouteBusy=false;stop.visited=true;stop.arrivalSource=source;stop.arrivalTime=arrivalTime;window.traxioVisitedIds.add(String(stop.id));arrivedSince=0;render();
 if(!next())end('completed');else if(previousPosition)recalculate(previousPosition,true);
 }
 function distanceToSegmentMeters(lat,lon,a,b){
@@ -1029,7 +1031,7 @@ $('liveStop').addEventListener('click',()=>{if(confirm('Encerrar esta rota agora
 window.traxioBeginNavigation=function(points,geometry=routeGeo){
 if(!Array.isArray(points)||!points.length)return;
 stopGPS();
-route={stops:points.filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)).map(x=>({id:x.id,name:x.name,lat:x.lat,lon:x.lon,visited:false}))};
+route={id:uid(),stops:points.filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)).map(x=>({id:x.id,name:x.name,lat:x.lat,lon:x.lon,visited:false}))};
 window.traxioVisitedIds.clear();routeGeo=geometry;activeGeometry=geometry;offRouteSince=null;offRouteSamples=0;$('liveNavigation').hidden=false;$('liveStart').disabled=false;$('liveStop').disabled=true;status('GPS desligado');render();
 };
 $('clearRoute').addEventListener('click',()=>{if(route){stopGPS();route=null;window.traxioVisitedIds.clear();$('liveNavigation').hidden=true;renderMarkers()}});
@@ -1096,5 +1098,5 @@ document.getElementById('traxioResetForm').addEventListener('submit',async e=>{
 e.preventDefault();const form=e.currentTarget,b=form.querySelector('[type=submit]'),msg=document.getElementById('traxioResetMessage');b.disabled=true;
 try{const {error}=await authClient.auth.updateUser({password:new FormData(form).get('password')});if(error)throw error;msg.textContent='Senha atualizada com sucesso.';setTimeout(()=>{document.getElementById('traxioResetPanel').hidden=true;form.reset()},1000)}catch(err){msg.textContent='Não foi possível atualizar: '+err.message}finally{b.disabled=false}
 });
-</script><nav id="traxio-legal-links" aria-label="Documentos legais"><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a><a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de Serviço</a></nav><script src="assets/traxio-ui.js"></script><script src="assets/traxelo-updates.js"></script><script src="assets/traxio-route-ui.js"></script><script src="assets/traxelo-location-ui.js"></script></body></html>
+</script><nav id="traxio-legal-links" aria-label="Documentos legais"><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a><a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de Serviço</a></nav><script src="assets/traxio-ui.js"></script><script src="assets/traxelo-updates.js"></script><script src="assets/traxio-route-ui.js"></script><script src="assets/traxelo-location-ui.js"></script><script src="assets/traxelo-visits-model.js"></script><script src="assets/traxelo-visit-store.js"></script><script src="assets/traxelo-visit-report.js"></script><script src="assets/traxelo-visits-ui.js"></script></body></html>
 

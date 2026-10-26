@@ -1,0 +1,36 @@
+name: Confirmed visits, monthly projection and Excel charts
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['assets/traxelo-visits*','assets/traxelo-visit-*','tests/visits.spec.js','test-unit/visits*','test-unit/visit-*','playwright.visits.config.js','.github/workflows/visits-reports.yml','index.html']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: visits-reports-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm run check && npm run test:geolocation
+      - name: Use installed Chrome
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
+      - run: npx playwright test --config=playwright.visits.config.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visits-report-evidence
+          retention-days: 30
+          path: test-results-visits/
