@@ -1,0 +1,16 @@
+{
+  "id": "/",
+  "name": "Traxelo.IA",
+  "short_name": "Traxelo.IA",
+  "description": "Planeje suas visitas, organize clientes e acompanhe suas rotas comerciais.",
+  "lang": "pt-BR",
+  "start_url": "/?source=iphone-pwa",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#052b36",
+  "theme_color": "#052b36",
+  "icons": [
+    {"src": "/assets/iphone/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/assets/iphone/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ]
+}

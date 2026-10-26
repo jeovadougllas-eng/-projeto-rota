@@ -1,4 +1,12 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#052b36"><title>Traxelo.IA | Sua rota com inteligência.</title>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#052b36"><title>Traxelo.IA | Sua rota com inteligência.</title>
+<!-- iphone-pwa:start -->
+<link rel="manifest" href="/iphone.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/iphone/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Traxelo.IA">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="assets/traxelo-iphone-pwa.css">
+<!-- iphone-pwa:end -->
 <link href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css" rel="stylesheet">
 
 <script>
@@ -1105,5 +1113,5 @@ e.preventDefault();const form=e.currentTarget,b=form.querySelector('[type=submit
 try{const {error}=await authClient.auth.updateUser({password:new FormData(form).get('password')});if(error)throw error;msg.textContent='Senha atualizada com sucesso.';setTimeout(()=>{document.getElementById('traxioResetPanel').hidden=true;form.reset()},1000)}catch(err){msg.textContent='Não foi possível atualizar: '+err.message}finally{b.disabled=false}
 });
 </script><nav id="traxio-legal-links" aria-label="Documentos legais"><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a><a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de Serviço</a></nav><script src="assets/traxio-ui.js"></script><script src="assets/traxelo-updates.js"></script><script src="assets/traxio-route-ui.js"></script><script src="assets/traxelo-geo-recovery.js"></script>
-<script src="assets/traxelo-location-ui.js"></script><script src="assets/traxelo-visits-model.js"></script><script src="assets/traxelo-visit-store.js"></script><script src="assets/traxelo-visit-report.js"></script><script src="assets/traxelo-visits-ui.js"></script></body></html>
+<script src="assets/traxelo-location-ui.js"></script><script src="assets/traxelo-visits-model.js"></script><script src="assets/traxelo-visit-store.js"></script><script src="assets/traxelo-visit-report.js"></script><script src="assets/traxelo-visits-ui.js"></script><!-- iphone-pwa:start --><script src="assets/traxelo-iphone-pwa.js"></script><!-- iphone-pwa:end --></body></html>
 

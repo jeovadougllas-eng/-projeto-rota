@@ -7,6 +7,8 @@ await cp(new URL('../assets/',import.meta.url),new URL('assets/',target),{recurs
 const esbuild=createRequire(new URL('../mobile/package.json',import.meta.url))('esbuild');
 await esbuild.build({entryPoints:[fileURLToPath(new URL('../mobile/runtime-entry.js',import.meta.url))],bundle:true,platform:'browser',format:'iife',outfile:fileURLToPath(new URL('assets/capacitor-runtime.js',target))});
 let html=await readFile(new URL('../index.html',import.meta.url),'utf8');
+// iPhone PWA controls and service-worker metadata are web-only; never ship them in the native shell.
+html=html.replace(/<!-- iphone-pwa:start -->[\s\S]*?<!-- iphone-pwa:end -->/g,'').replace(',viewport-fit=cover','');
 html=html.replace('<script src="assets/traxio-native.js"></script>','<script src="assets/capacitor-runtime.js"></script><script src="assets/traxio-native.js"></script>');
 await writeFile(new URL('index.html',target),html);
 const {execFileSync}=await import('node:child_process');
