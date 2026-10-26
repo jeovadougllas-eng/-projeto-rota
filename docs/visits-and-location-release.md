@@ -72,3 +72,13 @@ Versões antigas sem atualizador dependem da [migração com preservação de da
 O primeiro roteiro Android parou por faltar passar o identificador do emulador ao teste após a exportação. Não foi considerado aprovado. O teste foi corrigido e repetido usando o mesmo ZIP; não houve substituição do APK nem ativação daquele teste incompleto. A primeira configuração WebKit também foi corrigida para não tentar iniciar o executável do Chrome como WebKit.
 
 Capturas e [arquivo Excel de demonstração](examples/visit-report-example.xlsx) utilizam somente dados fictícios. A validação WebKit representa o motor do Safari, não um teste em iPhone físico.
+
+## Atualização Android aprovada
+
+Dez verificações passaram no APK original instalado no emulador Android API 35, incluindo atualização HTTPS sem reinstalação, pin com evento de arrasto MapLibre, rotação do tablet, visita individual e sincronização com banco simulado, Excel usando o Browser nativo e preservação da carteira e do histórico após rejeitar um pacote corrompido:
+https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40389769748
+
+Pacote web aprovado: `cc6c358d48d27b8b44ba5cfd3343813f0c7907d0982a172dcda59017efcc295b`, 62 arquivos, 10.637.533 bytes, SHA-256 do ZIP `f0f6c13b86ba90b3d51fc733c6ed8488e7d80f9b1a96094e8a1eb6f2b5037bcf`. O APK permaneceu igual. Evidência estruturada: [android-updates.json](captures/location-android/android-updates.json).
+
+A rodada pública final acrescenta a verificação de que o centro do mapa fica acessível acima dos controles de confirmação, inclusive em celular WebKit:
+https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40390108033

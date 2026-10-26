@@ -1,0 +1,38 @@
+name: Verify published visits, Excel, original APK and active Android update
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/visits-release-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify active web files, immutable bundle, unchanged APK and screenshots over public HTTPS
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {createHash} from 'node:crypto';
+          import {writeFile,unlink} from 'node:fs/promises';
+          import {execFileSync} from 'node:child_process';
+          const root='https://traxio-preview.vercel.app';
+          const digest=b=>createHash('sha256').update(b).digest('hex');
+          async function get(path){const r=await fetch(root+path,{signal:AbortSignal.timeout(45000)});assert.equal(r.status,200,path);return r;}
+          const html=await (await get('/')).text();assert.ok(html.includes('assets/traxelo-location-ui.js'));assert.ok(html.includes('assets/traxelo-visits-ui.js'));
+          const expected='cc6c358d48d27b8b44ba5cfd3343813f0c7907d0982a172dcda59017efcc295b';let manifest;for(let n=0;n<24;n++){manifest=await (await get('/updates/android/manifest.json')).json();if(manifest.version===expected)break;await new Promise(r=>setTimeout(r,5000));}assert.equal(manifest.version,expected);assert.equal(manifest.packageId,'app.traxio.mobile');
+          const archive=Buffer.from(await (await get(manifest.bundle)).arrayBuffer());assert.equal(archive.length,manifest.bytes);assert.equal(digest(archive),manifest.sha256);
+          const files=Object.entries(manifest.files),archivePath='/tmp/traxelo-verified-location-update.zip';await writeFile(archivePath,archive);
+          for(const [path,hash]of files){assert.ok(!path.startsWith('/')&&!path.split('/').includes('..'));const bytes=execFileSync('unzip',['-p',archivePath,path],{maxBuffer:25000000});assert.equal(digest(bytes),hash,path);}await unlink(archivePath);
+          const apk=Buffer.from(await (await get('/downloads/traxio-android-testes.apk')).arrayBuffer());assert.equal(digest(apk),'6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2');
+          const evidence=await (await get('/docs/captures/location-android/android-updates.json')).json();assert.equal(evidence.expected,manifest.version);assert.equal(evidence.checks.length,10);assert.ok(!evidence.error);
+          for(const name of ['android-location-tablet.png','android-location-landscape-menu.png','android-visit-report.png']){const b=Buffer.from(await (await get('/docs/captures/location-android/'+name)).arrayBuffer());assert.ok(b.length>50000);assert.equal(b.subarray(1,4).toString(),'PNG');}
+          assert.ok((await (await get('/docs/visits-and-location-review.html')).text()).includes('Visitas, Excel'));const example=Buffer.from(await (await get('/docs/examples/visit-report-example.xlsx')).arrayBuffer());assert.equal(example.subarray(0,2).toString(),'PK');
+          const status=await (await get('/api/geolocation-benchmark')).json();assert.deepEqual(status.configured,{geoapify:true,tomtom:true});
+          console.log(JSON.stringify({website:200,manifestVersion:manifest.version,validatedFiles:files.length,allNativeResourcesVerifiedInsideArchive:true,archiveBytes:archive.length,archiveSHA256:manifest.sha256,apkBytes:apk.length,apkUnchanged:true,nativeChecks:evidence.checks.length,screenshotsVerified:3,realCustomerDataUsed:false,providerQueriesPerformed:false}));
+          JS
