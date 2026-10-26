@@ -20,7 +20,11 @@ A consulta agregada de leitura à carteira real foi recusada pelo conector Supab
 
 ## Atualizações automáticas
 
-O APK antigo não possui o mecanismo: é necessária uma atualização inicial por instalação sobre a versão existente, preservando a assinatura, o package ID `app.traxio.mobile`, o callback OAuth e a origem `https://localhost` do armazenamento.
+O APK antigo não possui o mecanismo. O teste de instalação sobre o APK anteriormente distribuído confirmou `INSTALL_FAILED_UPDATE_INCOMPATIBLE`: as assinaturas de testes são diferentes. A rotina antiga tentou guardar um keystore num caminho que não existia; o log confirma que ele não foi salvo. Não é possível recuperar a chave privada a partir do APK.
+
+**Não desinstalar o aplicativo existente sem preservar seus dados.** O site atualizado pode ser usado enquanto isso. Foi preparado um procedimento de migração assistida por computador, para APKs de teste depuráveis: preserva o APK anterior e todo o armazenamento WebView, preferências, arquivos e bancos locais; verifica hashes; pede confirmação explícita; instala e restaura; verifica cada arquivo original e mantém possibilidade de retorno. Os backups ficam somente no computador do proprietário e não devem ser enviados pelo chat. O procedimento não altera o package ID `app.traxio.mobile`, o callback OAuth ou a origem `https://localhost`. Consulte [instruções de migração](android-migration.md).
+
+A ferramenta padrão apenas faz backup. A troca exige `--migrate` e a digitação de `MIGRAR`, depois da conferência do backup. Não foi executada nenhuma desinstalação no aparelho do proprietário. O teste usa somente o emulador com registros sintéticos. Uma chave de distribuição durável deve ser configurada em armazenamento secreto da CI antes de futuras alterações nativas; cache temporário não é um cofre de assinatura.
 
 Depois, a versão Android verifica um manifesto HTTPS da hospedagem de testes e baixa um pacote web compatível em segundo plano. A versão é ativada na próxima abertura completa, sem recarregar a página nem interromper uma navegação em andamento. Voltar de outro aplicativo ou girar a tela não ativa o pacote pendente.
 
@@ -31,6 +35,18 @@ O pacote atual e o anterior são mantidos. Uma versão corrompida é recusada; u
 Novas permissões, plugins ou mudanças incompatíveis no runtime exigem outro APK. A compatibilidade desta versão é `capacitor8-20261026`, versão nativa 2. A verificação ocorre na abertura e, no máximo uma vez por hora, ao retornar ao aplicativo.
 
 O fluxo de publicação mantém `candidate.json` separado do manifesto ativo. Somente o emulador de testes, configurado por ADB, usa o canal candidato. Depois dos testes, o pacote validado é promovido para `manifest.json`. Não há serviço pago adicional de atualização contratado.
+
+## APK e validação final da migração
+
+APK Android 1.1, código nativo 2, 16.171.451 bytes. SHA-256: `6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2`.
+
+A [execução final de migração e atualização](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40265253145) foi aprovada. Instalou o APK anterior, criou registros e histórico sintéticos, preservou e conferiu 44 arquivos privados, fez a transição de assinatura após confirmação de backup e verificou os clientes, os campos e o histórico no novo APK. O conteúdo privado do backup não foi publicado; somente a evidência de hashes e resultados.
+
+Depois, o mesmo APK baixou o pacote por HTTPS, permaneceu na versão em execução enquanto ele estava pendente, aplicou a versão na próxima abertura, manteve os dados e confirmou uma segunda abertura saudável. O teste corrompeu um arquivo baixado no emulador: a versão foi recusada, o aplicativo voltou ao conteúdo incluído no APK e o pacote ruim não foi reinstalado em ciclo. Os cinco controles passaram. Não foi necessário recompilar o APK durante esses retestes.
+
+Versão web automática validada: `9c6e912577cdab125760ba296ee29b934540cf13af6eb1b37a7868700110308f`. Pacote: 10.600.576 bytes, 55 arquivos declarados, SHA-256 `7297c3360c2204adb1ce634764c63eae9749c8f508bd3b873dbbe25454812c67`.
+
+As 14 verificações Android de rotas, GPS, desvio, teclado, rotação e confirmação passaram com o novo código. O teste público de três perfis também [passou](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40263683049).
 
 ## Validação
 
@@ -45,6 +61,9 @@ Os testes usam dados isolados; os testes de ruas mantêm o serviço de roteament
 
 Código de aplicação: `d669dc0d3a2e7745e385f58d6f2f65480d1ca1a7`. Commits posteriores de documentação, rotinas e evidências não mudam a interface compilada.
 
-Execuções: [interface e carteira](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40263245497), [confirmações](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40261845864), [planejamento e regressão](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40261957044), [Android e atualização](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40261957042).
+Execuções: [interface e carteira](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40263245497), [confirmações](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40261845864), [planejamento e regressão](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40263683066), [Android e atualização](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40261957042).
 
 Na execução inicial de planejamento, os testes passaram e o envio das capturas falhou por concorrência no Git. O envio ganhou tentativas limitadas com rebase. A primeira tentativa da atualização Android terminou antes de o pacote candidato estar publicado; o mesmo APK foi preservado para o reteste, sem recompilação. Os resultados finais do APK e da publicação são registrados nos arquivos JSON de evidência.
+
+
+Evidências finais: [migração dos arquivos](captures/android/android-migration-files.json), [clientes e histórico](captures/android/android-upgrade.json), [atualizações automáticas e recuperação](captures/android/android-updates.json), [identidade do APK](captures/android/android-candidate.json). A [galeria](scenic-review.html) inclui quinze capturas anteriores preservadas por hash e as novas capturas de quatro perfis.

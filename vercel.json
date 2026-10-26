@@ -56,6 +56,23 @@
           "value": "no-store"
         }
       ]
+    },
+    {
+      "source": "/downloads/traxelo-migrar.py",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/octet-stream"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=traxelo-migrar.py"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ]
 }
