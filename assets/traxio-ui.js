@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
   el('detailEdit').addEventListener('click',()=>{ editorTitle.textContent='Editar cliente'; editor.showModal(); });
   el('saveClient').addEventListener('click',()=>{ if(el('saveStatus').textContent === 'Cliente salvo.') editor.close(); });
   el('adjustPin').addEventListener('click',()=>{if(adjustingPin)editor.close();});
-  el('backToClient').addEventListener('click',()=>{editorTitle.textContent=editingClientId?'Editar cliente':'Cadastrar cliente';if(!editor.open)editor.showModal();});
+  el('backToClient').addEventListener('click',()=>{if(window.traxeloPinController)return;editorTitle.textContent=editingClientId?'Editar cliente':'Cadastrar cliente';if(!editor.open)editor.showModal();});
   const originalOpenClientLocation=openClientLocation;
   openClientLocation=(...args)=>{originalOpenClientLocation(...args);editorTitle.textContent='Localizar cliente';if(!editor.open)editor.showModal();el('address').focus();};
   const remove = button('Excluir cliente',()=>{

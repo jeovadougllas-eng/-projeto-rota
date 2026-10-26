@@ -1,0 +1,31 @@
+name: Map customer lookup, visible navigation and direct pin confirmation
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/location-workflow.yml','assets/traxelo-location-ui.js','assets/traxelo-glass.css','index.html','tests/location-workflow.spec.js','playwright.locations.config.js']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: location-workflow-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run check && npm run test:geolocation
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Phone WebKit, desktop and Android-sized tablets; synthetic customer data only
+        run: npx playwright test --config=playwright.locations.config.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: customer-location-workflow-evidence
+          retention-days: 30
+          path: test-results-locations/

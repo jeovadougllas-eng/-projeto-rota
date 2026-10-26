@@ -1,14 +1,18 @@
 import {validateQuery,compareProvider,combine} from '../lib/geolocation-benchmark.mjs';
 const users=new Map();
+const nativeOrigins=['https://localhost','capacitor://localhost','http://localhost'];
 const AUTH='https://ggsptbcgpdakxsdjrldd.supabase.co';
 const PUBLIC_KEY='sb_publishable_n0MBYWwtja-mxyrzGJ-yVA_otDB8Kwn';
 export default async function handler(req,res){
+ const origin=req.headers.origin;
+ if(nativeOrigins.includes(origin)){res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Access-Control-Allow-Headers','Authorization, Content-Type');res.setHeader('Access-Control-Allow-Methods','GET, POST, OPTIONS');res.setHeader('Vary','Origin');}
+ if(req.method==='OPTIONS')return nativeOrigins.includes(origin)?res.status(204).end():res.status(403).end();
  res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');
  const configured={geoapify:!!process.env.GEO_BENCH_GEOAPIFY_KEY,tomtom:!!process.env.GEO_BENCH_TOMTOM_KEY};
  if(req.method==='GET')return res.status(200).json({readOnly:true,configured});
  const error=(code,message)=>res.status(code).json({error:message});
  if(req.method!=='POST'){res.setHeader('Allow','GET, POST');return error(405,'Método não permitido.');}
- if(req.headers.origin&&!['https://traxio-preview.vercel.app','http://127.0.0.1:4173'].includes(req.headers.origin))return error(403,'Origem não permitida.');
+ if(req.headers.origin&&!['https://traxio-preview.vercel.app','http://127.0.0.1:4173',...nativeOrigins].includes(req.headers.origin))return error(403,'Origem não permitida.');
  const authorization=req.headers.authorization||'';if(!/^Bearer \S+$/.test(authorization))return error(401,'Entre na sua conta do aplicativo.');
  let q;try{const body=typeof req.body==='string'?JSON.parse(req.body):req.body;if(JSON.stringify(body||{}).length>4096)throw Error('Endereço muito longo.');q=validateQuery(body);}catch(e){return error(400,e.message);}
  let user;

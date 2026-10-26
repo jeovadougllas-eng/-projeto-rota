@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    for(const c of [...result.blocked,...result.unverified]){
     const row=node('article');row.className='location-review-row';const status=P.location(c);
     row.append(node('strong',null,c.name),node('p',null,(status.kind==='unverified'?'Coordenadas importadas ou não verificadas.':geoCandidates.get(c.id)?.error||c.locationCandidate?.error||'Sem localização exata confirmada.')+' '+(c.address||'Endereço ausente')));
-    const edit=node('button',null,'Corrigir endereço / confirmar no mapa');edit.type='button';edit.className='secondary';edit.onclick=()=>openClientLocation(c.id,c.locationCandidate||geoCandidates.get(c.id));row.append(edit);reviewList.append(row);
+    const edit=node('button',null,'Corrigir endereço / confirmar no mapa');edit.type='button';edit.className='secondary';edit.onclick=()=>window.traxeloReviewClient?window.traxeloReviewClient(c.id):openClientLocation(c.id,c.locationCandidate||geoCandidates.get(c.id));row.append(edit);reviewList.append(row);
    }
    for(const id of result.unloaded)reviewList.append(node('p',null,'Cliente '+id+': aguardando registro da sincronização. A seleção foi preservada.'));
   }

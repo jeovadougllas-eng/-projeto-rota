@@ -15,4 +15,4 @@ console.log(`Validated ${scripts.length} inline scripts, the presentation adapte
 for(const file of ['traxio-planner.js','traxio-route-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
 
-for(const file of ['traxelo-updates.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+for(const file of ['traxelo-updates.js','traxelo-location-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});

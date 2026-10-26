@@ -117,12 +117,12 @@ for(const c of clients)if(c.locationCandidate&&c.locationCandidate.fingerprint==
 function clientGeoQuery(c){return TraxioGeo.parse(c)}
 function restoreGeoCandidates(){for(const c of clients){const fingerprint=JSON.stringify(TraxioGeo.parse(c)),cached=geoCandidates.get(c.id);if(cached?.fingerprint&&cached.fingerprint!==fingerprint)geoCandidates.delete(c.id);if(!geoCandidates.has(c.id)&&c.locationCandidate?.fingerprint===fingerprint)geoCandidates.set(c.id,c.locationCandidate)}}
 async function geoToken(){try{return (await authClient?.auth.getSession())?.data?.session?.access_token}catch{return null}}
-async function geocodeOneSelected(c,{force=false}={}){
- if((valid(c.lat,c.lon)&&(TraxioPlanner.location(c).kind==='confirmed'||!force))||geoCandidates.has(c.id)||geoInFlight.has(c.id))return;
+async function geocodeOneSelected(c,{force=false,lookup=null}={}){
+ if((valid(c.lat,c.lon)&&(TraxioPlanner.location(c).kind==='confirmed'||!force))||(!force&&geoCandidates.has(c.id))||geoInFlight.has(c.id))return;
  geoInFlight.add(c.id);updateMapSelection();
  const fingerprint=JSON.stringify(TraxioGeo.parse(c));
  try{
-  const result=await TraxioGeo.locate(c,{token:await geoToken(),refresh:force});
+  const result=await (lookup||TraxioGeo.locate)(c,{token:await geoToken(),refresh:force});
   const current=clients.find(x=>String(x.id)===String(c.id));
   // Editing or deleting a client while a lookup runs invalidates its result.
   if(!current||(valid(current.lat,current.lon)&&(TraxioPlanner.location(current).kind==='confirmed'||!force))||JSON.stringify(TraxioGeo.parse(current))!==fingerprint)return;
@@ -139,13 +139,13 @@ async function geocodeOneSelected(c,{force=false}={}){
  finally{geoInFlight.delete(c.id);geoScheduled.delete(c.id);updateMapSelection();renderWorkspace()}
 }
 const geoJobs=new Map();let geoWorkerRunning=false;
-function queueClientGeocode(ids,{force=false}={}){
+function queueClientGeocode(ids,{force=false,lookup=null}={}){
  restoreGeoCandidates();const requested=new TraxioPlanner.IdSet(ids),waits=[];
  for(const c of clients){
   if(!requested.has(c.id)||(!force&&(valid(c.lat,c.lon)||geoCandidates.has(c.id))))continue;
   const id=String(c.id);let job=geoJobs.get(id);
-  if(!job){let resolve;const promise=new Promise(done=>resolve=done);job={id,force,priority:selectedIds.has(c.id),promise,resolve};geoJobs.set(id,job);geoScheduled.add(c.id);}
-  else{job.force=job.force||force;job.priority=job.priority||selectedIds.has(c.id);}
+  if(!job){let resolve;const promise=new Promise(done=>resolve=done);job={id,force,lookup,priority:selectedIds.has(c.id),promise,resolve};geoJobs.set(id,job);geoScheduled.add(c.id);}
+  else{job.force=job.force||force;if(lookup)job.lookup=lookup;job.priority=job.priority||selectedIds.has(c.id);}
   waits.push(job.promise);
  }
  if(!geoWorkerRunning&&geoJobs.size){
@@ -154,7 +154,7 @@ function queueClientGeocode(ids,{force=false}={}){
    try{while(geoJobs.size){
     const job=[...geoJobs.values()].find(j=>j.priority)||geoJobs.values().next().value;
     const c=clients.find(c=>String(c.id)===job.id);
-    try{if(c)await geocodeOneSelected(c,{force:job.force});}
+    try{if(c)await geocodeOneSelected(c,{force:job.force,lookup:job.lookup});}
     catch(error){console.warn('Falha ao verificar localização:',error.message);}
     finally{geoJobs.delete(job.id);geoScheduled.delete(job.id);job.resolve();}
    }}finally{geoWorkerRunning=false;}
@@ -480,7 +480,7 @@ $('detailMap').onclick=()=>{const c=clients.find(x=>x.id===activeDetailId);$('cl
 $('detailEdit').onclick=()=>{const c=clients.find(x=>x.id===activeDetailId);$('clientDialog').close();if(!c)return;switchTab('clientes');$('name').value=c.name;$('address').value=c.address||'';$('houseNumber').value='';$('complement').value='';$('cep').value=c.cep||'';$('lat').value=c.lat??'';$('lon').value=c.lon??'';$('priority').value=c.priority||2;editingClientId=c.id;$('saveStatus').textContent='Editando cadastro. O cliente original será preservado até salvar.'};
 function renderDashboard(){const root=$('dashboardClients');if(!root)return;root.replaceChildren();const q=norm($('dashboardSearch').value);const filtered=clients.filter(c=>!q||norm(c.name+' '+c.address+' '+(c.importFields||[]).map(f=>f.value).join(' ')).includes(q));if(!filtered.length){root.textContent=clients.length?'Nenhum cliente encontrado.':'Cadastre seu primeiro cliente para começar.';return}for(const c of filtered){const tile=document.createElement('div');tile.className='dashboard-client';const head=document.createElement('div');head.className='dashboard-client-head';const btn=document.createElement('button');btn.className='client-link';btn.textContent=c.name;btn.onclick=()=>viewClient(c.id);tile.tabIndex=0;tile.setAttribute('role','button');tile.setAttribute('aria-label','Abrir ficha de '+c.name);tile.onclick=e=>{if(e.target!==btn)viewClient(c.id)};tile.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();viewClient(c.id)}};head.append(btn,makePriority(c.priority));const address=document.createElement('p');address.textContent=c.address||'Endereço não informado';tile.append(head,address);root.append(tile)}}
 $('dashboardSearch')?.addEventListener('input',renderDashboard);
-function renderWorkspace(){restoreGeoCandidates();const root=$('mapClientList');if(!root)return;root.replaceChildren();const q=norm($('mapClientSearch').value);const selected=new TraxioPlanner.IdSet(selectedIds);const filtered=clients.filter(c=>(activePriorityFilter==='all'||String(c.priority||2)===activePriorityFilter)&&regionMatches(c)&&(!q||norm(c.name+' '+c.address+' '+(c.importFields||[]).map(f=>f.value).join(' ')).includes(q)));if(!filtered.length){root.textContent='Nenhum cliente corresponde ao filtro.';return}for(const c of filtered){const tile=document.createElement('div');tile.className='client-tile';const top=document.createElement('div');top.className='client-tile-top';const ck=document.createElement('input');ck.type='checkbox';ck.checked=selected.has(c.id);ck.disabled=false;ck.setAttribute('aria-label','Selecionar '+c.name+' para a rota');ck.onchange=()=>{if(ck.checked)selectedIds.add(c.id);else selectedIds.delete(c.id);const original=[...document.querySelectorAll('#routeChoices input')].find(x=>x.value===String(c.id));if(original)original.checked=ck.checked;updateSelectedCount();updateMapSelection();if(ck.checked)queueSelectedGeocode()};const name=document.createElement('strong');name.textContent=c.name;top.append(ck,name,makePriority(c.priority));const addr=document.createElement('div');addr.className='tile-address';addr.textContent=(c.address||'Endereço não informado')+(!valid(c.lat,c.lon)?' · '+(geoCandidates.get(c.id)?.error||'Localização pendente'):'');const actions=document.createElement('div');actions.className='tile-actions';const info=document.createElement('button');info.className='secondary';info.textContent='Ver ficha';info.onclick=()=>viewClient(c.id);const locate=document.createElement('button');locate.className='secondary';locate.textContent='Ver no mapa';locate.disabled=!valid(c.lat,c.lon);locate.onclick=()=>{initMap();map?.flyTo({center:[c.lon,c.lat],zoom:16})};const locateEdit=document.createElement('button');locateEdit.className='secondary';locateEdit.textContent=valid(c.lat,c.lon)?'Conferir ponto':'Localizar cliente';locateEdit.onclick=()=>openClientLocation(c.id);const candidate=geoCandidates.get(c.id);
+function renderWorkspace(){restoreGeoCandidates();const root=$('mapClientList');if(!root)return;root.replaceChildren();const q=norm($('mapClientSearch').value);const selected=new TraxioPlanner.IdSet(selectedIds);const filtered=clients.filter(c=>(activePriorityFilter==='all'||String(c.priority||2)===activePriorityFilter)&&regionMatches(c)&&(!q||norm(c.name+' '+c.address+' '+(c.importFields||[]).map(f=>f.value).join(' ')).includes(q)));if(!filtered.length){root.textContent='Nenhum cliente corresponde ao filtro.';return}for(const c of filtered){const tile=document.createElement('div');tile.className='client-tile';tile.dataset.clientId=String(c.id);const top=document.createElement('div');top.className='client-tile-top';const ck=document.createElement('input');ck.type='checkbox';ck.checked=selected.has(c.id);ck.disabled=false;ck.setAttribute('aria-label','Selecionar '+c.name+' para a rota');ck.onchange=()=>{if(ck.checked)selectedIds.add(c.id);else selectedIds.delete(c.id);const original=[...document.querySelectorAll('#routeChoices input')].find(x=>x.value===String(c.id));if(original)original.checked=ck.checked;updateSelectedCount();updateMapSelection();if(ck.checked)queueSelectedGeocode()};const name=document.createElement('strong');name.textContent=c.name;top.append(ck,name,makePriority(c.priority));const addr=document.createElement('div');addr.className='tile-address';addr.textContent=(c.address||'Endereço não informado')+(!valid(c.lat,c.lon)?' · '+(geoCandidates.get(c.id)?.error||'Localização pendente'):'');const actions=document.createElement('div');actions.className='tile-actions';const info=document.createElement('button');info.className='secondary';info.textContent='Ver ficha';info.onclick=()=>viewClient(c.id);const locate=document.createElement('button');locate.className='secondary';locate.textContent='Ver no mapa';locate.disabled=!valid(c.lat,c.lon);locate.onclick=()=>{initMap();map?.flyTo({center:[c.lon,c.lat],zoom:16})};const locateEdit=document.createElement('button');locateEdit.className='secondary';locateEdit.textContent=valid(c.lat,c.lon)?'Conferir ponto':'Localizar cliente';locateEdit.onclick=()=>openClientLocation(c.id);const candidate=geoCandidates.get(c.id);
  if(valid(candidate?.lat,candidate?.lon)&&!valid(c.lat,c.lon)){
   const confirm=document.createElement('button');confirm.type='button';confirm.className='secondary';
   confirm.textContent='Conferir pin sugerido';confirm.onclick=()=>openClientLocation(c.id,candidate);
@@ -1093,5 +1093,5 @@ document.getElementById('traxioResetForm').addEventListener('submit',async e=>{
 e.preventDefault();const form=e.currentTarget,b=form.querySelector('[type=submit]'),msg=document.getElementById('traxioResetMessage');b.disabled=true;
 try{const {error}=await authClient.auth.updateUser({password:new FormData(form).get('password')});if(error)throw error;msg.textContent='Senha atualizada com sucesso.';setTimeout(()=>{document.getElementById('traxioResetPanel').hidden=true;form.reset()},1000)}catch(err){msg.textContent='Não foi possível atualizar: '+err.message}finally{b.disabled=false}
 });
-</script><nav id="traxio-legal-links" aria-label="Documentos legais"><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a><a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de Serviço</a></nav><script src="assets/traxio-ui.js"></script><script src="assets/traxelo-updates.js"></script><script src="assets/traxio-route-ui.js"></script></body></html>
+</script><nav id="traxio-legal-links" aria-label="Documentos legais"><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a><a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de Serviço</a></nav><script src="assets/traxio-ui.js"></script><script src="assets/traxelo-updates.js"></script><script src="assets/traxio-route-ui.js"></script><script src="assets/traxelo-location-ui.js"></script></body></html>
 

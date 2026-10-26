@@ -133,3 +133,55 @@ body.traxio-ui-ready #painel .dashboard-service-note{background:#022d397d;border
  body.traxio-ui-ready .tab-title p{font-size:13px}
 }
 @media(prefers-reduced-transparency:reduce){body.traxio-ui-ready{--glass:#053340;--glass-soft:#073d49}}
+/* Navigation is a sibling of the scroll container, keeping fixed controls visible in WebKit. */
+body.traxio-ui-ready>nav.tabs{z-index:50;visibility:visible}
+body.auth-locked>nav.tabs{visibility:hidden}
+.mobile-nav-toggle,.nav-backdrop{display:none}
+.client-location-search{margin:0 0 16px;padding:16px!important}
+.client-location-search>summary{font-weight:700;cursor:pointer;min-height:44px;line-height:1.4;display:list-item!important}
+.client-location-search p{font-size:14px;line-height:1.5}
+.location-search-controls{display:flex;align-items:end;flex-wrap:wrap;gap:12px}
+.location-search-controls label{display:flex;flex-direction:column;gap:6px;flex:1 1 200px;font-size:14px}
+.location-search-controls button{flex:1 1 210px}
+#locationSearchReviewList{max-height:320px;overflow:auto;overscroll-behavior:contain}
+.location-search-review{padding:14px 0;border-top:1px solid #72c8ce55;overflow-wrap:anywhere}
+.location-search-review p{margin:6px 0}
+.traxelo-saved-pin{background:#087e73!important;border:2px solid white!important;border-radius:50%;color:#d5fa51!important;width:30px;height:30px;min-height:30px!important;padding:0!important;box-shadow:0 2px 6px #001b38aa;cursor:pointer}
+.location-save-notice{position:sticky;top:0;z-index:35;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin:0 0 12px;background:#073944f5;border:1px solid #bce67c;border-radius:12px;font-size:14px;line-height:1.45;color:#f1fbf6}
+.location-save-notice>span{flex:1 1 200px}
+.location-save-notice button{min-height:44px}
+.pin-confirm-panel{position:fixed;z-index:80;bottom:12px;left:calc(var(--sidebar-w) + 16px);right:16px;background:#033340f7;border:2px solid #c8f329;border-radius:14px;padding:14px 18px;box-shadow:0 5px 35px #001c2f99;color:white;max-height:40dvh;overflow:auto}
+.pin-confirm-panel strong{font-size:17px;display:block;overflow-wrap:anywhere}
+.pin-confirm-panel p{font-size:14px;line-height:1.4;margin:6px 0 10px;color:#e2efeb}
+.pin-confirm-panel .row{display:flex;flex-wrap:wrap;gap:10px}
+.pin-confirm-panel button{min-height:48px;font-size:16px;flex:1 1 180px}
+body.pin-mode #backToClient{display:inline-flex;align-items:center;justify-content:center}
+body.pin-mode #mapa :is(#routePlannerPanel,#clientLocationSearch,.route-mode-tabs,#routeActionBar){display:none!important}
+body.pin-mode #mapa .workspace-map{grid-column:1/-1;grid-row:1}
+body.pin-mode #mapa .workspace{padding-bottom:190px}
+body.pin-mode #mapa #map{height:clamp(260px,calc(100dvh - var(--header-h) - 210px),620px)}
+body.pin-mode #mapa .workspace-map>.map-hint{display:none}
+body.auth-locked #pinConfirmPanel{display:none!important}
+body.traxio-ui-ready [hidden]{display:none!important}
+@media(max-width:650px){
+ body.traxio-ui-ready>header{gap:6px;padding:5px 8px;z-index:110}
+ body.traxio-ui-ready .mobile-nav-toggle{display:inline-flex;align-items:center;justify-content:center;flex:none;background:#06444d;color:white;border:1px solid #80c9c766;border-radius:8px;width:44px;height:44px;min-height:44px;padding:0;font-size:25px}
+ body.traxio-ui-ready .header-brand{flex:0 1 125px;min-width:90px;margin-right:0}
+ body.traxio-ui-ready .header-brand .brand-crop{width:100%;max-width:125px}
+ body.traxio-ui-ready .theme-toggle{width:44px;min-height:44px;margin-left:auto}
+ body.traxio-ui-ready #accountToggle{min-height:44px;max-width:100px;min-width:44px;padding:4px 6px}
+ body.traxio-ui-ready #authIdentity{max-width:50px;font-size:10px;overflow:hidden;text-overflow:ellipsis}
+ body.traxio-ui-ready .account-avatar{width:22px;height:22px;flex:none}
+ body.traxio-ui-ready>nav.tabs{top:var(--header-h);bottom:0;left:0;width:var(--sidebar-w);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+ body.traxio-ui-ready.nav-expanded>nav.tabs{width:min(280px,84vw);z-index:100;background:#032f3df5;padding:16px 12px}
+ body.traxio-ui-ready.nav-expanded>nav.tabs>button{min-height:56px;flex-direction:row;justify-content:flex-start;text-align:left;gap:12px;font-size:17px;padding:12px 14px}
+ body.traxio-ui-ready.nav-expanded .kit-nav-icon{width:24px}
+ body.traxio-ui-ready.nav-expanded .nav-backdrop:not([hidden]){display:block;position:fixed;z-index:95;inset:var(--header-h) 0 0;border:0;border-radius:0;background:#001b2c99;padding:0}
+ body.traxio-ui-ready.nav-expanded main{pointer-events:none}
+ .pin-confirm-panel{left:calc(var(--sidebar-w) + 8px);right:8px;bottom:max(8px,env(safe-area-inset-bottom));padding:12px;max-height:45dvh}
+ .pin-confirm-panel strong{font-size:15px}
+ .pin-confirm-panel p{font-size:13px}
+ .pin-confirm-panel .row{gap:6px}
+ .pin-confirm-panel button{flex-basis:100%;min-height:44px;font-size:14px;padding:10px}
+ body.pin-mode #mapa .workspace{padding-bottom:230px}
+}
