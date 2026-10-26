@@ -39,3 +39,17 @@ References consulted 2026-10-26:
 - https://docs.tomtom.com/places-search-api/documentation/places-search/discover
 - https://apidocs.geoapify.com/docs/geocoding/forward-geocoding/
 - https://supabase.com/docs/reference/javascript/auth-getuser
+
+## Results actually executed on 2026-10-26
+
+- 35 Node cases passed (23 existing + 12 benchmark): local Node 24 with `--test-isolation=none`, and CI Node 22.
+- 18 Playwright cases passed across desktop 1440×1000, tablet portrait 768×1024 and landscape 1024×768. Synthetic customer data and fake provider replies; no real account/portfolio or provider credentials used in fixtures. Includes 3 screenshots in the CI artifact.
+- 3 browser checks passed against the actual public URL in the same three profiles. Verified public HTML, both server-side configured flags, login requirement, disabled unauthenticated controls, no horizontal overflow and HTTP 401 for unauthorized POSTs. Includes 3 public-page screenshots in the CI artifact. No actual geocoding call in these checks.
+- Public GET returned HTTP 200 and `{readOnly:true,configured:{geoapify:true,tomtom:true}}`.
+- `main` remains `84b23d405fa141854314267b528544a184e89f23`.
+- Deployed application source: `7995e487825fada155172dc330ea321bf11673af`, deployment `dpl_EgGNmejgbAUmTi25uiiCTggV7F5t` on isolated TEST project `traxio-preview`. APK and automatic Android web bundle are unchanged.
+- Provider key validity, actual portfolio coverage, 80% target and physical customer entrance precision remain UNMEASURED until an authenticated owner run. No recovered or invented customer coordinates are claimed.
+
+Reproducible CI evidence and screenshots:
+- https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40365148661 (35 Node + 18 browser)
+- https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40365571008 (3 real public-page checks)
