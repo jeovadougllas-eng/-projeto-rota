@@ -1,4 +1,4 @@
-name: Published confirmed portfolio on real streets
+name: Published scenic pages and confirmed portfolio on real streets
 on:
   push:
     branches: [dev/traxelo-android-routes]
