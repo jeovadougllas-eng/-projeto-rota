@@ -67,3 +67,12 @@ Na execução inicial de planejamento, os testes passaram e o envio das capturas
 
 
 Evidências finais: [migração dos arquivos](captures/android/android-migration-files.json), [clientes e histórico](captures/android/android-upgrade.json), [atualizações automáticas e recuperação](captures/android/android-updates.json), [identidade do APK](captures/android/android-candidate.json). A [galeria](scenic-review.html) inclui quinze capturas anteriores preservadas por hash e as novas capturas de quatro perfis.
+
+
+## Publicação final verificada
+
+A [verificação pública final](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40266033536) passou: site e APK públicos HTTP 200, download completo com o SHA-256 do APK instalado, todos os módulos web iguais à fonte, 55 arquivos do pacote automático conferidos, oito originais novos intactos, manifesto sem cache e comparação dos dois APKs com a prova real da migração. Os retornos OAuth Google web/Android e a recusa de uma URL não autorizada também passaram por cancelamento controlado, sem login pessoal nem escrita na carteira real.
+
+[Guia de instalação e migração](android-install.html). A versão anterior deve permanecer no aparelho até a conferência do backup; o site atualizado pode ser usado imediatamente.
+
+Principais fontes novas/alteradas: `index.html`, `assets/traxio-ui.js`, `assets/traxio-planner.js`, `assets/traxelo-glass.css`, `assets/scenes/`, `assets/traxelo-updates.js`, `mobile/native/`, scripts de compilação/migração/validação e workflows de carteira, rotas, Android e publicação. Package ID, callback OAuth e chaves persistidas foram mantidos. A main permanece em `84b23d405fa141854314267b528544a184e89f23`.
