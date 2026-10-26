@@ -39,8 +39,11 @@ jobs:
           git add docs/captures/portfolio-before/ docs/captures/portfolio-after/ docs/captures/scenic-after/
           if ! git diff --cached --quiet; then
             git commit -m "test: preserve brand and shared sidebar before and after evidence [skip ci]"
-            git pull --rebase origin "$GITHUB_REF_NAME"
-            git push origin "HEAD:$GITHUB_REF_NAME"
+            for attempt in 1 2 3; do
+              git pull --rebase origin "$GITHUB_REF_NAME"
+              if git push origin "HEAD:$GITHUB_REF_NAME"; then break; fi
+              if [ "$attempt" = 3 ]; then exit 1; fi
+            done
           fi
       - uses: actions/upload-artifact@v4
         if: always()
