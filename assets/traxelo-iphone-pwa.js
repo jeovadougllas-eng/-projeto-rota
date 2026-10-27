@@ -31,7 +31,7 @@ function positionTools(){
  if(!enabled){dialog.close();tools.remove();if(theme.parentElement!==header)header.insertBefore(theme,account);return;}
  if(theme.parentElement!==tools)tools.append(theme);if(button.parentElement!==tools)tools.append(button);
  const parent=document.body.classList.contains('auth-locked')?document.querySelector('#authScreen .auth-panel'):header;
- if(parent&&tools.parentElement!==parent){if(parent===header)header.insertBefore(tools,account);else parent.prepend(tools);}
+ if(parent&&tools.parentElement!==parent){if(parent===header)header.insertBefore(tools,account);else parent.insertBefore(tools,parent.children[1]||null);}
 }
 document.getElementById('accountToggle')?.setAttribute('aria-label','Abrir menu da conta');
 positionTools();standalone.addEventListener('change',positionTools);window.addEventListener('appinstalled',positionTools);
