@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "fd2fc36b8b634707c45a72fe507e6acd0e777ef77c7c201f8ccb65b70c894254",
+  "version": "177a819cc27fc811e2a9107e7e45d39ff9f27ecc7c7dd1e551e7f4d8d535c722",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -28,10 +28,13 @@
     "assets/scenes/mapa.webp": "ebf85eec05b5a10ba1de970d25789bd5cc41db70e171cdcf810bf139afe67b03",
     "assets/scenes/painel.webp": "7114657883554c88a006a8bd1e98acf3cebc9e7480dcb6e2a62ef10d8328822d",
     "assets/traxelo-geo-recovery.js": "be33f457d8ef25ec636ada7048fac319752f3e5d0d50f9439fad96bb486e44e3",
-    "assets/traxelo-glass.css": "fff24110b92e39a0b6cae76712a273bc2a7606dbd1493ad14dd4ee5c922bd2ee",
+    "assets/traxelo-glass.css": "32ee18cbaba79452a40b68ecf686fb1ba6227e07757fff010f1ada59fe2b63e1",
     "assets/traxelo-iphone-pwa.css": "3540f983fe46ffbbd3e4e3694c9a22c6c99e016c36b35f1a267fa3ca9a38cfb6",
     "assets/traxelo-iphone-pwa.js": "4099ad22c737eab369dab7629b1e9be62681d358d60f95c4510eefed25a67148",
-    "assets/traxelo-location-ui.js": "8e32688c88b2cf97973e266b90d5e8846755a3889af65917b24f29f2e2ca9ec3",
+    "assets/traxelo-location-ui.js": "4af12aac624eff0613e7f6752bcacb39b00c3ca7636524d5920b4da0f35f4af3",
+    "assets/traxelo-map-actions.js": "3446594d850b666090b09578a2d643b2336ace695a8e2f51b044489d8750e39a",
+    "assets/traxelo-navigation-model.js": "db449bf1cf591a0519efbe4a5e855ed967688c41e66c20763ac45b22e0607bdd",
+    "assets/traxelo-navigation-ui.js": "a806256e1316a59ac838b3fbca6f162c9b27810dbf0d04d8a13ed07f68051f23",
     "assets/traxelo-shell.css": "2d9086dd13caeb81cdd7941e32a83242894ab484ebef44be1c1b41a82abbfaa2",
     "assets/traxelo-updates.js": "4e855cf5af80451e0254728f93b1d55a8af5fb13b13ee4f004310f13e1cd658c",
     "assets/traxelo-visit-report.js": "793eac538b2f27a361aca2cbf5312646aab527fac5e448243f165f9ace68fd86",
@@ -50,7 +53,7 @@
     "assets/traxio-native.js": "5e3b460a10a70836c19d20a309e6c180de869d9a6de1fbbcd4c148922676ed04",
     "assets/traxio-planner.js": "ea1fbf8e2037d1ced814c50b376ac6de4ba336c81f0e0502f8e30cf9eca88840",
     "assets/traxio-route-scene.svg": "428a7abbba4612536c3c657d559ccf1cf50a2af684f15a4f806401d10db65dac",
-    "assets/traxio-route-ui.js": "f77c4bf3c4f2096bd962f663cd924d2f09eae5acf52343b2922bc8116dea1076",
+    "assets/traxio-route-ui.js": "f8bc45a6591b685c6127c9c606f791ca3b322004873c47c8e54aeb5abd3ed522",
     "assets/traxio-routes.css": "f20cb08bca3f3b28cd117c7bf226f21a2663a7917fb05cf4b61ffa618137a6f8",
     "assets/traxio-ui.js": "ae563efaa14df34d2202121b712a7702491478b42329c0588010a13ee510f5ed",
     "assets/traxio-wordmark-ui.svg": "cb92ddcdb81c7bb0e5ead9963a46ace9a870e22de53f9c5f077e1765ac9b34a9",
@@ -72,9 +75,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "23e1628906db9eed74ecfa9c0d4f974ed89d4c5fa27fc20e4f8e6e35fe8a587d"
+    "index.html": "809d9e0f59877c2baac1f5a7e2c7a463146589e70cdc80b7a4fc24d699bde471"
   },
-  "bundle": "/updates/android/bundles/fd2fc36b8b634707c45a72fe507e6acd0e777ef77c7c201f8ccb65b70c894254.zip",
-  "sha256": "b6da7540310b0a0fc766d3d3af16ee5c1117d11ce811b5fa7ac4c70a371fff74",
-  "bytes": 10883921
+  "bundle": "/updates/android/bundles/177a819cc27fc811e2a9107e7e45d39ff9f27ecc7c7dd1e551e7f4d8d535c722.zip",
+  "sha256": "eadc00662ef3db31dc39aa4048dec571b792602660e94ed6f866c351ce3b7648",
+  "bytes": 10891073
 }
