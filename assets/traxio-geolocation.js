@@ -30,8 +30,8 @@ function addressParts(c){
  const cityState=tail.find(t=>/^(.+?)\s*[-/]\s*([A-Za-z]{2})$/.test(t));
  if(cityState){const m=cityState.match(/^(.+?)\s*[-/]\s*([A-Za-z]{2})$/);if(stateCode(m[2])){if(!region&&!city)city=clean(m[1]);state=state||stateCode(m[2]);}}
  state=state||stateCode(tail.find(t=>stateCode(t)));
- const remainder=tail.filter(t=>!stateCode(t)&&!/^brasil|brazil$/i.test(t)&&!/^\d{5}-?\d{3}$/.test(t)&&t!==cityState);
- const isComplement=t=>/^(?:casa|loja|sala|bloco|apto?|apartamento|quadra|lote|conj(?:unto)?|fundos|km|andar)\b/i.test(t);
+ const remainder=tail.filter(t=>!stateCode(t)&&!['brasil','brazil'].includes(norm(t))&&!/^\d{5}-?\d{3}$/.test(t)&&t!==cityState);
+ const isComplement=t=>/^(?:casa|loja|sala|bloco|apto?|apartamento|quadra|lote|conj(?:unto)?|fundos|km|andar)(?:\b|(?=\d))/i.test(t);
  if(!region&&!city&&tokens.length>=3){const last=remainder.at(-1);if(regionName(last||'')&&!isComplement(last))city=last;}
  const unknown=remainder.filter(t=>norm(t)!==norm(city)&&norm(t)!==norm(district));
  const complements=unknown.filter(isComplement);

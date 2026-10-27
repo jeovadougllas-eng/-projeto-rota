@@ -23,3 +23,5 @@ test('official lookup fills missing imported boxes but never replaces a user-rev
  const enriched=geo.structured(imported,{fillMissing:true});assert.equal(enriched.street,'Rua Importada');assert.equal(enriched.houseNumber,'10');assert.equal(enriched.city,'Natal');assert.equal(enriched.neighborhood,'Tirol');assert.equal(enriched.complement,'Loja 2');
  const reviewed=geo.structured({...enriched,addressManuallyEdited:true,complement:''},{fillMissing:true});assert.equal(reviewed.complement,'');
 });
+
+test('an unlabelled city is never invented from a complement and an official street fills an empty import',()=>{assert.equal(geo.addressParts({address:'Rua X · nº 929 · CASA2'}).city,'');const c=geo.structured({address:'',city:'Natal'});c.companyData={fields:[['Logradouro','Rua Oficial'],['Número','40']]};assert.equal(geo.structured(c,{fillMissing:true}).street,'Rua Oficial');});
