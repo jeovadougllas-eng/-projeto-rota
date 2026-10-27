@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "177a819cc27fc811e2a9107e7e45d39ff9f27ecc7c7dd1e551e7f4d8d535c722",
+  "version": "004a7d951f4d865b10a7b45c231297bd19526e148b56f9d2c35182368b6207fb",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -35,12 +35,16 @@
     "assets/traxelo-map-actions.js": "3446594d850b666090b09578a2d643b2336ace695a8e2f51b044489d8750e39a",
     "assets/traxelo-navigation-model.js": "db449bf1cf591a0519efbe4a5e855ed967688c41e66c20763ac45b22e0607bdd",
     "assets/traxelo-navigation-ui.js": "a806256e1316a59ac838b3fbca6f162c9b27810dbf0d04d8a13ed07f68051f23",
+    "assets/traxelo-premium-model.js": "12c89912e8654d3d2941809be1b81be1591e601775dfb3b92dc7f7fac9273274",
+    "assets/traxelo-premium.css": "140884cabb9906189e1caf0fe259d24c3bdbd047ddf8cabe4c25daaa42c8321c",
     "assets/traxelo-shell.css": "2d9086dd13caeb81cdd7941e32a83242894ab484ebef44be1c1b41a82abbfaa2",
     "assets/traxelo-updates.js": "4e855cf5af80451e0254728f93b1d55a8af5fb13b13ee4f004310f13e1cd658c",
-    "assets/traxelo-visit-report.js": "793eac538b2f27a361aca2cbf5312646aab527fac5e448243f165f9ace68fd86",
+    "assets/traxelo-visit-report.js": "8c301c0013b40e40e20650fec6ea689cf53b060a7722e84ea98235a1a949169b",
     "assets/traxelo-visit-store.js": "4af4cc808836e6fef4704eeb8b659d0fd31924333ab1658665c2cdaf89f85e97",
     "assets/traxelo-visits-model.js": "b25a190d3e07cd826e4a9faebaa608e9ad108e20fff0e91b4d51fbce7522e4e1",
-    "assets/traxelo-visits-ui.js": "26478b8964d076df064c9af07d7b656fce5adba0ad4681d697c44d546496b210",
+    "assets/traxelo-visits-ui.js": "bddfb9973916137bf1c29f286c5c2a3f5550f478b541a56c818cb662863c6600",
+    "assets/traxelo-workspace-store.js": "b917b7b3cfb83f873bdb527752f3890f2129bb6f9539592e6ec555aea5bf3efb",
+    "assets/traxelo-workspace-ui.js": "806dbbfbbd1e3c4870ff32dfa3ed365cfc0dbaf707e70aa916c9b864965890e0",
     "assets/traxelo/approved/vector/README.md": "f40136673131642bd2daf74f0f3d1fa8d45efeb815594975f9213c5f9e409b71",
     "assets/traxelo/approved/vector/manifest.json": "e107b2f9fccf49a293940d786098dfbaaba4a995cd742433b2bce3df6e4cb4d9",
     "assets/traxelo/approved/vector/png_transparente/simbolo_estrada_pin.png": "ebfe996c8d86f616b7ce5668937b04a63a9aa3ace5588c4832d0aead931c7f2d",
@@ -53,7 +57,7 @@
     "assets/traxio-native.js": "5e3b460a10a70836c19d20a309e6c180de869d9a6de1fbbcd4c148922676ed04",
     "assets/traxio-planner.js": "ea1fbf8e2037d1ced814c50b376ac6de4ba336c81f0e0502f8e30cf9eca88840",
     "assets/traxio-route-scene.svg": "428a7abbba4612536c3c657d559ccf1cf50a2af684f15a4f806401d10db65dac",
-    "assets/traxio-route-ui.js": "f8bc45a6591b685c6127c9c606f791ca3b322004873c47c8e54aeb5abd3ed522",
+    "assets/traxio-route-ui.js": "7840937b5b6588aa9bcc792120f0f7d60ebe499edd1fe10fe3ad4af7859d79c0",
     "assets/traxio-routes.css": "f20cb08bca3f3b28cd117c7bf226f21a2663a7917fb05cf4b61ffa618137a6f8",
     "assets/traxio-ui.js": "ae563efaa14df34d2202121b712a7702491478b42329c0588010a13ee510f5ed",
     "assets/traxio-wordmark-ui.svg": "cb92ddcdb81c7bb0e5ead9963a46ace9a870e22de53f9c5f077e1765ac9b34a9",
@@ -75,9 +79,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "809d9e0f59877c2baac1f5a7e2c7a463146589e70cdc80b7a4fc24d699bde471"
+    "index.html": "9956eb6ab3339c837e44b3b4192745a727af0bb71a138e8f08bba0a238fea195"
   },
-  "bundle": "/updates/android/bundles/177a819cc27fc811e2a9107e7e45d39ff9f27ecc7c7dd1e551e7f4d8d535c722.zip",
-  "sha256": "eadc00662ef3db31dc39aa4048dec571b792602660e94ed6f866c351ce3b7648",
-  "bytes": 10891073
+  "bundle": "/updates/android/bundles/004a7d951f4d865b10a7b45c231297bd19526e148b56f9d2c35182368b6207fb.zip",
+  "sha256": "8792a4a349a78ecfed144d37a6583a618e539ab5c71a894d956b04a4bc033e4b",
+  "bytes": 10905696
 }
