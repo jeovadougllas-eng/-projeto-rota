@@ -218,3 +218,15 @@ body.pin-review-active #mapa .workspace-map{grid-column:1/-1;grid-row:1}
 body.pin-review-active #mapa .workspace{padding-bottom:210px}
 #pinClientAddress{font-size:13px;line-height:1.4;color:#d6ebe7;margin:4px 0}
 #pinReviewNext,#pinReviewSkip{min-height:44px}
+/* An obvious, keyboard-operable entry to the actual filtered results. */
+body.traxio-ui-ready #mapClientListDisclosure{margin-top:18px;border:2px solid #43ddc2;border-radius:12px;overflow:hidden}
+body.traxio-ui-ready #mapClientListDisclosure>summary{display:flex;align-items:center;gap:12px;list-style:none;min-height:66px;padding:15px 16px;background:linear-gradient(100deg,#007e79ed,#055263ed);color:#fff;font-size:18px;font-weight:700;line-height:1.3;cursor:pointer}
+#mapClientListDisclosure>summary::-webkit-details-marker{display:none}
+#mapClientListDisclosure>summary:before{content:'▸';font-size:25px;flex:none}
+#mapClientListDisclosure[open]>summary:before{content:'▾'}
+#mapClientListDisclosure .filtered-client-heading{flex:1;min-width:0}
+#mapClientListDisclosure .filtered-client-heading small{display:block;margin-top:4px;font-size:13px;font-weight:400;color:#dbf8ee}
+#mapClientListDisclosure #mapClientListCount{display:inline-flex;align-items:center;justify-content:center;min-width:32px;min-height:32px;padding:3px 7px;border-radius:20px;background:#e4ffed;color:#064844;font-size:16px}
+body.traxio-ui-ready #mapClientListDisclosure>.compact-list{max-height:min(65dvh,650px);padding:10px}
+body.traxio-ui-ready #clientRegionCorrection{margin:12px 0}
+body.traxio-ui-ready #clientRegionCorrection>summary{min-height:44px;font-weight:600;cursor:pointer}

@@ -100,7 +100,7 @@ test('correct city, district and state, geocode again and preserve original comm
  const rows=records.map((c,i)=>i?c:{...c,city:'São Paulo',neighborhood:'Bairro antigo',state:'SP',importFields:[{label:'Cidade',value:'São Paulo'},{label:'Bairro',value:'Bairro antigo'},{label:'UF',value:'SP'},{label:'CNPJ',value:'00.000.000/0001-00'}]});
  await setup(page,info.project.metadata.theme,rows);await select(page);
  await page.evaluate(()=>{TraxioGeo.locate=async c=>({status:'matched',query:TraxioGeo.parse(c),best:{lat:-5.81,lon:-35.21,provider:'photon_osm',confidence:'address'},candidates:[]});openClientLocation(1);});
- await expect(page.locator('#clientEditDialog')).toBeVisible();await page.locator('#clientRegionCorrection summary').click();
+ await expect(page.locator('#clientEditDialog')).toBeVisible();await page.locator('#clientRegionCorrection').evaluate(n=>n.open=true);
  await page.locator('#clientCity').fill('Natal');await page.locator('#clientNeighborhood').fill('Tirol');await page.locator('#clientState').fill('RN');await page.locator('#saveClient').click();
  await expect.poll(()=>page.evaluate(()=>clients.find(c=>String(c.id)==='1').locationVerification)).toBe('automatic_housenumber');
  const c=await page.evaluate(()=>clients.find(c=>String(c.id)==='1'));
@@ -149,3 +149,4 @@ test('large Android portrait viewport uses map-first layout and keeps the single
  const action=await page.locator('#routeActionBar').boundingBox();expect(action.y+action.height).toBeLessThanOrEqual(1921);
  await page.setViewportSize({width:1920,height:1200});const landscapeMap=await page.locator('.workspace-map').boundingBox(),landscapePlan=await page.locator('#routePlannerPanel').boundingBox();expect(landscapeMap.x).toBeGreaterThan(landscapePlan.x);
 });
+

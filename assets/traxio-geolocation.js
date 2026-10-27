@@ -8,20 +8,43 @@ const valid=(lat,lon)=>Number.isFinite(lat)&&Number.isFinite(lon)&&Math.abs(lat)
 const states={AC:'Acre',AL:'Alagoas',AP:'Amapá',AM:'Amazonas',BA:'Bahia',CE:'Ceará',DF:'Distrito Federal',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Pará',PB:'Paraíba',PR:'Paraná',PE:'Pernambuco',PI:'Piauí',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondônia',RR:'Roraima',SC:'Santa Catarina',SP:'São Paulo',SE:'Sergipe',TO:'Tocantins'};
 const stateCode=v=>Object.keys(states).find(k=>norm(k)===norm(v)||norm(states[k])===norm(v))||'';
 function field(c,aliases){return clean((c.importFields||[]).find(f=>aliases.includes(norm(f.label))&&clean(f.value))?.value);}
-function parse(c){
+// Resolve legacy combined addresses without mutating imported/company evidence or pins.
+function addressParts(c){
+ const canonical=c.addressFieldsVersion===1;
  const company=Object.fromEntries((c.companyData?.fields||[]).map(([k,v])=>[norm(k),v]));
- const raw=clean(c.geocodingAddressOverride)||field(c,['endereco','logradouro','rua'])||clean(c.address);
- const regionOverride=c.geocodingRegionOverride;
- const cityValue=regionOverride?clean(regionOverride.city):field(c,['cidade','municipio','localidade'])||clean(c.city)||clean(company.municipio);
- const embedded=cityValue.match(/^(.+?)\s*[-/]\s*([A-Za-z]{2})$/);const city=embedded?clean(embedded[1]):cityValue;
- const district=regionOverride?clean(regionOverride.district):field(c,['bairro','distrito','neighborhood'])||clean(c.neighborhood)||clean(company.bairro);
- const state=stateCode(regionOverride?regionOverride.state:field(c,['uf','estado'])||c.state||c.uf||company.uf||embedded?.[2])||stateCode(raw.split(',').map(clean).find(v=>stateCode(v)))||'';
- let street=raw.split(/[,·]/)[0].trim();
- const found=raw.match(/(?:^|[,·])\s*(?:n[º°o.]?\s*)?(\d{1,6}\s*[a-z]?)\b/i)||raw.match(/\bn[º°o.]\s*(\d{1,6}\s*[a-z]?)\b/i);
- const house=(c.geocodingAddressOverride?clean(c.houseNumber):field(c,['numero','numerodologradouro','numerodoimovel','nro','num'])||clean(c.houseNumber))||clean(found?.[1]);
- street=street.replace(/\s+n[º°o.]\s*\d{1,6}\s*[a-z]?\b.*$/i,'').trim();
- const inferredCity=city||raw.split(',').slice(1).map(clean).reverse().find(v=>regionName(v)&&!/^\d/.test(v))||'';
- return {street,house:/^(s\/?n|semnumero)$/i.test(norm(house))?'':house,city:regionName(inferredCity)?inferredCity:'',district,state,zip:digits(clean(c.cep)||field(c,['cep','codigopostal'])||c.zip_code||company.cep),country:'BR'};
+ const raw=clean(c.geocodingAddressOverride)||clean(c.street)||field(c,['endereco','logradouro','rua'])||clean(c.address)||clean(company.logradouro);
+ const tokens=raw.split(/[,·]/).map(clean).filter(Boolean);
+ let street=tokens[0]||'',embeddedHouse='',embeddedComplement='';
+ const numbered=street.match(/^(.*?)\s+(?:n[º°o.]|número|numero)\s*(\d{1,6}[a-z]?|s\s*\/\s*n)\b\s*(.*)$/i);
+ if(numbered){street=clean(numbered[1]);embeddedHouse=clean(numbered[2]);embeddedComplement=clean(numbered[3]);}
+ const numberToken=tokens[1]?.match(/^(?:n[º°o.]?\s*)?(\d{1,6}(?:\s*[a-z](?=\s|$))?|s\s*\/\s*n|sn|sem\s+n[uú]mero)(?:\s+(.*))?$/i);
+ if(numberToken){embeddedHouse=clean(numberToken[1]);embeddedComplement=clean(numberToken[2]);}
+ const region=c.geocodingRegionOverride;
+ let city=region?clean(region.city):clean(c.city)||field(c,['cidade','municipio','municipioibge','localidade'])||clean(company.municipio);
+ let district=region?clean(region.district):clean(c.neighborhood)||field(c,['bairro','distrito','neighborhood'])||clean(company.bairro);
+ let state=stateCode(region?region.state:clean(c.state)||c.uf||field(c,['uf','estado'])||company.uf);
+ const embedded=city.match(/^(.+?)\s*[-/]\s*([A-Za-z]{2})$/);
+ if(embedded){city=clean(embedded[1]);state=state||stateCode(embedded[2]);}
+ // Infer a trailing locality only in a delimited address; never infer one from a street name.
+ const tail=tokens.slice(numberToken?2:1);
+ const cityState=tail.find(t=>/^(.+?)\s*[-/]\s*([A-Za-z]{2})$/.test(t));
+ if(cityState){const m=cityState.match(/^(.+?)\s*[-/]\s*([A-Za-z]{2})$/);if(stateCode(m[2])){if(!region&&!city)city=clean(m[1]);state=state||stateCode(m[2]);}}
+ state=state||stateCode(tail.find(t=>stateCode(t)));
+ const remainder=tail.filter(t=>!stateCode(t)&&!/^brasil|brazil$/i.test(t)&&!/^\d{5}-?\d{3}$/.test(t)&&t!==cityState);
+ const isComplement=t=>/^(?:casa|loja|sala|bloco|apto?|apartamento|quadra|lote|conj(?:unto)?|fundos|km|andar)\b/i.test(t);
+ if(!region&&!city&&tokens.length>=3){const last=remainder.at(-1);if(regionName(last||'')&&!isComplement(last))city=last;}
+ const unknown=remainder.filter(t=>norm(t)!==norm(city)&&norm(t)!==norm(district));
+ const complements=unknown.filter(isComplement);
+ if(!region&&!district&&city){const rest=unknown.filter(t=>!isComplement(t));if(rest.length===1)district=rest[0];}
+ let house=canonical?clean(c.houseNumber):clean(c.houseNumber)||field(c,['numero','numerodologradouro','numerodoimovel','nro','num'])||embeddedHouse||clean(company.numero);
+ let complement=canonical?clean(c.complement):clean(c.complement)||field(c,['complemento','complement'])||[embeddedComplement,...complements].filter(Boolean).join(' · ')||clean(company.complemento);
+ if(canonical){street=clean(c.street);city=clean(c.city);district=clean(c.neighborhood);state=stateCode(c.state);}
+ return {street,house,complement,city:regionName(city||'')?city:'',district,state,zip:digits(clean(c.cep)||field(c,['cep','codigopostal'])||c.zip_code||company.cep),country:'BR'};
+}
+function parse(c){const parts=addressParts(c);const {complement,...query}=parts;return {...query,house:/^(sn|semnumero)$/.test(norm(parts.house))?'':parts.house};}
+function structured(c){
+ const p=addressParts(c);
+ return {...c,street:p.street,houseNumber:p.house,complement:p.complement,city:p.city,neighborhood:p.district,state:p.state,cep:p.zip,addressFieldsVersion:1};
 }
 function regionName(v){return /[A-Za-zÀ-ÿ]{2}/.test(v)&&!/^\d/.test(v)&&!(/^[A-Za-z]{2}$/.test(clean(v))&&stateCode(v))&&!/^brasil$/i.test(v);}
 function streetKey(v){return clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\bdr\.?\b/g,'doutor').replace(/\bdra\.?\b/g,'doutora').replace(/\bprof\.?\b/g,'professor').replace(/^(?:rua|r\.?|avenida|av\.?|travessa|tv\.?|praca|rodovia|estrada)\s+/,'').replace(/[^a-z0-9]/g,'');}
@@ -111,5 +134,5 @@ async function locate(client,{signal,token,refresh=false}={}){
  result=rank(all,q);if(q.postalIssue)result.reason=q.postalIssue;if(result.status==='not_found'&&lastError)throw lastError;
  cache.set(key,{at:Date.now(),result});return result;
 }
-root.TraxioGeo={parse,rank,assess,photon,geoapify,locate,meters,stateCode,ensureAttribution};
+root.TraxioGeo={parse,addressParts,structured,rank,assess,photon,geoapify,locate,meters,stateCode,ensureAttribution};
 })(globalThis);
