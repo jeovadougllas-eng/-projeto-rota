@@ -25,3 +25,8 @@ test('priority is strict, balanced remains distance-aware, and unreachable links
  assert.throws(()=>e.optimizeStrategy(nodes,[[0,null,null],[null,0,10],[null,10,0]],'distance'));
  assert.throws(()=>e.optimizeStrategy(nodes,[[0,null,null],[null,0,10],[null,10,0]],'balanced'));
 });
+test('road response keeps step geometry separated by destination for current-leg deviation checks',async()=>{
+ const points=[{lat:-5.81,lon:-35.22},{lat:-5.81,lon:-35.21},{lat:-5.82,lon:-35.21}];
+ const e=engine(async url=>{assert.equal(new URL(url).searchParams.get('steps'),'true');return json({code:'Ok',routes:[{distance:2000,duration:200,geometry:{type:'LineString',coordinates:[[-35.22,-5.81],[-35.21,-5.81],[-35.21,-5.82]]},legs:[{distance:1000,duration:100,steps:[{geometry:{type:'LineString',coordinates:[[-35.22,-5.81],[-35.215,-5.81]]}},{geometry:{type:'LineString',coordinates:[[-35.215,-5.81],[-35.21,-5.81]]}}]},{distance:1000,duration:100,steps:[{geometry:{type:'LineString',coordinates:[[-35.21,-5.81],[-35.21,-5.82]]}}]}]}]});});
+ const road=await e.fetchRoadRoute(points);assert.equal(road.legs.length,2);assert.equal(road.legs[0].geometry.coordinates.length,3);assert.equal(road.legs[0].geometry.coordinates.at(-1)[1],-5.81);assert.equal(road.legs[1].geometry.coordinates.at(-1)[1],-5.82);
+});
