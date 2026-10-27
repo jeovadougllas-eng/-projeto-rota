@@ -250,9 +250,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  async function openSaved(saved,{currentOrigin=true}={}){
   if(window.TraxeloNavigation?.isTracking()&&!confirm('Trocar a navegação atual pela rota salva? As visitas registradas serão preservadas.'))return false;
-  const resolved=TraxeloPremiumModel.resolve(saved,clients,{currentOrigin});
+  let resolved=TraxeloPremiumModel.resolve(saved,clients,{currentOrigin});
   if(resolved.missing.length||resolved.pending.length)throw Error('Revise esta rota antes de navegar. Ausentes: '+(resolved.missing.join(', ')||'nenhum')+'. Localização pendente: '+(resolved.pending.join(', ')||'nenhuma')+'.');
   const requestGeneration=generation;let start=resolved.start;if(currentOrigin)start=await requestGPS();if(requestGeneration!==generation||document.body.classList.contains('auth-locked'))return false;if(!start)throw Error('A origem salva não está mais disponível. Use a posição atual.');
+  resolved=TraxeloPremiumModel.resolve(saved,clients,{currentOrigin});if(resolved.missing.length||resolved.pending.length)throw Error('Os cadastros mudaram durante a abertura. Revise os clientes e suas localizações antes de tentar novamente.');if(!currentOrigin)start=resolved.start;
   cancel();el('origin').value='manual';manualOrigin={...start};manualDraft={...start};originForm.hidden=false;el('routeOriginAddress').value=start.name||'Origem da rota salva';showGpsOrigin();
   selectedIds=new P.IdSet(resolved.points.map(c=>c.id).filter(id=>id!=null));selectionInitialized=true;syncRouteChoices();renderWorkspace();switchTab('mapa');
   const result=await calculate(saved.strategy||'distance',{existing:{start,points:resolved.points,excluded:[],allowUnverified:false,strategy:saved.strategy||'distance'}});
