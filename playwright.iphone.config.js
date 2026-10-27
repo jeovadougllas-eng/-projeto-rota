@@ -8,4 +8,4 @@ export default defineConfig({testDir:'./tests',testMatch:'iphone-pwa.spec.js',wo
  {name:'iphone-landscape',use:{browserName:'webkit',userAgent:safari,viewport:{width:844,height:390},isMobile:true,hasTouch:true}},
  {name:'android-browser',use:{...chrome,browserName:'chromium',userAgent:'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36',viewport:{width:390,height:844}}},
  {name:'desktop',use:{...chrome,browserName:'chromium',viewport:{width:1440,height:1000}}}
-],webServer:process.env.TRAXELO_PWA_BASE?undefined:{command:'node scripts/serve.mjs',url:'http://127.0.0.1:4173',reuseExistingServer:!process.env.CI}});
+],webServer:process.env.TRAXELO_PWA_BASE?undefined:{command:'node tests/fixtures/iphone-server.mjs',url:'http://127.0.0.1:4173',reuseExistingServer:!process.env.CI}});

@@ -2,7 +2,7 @@ name: iPhone PWA installation, privacy and native separation
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['assets/traxelo-iphone-pwa.*','assets/iphone/**','iphone*','tests/iphone-pwa.spec.js','playwright.iphone.config.js','.github/workflows/iphone-pwa.yml','scripts/build-mobile.mjs']
+    paths: ['assets/traxelo-iphone-pwa.*','assets/iphone/**','iphone*','tests/iphone-pwa.spec.js','tests/fixtures/iphone-server.mjs','playwright.iphone.config.js','.github/workflows/iphone-pwa.yml','scripts/build-mobile.mjs']
   workflow_dispatch:
 permissions:
   contents: write
