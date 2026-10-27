@@ -1,0 +1,50 @@
+name: Published iPhone PWA and unchanged Android release
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/iphone-pwa-public.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      TRAXELO_PWA_BASE: https://traxio-preview.vercel.app
+      TRAXELO_VISITS_BASE: https://traxio-preview.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Verify published manifest, icons, worker policy and untouched Android release
+        run: |
+          node --input-type=module <<'JS'
+          import {readFile} from 'node:fs/promises';import {createHash} from 'node:crypto';import assert from 'node:assert/strict';
+          const root='https://traxio-preview.vercel.app',hash=b=>createHash('sha256').update(b).digest('hex');
+          const expected=hash(await readFile('assets/traxelo-iphone-pwa.js'));
+          for(let n=0;n<36;n++){const r=await fetch(root+'/assets/traxelo-iphone-pwa.js');if(r.ok&&hash(Buffer.from(await r.arrayBuffer()))===expected)break;if(n===35)throw Error('PWA deployment not ready');await new Promise(r=>setTimeout(r,5000));}
+          for(const path of ['iphone.webmanifest','iphone-sw.js','iphone-offline.html','assets/traxelo-iphone-pwa.js','assets/traxelo-iphone-pwa.css','assets/iphone/icon-192.png','assets/iphone/icon-512.png','assets/iphone/apple-touch-icon.png']){const r=await fetch(root+'/'+path);assert.equal(r.status,200,path);assert.equal(hash(Buffer.from(await r.arrayBuffer())),hash(await readFile(path)),path);if(path.endsWith('.webmanifest'))assert.ok(r.headers.get('content-type').includes('application/manifest+json'));if(path==='iphone-sw.js'){assert.equal(r.headers.get('service-worker-allowed'),'/');assert.ok(r.headers.get('cache-control').includes('no-store'));}}
+          const html=await (await fetch(root+'/')).text();assert.ok(html.includes('traxelo-iphone-pwa.js'));assert.ok(html.includes('rel="apple-touch-icon"'));
+          const active=await (await fetch(root+'/updates/android/manifest.json')).json();assert.equal(active.version,'cc6c358d48d27b8b44ba5cfd3343813f0c7907d0982a172dcda59017efcc295b');
+          const apk=await fetch(root+'/downloads/traxio-android-testes.apk');assert.equal(hash(Buffer.from(await apk.arrayBuffer())),'6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2');
+          console.log('Public PWA resources and headers verified; original APK and Android update unchanged.');
+          JS
+      - name: Prepare browser engines
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"; else npx playwright install chromium; fi
+          timeout 180s npx playwright install --with-deps webkit
+      - run: npx playwright test --config=playwright.iphone.config.js --max-failures=2
+      - name: Verify latest visit reports and Excel downloads with iPhone browser profiles
+        run: npx playwright test --config=playwright.iphone-visits.config.js --max-failures=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-iphone-pwa-evidence
+          retention-days: 30
+          path: |
+            test-results-iphone/
+            test-results-iphone-visits/
