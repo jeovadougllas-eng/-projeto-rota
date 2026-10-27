@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "07b3ee175c89eceb36945e38aa48c89b5c1a55d014ec4d232cdb657e9aa61ef7",
+  "version": "fd2fc36b8b634707c45a72fe507e6acd0e777ef77c7c201f8ccb65b70c894254",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -46,7 +46,7 @@
     "assets/traxelo/approved/visual/assets/branding/logo_horizontal_fundo_escuro.png": "bbc2281e98056626c9246f09da7dae022bfaf7a35a24cf6e2e600197b37ba401",
     "assets/traxelo/approved/visual/manifest.json": "33c619f3adfcbbd0fce69b7de62c7c057602608b1029ce60c9ae8377c723118d",
     "assets/traxelo/approved/visual/reference/brand_APROVADA_TRAXELO_IA.png": "b896bc1a53305bd7b39e6eeca8cec366509f9176992bf4da8b73d35caa1995e3",
-    "assets/traxio-geolocation.js": "f146defd9c93fff03bc54d404e0818da456429212afcf959a3ab5f21b25035c7",
+    "assets/traxio-geolocation.js": "66bf2b645f52f7a63c0c8aefe95d451d8f366eadc12f4899033f070e086fc5a8",
     "assets/traxio-native.js": "5e3b460a10a70836c19d20a309e6c180de869d9a6de1fbbcd4c148922676ed04",
     "assets/traxio-planner.js": "ea1fbf8e2037d1ced814c50b376ac6de4ba336c81f0e0502f8e30cf9eca88840",
     "assets/traxio-route-scene.svg": "428a7abbba4612536c3c657d559ccf1cf50a2af684f15a4f806401d10db65dac",
@@ -72,9 +72,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "75896828532542651b620e9fb7f62b81ad702cb899719f55f6577a2b9a074b2d"
+    "index.html": "23e1628906db9eed74ecfa9c0d4f974ed89d4c5fa27fc20e4f8e6e35fe8a587d"
   },
-  "bundle": "/updates/android/bundles/07b3ee175c89eceb36945e38aa48c89b5c1a55d014ec4d232cdb657e9aa61ef7.zip",
-  "sha256": "1f6162c287b17632070df14bcb45ead2a27ecee95be6eeb6613c5beb03bc1b0d",
-  "bytes": 10883836
+  "bundle": "/updates/android/bundles/fd2fc36b8b634707c45a72fe507e6acd0e777ef77c7c201f8ccb65b70c894254.zip",
+  "sha256": "b6da7540310b0a0fc766d3d3af16ee5c1117d11ce811b5fa7ac4c70a371fff74",
+  "bytes": 10883921
 }
