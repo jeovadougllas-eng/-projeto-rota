@@ -55,6 +55,7 @@ try{
  if(process.env.TRAXELO_LOCATION_PROOF==='1'){const {verifyLocations}=await import('./android-location-checks.mjs');before=await verifyLocations({page,device,evidence});}
  if(process.env.TRAXELO_FIELDS_PROOF==='1'){const {verifyClientFields}=await import('./android-client-fields.mjs');before=await verifyClientFields({page,device,evidence});}
  if(process.env.TRAXELO_VISITS_PROOF==='1'){const {verifyVisits}=await import('./android-visit-checks.mjs');visitSnapshot=await verifyVisits({page,device,evidence});}
+ if(process.env.TRAXELO_FIELD_NAVIGATION_PROOF==='1'){const {verifyFieldNavigation}=await import('./android-field-navigation.mjs');before=await verifyFieldNavigation({page,device,evidence});}
  // Corrupt a downloaded file only inside this isolated emulator, then prove the native loader refuses it.
  await device.shell('am force-stop app.traxio.mobile');
  await device.shell("run-as app.traxio.mobile sh -c 'echo corrupted > files/traxelo-web-releases/"+manifest.version+"/index.html'");

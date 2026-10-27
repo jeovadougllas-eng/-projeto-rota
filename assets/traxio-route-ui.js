@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded',()=>{
  const el=id=>document.getElementById(id), P=TraxioPlanner;
  let generation=0,controller=null,manualOrigin=null,manualDraft=null,checking=false,selectionKey=null,lastSignature='',activeFingerprint='',activeSelection='',consentResolve=null;
- let preparedRoute=null,calculationPlan=null,dialogPlanSignature='';
+ let preparedRoute=null,calculationPlan=null,dialogPlanSignature='',gpsOrigin=null;const matrixCache=new Map();
  const state={phase:'awaiting-selection',excluded:[]};
  const labels={'ready':'Pronto para calcular','awaiting-selection':'Aguardando seleção','awaiting-origin':'Aguardando origem','checking-locations':'Verificando localizações','calculating':'Calculando rota','calculated':'Rota calculada','partial':'Rota parcialmente calculada','location-error':'Falha de localização','communication-error':'Falha de comunicação','impossible':'Nenhuma rota possível','review':'Revisão necessária'};
  function node(tag,id,text){const n=document.createElement(tag);if(id)n.id=id;if(text)n.textContent=text;return n;}
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const steps=node('p','routeSteps','Selecionar clientes → Definir origem → Escolher critério → Calcular → Conferir rota → Iniciar navegação');summary.after(steps);
  const badge=node('p','plannerState');badge.setAttribute('role','status');badge.setAttribute('aria-live','polite');el('routeResult').before(badge);
  el('routeResult').setAttribute('role','status');el('routeResult').setAttribute('aria-live','polite');
- el('selectAllClients').textContent='Selecionar resultados filtrados';
+ el('selectAllClients').textContent='Selecionar resultados filtrados';el('priorityFilters').after(el('mapClientListDisclosure'));
  const all=node('button','selectEntirePortfolio','Selecionar toda a carteira');all.type='button';all.className='secondary';el('selectNoClients').after(all);
  all.onclick=()=>{for(const c of clients)selectedIds.add(c.id);syncRouteChoices();renderWorkspace();refresh();};
  const readiness=node('div','routeReadiness');readiness.setAttribute('role','status');el('selectedCount').after(readiness);
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const stopsDisclosure=node('details','navigationStopDisclosure');stopsDisclosure.append(node('summary',null,'Paradas e visitas'),el('liveStopList'));el('liveNextStop').after(stopsDisclosure);
  document.querySelector('.route-summary').append(el('liveNavigation'));
  const actionBar=document.querySelector('.planner-main>.row');actionBar.id='routeActionBar';actionBar.append(el('liveStart'));panel.append(actionBar);el('liveStart').hidden=true;
- new MutationObserver(()=>{el('liveStart').hidden=el('liveNavigation').hidden;}).observe(el('liveNavigation'),{attributes:true,attributeFilter:['hidden']});
+ new MutationObserver(()=>{el('liveStart').hidden=el('liveNavigation').hidden||!!window.TraxeloNavigation?.isTracking();}).observe(el('liveNavigation'),{attributes:true,attributeFilter:['hidden']});
  el('traxioAvulso').querySelector('h3').textContent='Destino avulso';
  const trace=document.querySelector('.approved-trace-route');
  if(trace){trace.onclick=()=>{el('calcRoute').click();};trace.hidden=true;}
@@ -34,6 +34,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  originForm.hidden=true;
  originForm.innerHTML='<label for="routeOriginAddress">Endereço da origem</label><div class="row"><input id="routeOriginAddress" placeholder="Rua, número, bairro, cidade, UF" autocomplete="street-address"><button type="button" id="findRouteOrigin">Buscar origem</button><button type="button" id="pickRouteOrigin" class="secondary">Marcar origem no mapa</button></div><p id="routeOriginStatus" role="status">Informe o endereço completo ou confirme um ponto no mapa.</p><div id="routeOriginSuggestions"></div><button type="button" id="confirmRouteOrigin" hidden>Confirmar este ponto como origem</button>';
  el('origin').after(originForm);
+ const gpsPanel=node('div','gpsOriginPanel'),gpsLabel=node('p','gpsOriginLabel','Sua posição será fixada ao calcular. Atualize-a quando quiser mudar o ponto de partida.'),gpsRefresh=node('button','refreshGpsOrigin','Atualizar minha posição');gpsRefresh.type='button';gpsRefresh.className='secondary';gpsPanel.append(gpsLabel,gpsRefresh);originForm.after(gpsPanel);
+ function showGpsOrigin(){gpsPanel.hidden=el('origin').value!=='gps';gpsLabel.textContent=gpsOrigin?'Origem GPS definida: '+gpsOrigin.lat.toFixed(6)+', '+gpsOrigin.lon.toFixed(6)+(Number.isFinite(gpsOrigin.accuracy)?' · precisão ±'+Math.round(gpsOrigin.accuracy)+' m':'')+'. Esta origem será mantida até você atualizá-la.':'Sua posição será fixada ao calcular. Atualize-a quando quiser mudar o ponto de partida.';}
+ async function roadDistances(nodes,signal){const key=JSON.stringify(nodes.map(p=>[Number(p.lat),Number(p.lon)])),cached=matrixCache.get(key);if(cached&&Date.now()-cached.at<600000)return cached.matrix;const matrix=await roadMatrix(nodes,{signal});signal.throwIfAborted();matrixCache.set(key,{at:Date.now(),matrix});if(matrixCache.size>5)matrixCache.delete(matrixCache.keys().next().value);return matrix;}
+
  const citySearch=node('input','regionCitySearch');citySearch.type='search';citySearch.placeholder='Buscar cidade';citySearch.setAttribute('aria-label','Buscar cidade');el('regionCity').before(citySearch);
  const districtSearch=node('input','regionNeighborhoodSearch');districtSearch.type='search';districtSearch.placeholder='Buscar bairro';districtSearch.setAttribute('aria-label','Buscar bairro');el('regionNeighborhoods').before(districtSearch);
  function applyRegionSearch(){const cq=norm(citySearch.value),dq=norm(districtSearch.value);for(const o of el('regionCity').options)o.hidden=o.value!=='all'&&o.value!==el('regionCity').value&&!norm(o.textContent).includes(cq);for(const label of el('regionNeighborhoods').children)label.hidden=!norm(label.textContent).includes(dq);}
@@ -47,7 +51,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const busy=routeBusy;
   el('calcRoute').disabled=busy;el('generateSuggestion').disabled=busy;
   el('roadRoute').disabled=busy||!(lastRoute||preparedRoute);confirmedOnly.disabled=busy;
-  planner.setAttribute('aria-busy',String(busy));
+  planner.setAttribute('aria-busy',String(busy));window.TraxeloMapActions?.refresh();
  }
  function phase(name,message){state.phase=name;badge.textContent=labels[name]||name;badge.dataset.phase=name;el('mapa').dataset.routeState=name;if(message)el('routeResult').textContent=message;updateButtons();}
 
@@ -73,7 +77,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   lastSignature=signature();refresh();
  }
  let wasLocked=document.body.classList.contains('auth-locked');
- const authObserver=new MutationObserver(()=>{const locked=document.body.classList.contains('auth-locked');if(locked===wasLocked)return;wasLocked=locked;if(locked){selectionKey=null;selectedIds.clear();cancel('Entre na sua conta para planejar as visitas.');}else hydrate().catch(()=>{});});
+ const authObserver=new MutationObserver(()=>{const locked=document.body.classList.contains('auth-locked');if(locked===wasLocked)return;wasLocked=locked;if(locked){selectionKey=null;gpsOrigin=null;manualOrigin=null;matrixCache.clear();selectedIds.clear();cancel('Entre na sua conta para planejar as visitas.');}else hydrate().catch(()=>{});});
  authObserver.observe(document.body,{attributes:true,attributeFilter:['class']});hydrate().catch(()=>{});
  function refresh(){
   const fingerprint=signature();
@@ -138,7 +142,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  el('cancelPartialRoute').onclick=()=>{const done=consentResolve;consentResolve=null;dialog.close();review.open=true;done?.(false);review.scrollIntoView({block:'nearest'});};
  function manualChanged(){window.traxioPickingOrigin=false;originMarker?.remove();manualOrigin=null;manualDraft=null;el('confirmRouteOrigin').hidden=true;cancel('Confirme a nova origem e calcule novamente.');lastSignature=signature();}
  el('routeOriginAddress').oninput=manualChanged;
- el('origin').addEventListener('change',()=>{window.traxioPickingOrigin=false;if(el('origin').value!=='manual')originMarker?.remove();originForm.hidden=el('origin').value!=='manual';cancel('Origem alterada. Confira os dados e calcule novamente.');lastSignature=signature();});
+ el('origin').addEventListener('change',()=>{gpsOrigin=null;showGpsOrigin();window.traxioPickingOrigin=false;if(el('origin').value!=='manual')originMarker?.remove();originForm.hidden=el('origin').value!=='manual';cancel('Origem alterada. Confira os dados e calcule novamente.');lastSignature=signature();});
  el('findRouteOrigin').onclick=async()=>{
   manualChanged();const q=el('routeOriginAddress').value.trim();if(q.length<8){el('routeOriginStatus').textContent='Informe rua, número, cidade e UF.';return;}
   el('routeOriginStatus').textContent='Buscando a origem…';const text=q,run=generation;
@@ -162,9 +166,10 @@ document.addEventListener('DOMContentLoaded',()=>{
  el('confirmRouteOrigin').onclick=()=>{if(!manualDraft)return;manualOrigin={...manualDraft};window.traxioPickingOrigin=false;cancel('Origem confirmada. Organize as visitas.');lastSignature=signature();el('routeOriginStatus').textContent='Origem confirmada: '+manualOrigin.lat.toFixed(6)+', '+manualOrigin.lon.toFixed(6);el('confirmRouteOrigin').hidden=true;};
  el('myLocation').onclick=async()=>{
   phase('awaiting-origin','Obtendo sua localização…');const run=generation;
-  try{const point=await requestGPS();if(run!==generation)return;el('origin').value='gps';originForm.hidden=true;cancel('Origem por GPS definida. Organize as visitas.');lastSignature=signature();initMap();map?.flyTo({center:[point.lon,point.lat],zoom:15});}
+  try{const point=await requestGPS();if(run!==generation)return;gpsOrigin={...point};el('origin').value='gps';showGpsOrigin();originForm.hidden=true;cancel('Origem por GPS definida. Organize as visitas.');lastSignature=signature();initMap();map?.flyTo({center:[point.lon,point.lat],zoom:15});}
   catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');}
  };
+ gpsRefresh.onclick=()=>el('myLocation').click();showGpsOrigin();
  async function waitForGeometry(geometry,signal){
   initMap();if(!map||!window.maplibregl)throw Error('Mapa indisponível. Confira a conexão e tente novamente.');
   if(!map.isStyleLoaded()&&!map.getStyle()?.layers?.length)await new Promise((resolve,reject)=>{
@@ -198,24 +203,24 @@ document.addEventListener('DOMContentLoaded',()=>{
    if(destination){if(!valid(destination.lat,destination.lon)){phase('location-error','Confirme um destino com coordenadas válidas.');return;}try{start=await requestGPS();}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message);return;}}
    else if(existing)start=existing.start;
    else if(el('origin').value==='manual'){if(!manualOrigin){phase('awaiting-origin','Busque e confirme o endereço ou marque a origem no mapa.');return;}start={...manualOrigin};}
-   else if(el('origin').value==='gps'){try{start=await requestGPS();}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');return;}}
+   else if(el('origin').value==='gps'){try{start=gpsOrigin?{...gpsOrigin}:await requestGPS();if(current(run)){gpsOrigin={...start};showGpsOrigin();}}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');return;}}
    else start=points[0];
    if(!current(run)||snapshot!==planSignature())return;
-   const nodes=existing?[start,...existing.points]:[start,...points.filter(c=>!(start.id!==undefined&&String(c.id)===String(start.id)))];
+   const nodes=existing?[start,...existing.points]:[start,...TraxeloNavigationModel.canonical(points.filter(c=>!(start.id!==undefined&&String(c.id)===String(start.id))))];
    if(nodes.length<2){phase('impossible','A origem já é o único cliente selecionado. Escolha GPS ou uma origem manual para traçar o percurso.');return;}
    phase('calculating','Calculando sequência e trajeto pelas ruas…');
-   const matrix=existing||destination?null:await roadMatrix(nodes,{signal});if(!current(run))return;
+   const matrix=existing||destination?null:await roadDistances(nodes,signal);if(!current(run))return;
    const arranged=existing?existing.points:destination?[destination]:optimizeStrategy(nodes,matrix,strategy).slice(1).map(i=>nodes[i]);
    preparedRoute={start,points:arranged,excluded:[...state.excluded],strategy,allowUnverified};
    const road=await fetchRoadRoute([start,...arranged],{signal});
    if(!current(run)||snapshot!==planSignature())return;
    await waitForGeometry(road.geometry,signal);if(!current(run))return;
    lastRoute={...preparedRoute};preparedRoute=null;calculationPlan=null;activeSelection=JSON.stringify([...selectedIds].sort());activeFingerprint=P.signature(clients,[...arranged.map(c=>c.id),...(start.id!==undefined?[start.id]:[])],originSignature());showOrder(arranged);renderMarkers();
-   window.traxioBeginNavigation?.(arranged,road.geometry);
+   window.traxioBeginNavigation?.(arranged,road.geometry,{legs:road.legs,origin:start});
    const partial=state.excluded.length>0;
    phase(partial?'partial':'calculated',(destination?'Destino avulso · Trajeto por ruas: ':'Trajeto por ruas: ')+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+' clientes excluídos com sua confirmação. ':'')+(allowUnverified?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
    window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:arranged.map(c=>c.name),strategy,at:new Date().toISOString(),excluded:[...state.excluded]};
-   window.traxioShowSaveTrip?.();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});
+   window.traxioShowSaveTrip?.();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});return lastRoute;
   }catch(e){
    if(!current(run)||signal.aborted)return;
    window.traxioResetNavigation?.();lastRoute=null;calculationPlan=null;clearRouteVisual();if(preparedRoute)showOrder(preparedRoute.points);else el('routeOrder').replaceChildren();
@@ -235,7 +240,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   clearRouteVisual();showOrder(plan.points);phase('ready','Ordem ajustada. Toque em Traçar pelas ruas para confirmar o novo itinerário.');
  };
 
- window.TraxioRouteUI={calculate,cancel,adHoc:destination=>calculate('avulso',{destination:{...destination}}),retrace:()=>{const existing=lastRoute||preparedRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};
+ async function singleClient(id){
+  const c=clients.find(c=>String(c.id)===String(id));if(!c)return false;
+  if(!P.location(c).ready){window.traxeloReviewClient?.(c.id);return false;}
+  if(window.TraxeloNavigation?.isTracking()){if(!confirm('Trocar a navegação atual por uma rota somente até '+c.name+'? As visitas já registradas serão preservadas.'))return false;window.TraxeloNavigation.finish('partial');}
+  selectedIds=new P.IdSet([c.id]);selectionInitialized=true;syncRouteChoices();renderWorkspace();switchTab('mapa');
+  const result=await calculate('single',{destination:{...c,lat:Number(c.lat),lon:Number(c.lon)}});
+  if(!result)return false;window.TraxeloNavigation?.start();return true;
+ }
+ window.TraxioRouteUI={calculate,singleClient,cancel,adHoc:destination=>calculate('avulso',{destination:{...destination}}),retrace:()=>{const existing=lastRoute||preparedRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};
  // Keep keyboard-driven fields visible for any browser implementing VisualViewport.
  let viewportFrame=0;
  function viewportChanged(){cancelAnimationFrame(viewportFrame);viewportFrame=requestAnimationFrame(()=>{const viewport=window.visualViewport;document.documentElement.style.setProperty('--route-visible-height',(viewport?.height||innerHeight)+'px');const focused=document.activeElement;if(focused?.matches('#mapa input,#mapa select'))focused.scrollIntoView({block:'nearest',inline:'nearest'});map?.resize();});}

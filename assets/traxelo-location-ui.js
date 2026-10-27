@@ -122,7 +122,7 @@ const originalMarkers=renderMarkers;
 renderMarkers=function(){
  originalMarkers();if(!map)return;
  for(const c of visibleClients().filter(c=>P.location(c).ready&&!selectedIds.has(c.id))){
-  const b=node('button','●','traxelo-saved-pin');b.type='button';b.title='Cliente confirmado: '+c.name;b.setAttribute('aria-label',b.title);b.onclick=()=>viewClient(c.id);
+  const b=node('button','●','traxelo-saved-pin');b.type='button';b.title='Cliente confirmado: '+c.name;b.setAttribute('aria-label',b.title);b.onclick=()=>window.TraxeloMapActions?.showClient(c.id,{fly:false});
   markers.push(new maplibregl.Marker({element:b}).setLngLat([Number(c.lon),Number(c.lat)]).addTo(map));
  }
 };

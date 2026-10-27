@@ -85,7 +85,7 @@ test('GPS builds missing geometry, retries a failed recalculation and cancels la
  await page.route('https://router.project-osrm.org/route/**',async route=>{calls++;if(calls===1){await route.abort();return;}if(calls===3){await late;await route.fulfill({json:routeReply(geometry.coordinates)}).catch(()=>{});lateFinished=true;return;}await route.fulfill({json:routeReply(geometry.coordinates)});});
  await navigation(page,{missingGeometry:true});await page.clock.install();await emit(page,-5.812,-35.218);
  await expect(page.locator('#liveGPSState')).toContainText('Sem conexão');expect(calls).toBe(1);
- await page.clock.fastForward(15100);await emit(page,-5.812,-35.217);await expect(page.locator('#liveGPSState')).toContainText('Nova rota calculada');expect(calls).toBe(2);
+ await page.clock.fastForward(3100);await expect(page.locator('#liveGPSState')).toContainText('Nova rota calculada');expect(calls).toBe(2);
  await page.clock.fastForward(15100);await emit(page,-5.82,-35.217);await page.clock.fastForward(3100);await emit(page,-5.82,-35.216);await expect.poll(()=>calls).toBe(3);
  page.on('dialog',d=>d.accept());await page.locator('#liveStop').click();await expect(page.locator('#routeResult')).toContainText('encerrada antecipadamente');lateResolve();await expect.poll(()=>lateFinished).toBe(true);
  await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#routeResult')).toContainText('encerrada antecipadamente');

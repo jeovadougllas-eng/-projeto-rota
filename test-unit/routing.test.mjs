@@ -2,9 +2,10 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {runInNewContext} from 'node:vm';
+import '../assets/traxelo-navigation-model.js';
 const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
 const source=html.slice(html.indexOf('async function fetchRoadRoute('),html.indexOf('let routeLookupBusy='));
-function engine(fetch){return runInNewContext(source+';({fetchRoadRoute,roadMatrix,optimizeStrategy})',{fetch,AbortSignal,setTimeout:fn=>{fn();},Number,Error,Math,Promise,Set,Array});}
+function engine(fetch){return runInNewContext(source+';({fetchRoadRoute,roadMatrix,optimizeStrategy})',{TraxeloNavigationModel:globalThis.TraxeloNavigationModel,fetch,AbortSignal,setTimeout:fn=>{fn();},Number,Error,Math,Promise,Set,Array});}
 const json=data=>({ok:true,json:async()=>data});
 test('road matrix supports 157 selected clients with bounded blocks and directed distances',async()=>{
  const nodes=Array.from({length:158},(_,i)=>({lat:-5.8+i/10000,lon:-35.2+i/10000}));let calls=0;

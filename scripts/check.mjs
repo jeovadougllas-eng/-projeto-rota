@@ -12,7 +12,7 @@ for(const source of ['https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js','
 for(const provider of ["data-provider=\"google\"", "data-provider=\"azure\"", "flowType:'pkce'", "KEY='projeto_rota_mapa_v1'", "storageKey:'traxio-auth-v3'"]) if(!html.includes(provider)) throw Error('Existing integration changed: '+provider);
 console.log(`Validated ${scripts.length} inline scripts, the presentation adapter, unique HTML IDs and existing integration identifiers.`);
 
-for(const file of ['traxio-planner.js','traxio-route-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+for(const file of ['traxio-planner.js','traxio-route-ui.js','traxelo-navigation-model.js','traxelo-navigation-ui.js','traxelo-map-actions.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
 
 for(const file of ['traxelo-iphone-pwa.js','traxelo-geo-recovery.js','traxelo-updates.js','traxelo-location-ui.js','traxelo-visits-model.js','traxelo-visit-store.js','traxelo-visit-report.js','traxelo-visits-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
