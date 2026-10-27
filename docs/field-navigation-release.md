@@ -15,3 +15,14 @@ A PWA usa GPS em primeiro plano. Ao retornar do segundo plano, ela renova a leit
 Em simulações com origem GPS, o ponto capturado fica visível e é mantido até tocar em **Atualizar minha posição**. Os mesmos clientes são ordenados de forma estável, com a primeira visita sendo o cliente mais próximo em distância pelas ruas no critério **Menor deslocamento**; os demais deslocamentos são melhorados por uma heurística determinística. Isso não é uma garantia matemática de menor percurso global e não considera trânsito em tempo real. Uma navegação individual sempre obtém o GPS atual. Não houve migração de fornecedor de mapas nesta entrega.
 
 Para receber a versão: recarregue a web ou feche/reabra a PWA pelo ícone. No Android com atualizador, abra com internet, aguarde o recebimento da atualização e feche completamente/reabra. O APK original e sua assinatura são preservados.
+
+## Verificação da entrega — 27/10/2026
+
+- 64 testes de regras, geometria de etapas, matriz rodoviária, preservação de dados e histórico passaram.
+- 65 testes de interface e navegação passaram em seis perfis: Safari e Chrome no iPhone, iPhone pequeno e paisagem, Android e desktop. Apenas o caso de teclado em paisagem foi omitido por falta de altura útil simulada. Sensores GPS e respostas de falha são simulados; não houve teste em iPhone físico.
+- 11 fluxos passaram novamente no endereço público, com contas e clientes fictícios, sem gravar nos registros reais da produção.
+- A integração com OSRM e o canvas real do MapLibre foi validada, incluindo ampliação e janela flutuante. As provas de GPS usam coordenadas simuladas.
+- O APK original foi instalado em emulador, baixou a atualização por HTTPS e passou em 12 verificações, incluindo navegação individual, mapa flutuante entre abas, visitas, Excel e recuperação sem apagar a carteira. O arquivo APK e a assinatura foram preservados.
+- A regressão de rotas e funcionalidades anteriores também passou.
+
+Evidências: [interface, WebKit e atualização Android](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40590093756), [rotas e funcionalidades anteriores](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40590093693), [iPhone em navegação individual](captures/field-navigation/iphone-safari-single-customer-full-navigation.png), [iPhone com mapa flutuante](captures/field-navigation/iphone-safari-floating-map-customer-search.png).
