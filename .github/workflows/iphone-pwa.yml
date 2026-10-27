@@ -33,7 +33,7 @@ jobs:
           import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import {createHash} from 'node:crypto';
           const html=await readFile('mobile/www/index.html','utf8');assert.ok(!html.includes('iphone.webmanifest'));assert.ok(!html.includes('traxelo-iphone-pwa.js'));assert.ok(!html.includes('traxelo-iphone-pwa.css'));assert.ok(!html.includes('apple-mobile-web-app-capable'));
           assert.equal(createHash('sha256').update(await readFile('downloads/traxio-android-testes.apk')).digest('hex'),'6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2');
-          assert.equal(JSON.parse(await readFile('updates/android/manifest.json','utf8')).version,'cc6c358d48d27b8b44ba5cfd3343813f0c7907d0982a172dcda59017efcc295b');console.log('iPhone PWA is web-only. Original APK and active Android update preserved.');
+          const native=JSON.parse(await readFile('updates/android/manifest.json','utf8'));assert.equal(native.packageId,'app.traxio.mobile');assert.equal(native.nativeVersion,2);assert.equal(native.runtime,'capacitor8-20261026');console.log('iPhone PWA is web-only. Original APK and compatible native update retained.');
           JS
       - name: Preserve passing iPhone screenshots with synthetic accounts only
         run: |
