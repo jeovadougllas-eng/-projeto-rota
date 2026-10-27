@@ -249,6 +249,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(!result)return false;window.TraxeloNavigation?.start();return true;
  }
  async function openSaved(saved,{currentOrigin=true}={}){
+  const localOwner=localStorage.getItem('traxio_sync_owner_v29'),activeOwner=window.TraxeloWorkspace?.getStore()?.owner;if(localOwner&&localOwner!==activeOwner)throw Error('A carteira deste navegador pertence a outra conta. Use um perfil separado antes de abrir esta rota.');
   if(window.TraxeloNavigation?.isTracking()&&!confirm('Trocar a navegação atual pela rota salva? As visitas registradas serão preservadas.'))return false;
   let resolved=TraxeloPremiumModel.resolve(saved,clients,{currentOrigin});
   if(resolved.missing.length||resolved.pending.length)throw Error('Revise esta rota antes de navegar. Ausentes: '+(resolved.missing.join(', ')||'nenhum')+'. Localização pendente: '+(resolved.pending.join(', ')||'nenhuma')+'.');
