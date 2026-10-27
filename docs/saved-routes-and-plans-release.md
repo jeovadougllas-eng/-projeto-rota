@@ -57,3 +57,14 @@ Uma redução de plano preserva todas as rotas para consulta, abertura, renomea�
 `test-db/premium-assertions.sql` foi executado em transação com rollback no Supabase, sem deixar usuários ou rotas de teste. O teste de concorrência roda somente no PostgreSQL isolado de CI.
 
 O mesmo pacote web é usado na PWA e no Android. A atualização Android mantém o APK assinado original, aplica o novo conteúdo na próxima inicialização e preserva a carteira e o histórico. O fluxo de CI só ativa o pacote depois dos testes no APK original instalado no emulador.
+
+### Resultado da rodada de liberação
+
+- 73 testes de modelos, dados e proteção de estado passaram.
+- 48 testes das novas funções passaram em seis perfis: Safari e Chrome no iPhone, iPhone pequeno, iPhone em paisagem, Android e desktop.
+- 33 testes de navegação individual, mapa flutuante e recálculo passaram em Safari, Android e desktop.
+- Os testes de banco confirmaram isolamento entre contas, rejeição de troca de usuário durante uma gravação, revisões, cotas e redução de plano. Na concorrência, exatamente três de doze salvamentos simultâneos no Free foram aceitos.
+- O APK original instalado no emulador passou em 13 verificações, incluindo download HTTPS, atualização na próxima inicialização, preservação da carteira e do histórico, Excel, navegação, rotas salvas, agenda mensal, reabertura e rejeição de um pacote propositalmente corrompido.
+- O formulário da agenda também passou em uma simulação da PWA instalada com áreas seguras de 47 px no topo e 34 px na base. Esta verificação usa Chromium com comportamento de iPhone simulado; não substitui o teste em um iPhone físico.
+
+As capturas de interface com serviços simulados ficam em [docs/captures/premium](captures/premium/). A imagem do [APK com rotas salvas](captures/premium-android/android-saved-routes.png) e o [registro das 13 verificações](captures/premium-android/android-updates.json) vêm do APK original instalado no emulador. Todas as contas, visitas e clientes dessas evidências são fictícios.
