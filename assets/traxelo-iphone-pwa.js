@@ -1,6 +1,7 @@
 /* iPhone install guidance: iOS requires the user's browser Share menu to add a web app. */
 (function(){
 'use strict';
+function initialize(){
 if(window.TraxioNative||window.Capacitor?.isNativePlatform?.()||!/iPhone|iPod/i.test(navigator.userAgent))return;
 const standalone=matchMedia('(display-mode: standalone)'),isInstalled=()=>standalone.matches||navigator.standalone===true;
 const header=document.querySelector('body>header'),theme=document.getElementById('themeToggle'),account=document.getElementById('accountArea');
@@ -9,14 +10,14 @@ const tools=document.createElement('div');tools.id='iphoneInstallTools';tools.se
 const button=document.createElement('button');button.id='iphoneInstallButton';button.type='button';button.title='Adicionar Traxelo.IA à Tela de Início';button.setAttribute('aria-label','Instalar Traxelo.IA no iPhone');
 button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v11h8M9 21v-7h5M18 14v8M14 18h8"/></svg><span>Instalar</span>';
 const dialog=document.createElement('dialog');dialog.id='iphoneInstallDialog';dialog.setAttribute('aria-labelledby','iphoneInstallTitle');
-dialog.innerHTML='<div class="iphone-install-heading"><img src="/assets/iphone/apple-touch-icon.png" width="56" height="56" alt=""><div><h2 id="iphoneInstallTitle">Traxelo.IA no seu iPhone</h2><p>Acesse pelo ícone na Tela de Início.</p></div></div><p id="iphoneBrowserHelp"></p><ol id="iphoneInstallSteps"></ol><p class="iphone-install-note">A instalação é concluída no menu do navegador. Se não encontrar a opção, copie o link e abra-o no Safari.</p><div class="iphone-install-actions"><button type="button" id="copyIphoneAppLink" class="secondary">Copiar link do aplicativo</button><button type="button" id="closeIphoneInstall">Entendi</button></div><p id="iphoneInstallStatus" role="status" aria-live="polite"></p>';
+dialog.innerHTML='<div class="iphone-install-heading"><img src="/assets/iphone/apple-touch-icon.png" width="56" height="56" alt=""><div><h2 id="iphoneInstallTitle" tabindex="-1">Traxelo.IA no seu iPhone</h2><p>Acesse pelo ícone na Tela de Início.</p></div></div><p id="iphoneBrowserHelp"></p><ol id="iphoneInstallSteps"></ol><p class="iphone-install-note">A instalação é concluída no menu do navegador. Se não encontrar a opção, copie o link e abra-o no Safari.</p><p class="iphone-install-note">Já usa o Traxelo? Confira a sincronização em Planilhas antes de instalar. Ao abrir pelo ícone, entre na mesma conta para acessar seus dados sincronizados.</p><div class="iphone-install-actions"><button type="button" id="copyIphoneAppLink" class="secondary">Copiar link do aplicativo</button><button type="button" id="closeIphoneInstall">Entendi</button></div><p id="iphoneInstallStatus" role="status" aria-live="polite"></p>';
 document.body.append(dialog);
 const browser=/CriOS/i.test(navigator.userAgent)?'Chrome':/FxiOS/i.test(navigator.userAgent)?'Firefox':/EdgiOS/i.test(navigator.userAgent)?'Edge':/Version\/[\d.]+.*Safari/i.test(navigator.userAgent)?'Safari':'seu navegador';
 const inApp=/FBAN|FBAV|Instagram|Line\/|GSA\//i.test(navigator.userAgent);
 document.getElementById('iphoneBrowserHelp').textContent=inApp?'Abra este link no Safari ou Chrome para adicionar o aplicativo.':browser==='Safari'?'No Safari, siga estes passos:':'No '+browser+', use o menu de compartilhamento:';
 const steps=browser==='Safari'?['Toque em Compartilhar (quadrado com seta para cima). Em algumas versões, abra primeiro o menu •••.','Escolha Adicionar à Tela de Início. Se não aparecer, procure em Editar Ações.','Ative Abrir como App, se essa opção aparecer, e toque em Adicionar.']:['Toque em Compartilhar, ao lado da barra de endereço ou dentro do menu •••.','Escolha Adicionar à Tela de Início.','Confirme o nome Traxelo.IA e toque em Adicionar. Se a opção não estiver disponível, abra o link no Safari.'];
 const list=document.getElementById('iphoneInstallSteps');for(const text of steps){const item=document.createElement('li');item.textContent=text;list.append(item);}
-button.onclick=()=>{if(!dialog.open)dialog.showModal();};
+button.onclick=()=>{if(!dialog.open){dialog.showModal();dialog.scrollTop=0;document.getElementById('iphoneInstallTitle').focus({preventScroll:true});}};
 document.getElementById('closeIphoneInstall').onclick=()=>dialog.close();
 dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
 dialog.addEventListener('close',()=>{if(!button.hidden&&button.isConnected)button.focus();});
@@ -39,4 +40,6 @@ if('serviceWorker' in navigator&&window.isSecureContext){
  const register=()=>navigator.serviceWorker.register('/iphone-sw.js',{scope:'/',updateViaCache:'none'}).catch(()=>{});
  if(document.readyState==='complete')register();else window.addEventListener('load',register,{once:true});
 }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});else initialize();
 })();

@@ -18,13 +18,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm ci && npm run check
+      - run: npm ci && npm run check && node --test test-unit/iphone-pwa.test.mjs
       - name: Prepare browser engines with bounded installation
         run: |
           browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
           if [ -n "$browser_path" ]; then echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"; else npx playwright install chromium; fi
           timeout 180s npx playwright install --with-deps webkit
-      - run: npx playwright test --config=playwright.iphone.config.js
+      - run: npx playwright test --config=playwright.iphone.config.js --max-failures=2
       - name: Confirm native HTML excludes PWA metadata and installation code; preserve active APK and update
         run: |
           npm ci --prefix mobile --ignore-scripts
