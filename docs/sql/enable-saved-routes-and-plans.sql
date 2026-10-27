@@ -87,8 +87,12 @@ begin
 end;$$;
 revoke all on function traxelo_private.write_item(uuid,text,jsonb,bigint,boolean) from public,anon;
 grant execute on function traxelo_private.write_item(uuid,text,jsonb,bigint,boolean) to authenticated;
-create function public.traxelo_write_item(p_id uuid,p_kind text,p_data jsonb,p_revision bigint,p_deleted boolean default false) returns jsonb language sql security invoker set search_path='' as $$ select traxelo_private.write_item(p_id,p_kind,p_data,p_revision,p_deleted);$$;
-revoke all on function public.traxelo_write_item(uuid,text,jsonb,bigint,boolean) from public,anon;
-grant execute on function public.traxelo_write_item(uuid,text,jsonb,bigint,boolean) to authenticated;
+create function public.traxelo_write_owned_item(p_owner uuid,p_id uuid,p_kind text,p_data jsonb,p_revision bigint,p_deleted boolean default false) returns jsonb language plpgsql security invoker set search_path='' as $$
+begin
+ if p_owner is null or p_owner is distinct from auth.uid() then raise exception 'A conta mudou. Abra novamente o salvamento.' using errcode='42501';end if;
+ return traxelo_private.write_item(p_id,p_kind,p_data,p_revision,p_deleted);
+end;$$;
+revoke all on function public.traxelo_write_owned_item(uuid,uuid,text,jsonb,bigint,boolean) from public,anon;
+grant execute on function public.traxelo_write_owned_item(uuid,uuid,text,jsonb,bigint,boolean) to authenticated;
 notify pgrst,'reload schema';
 commit;

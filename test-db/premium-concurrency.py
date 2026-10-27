@@ -7,7 +7,7 @@ def sql(text,check=True):
 sql(f"insert into auth.users(id) values('{owner}'); insert into public.traxelo_plan_grants(user_id,plan) values('{owner}','free');")
 payload=json.dumps({'name':'Concurrent fixture','start':{'lat':-5.8,'lon':-35.2},'points':[{'lat':-5.81,'lon':-35.21}]})
 def save(i):
-    return sql(f"begin;set local role authenticated;select set_config('request.jwt.claims','{{\"sub\":\"{owner}\",\"is_anonymous\":false}}',true);select public.traxelo_write_item('e64d0db2-f5d8-461a-8799-{i:012d}','route','{payload}',0);select pg_sleep(0.1);commit;",False)
+    return sql(f"begin;set local role authenticated;select set_config('request.jwt.claims','{{\"sub\":\"{owner}\",\"is_anonymous\":false}}',true);select public.traxelo_write_owned_item(auth.uid(),'e64d0db2-f5d8-461a-8799-{i:012d}','route','{payload}',0);select pg_sleep(0.1);commit;",False)
 with ThreadPoolExecutor(max_workers=8) as pool: results=list(pool.map(save,range(100,112)))
 assert sum(r.returncode==0 for r in results)==3,[(r.returncode,r.stderr)for r in results]
 assert sql(f"select count(*) from public.traxelo_workspace_items where user_id='{owner}' and not deleted").stdout.strip()=='3'
