@@ -20,4 +20,11 @@ test('seven clients: real OSRM matrix and street route rendered by real MapLibre
  await page.waitForTimeout(1500);
  const dir='docs/captures/routes-after';await mkdir(dir,{recursive:true});const path=dir+'/'+info.project.name+'.png';
  await page.screenshot({path,fullPage:true});await page.screenshot({path:dir+'/'+info.project.name+'.jpg',type:'jpeg',quality:80,fullPage:true});await writeFile(dir+'/'+info.project.name+'.json',JSON.stringify({syntheticClients:true,realServices:true,calls,result},null,2));await info.attach('Rota real por ruas, sete clientes sintéticos',{path,contentType:'image/png'});
+ // Exercise the real WebGL canvas after moving the existing MapLibre instance.
+ await page.locator('#liveStart').click();await expect(page.locator('#traxioNavOverlay')).toBeVisible();await expect(page.locator('#traxioNavMapHost .maplibregl-canvas')).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>{const host=document.getElementById('map').getBoundingClientRect(),canvas=map.getCanvas().getBoundingClientRect();return Math.abs(host.width-canvas.width)<2&&Math.abs(host.height-canvas.height)<2;})).toBe(true);
+ await page.screenshot({path:dir+'/'+info.project.name+'-navigation-fullscreen.png'});await page.locator('#traxioNavMinimize').click();await page.locator('[data-tab=clientes]').click();await expect(page.locator('#traxioNavOverlay')).toHaveClass(/traxio-mini/);expect(await page.evaluate(()=>TraxeloNavigation.state().tracking)).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>map.getCanvas().getBoundingClientRect().width)).toBeLessThanOrEqual(330);await page.screenshot({path:dir+'/'+info.project.name+'-navigation-floating.png'});
+
 });
+
