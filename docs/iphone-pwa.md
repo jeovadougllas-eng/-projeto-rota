@@ -40,3 +40,13 @@ Os testes automáticos usam contas e clientes fictícios e o motor WebKit com pe
 - Evidências: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40438198255
 
 A primeira validação identificou e corrigiu a inicialização anterior ao cabeçalho e uma regra antiga que ocultava os controles antes do login. O modo offline simulado pelo WebKit retornou erro interno; a verificação de recuperação passou ao provocar uma interrupção real no servidor de testes e restaurar a conexão. O teste público valida o registro e o cache do worker; a interrupção de transporte fica no servidor isolado, sem afetar o aplicativo publicado.
+
+### Verificação no endereço público
+
+Os recursos publicados foram conferidos por hash, incluindo os tipos de conteúdo do manifesto, os ícones e a política de atualização do service worker. O APK e o pacote ativo Android foram confirmados sem alteração. Passaram 30 verificações públicas de instalação/isolamento e 20 verificações dos relatórios de visitas nos quatro perfis de iPhone, incluindo persistência após recarregar e download do Excel.
+
+Evidências públicas: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40440422440
+
+A regressão anterior do mesmo código do aplicativo também passou nas transações de rotas, fluxos existentes e serviços reais de ruas: https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40438198066
+
+O teste de relatório mantém a autenticação sintética isolada mesmo quando o service worker assume a navegação; o SDK real não substitui a simulação. Não foram utilizados dados ou credenciais reais de usuários para essas verificações.
