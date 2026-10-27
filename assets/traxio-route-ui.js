@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    calculationPlan={points,start:existing?.start};activeSelection=JSON.stringify([...selectedIds].sort());
    const planSignature=()=>P.signature(clients,[...points.map(c=>c.id),...(existing?.start?.id!==undefined?[existing.start.id]:[])],originSignature());
    const snapshot=planSignature();activeFingerprint=snapshot;let start;phase('awaiting-origin','Verificando a origem da rota…');
-   if(destination){if(!valid(destination.lat,destination.lon)){phase('location-error','Confirme um destino com coordenadas válidas.');return;}try{start=await requestGPS();}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message);return;}}
+   if(destination){if(!valid(destination.lat,destination.lon)){phase('location-error','Confirme um destino com coordenadas válidas.');return;}try{start=await requestGPS();if(current(run)){gpsOrigin={...start};showGpsOrigin();}}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message);return;}}
    else if(existing)start=existing.start;
    else if(el('origin').value==='manual'){if(!manualOrigin){phase('awaiting-origin','Busque e confirme o endereço ou marque a origem no mapa.');return;}start={...manualOrigin};}
    else if(el('origin').value==='gps'){try{start=gpsOrigin?{...gpsOrigin}:await requestGPS();if(current(run)){gpsOrigin={...start};showGpsOrigin();}}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');return;}}
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const c=clients.find(c=>String(c.id)===String(id));if(!c)return false;
   if(!P.location(c).ready){window.traxeloReviewClient?.(c.id);return false;}
   if(window.TraxeloNavigation?.isTracking()){if(!confirm('Trocar a navegação atual por uma rota somente até '+c.name+'? As visitas já registradas serão preservadas.'))return false;window.TraxeloNavigation.finish('partial');}
-  selectedIds=new P.IdSet([c.id]);selectionInitialized=true;syncRouteChoices();renderWorkspace();switchTab('mapa');
+  el('origin').value='gps';gpsOrigin=null;originForm.hidden=true;showGpsOrigin();selectedIds=new P.IdSet([c.id]);selectionInitialized=true;syncRouteChoices();renderWorkspace();switchTab('mapa');
   const result=await calculate('single',{destination:{...c,lat:Number(c.lat),lon:Number(c.lon)}});
   if(!result)return false;window.TraxeloNavigation?.start();return true;
  }

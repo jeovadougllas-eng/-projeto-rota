@@ -204,7 +204,7 @@ function renderMarkers(){
   const el=document.createElement('button');el.type='button';el.className='traxio-route-pin';
   el.style.background='#f59e0b';el.style.border='3px dashed #fff';el.textContent='?';
   el.title='Ponto sugerido, confirmar: '+c.name;
-  el.onclick=()=>openClientLocation(c.id,candidate);
+  el.onclick=()=>window.TraxeloMapActions?.showClient(c.id);
   markers.push(new maplibregl.Marker({element:el}).setLngLat([candidate.lon,candidate.lat])
    .setPopup(new maplibregl.Popup({offset:22}).setText('Ponto NÃO confirmado: '+c.name+'. Toque no marcador para conferir.')).addTo(map));
  });
