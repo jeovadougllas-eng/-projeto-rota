@@ -1,4 +1,4 @@
-name: Published iPhone PWA and unchanged Android release
+name: Published iPhone PWA, persistent visits and unchanged Android release
 on:
   push:
     branches: [dev/traxelo-android-routes]

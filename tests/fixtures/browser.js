@@ -1,8 +1,8 @@
 import { clients } from './clients.js';
 
 // Only Playwright injects these doubles. Production HTML has no test switch or auth bypass.
-export async function prepare(page, {authenticated=true, theme='light', records=clients, liveMaps=false}={}) {
-  await page.addInitScript(({authenticated,theme,records})=>{
+export async function prepare(page, {authenticated=true, theme='light', records=clients, liveMaps=false, lockAuthFixture=false}={}) {
+  await page.addInitScript(({authenticated,theme,records,lockAuthFixture})=>{
     if(!localStorage.getItem('projeto_rota_mapa_v1')) localStorage.setItem('projeto_rota_mapa_v1',JSON.stringify(records));
     if(!localStorage.getItem('traxio.account.preferences.v1')) localStorage.setItem('traxio.account.preferences.v1',JSON.stringify({theme,font:100}));
     const user={id:'00000000-0000-4000-8000-000000000001',email:'representante@exemplo.com',user_metadata:{display_name:'Representante Traxio'},app_metadata:{provider:'google'}};
@@ -25,7 +25,10 @@ export async function prepare(page, {authenticated=true, theme='light', records=
       exchangeCodeForSession:async code=>{window.__exchangeCalls.push(code);return {data:{session:{user}},error:null};},
       signOut:async()=>({error:null}),resetPasswordForEmail:async()=>({error:null}),updateUser:async()=>({data:{user},error:null}),signUp:async()=>({data:{user,session:null},error:null})
     },from:query})};
-  },{authenticated,theme,records});
+    // Real service-worker controlled navigations can bypass page-level CDN routing.
+    // Keep this test-only SDK double authoritative; never initialize a real account.
+    if(lockAuthFixture){const fixture=window.supabase;Object.defineProperty(window,'supabase',{configurable:true,get:()=>fixture,set:()=>{}});}
+  },{authenticated,theme,records,lockAuthFixture});
   // Block all external services so no real account, client record, geocoder, or provider is touched.
   await page.route(/^https?:\/\/(?!(?:127\.0\.0\.1|localhost)(?::|\/))/,async route=>{
     const url=route.request().url();
@@ -36,3 +39,4 @@ export async function prepare(page, {authenticated=true, theme='light', records=
 }
 
 export async function ready(page) { await page.goto('/'); await page.locator('body.traxio-ui-ready').waitFor(); }
+
