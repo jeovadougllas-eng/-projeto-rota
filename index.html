@@ -278,7 +278,7 @@ function saveClientRecord({keepForm=false}={}){
  }
  const original=editingClientId!==null?clients.find(c=>String(c.id)===String(editingClientId)):null;
  const address=[$('address').value.trim(),$('houseNumber').value.trim()?'nº '+$('houseNumber').value.trim():'',$('complement').value.trim()].filter(Boolean).join(' · ');
- const record={...(original||{}),id:original?.id??uid(),name,address,street:$('address').value.trim(),complement:$('complement').value.trim(),pharmacyNetwork:$('pharmacyNetwork').value,addressFieldsVersion:1,cep:$('cep').value.trim(),lat,lon,locationVerification:lat!==null?'manual_reviewed':'pending',priority:Number($('priority').value)};
+ const record={...(original||{}),id:original?.id??uid(),name,address,street:$('address').value.trim(),complement:$('complement').value.trim(),pharmacyNetwork:$('pharmacyNetwork').value,addressFieldsVersion:1,addressManuallyEdited:true,cep:$('cep').value.trim(),lat,lon,locationVerification:lat!==null?'manual_reviewed':'pending',priority:Number($('priority').value)};
  if(original&&original.address!==record.address){
   if(!record.originalAddress)record.originalAddress=original.address;
   record.geocodingAddressOverride=record.address;
@@ -465,7 +465,7 @@ async function enrichRun(refresh=false){
      enrichUI('Consultando '+c.name+' (tentativa '+attempt+'/3)...');
      const data=await companyFetch(cnpj);
      c.companyData={cnpj,fields:companyFields(data),source:'BrasilAPI',checkedAt:new Date().toISOString()};
-     Object.assign(c,TraxioGeo.structured(c));delete c.companyError;save();succeeded=true;consecutiveFailures=0;
+     Object.assign(c,TraxioGeo.structured(c,{fillMissing:true}));delete c.companyError;save();succeeded=true;consecutiveFailures=0;
      enrichUI('Consultado: '+c.name+'.');break;
     }catch(e){
      if(enrichStopRequested)break;

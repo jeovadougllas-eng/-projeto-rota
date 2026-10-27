@@ -42,8 +42,8 @@ function addressParts(c){
  return {street,house,complement,city:regionName(city||'')?city:'',district,state,zip:digits(clean(c.cep)||field(c,['cep','codigopostal'])||c.zip_code||company.cep),country:'BR'};
 }
 function parse(c){const parts=addressParts(c);const {complement,...query}=parts;return {...query,house:/^(sn|semnumero)$/.test(norm(parts.house))?'':parts.house};}
-function structured(c){
- const p=addressParts(c);
+function structured(c,{fillMissing=false}={}){
+ const p=addressParts(fillMissing&&!c.addressManuallyEdited?{...c,addressFieldsVersion:undefined}:c);
  return {...c,street:p.street,houseNumber:p.house,complement:p.complement,city:p.city,neighborhood:p.district,state:p.state,cep:p.zip,addressFieldsVersion:1};
 }
 function regionName(v){return /[A-Za-zÀ-ÿ]{2}/.test(v)&&!/^\d/.test(v)&&!(/^[A-Za-z]{2}$/.test(clean(v))&&stateCode(v))&&!/^brasil$/i.test(v);}

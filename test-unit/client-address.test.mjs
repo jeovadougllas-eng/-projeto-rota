@@ -16,3 +16,10 @@ test('manual fields and intentionally cleared optional boxes outrank old spreads
  const c={addressFieldsVersion:1,street:'Rua Corrigida',houseNumber:'20',complement:'',city:'Natal',neighborhood:'Tirol',state:'RN',address:'Rua Corrigida · nº 20',geocodingAddressOverride:'Rua Antiga · nº 10',importFields:[{label:'Número',value:'10'},{label:'Complemento',value:'Casa 2'},{label:'Cidade',value:'Recife'}],companyData:{fields:[['Complemento','Loja 4'],['UF','PE']]},pharmacyNetwork:'Santa Fé'};
  const p=geo.addressParts(c);assert.equal(p.street,'Rua Corrigida');assert.equal(p.house,'20');assert.equal(p.complement,'');assert.equal(p.city,'Natal');assert.equal(p.state,'RN');assert.equal(geo.structured(c).pharmacyNetwork,'Santa Fé');
 });
+
+test('official lookup fills missing imported boxes but never replaces a user-reviewed address',()=>{
+ const imported=geo.structured({address:'Rua Importada, 10',importFields:[{label:'Endereço',value:'Rua Importada, 10'}]});
+ imported.companyData={fields:[['Logradouro','Rua Oficial'],['Número','99'],['Bairro','Tirol'],['Município','Natal'],['UF','RN'],['Complemento','Loja 2']]};
+ const enriched=geo.structured(imported,{fillMissing:true});assert.equal(enriched.street,'Rua Importada');assert.equal(enriched.houseNumber,'10');assert.equal(enriched.city,'Natal');assert.equal(enriched.neighborhood,'Tirol');assert.equal(enriched.complement,'Loja 2');
+ const reviewed=geo.structured({...enriched,addressManuallyEdited:true,complement:''},{fillMissing:true});assert.equal(reviewed.complement,'');
+});
