@@ -10,7 +10,7 @@ export async function prepare(page, {authenticated=true, theme='light', records=
     window.__oauthCalls=[];window.__exchangeCalls=[]; window.__passwordCalls=[];window.__dataCalls=[];
     const rows=records.map(c=>({id:c.id,local_id:c.id,data:c,revision:1,deleted_at:null}));
     const query=table=>{
-      const result={data:table==='clients'?rows:null,count:table==='clients'?rows.length:0,error:null};
+      const result={data:table==='clients'?rows:table==='traxelo_workspace_items'?[]:null,count:table==='clients'?rows.length:0,error:null};
       const chain={then:(yes,no)=>Promise.resolve(result).then(yes,no)};
       for(const method of ['select','eq','order','range','is','in','limit','match','neq','gt','gte','lt','lte'])chain[method]=()=>chain;
       for(const method of ['insert','upsert','update','delete'])chain[method]=payload=>{window.__dataCalls.push({method,table,payload});return chain;};
@@ -24,7 +24,7 @@ export async function prepare(page, {authenticated=true, theme='light', records=
       signInWithOAuth:async options=>{window.__oauthCalls.push(options);return{data:{url:'https://identity.example.test/authorize'},error:null};},
       exchangeCodeForSession:async code=>{window.__exchangeCalls.push(code);return {data:{session:{user}},error:null};},
       signOut:async()=>({error:null}),resetPasswordForEmail:async()=>({error:null}),updateUser:async()=>({data:{user},error:null}),signUp:async()=>({data:{user,session:null},error:null})
-    },from:query})};
+    },from:query,rpc:async name=>name==='traxelo_plan_access'?({data:{plan:'pro',beta:true,routeLimit:null,routeCount:0},error:null}):({data:null,error:{message:'Workspace fixture write not configured'}})})};
     // Real service-worker controlled navigations can bypass page-level CDN routing.
     // Keep this test-only SDK double authoritative; never initialize a real account.
     if(lockAuthFixture){const fixture=window.supabase;Object.defineProperty(window,'supabase',{configurable:true,get:()=>fixture,set:()=>{}});}

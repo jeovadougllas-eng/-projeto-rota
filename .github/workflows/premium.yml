@@ -1,0 +1,180 @@
+name: Saved routes, recurring agenda and subscription features
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/premium.yml','assets/traxelo-premium*','assets/traxelo-workspace*','tests/premium.spec.js','test-unit/premium*','test-db/premium*','docs/sql/enable-saved-routes-and-plans.sql','playwright.premium.config.js']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: premium-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: fixture-only-password
+          POSTGRES_DB: premium_fixture
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: fixture-only-password
+      PGDATABASE: premium_fixture
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare isolated authentication schema
+        run: |
+          psql -v ON_ERROR_STOP=1 -f test-db/visits-fixture.sql
+          psql -v ON_ERROR_STOP=1 -c 'create role service_role nologin;'
+          psql -v ON_ERROR_STOP=1 -f docs/sql/enable-saved-routes-and-plans.sql
+          python - <<'PY'
+          from pathlib import Path
+          Path('/tmp/premium-probes.sql').write_text('begin;\n'+Path('test-db/premium-assertions.sql').read_text()+'\nrollback;')
+          PY
+          psql -v ON_ERROR_STOP=1 -f /tmp/premium-probes.sql
+          python test-db/premium-concurrency.py
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm run check && npm run test:geolocation
+      - name: Install browser engines
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"; else npx playwright install chromium; fi
+          timeout 180s npx playwright install --with-deps webkit
+      - run: npx playwright test --config=playwright.premium.config.js --max-failures=2
+      - run: npx playwright test --config=playwright.field-navigation.config.js --project=iphone-safari --project=android-browser --project=desktop --max-failures=2
+      - name: Inspect actual Excel package
+        run: |
+          python -m pip install --quiet openpyxl==3.1.5
+          node scripts/visit-workbook-fixture.mjs
+          python scripts/verify-visit-workbook.py
+          node scripts/premium-workbook-fixture.mjs
+          python scripts/verify-premium-workbook.py
+      - name: Preserve synthetic-account captures
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          root=Path('docs/captures/premium');root.mkdir(parents=True,exist_ok=True)
+          for image in Path('test-results-premium').rglob('*.png'):
+            if image.name in ['saved-routes.png','recurring-agenda.png','pro-comparison-and-suggestions.png']:
+              device=next((x for x in ['iphone-safari','iphone-chrome','iphone-small','iphone-landscape','android-browser','desktop'] if image.parent.name.endswith(x)),None)
+              if device:shutil.copyfile(image,root/(device+'-'+image.name))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/captures/premium/
+          if ! git diff --cached --quiet; then
+            git commit -m "test: capture saved routes, recurring agenda and Pro insights [skip ci]"
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: premium-browser-evidence
+          path: |
+            test-results-premium/
+            test-results-field-navigation/
+
+  stage-android:
+    needs: [browser, database]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm ci --prefix mobile --ignore-scripts
+      - name: Build compatible web update without replacing signed APK
+        run: |
+          TRAXELO_UPDATE_OUTPUT=candidate/updateweb node scripts/build-mobile.mjs
+          mkdir -p updates/android/bundles
+          cp candidate/updateweb/bundles/* updates/android/bundles/
+          cp candidate/updateweb/manifest.json updates/android/candidate.json
+          cp candidate/updateweb/manifest.json candidate/update-manifest.json
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/android/candidate.json updates/android/bundles/
+          git commit -m "build: stage saved routes and Pro planning Android update [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: premium-android-candidate
+          path: candidate/update-manifest.json
+  installed-android:
+    needs: stage-android
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: premium-android-candidate
+          path: candidate
+      - run: npm ci
+      - name: Preserve exact APK and prepare emulator renderer
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          assert hashlib.sha256(Path('downloads/traxio-android-testes.apk').read_bytes()).hexdigest()=='6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2'
+          PY
+          sudo chmod a+rw /dev/kvm
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-fields-xvfb.log 2>&1 &
+      - name: Test real HTTPS update in original APK with synthetic data only
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb install downloads/traxio-android-testes.apk
+            adb shell am start -n app.traxio.mobile/.MainActivity
+            adb shell run-as app.traxio.mobile mkdir -p shared_prefs
+            TRAXELO_LOCATION_PROOF=1 TRAXELO_FIELDS_PROOF=1 TRAXELO_VISITS_PROOF=1 TRAXELO_FIELD_NAVIGATION_PROOF=1 TRAXELO_PREMIUM_PROOF=1 node scripts/android-updates.mjs
+      - name: Activate only the update proven in installed APK
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs downloads/traxio-android-testes.apk
+          mkdir -p updates/android docs/captures/premium-android
+          cp candidate/update-manifest.json updates/android/manifest.json
+          cp mobile/evidence/* docs/captures/premium-android/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/android/manifest.json docs/captures/premium-android/
+          git commit -m "build: activate Android-tested saved routes and Pro features [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: premium-installed-android
+          path: mobile/evidence/

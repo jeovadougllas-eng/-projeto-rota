@@ -16,3 +16,5 @@ for(const file of ['traxio-planner.js','traxio-route-ui.js','traxelo-navigation-
 
 
 for(const file of ['traxelo-iphone-pwa.js','traxelo-geo-recovery.js','traxelo-updates.js','traxelo-location-ui.js','traxelo-visits-model.js','traxelo-visit-store.js','traxelo-visit-report.js','traxelo-visits-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+for(const file of ['traxelo-premium-model.js','traxelo-workspace-store.js','traxelo-workspace-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});

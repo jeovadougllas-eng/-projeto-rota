@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const busy=routeBusy;
   el('calcRoute').disabled=busy;el('generateSuggestion').disabled=busy;
   el('roadRoute').disabled=busy||!(lastRoute||preparedRoute);confirmedOnly.disabled=busy;
-  planner.setAttribute('aria-busy',String(busy));window.TraxeloMapActions?.refresh();
+  planner.setAttribute('aria-busy',String(busy));window.TraxeloMapActions?.refresh();window.TraxeloWorkspace?.routeReady();
  }
  function phase(name,message){state.phase=name;badge.textContent=labels[name]||name;badge.dataset.phase=name;el('mapa').dataset.routeState=name;if(message)el('routeResult').textContent=message;updateButtons();}
 
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    const partial=state.excluded.length>0;
    phase(partial?'partial':'calculated',(destination?(strategy==='single'?'Visita individual · Trajeto por ruas: ':'Destino avulso · Trajeto por ruas: '):'Trajeto por ruas: ')+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+' clientes excluídos com sua confirmação. ':'')+(allowUnverified?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
    window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:arranged.map(c=>c.name),strategy,at:new Date().toISOString(),excluded:[...state.excluded]};
-   window.traxioShowSaveTrip?.();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});return lastRoute;
+   window.traxioShowSaveTrip?.();window.TraxeloWorkspace?.routeReady();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});return lastRoute;
   }catch(e){
    if(!current(run)||signal.aborted)return;
    window.traxioResetNavigation?.();lastRoute=null;calculationPlan=null;clearRouteVisual();if(preparedRoute)showOrder(preparedRoute.points);else el('routeOrder').replaceChildren();
@@ -248,7 +248,17 @@ document.addEventListener('DOMContentLoaded',()=>{
   const result=await calculate('single',{destination:{...c,lat:Number(c.lat),lon:Number(c.lon)}});
   if(!result)return false;window.TraxeloNavigation?.start();return true;
  }
- window.TraxioRouteUI={calculate,singleClient,cancel,adHoc:destination=>calculate('avulso',{destination:{...destination}}),retrace:()=>{const existing=lastRoute||preparedRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};
+ async function openSaved(saved,{currentOrigin=true}={}){
+  if(window.TraxeloNavigation?.isTracking()&&!confirm('Trocar a navegação atual pela rota salva? As visitas registradas serão preservadas.'))return false;
+  const resolved=TraxeloPremiumModel.resolve(saved,clients,{currentOrigin});
+  if(resolved.missing.length||resolved.pending.length)throw Error('Revise esta rota antes de navegar. Ausentes: '+(resolved.missing.join(', ')||'nenhum')+'. Localização pendente: '+(resolved.pending.join(', ')||'nenhuma')+'.');
+  const requestGeneration=generation;let start=resolved.start;if(currentOrigin)start=await requestGPS();if(requestGeneration!==generation||document.body.classList.contains('auth-locked'))return false;if(!start)throw Error('A origem salva não está mais disponível. Use a posição atual.');
+  cancel();el('origin').value='manual';manualOrigin={...start};manualDraft={...start};originForm.hidden=false;el('routeOriginAddress').value=start.name||'Origem da rota salva';showGpsOrigin();
+  selectedIds=new P.IdSet(resolved.points.map(c=>c.id).filter(id=>id!=null));selectionInitialized=true;syncRouteChoices();renderWorkspace();switchTab('mapa');
+  const result=await calculate(saved.strategy||'distance',{existing:{start,points:resolved.points,excluded:[],allowUnverified:false,strategy:saved.strategy||'distance'}});
+  if(result&&resolved.changed.length)el('routeResult').textContent+=' Posições atualizadas: '+resolved.changed.join(', ')+'.';return !!result;
+ }
+ window.TraxioRouteUI={calculate,singleClient,cancel,openSaved,getRoute:()=>lastRoute?JSON.parse(JSON.stringify(lastRoute)):null,adHoc:destination=>calculate('avulso',{destination:{...destination}}),retrace:()=>{const existing=lastRoute||preparedRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};
  // Keep keyboard-driven fields visible for any browser implementing VisualViewport.
  let viewportFrame=0;
  function viewportChanged(){cancelAnimationFrame(viewportFrame);viewportFrame=requestAnimationFrame(()=>{const viewport=window.visualViewport;document.documentElement.style.setProperty('--route-visible-height',(viewport?.height||innerHeight)+'px');document.documentElement.style.setProperty('--route-keyboard-inset',Math.max(0,innerHeight-((viewport?.height||innerHeight)+(viewport?.offsetTop||0)))+'px');const focused=document.activeElement;if(focused?.matches('#mapa input,#mapa select'))focused.scrollIntoView({block:'nearest',inline:'nearest'});map?.resize();});}
