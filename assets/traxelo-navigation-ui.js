@@ -16,7 +16,7 @@ function exitNav(){
 const overlay=$('traxioNavOverlay');if(overlay.hidden)return;
 const mapEl=$('map'),panel=$('liveNavigation');
 if(originalMapParent){originalMapParent.insertBefore(mapEl,originalMapNext?.parentNode===originalMapParent?originalMapNext:null);originalPanelParent.insertBefore(panel,originalPanelNext?.parentNode===originalPanelParent?originalPanelNext:null)}
-if(overlay.matches?.(':popover-open'))overlay.hidePopover();overlay.hidden=true;overlay.classList.remove('traxio-mini');$('traxioNavExpand').hidden=watch===null;document.body.classList.remove('traxio-navigating');setTimeout(()=>map?.resize(),80);
+if(typeof overlay.hidePopover==='function'&&overlay.matches(':popover-open'))overlay.hidePopover();overlay.hidden=true;overlay.classList.remove('traxio-mini');$('traxioNavExpand').hidden=watch===null;document.body.classList.remove('traxio-navigating');setTimeout(()=>map?.resize(),80);
 }
 $('traxioNavMinimize').onclick=()=>{const o=$('traxioNavOverlay');o.classList.add('traxio-mini');document.body.classList.remove('traxio-navigating');setTimeout(()=>map?.resize(),90)};
 const restore=document.createElement('button');restore.type='button';restore.className='traxio-mini-restore';restore.textContent='⛶ Ampliar';restore.onclick=()=>{const o=$('traxioNavOverlay');o.classList.remove('traxio-mini');document.body.classList.add('traxio-navigating');setTimeout(()=>map?.resize(),90)};$('traxioNavMinimize').parentNode.prepend(restore);$('traxioNavClose').onclick=exitNav;$('traxioNavExpand').onclick=enterNav;
@@ -117,13 +117,13 @@ function scheduleRetry(){
  },Math.min(10000,3000*retryCount));
 }
 function pauseTracking(){
- navGeneration++;clearTimeout(retryTimer);clearTimeout(watchRetryTimer);rerouteController?.abort();rerouteController=null;rerouteBusy=false;
+ navGeneration++;$('navigationRecalculate').disabled=true;clearTimeout(retryTimer);clearTimeout(watchRetryTimer);rerouteController?.abort();rerouteController=null;rerouteBusy=false;
  if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null;}
 }
 function watchError(error){
  if(!trackingRequested)return;status('Erro no GPS: '+error.message+(error.code===1?' Autorize a localização e toque em Iniciar navegação.':' Tentando obter um sinal atual…'));
  arrivedSince=0;offRouteSince=null;offRouteSamples=0;
- if(error.code===1){pauseTracking();trackingRequested=false;$('liveStart').disabled=false;return;}
+ if(error.code===1){pauseTracking();trackingRequested=false;$('liveStart').disabled=false;$('liveStart').hidden=false;$('navigationResume').hidden=false;return;}
  clearTimeout(watchRetryTimer);const generation=navGeneration;watchRetryTimer=setTimeout(()=>{if(generation===navGeneration&&trackingRequested&&!document.hidden){pauseTracking();startWatch(true);}},5000);
 }
 function startWatch(resuming=false){
@@ -134,7 +134,7 @@ function startWatch(resuming=false){
  try{
   const id=navigator.geolocation.watchPosition(accept,watchError,{enableHighAccuracy:true,maximumAge:0,timeout:18000});
   if(!trackingRequested||generation!==navGeneration){navigator.geolocation.clearWatch(id);return;}
-  watch=id;$('navigationRecalculate').disabled=false;$('liveStart').disabled=true;$('liveStart').hidden=true;$('liveStop').disabled=false;status(resuming?'Retomando navegação · aguardando GPS atual…':'Aguardando sinal GPS…');
+  watch=id;$('navigationResume').hidden=true;$('navigationRecalculate').disabled=false;$('liveStart').disabled=true;$('liveStart').hidden=true;$('liveStop').disabled=false;status(resuming?'Retomando navegação · aguardando GPS atual…':'Aguardando sinal GPS…');
   // A watch may stop delivering callbacks when an iPhone PWA goes to the background.
   // On return, explicitly reacquire a fresh fix and retrace the remaining stops.
   if(resuming)navigator.geolocation.getCurrentPosition(p=>{if(generation!==navGeneration||!trackingRequested)return;accept(p);if(latestFix&&Date.now()-latestFix.at<=20000)recalculate(latestFix.coord,true);},watchError,{enableHighAccuracy:true,maximumAge:0,timeout:18000});
@@ -147,8 +147,8 @@ const recalc=document.createElement('button');recalc.disabled=true;recalc.type='
  navigator.geolocation.getCurrentPosition(p=>{if(!trackingRequested)return;position(p);if(latestFix&&Date.now()-latestFix.at<=20000)recalculate(latestFix.coord,true);},watchError,{enableHighAccuracy:true,maximumAge:0,timeout:18000});
 };
 const adjust=document.createElement('button');adjust.type='button';adjust.id='navigationAdjustPin';adjust.className='secondary';adjust.textContent='Ajustar pin da próxima parada';adjust.onclick=()=>{const stop=next();if(!stop)return;pauseTracking();trackingRequested=false;exitNav();$('liveStart').disabled=false;window.TraxeloMapActions?.showClient(stop.id);window.traxeloReviewClient?.(stop.id);};
-$('liveStop').after(recalc,adjust);
-window.TraxeloNavigation={start:startNavigation,expand:enterNav,minimize:()=>$('traxioNavMinimize').click(),close:exitNav,finish:end,preparePinEdit:()=>{pauseTracking();trackingRequested=false;exitNav();$('liveStart').disabled=false;status('GPS pausado para ajustar o pin. Confirme a localização antes de retomar.');},isTracking:()=>trackingRequested,state:()=>({tracking:trackingRequested,watching:watch!==null,next:next()?.id,stops:stops().map(s=>({...s})),expanded:!$('traxioNavOverlay').hidden&&!$('traxioNavOverlay').classList.contains('traxio-mini')})};
+const resume=document.createElement('button');resume.type='button';resume.id='navigationResume';resume.className='secondary';resume.textContent='Retomar GPS';resume.hidden=true;resume.onclick=startNavigation;$('liveStop').after(recalc,adjust,resume);
+window.TraxeloNavigation={start:startNavigation,expand:enterNav,minimize:()=>$('traxioNavMinimize').click(),close:exitNav,finish:end,preparePinEdit:()=>{pauseTracking();trackingRequested=false;exitNav();$('liveStart').disabled=false;$('liveStart').hidden=false;status('GPS pausado para ajustar o pin. Confirme a localização antes de retomar.');},isTracking:()=>trackingRequested,state:()=>({tracking:trackingRequested,watching:watch!==null,next:next()?.id,stops:stops().map(s=>({...s})),expanded:!$('traxioNavOverlay').hidden&&!$('traxioNavOverlay').classList.contains('traxio-mini')})};
 document.addEventListener('visibilitychange',()=>{if(!trackingRequested||!route)return;if(document.hidden){pauseTracking();status('Navegação pausada em segundo plano. Será retomada ao voltar ao aplicativo.');}else startWatch(true);});
 window.addEventListener('pageshow',()=>{if(trackingRequested&&route&&!document.hidden)startWatch(true);});
 $('liveStop').addEventListener('click',()=>{if(confirm('Encerrar esta rota agora? As visitas restantes ficarão pendentes no histórico.'))end('partial')});

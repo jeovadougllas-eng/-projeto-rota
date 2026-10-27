@@ -33,3 +33,10 @@ test('returning to the foreground reacquires the GPS watch and retraces the rema
 test('GPS denial leaves the pin actions usable and never claims navigation has started',async({page})=>{
  await setup(page);await roads(page);await showFirstClient(page);await page.evaluate(()=>window.__gpsDenied=true);await page.locator('#focusedClientNavigate').click();await expect(page.locator('#focusedClientStatus')).toContainText('Permissão negada');await expect(page.locator('#traxioNavOverlay')).toBeHidden();expect(await page.evaluate(()=>TraxeloNavigation.state().tracking)).toBe(false);await expect(page.locator('#focusedClientAdjust')).toBeEnabled();
 });
+
+test('a browser without Popover support can expand, close and restore navigation without stopping GPS',async({page})=>{
+ await setup(page);await roads(page);await page.evaluate(()=>{const n=document.getElementById('traxioNavOverlay');n.showPopover=undefined;n.hidePopover=undefined;});await showFirstClient(page);await page.locator('#focusedClientNavigate').click();await expect(page.locator('#traxioNavOverlay')).toBeVisible();await page.locator('#traxioNavClose').click();await expect(page.locator('#traxioNavOverlay')).toBeHidden();expect(await page.evaluate(()=>TraxeloNavigation.state().tracking)).toBe(true);await page.locator('#traxioNavExpand').click();await expect(page.locator('#traxioNavOverlay')).toBeVisible();
+});
+test('GPS permission revoked during a route exposes a recovery action while preserving the destination',async({page})=>{
+ await setup(page);await roads(page);await showFirstClient(page);await page.locator('#focusedClientNavigate').click();await expect(page.locator('#traxioNavOverlay')).toBeVisible();await page.evaluate(()=>window.__gpsError({code:1,message:'Permissão negada'}));await expect(page.locator('#navigationResume')).toBeVisible();expect(await page.evaluate(()=>TraxeloNavigation.state().tracking)).toBe(false);await page.locator('#navigationResume').click();expect(await page.evaluate(()=>TraxeloNavigation.state().tracking)).toBe(true);expect(await page.evaluate(()=>TraxeloNavigation.state().next)).toBe('a');
+});
