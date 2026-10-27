@@ -117,6 +117,7 @@ function scheduleRetry(){
  },Math.min(10000,3000*retryCount));
 }
 function pauseTracking(){
+ arrivedSince=0;offRouteSince=null;offRouteSamples=0;
  navGeneration++;$('navigationRecalculate').disabled=true;clearTimeout(retryTimer);clearTimeout(watchRetryTimer);rerouteController?.abort();rerouteController=null;rerouteBusy=false;
  if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null;}
 }
