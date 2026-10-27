@@ -19,10 +19,10 @@ Para receber a versão: recarregue a web ou feche/reabra a PWA pelo ícone. No A
 ## Verificação da entrega — 27/10/2026
 
 - 64 testes de regras, geometria de etapas, matriz rodoviária, preservação de dados e histórico passaram.
-- 65 testes de interface e navegação passaram em seis perfis: Safari e Chrome no iPhone, iPhone pequeno e paisagem, Android e desktop. Apenas o caso de teclado em paisagem foi omitido por falta de altura útil simulada. Sensores GPS e respostas de falha são simulados; não houve teste em iPhone físico.
+- 65 testes de interface e navegação passaram em seis perfis: Safari e Chrome no iPhone, iPhone pequeno e paisagem, Android e desktop. Apenas o caso de teclado em paisagem foi omitido por falta de altura útil simulada. Nas verificações de interface, mapa, sensores GPS e respostas de falha são simulados; a renderização real é conferida separadamente. Não houve teste em iPhone físico.
 - 11 fluxos passaram novamente no endereço público, com contas e clientes fictícios, sem gravar nos registros reais da produção.
 - A integração com OSRM e o canvas real do MapLibre foi validada, incluindo ampliação e janela flutuante. As provas de GPS usam coordenadas simuladas.
 - O APK original foi instalado em emulador, baixou a atualização por HTTPS e passou em 12 verificações, incluindo navegação individual, mapa flutuante entre abas, visitas, Excel e recuperação sem apagar a carteira. O arquivo APK e a assinatura foram preservados.
 - A regressão de rotas e funcionalidades anteriores também passou.
 
-Evidências: [interface, WebKit e atualização Android](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40590093756), [rotas e funcionalidades anteriores](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40590093693), [iPhone em navegação individual](captures/field-navigation/iphone-safari-single-customer-full-navigation.png), [iPhone com mapa flutuante](captures/field-navigation/iphone-safari-floating-map-customer-search.png).
+Evidências: [interface, WebKit e atualização Android](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40590093756), [rotas e funcionalidades anteriores](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40590093693), [interface no WebKit com mapa simulado](captures/field-navigation/iphone-safari-single-customer-full-navigation.png), [mapa real ampliado](captures/routes-after/desktop-light-navigation-fullscreen.png), [mapa real flutuante](captures/routes-after/desktop-light-navigation-floating.png).
