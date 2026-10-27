@@ -2,7 +2,7 @@ name: Saved routes, recurring agenda and subscription features
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['.github/workflows/premium.yml','assets/traxelo-premium*','assets/traxelo-workspace*','tests/premium.spec.js','test-unit/premium*','test-db/premium*','docs/sql/enable-saved-routes-and-plans.sql','playwright.premium.config.js']
+    paths: ['.github/workflows/premium.yml','assets/traxelo-premium*','assets/traxelo-workspace*','assets/traxelo-visits-ui.js','assets/traxelo-visit-report.js','assets/traxio-route-ui.js','tests/premium.spec.js','test-unit/premium*','test-db/premium*','docs/sql/enable-saved-routes-and-plans.sql','playwright.premium.config.js']
   workflow_dispatch:
 permissions:
   contents: write
