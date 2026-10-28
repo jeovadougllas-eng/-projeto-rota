@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "004a7d951f4d865b10a7b45c231297bd19526e148b56f9d2c35182368b6207fb",
+  "version": "781f6480f83b9f73b430554fe6a70da5962f566fb82ed9e8592fd1572192bc1d",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -31,13 +31,14 @@
     "assets/traxelo-glass.css": "32ee18cbaba79452a40b68ecf686fb1ba6227e07757fff010f1ada59fe2b63e1",
     "assets/traxelo-iphone-pwa.css": "3540f983fe46ffbbd3e4e3694c9a22c6c99e016c36b35f1a267fa3ca9a38cfb6",
     "assets/traxelo-iphone-pwa.js": "4099ad22c737eab369dab7629b1e9be62681d358d60f95c4510eefed25a67148",
-    "assets/traxelo-location-ui.js": "4af12aac624eff0613e7f6752bcacb39b00c3ca7636524d5920b4da0f35f4af3",
+    "assets/traxelo-location-ui.js": "1a8d7d4c22c69c9824780559f8bef6de44bfa5e8c65eaa2b4a888700aac42962",
     "assets/traxelo-map-actions.js": "3446594d850b666090b09578a2d643b2336ace695a8e2f51b044489d8750e39a",
     "assets/traxelo-navigation-model.js": "db449bf1cf591a0519efbe4a5e855ed967688c41e66c20763ac45b22e0607bdd",
     "assets/traxelo-navigation-ui.js": "a806256e1316a59ac838b3fbca6f162c9b27810dbf0d04d8a13ed07f68051f23",
     "assets/traxelo-premium-model.js": "12c89912e8654d3d2941809be1b81be1591e601775dfb3b92dc7f7fac9273274",
     "assets/traxelo-premium.css": "140884cabb9906189e1caf0fe259d24c3bdbd047ddf8cabe4c25daaa42c8321c",
     "assets/traxelo-shell.css": "2d9086dd13caeb81cdd7941e32a83242894ab484ebef44be1c1b41a82abbfaa2",
+    "assets/traxelo-theme.css": "7a521211cf20c0626ced4b220cdf04f447fd569b80f527e2c5aeead5864e55b8",
     "assets/traxelo-updates.js": "4e855cf5af80451e0254728f93b1d55a8af5fb13b13ee4f004310f13e1cd658c",
     "assets/traxelo-visit-report.js": "8c301c0013b40e40e20650fec6ea689cf53b060a7722e84ea98235a1a949169b",
     "assets/traxelo-visit-store.js": "4af4cc808836e6fef4704eeb8b659d0fd31924333ab1658665c2cdaf89f85e97",
@@ -79,9 +80,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "9956eb6ab3339c837e44b3b4192745a727af0bb71a138e8f08bba0a238fea195"
+    "index.html": "7b7f0c09165eaffc18ac80ac3b3ed4b459d8fc0bcc2a11ecd12fd12c9cf694b7"
   },
-  "bundle": "/updates/android/bundles/004a7d951f4d865b10a7b45c231297bd19526e148b56f9d2c35182368b6207fb.zip",
-  "sha256": "8792a4a349a78ecfed144d37a6583a618e539ab5c71a894d956b04a4bc033e4b",
-  "bytes": 10905696
+  "bundle": "/updates/android/bundles/781f6480f83b9f73b430554fe6a70da5962f566fb82ed9e8592fd1572192bc1d.zip",
+  "sha256": "a34be5f0565692043a96e80bfcd7d0632e732670f7e9c891a168770fa90a88a6",
+  "bytes": 10906916
 }
