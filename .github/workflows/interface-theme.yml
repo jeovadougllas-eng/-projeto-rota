@@ -104,6 +104,8 @@ jobs:
           cp mobile/android/app/build/outputs/apk/debug/app-debug.apk candidate/apk/traxelo-ia-testes-atualizado.apk
           cp candidate/updateweb/bundles/* updates/android/bundles/
           cp candidate/updateweb/manifest.json updates/android/candidate.json
+          # Native sync/label generation is local to this disposable build worker; the compiled APK is already preserved.
+          git restore --worktree -- mobile/android
           git fetch origin "$GITHUB_REF_NAME"
           git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs
           git config user.name "github-actions[bot]"
