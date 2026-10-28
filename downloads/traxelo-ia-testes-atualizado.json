@@ -1,0 +1,9 @@
+{
+  "name": "Traxelo.IA",
+  "packageId": "app.traxio.mobile",
+  "release": "781f6480f83b9f73b430554fe6a70da5962f566fb82ed9e8592fd1572192bc1d",
+  "sha256": "232a24f36daa66e00eb93beba49ca2b833075f3f3ed7b85ef88d52b362af831e",
+  "bytes": 16485888,
+  "purpose": "first_installation",
+  "existingInstallations": "Use the compatible automatic web update; keep the original signed app and its local data."
+}
