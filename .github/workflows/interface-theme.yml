@@ -2,7 +2,7 @@ name: Sidebar simplicity and distinct light and dark surfaces
 on:
   push:
     branches: [dev/traxelo-android-routes]
-    paths: ['.github/workflows/interface-theme.yml','assets/traxelo-theme.css','tests/interface-theme.spec.js','playwright.interface-theme.config.js']
+    paths: ['.github/workflows/interface-theme.yml','assets/traxelo-theme.css','assets/traxelo-location-ui.js','docs/interface-theme-art.json','tests/interface-theme.spec.js','playwright.interface-theme.config.js']
   workflow_dispatch:
 permissions:
   contents: write
