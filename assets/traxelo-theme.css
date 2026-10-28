@@ -43,3 +43,4 @@ body.traxio-ui-ready :is(#visitEntryError,#saveRouteError,#openSavedRouteError,#
  body.traxio-ui-ready:not(.traxio-dark){--glass:#f8fffc;--glass-soft:#e4f5f0}
  body.traxio-ui-ready.traxio-dark{--glass:#001a25;--glass-soft:#032a37}
 }
+body.traxio-ui-ready :is(dialog,.account-dialog,.traxio-dialog) .detail-inner :is(h2,h3,strong){color:var(--surface-ink)}
