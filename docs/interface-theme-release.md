@@ -21,3 +21,13 @@ Quem já usa o APK original deve mantê-lo instalado: abra com internet, aguarde
 ## Verificação
 
 O fluxo de liberação compara os dois temas nas cinco páginas, exige contraste legível dos campos/seleções, verifica a persistência do tema e a navegação lateral, preserva a arte aprovada e exercita tanto a atualização no APK original quanto uma instalação nova com a interface atual embutida. Contas, clientes e GPS das verificações são sintéticos; nenhuma carteira real é importada nos testes.
+
+## Resultado da liberação
+
+- 18 verificações de interface passaram em seis perfis de navegador, incluindo Safari/Chrome no iPhone, iPhone pequeno/em paisagem, Android e desktop.
+- 14 verificações do fluxo de localização e navegação lateral passaram em telefone e desktop.
+- 73 testes existentes de modelos e proteção de dados passaram localmente.
+- O endereço web publicado passou nos três cenários de tema/menu, além da conferência dos hashes da arte.
+- O APK original passou na atualização compatível, preservação de carteira/histórico e novas verificações de tema. Um APK novo foi compilado com a mesma interface e instalado separadamente no emulador, começando sem clientes. Ponte nativa, permissões/GPS simulados, navegação individual e rotas salvas/agenda também foram verificados.
+
+As verificações Android usam emulador, contas fictícias e coordenadas simuladas. A testadora pode validar agora o uso real com a própria carteira.
