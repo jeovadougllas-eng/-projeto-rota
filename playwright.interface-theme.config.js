@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.iphone.config.js';export default defineConfig({...base,testMatch:'interface-theme.spec.js',timeout:45000,outputDir:'test-results-interface-theme',reporter:[['list'],['json',{outputFile:'test-results-interface-theme/results.json'}]]});

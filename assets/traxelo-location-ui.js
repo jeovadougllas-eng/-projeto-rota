@@ -3,18 +3,11 @@
 'use strict';
 const el=id=>document.getElementById(id),P=TraxioPlanner;
 function node(tag,text,cls){const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;}
-const nav=document.querySelector('nav.tabs'),header=document.querySelector('body>header'),main=document.querySelector('body>main');
+const nav=document.querySelector('nav.tabs'),main=document.querySelector('body>main');
 // Fixed navigation must not be clipped/stacked by the scrolling content (notably WebKit).
 nav.id='primaryNavigation';document.body.insertBefore(nav,main);
-const menu=node('button','☰','mobile-nav-toggle');menu.id='mobileNavToggle';menu.type='button';menu.setAttribute('aria-label','Abrir menu de navegação');menu.setAttribute('aria-controls',nav.id);menu.setAttribute('aria-expanded','false');header.prepend(menu);
-const shade=node('button',null,'nav-backdrop');shade.type='button';shade.hidden=true;shade.setAttribute('aria-label','Fechar menu de navegação');document.body.append(shade);
-function closeMenu(restore=false){if(document.body.classList.contains('nav-expanded'))document.body.classList.remove('nav-expanded');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Abrir menu de navegação');shade.hidden=true;main.inert=false;if(restore)menu.focus();}
-menu.onclick=()=>{if(document.body.classList.contains('nav-expanded'))closeMenu(true);else{document.body.classList.add('nav-expanded');menu.setAttribute('aria-expanded','true');menu.setAttribute('aria-label','Fechar menu de navegação');shade.hidden=false;main.inert=true;nav.querySelector('button').focus();}};
-shade.onclick=()=>closeMenu(true);
-nav.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{closeMenu();if(reviewQueue){finishReview();}else if(adjustingPin){directPin=false;endPin();showNotice('Ajuste cancelado ao mudar de aba. A posição do cliente não foi alterada.');}}));
-document.addEventListener('keydown',e=>{if(!document.body.classList.contains('nav-expanded'))return;if(e.key==='Escape'){e.preventDefault();closeMenu(true);}else if(e.key==='Tab'){const items=[menu,...nav.querySelectorAll('button[data-tab]')],first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
-matchMedia('(max-width:650px)').addEventListener('change',()=>closeMenu());
-new MutationObserver(()=>{if(document.body.classList.contains('auth-locked'))closeMenu();}).observe(document.body,{attributes:true,attributeFilter:['class']});
+// The permanent sidebar is the sole page navigator. Keep pin/review cancellation on tab changes.
+nav.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{if(reviewQueue){finishReview();}else if(adjustingPin){directPin=false;endPin();showNotice('Ajuste cancelado ao mudar de aba. A posição do cliente não foi alterada.');}}));
 
 // One status surface describes local durability separately from confirmed cloud synchronization.
 const notice=node('div',null,'location-save-notice');notice.id='locationSaveNotice';notice.hidden=true;notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');

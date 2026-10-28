@@ -10,13 +10,13 @@ async function cloud(page){await page.evaluate(async()=>{
  authClient.rpc=async(name,args)=>{window.__writes.push({name,args});if(window.__denyCloud)throw Error('Rede indisponível no teste');const r=window.__rows.find(r=>r.local_id===args.p_local_id);if(r.revision!==args.p_expected_revision)return {data:[{result:'conflict',current_revision:r.revision}],error:null};r.data=structuredClone(args.p_data);r.revision++;return {data:[{result:'updated',current_revision:r.revision}],error:null};};
  localStorage.removeItem('traxio_sync_baseline_v29_00000000-0000-4000-8000-000000000001');await traxioAutoSync();
  });}
-test('sidebar stays clickable after scrolling all five pages; phone Menu opens and closes accessibly',async({page},info)=>{
+test('permanent sidebar stays clickable after scrolling all five pages without a duplicate phone menu',async({page},info)=>{
  await setup(page);expect(await page.locator('.tabs').evaluate(n=>n.parentElement===document.body)).toBe(true);
  for(const tab of ['painel','clientes','mapa','historico','dados']){
   await page.locator(`.tabs [data-tab="${tab}"]`).click();await expect(page.locator('body')).toHaveAttribute('data-screen',tab);await page.locator('main').evaluate(n=>n.scrollTop=n.scrollHeight);
   const accessible=await page.locator(`.tabs [data-tab="${tab}"]`).evaluate(n=>{const r=n.getBoundingClientRect();return n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));});expect(accessible).toBe(true);
  }
- if(info.project.use.viewport.width<=650){await page.locator('#mobileNavToggle').click();await expect(page.locator('#mobileNavToggle')).toHaveAttribute('aria-expanded','true');await expect(page.locator('body')).toHaveClass(/nav-expanded/);await page.keyboard.press('Escape');await expect(page.locator('#mobileNavToggle')).toBeFocused();await page.locator('#mobileNavToggle').click();await page.locator('.tabs [data-tab="mapa"]').click();await expect(page.locator('body')).not.toHaveClass(/nav-expanded/);}
+ await expect(page.locator('#mobileNavToggle,.nav-backdrop')).toHaveCount(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:info.outputPath('navigation-restored.png')});
 });
 test('approximate client opens map directly and confirms only coordinates, preserving original commercial and address data',async({page},info)=>{

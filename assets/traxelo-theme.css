@@ -1,0 +1,45 @@
+/* Theme surfaces only. Scenic images, their overlays, positions and menu icons are untouched. */
+body.traxio-ui-ready:not(.traxio-dark){
+ --glass:rgba(248,255,252,.94);--glass-soft:rgba(228,245,240,.94);--glass-border:rgba(63,112,108,.65);
+ --surface-ink:#153e45;--surface-muted:#3f6269;--surface-field:#ffffff;--surface-line:#769d99;
+ --surface-hover:#d0ece4;--surface-selected:#006c62;--surface-on-selected:#ffffff;--surface-focus:#00675f;
+ --surface-danger:#9e263b;
+}
+body.traxio-ui-ready.traxio-dark{
+ --surface-ink:#f1faf9;--surface-muted:#c2d9da;--surface-field:#012531;--surface-line:#6d9d9e;
+ --surface-hover:#11535d;--surface-selected:#007f72;--surface-on-selected:#ffffff;--surface-focus:#d1f42f;
+ --surface-danger:#ffb6c3;
+}
+body.traxio-ui-ready :is(.card:not(.dashboard-overview):not(.quick-actions):not(.traxio-hero),.traxio-data-expand,.route-mode-panel,.traxio-client-disclosure,dialog,.account-dialog,.traxio-dialog,#routePlannerPanel,.premium-item,#focusedClientActions,.pin-confirm-panel,#gpsOriginPanel,.location-save-notice,.location-recovery,.stat,.glass-action,.approved-sync-bar,.history-stats>div,.strategy-option,.route-stop,.route-status,.planner-message,.visit-metrics>div,.visit-chart){
+ --text:var(--surface-ink);--ink:var(--surface-ink);--muted:var(--surface-muted);--panel:var(--glass);--soft:var(--glass-soft);--line:var(--surface-line);
+ color:var(--surface-ink);border-color:var(--surface-line);
+}
+body.traxio-ui-ready :is(.premium-item,#focusedClientActions,.pin-confirm-panel,#gpsOriginPanel,.location-save-notice,.location-recovery,.visit-metrics>div,.visit-chart){background:var(--glass)}
+body.traxio-ui-ready :is(dialog,.account-dialog,.traxio-dialog){background:var(--glass);color:var(--surface-ink)}
+body.traxio-ui-ready :is(dialog,.account-dialog,.traxio-dialog) :is(h2,h3,h4,strong,label,p,small,.muted,.detail-label){color:var(--surface-ink)}
+body.traxio-ui-ready :is(main,dialog,.account-dialog,.traxio-dialog) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){background:var(--surface-field);color:var(--surface-ink);border-color:var(--surface-line);color-scheme:light}
+body.traxio-ui-ready.traxio-dark :is(main,dialog,.account-dialog,.traxio-dialog) :is(input,select,textarea){color-scheme:dark}
+body.traxio-ui-ready :is(main,dialog,.account-dialog,.traxio-dialog) :is(input,textarea)::placeholder{color:var(--surface-muted);opacity:1}
+body.traxio-ui-ready :is(main,dialog,.account-dialog,.traxio-dialog) :is(input[type=checkbox],input[type=radio]){accent-color:var(--surface-selected);color-scheme:light}
+body.traxio-ui-ready.traxio-dark :is(main,dialog,.account-dialog,.traxio-dialog) :is(input[type=checkbox],input[type=radio]){color-scheme:dark}
+body.traxio-ui-ready :is(main,dialog,.account-dialog,.traxio-dialog) :is(button.secondary,a.secondary){background:var(--glass-soft);color:var(--surface-ink);border-color:var(--surface-line)}
+body.traxio-ui-ready :is(.card,.premium-item,#routePlannerPanel,.stat,.glass-action,.pin-confirm-panel) :is(button,a,summary,input,select,textarea):focus-visible{outline-color:var(--surface-focus)}
+body.traxio-ui-ready #painel :is(.stat strong,.stat-chevron,.quick-action-copy strong,.glass-action,.action-chevron){color:var(--surface-ink)}
+body.traxio-ui-ready #painel :is(.stat .muted,.quick-action-copy small,.location-recovery p){color:var(--surface-muted)}
+body.traxio-ui-ready #painel .glass-action:hover{background:var(--surface-hover);border-color:var(--surface-line)}
+body.traxio-ui-ready .client-table{color:var(--surface-ink)}
+body.traxio-ui-ready .client-table thead{background:var(--glass-soft);color:var(--surface-ink)}
+body.traxio-ui-ready .client-table :is(th,td){border-color:var(--surface-line)}
+body.traxio-ui-ready .client-table tbody tr:hover{background:var(--surface-hover)}
+body.traxio-ui-ready :is(.registry-count,.registry-footer,.registry-location-tools label,#focusedClientActions>p,#gpsOriginLabel,#pinClientAddress,.pin-confirm-panel p,.visit-metrics span,.visit-chart svg){color:var(--surface-muted)}
+body.traxio-ui-ready :is(.visit-metrics strong,#workspacePlanStatus){color:var(--surface-ink)}
+body.traxio-ui-ready .traxio-data-guide>button{background:var(--glass-soft);color:var(--surface-ink);border-color:var(--surface-line)}
+body.traxio-ui-ready #priorityFilters button{background:var(--glass-soft);color:var(--surface-ink);border:1px solid var(--surface-line)}
+body.traxio-ui-ready #priorityFilters button.selected,body.traxio-ui-ready .route-mode-tabs button[aria-selected=true]{background:var(--surface-selected);color:var(--surface-on-selected);border-color:var(--surface-selected)}
+body.traxio-ui-ready .strategy-option:has(input:checked),body.traxio-ui-ready .client-tile:has(input:checked){background:var(--surface-hover);border-color:var(--surface-selected);color:var(--surface-ink)}
+body.traxio-ui-ready #mapClientListDisclosure>summary{background:var(--surface-selected);color:var(--surface-on-selected)}
+body.traxio-ui-ready :is(#visitEntryError,#saveRouteError,#openSavedRouteError,#scheduleError){color:var(--surface-danger)}
+@media(prefers-reduced-transparency:reduce){
+ body.traxio-ui-ready:not(.traxio-dark){--glass:#f8fffc;--glass-soft:#e4f5f0}
+ body.traxio-ui-ready.traxio-dark{--glass:#001a25;--glass-soft:#032a37}
+}
