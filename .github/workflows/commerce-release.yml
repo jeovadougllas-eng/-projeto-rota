@@ -34,7 +34,6 @@ jobs:
           name: commerce-browser
           path: test-results-commerce-release/
   build:
-    needs: browser
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -95,7 +94,7 @@ jobs:
             candidate/update-manifest.json
             candidate/apk/rotamapa-android-testes.apk
   installed-android:
-    needs: build
+    needs: [browser, build]
     runs-on: ubuntu-latest
     timeout-minutes: 28
     env:
