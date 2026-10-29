@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  async function hydrate(){
   const response=await authClient?.auth.getSession();const user=response?.data?.session?.user;
   if(!user)return;
-  const key='traxio.route.selection.v1:'+user.id;
+  const key=RotaMapaPortfolioScope.key('traxio.route.selection.v1:'+user.id,user.id);
   if(selectionKey===key)return;
   selectionKey=key;let stored=null;try{stored=JSON.parse(localStorage.getItem(key)||'null');}catch{}
   if(Array.isArray(stored)){selectedIds=new P.IdSet(stored);selectionInitialized=true;syncRouteChoices();renderWorkspace();}

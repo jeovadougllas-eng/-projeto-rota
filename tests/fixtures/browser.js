@@ -8,9 +8,9 @@ export async function prepare(page, {authenticated=true, theme='light', records=
     const user={id:'00000000-0000-4000-8000-000000000001',email:'representante@exemplo.com',user_metadata:{display_name:'Representante Traxio'},app_metadata:{provider:'google'}};
     const session=authenticated?{user}:null;
     window.__oauthCalls=[];window.__exchangeCalls=[]; window.__passwordCalls=[];window.__dataCalls=[];
-    const rows=records.map(c=>({id:c.id,local_id:c.id,data:c,revision:1,deleted_at:null}));
+    const rows=records.map(c=>({id:c.id,local_id:c.id,portfolio_id:'00000000-0000-4000-8000-000000000000',data:c,revision:1,deleted_at:null}));
     const query=table=>{
-      const result={data:table==='clients'?rows:table==='traxelo_workspace_items'?[]:null,count:table==='clients'?rows.length:0,error:null};
+      const result={data:table==='clients'?rows:table==='rotamapa_portfolios'?[{id:'00000000-0000-4000-8000-000000000000',name:'Carteira inicial',revision:1}]:table==='traxelo_workspace_items'?[]:null,count:table==='clients'?rows.length:0,error:null};
       const chain={then:(yes,no)=>Promise.resolve(result).then(yes,no)};
       for(const method of ['select','eq','order','range','is','in','limit','match','neq','gt','gte','lt','lte'])chain[method]=()=>chain;
       for(const method of ['insert','upsert','update','delete'])chain[method]=payload=>{window.__dataCalls.push({method,table,payload});return chain;};

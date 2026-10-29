@@ -79,7 +79,7 @@ renderMarkers();
 window.traxioResetNavigation=()=>{stopGPS();route=null;window.traxioVisitedIds.clear();$('liveNavigation').hidden=true;};
 function stopGPS(){trackingRequested=false;following=true;course=null;courseAnchor=null;carAngle=0;syncRecenter();clearTimeout(retryTimer);clearTimeout(watchRetryTimer);retryCount=0;latestFix=null;activeLeg=null;navGeneration++;rerouteController?.abort();rerouteController=null;rerouteBusy=false;lastRerouteAt=0;offRouteSamples=0;exitNav();$('traxioNavExpand').hidden=true;activeGeometry=null;offRouteSince=null;if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null}if(car){car.remove();car=null}previousPosition=null;arrivedSince=0;$('navigationRecalculate').disabled=true;$('liveStart').disabled=false;$('liveStart').hidden=false;$('liveStop').disabled=true;status('GPS desligado')}
 function recordHistory(outcome){
-const key='traxio.route.history.v1:'+(document.getElementById('authIdentity')?.textContent||'account');
+const key=RotaMapaPortfolioScope.key('traxio.route.history.v1:'+(document.getElementById('authIdentity')?.textContent||'account'),RotaMapaPortfolioScope.loadedOwner);
 let rows=[];try{rows=JSON.parse(localStorage.getItem(key)||'[]');if(!Array.isArray(rows))rows=[]}catch{}
 const visited=stops().filter(x=>x.visited),pending=stops().filter(x=>!x.visited);
 const p=window.traxioPendingTrip||{};

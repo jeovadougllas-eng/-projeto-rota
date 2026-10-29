@@ -61,7 +61,7 @@ if(new URLSearchParams(location.search).has('code'))document.documentElement.cla
 </details>
 </div></section>
 </main><div id="traxioNavOverlay" class="traxio-nav-overlay" hidden><div class="traxio-nav-top"><strong>RotaMapa · Navegação</strong><div class="traxio-nav-actions"><button id="traxioNavMinimize" type="button" aria-label="Minimizar mapa">▣ Minimizar</button><button id="traxioNavClose" type="button" aria-label="Fechar mapa ampliado">✕</button></div></div><div id="traxioNavMapHost" class="traxio-nav-map-host"></div><div id="traxioNavControls" class="traxio-nav-controls"></div></div><button id="traxioNavExpand" class="traxio-nav-expand" type="button" hidden>↗ Ampliar navegação</button><dialog id="clientDialog" class="detail-dialog"><div class="detail-inner"><div id="clientDetail"></div><div class="detail-actions"><button id="detailMap">Ver no mapa</button><button class="secondary" id="detailEdit">Editar cadastro</button><button class="secondary" id="detailClose">Fechar</button></div></div></dialog><footer>Projeto Rota · Protótipo de validação, não APK e não navegador automotivo</footer>
-<script src="assets/traxelo-navigation-model.js"></script><script src="assets/traxio-geolocation.js"></script><script src="assets/traxio-planner.js"></script>
+<script src="assets/rotamapa-portfolio-scope.js"></script><script src="assets/traxelo-navigation-model.js"></script><script src="assets/traxio-geolocation.js"></script><script src="assets/traxio-planner.js"></script>
 <script src="assets/traxio-native.js"></script>
 <script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -69,7 +69,7 @@ if(new URLSearchParams(location.search).has('code'))document.documentElement.cla
 
 <script>
 'use strict';
-const $=id=>document.getElementById(id), KEY='projeto_rota_mapa_v1';
+const $=id=>document.getElementById(id), KEY=RotaMapaPortfolioScope.clientsKey();
 let selectedIds=new TraxioPlanner.IdSet(),selectionInitialized=false,routeBusy=false;let editingClientId=null;let clients=[],map=null,markers=[],draftMarker=null,routeGeo=null,gps=null,lastRoute=null,adjustingPin=false;
 try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))clients=raw}catch{}
 const save=()=>{localStorage.setItem(KEY,JSON.stringify(clients));render();if(typeof traxioScheduleSync==='function')traxioScheduleSync()};
@@ -421,7 +421,8 @@ $('calcRoute').onclick=()=>makeRoute(document.querySelector('input[name="routeSt
 $('generateSuggestion').onclick=()=>makeRoute(document.querySelector('input[name="routeStrategy"]:checked')?.value||'distance');
 $('roadRoute').onclick=()=>window.TraxioRouteUI?.retrace();
 function parseCSV(text){text=text.replace(/^\uFEFF/,'');const first=text.split(/\r?\n/).find(Boolean)||'';const delim=(first.match(/;/g)||[]).length>=(first.match(/,/g)||[]).length?';':',';const rows=[];let row=[],value='',quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'){if(quoted&&text[i+1]==='"'){value+='"';i++}else quoted=!quoted}else if(ch===delim&&!quoted){row.push(value);value=''}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(value);if(row.some(x=>x.trim()))rows.push(row);row=[];value=''}else value+=ch}if(quoted)throw Error('CSV com aspas incompletas');row.push(value);if(row.some(x=>x.trim()))rows.push(row);return rows}
-$('sheetFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>8_000_000)throw Error('Arquivo acima de 8 MB');let rows;const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv')rows=parseCSV(await file.text());else{if(!window.XLSX)throw Error('Biblioteca de Excel indisponível; conecte-se à internet ou exporte CSV');const book=XLSX.read(await file.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]],{header:1,defval:'',raw:false})}if(rows.length<2)throw Error('Nenhum registro');const originalHeaders=rows[0].map((h,i)=>String(h??'').trim()||'Coluna '+(i+1));const headers=originalHeaders.map(norm),index=(...keys)=>headers.findIndex(h=>keys.includes(h));const ni=index('nome','razaosocial','cliente','nomefantasia','fantasia'),ai=index('endereco','rua','logradouro'),ci=index('cidade','municipio'),cepi=index('cep'),lati=index('lat','latitude'),loni=index('lon','lng','longitude');if(ni<0)throw Error('Coluna Nome ou Razão Social não encontrada');let count=0,located=0;const importedIds=[];for(const r of rows.slice(1)){const val=i=>i<0?'':String(r[i]??'').trim();if(!r.some(v=>String(v??'').trim()))continue;const lat=num(val(lati)),lon=num(val(loni)),has=lat!==null&&lon!==null&&valid(lat,lon);const fields=originalHeaders.map((label,i)=>({label,value:val(i)}));const importedId=uid();importedIds.push(importedId);clients.push(TraxioGeo.structured({id:importedId,name:val(ni)||val(index('nomefantasia','razaosocial'))||'Cliente sem nome',address:[val(ai),val(ai)?val(ci):''].filter(Boolean).join(', '),city:val(ci),neighborhood:val(index('bairro','distrito')),state:val(index('estado','uf')),houseNumber:val(index('numero','nro','num')),cep:val(cepi),locationVerification:has?'imported_coordinates':'pending',lat:has?lat:null,lon:has?lon:null,priority:2,importFields:fields,importSource:file.name}));count++;if(has)located++}save();$('importStatus').textContent=count+' importados com todas as colunas preservadas; '+located+' com coordenadas; '+(count-located)+' aguardando localização. A localização dos endereços será consultada em sequência; mantenha esta aba aberta.';queueClientGeocode(importedIds).then(()=>{const added=clients.filter(c=>importedIds.includes(c.id));const ready=added.filter(c=>TraxioPlanner.location(c).ready).length;const review=added.filter(c=>!TraxioPlanner.location(c).ready&&TraxioPlanner.hasSavedPoint(c)).length;$('importStatus').textContent=count+' importados com todas as colunas preservadas; '+ready+' confirmados; '+review+' pontos salvos para conferir; '+(count-ready-review)+' sem resultado. Selecione os clientes em Mapa e Rotas para conferir as sugestões.';});enrichUI('Planilha importada.');if(confirm('Deseja consultar agora os CNPJs importados para guardar os dados empresariais? Mantenha a página aberta; o processo pode levar vários minutos.'))enrichRun(false)}catch(err){$('importStatus').textContent='Erro na importação: '+err.message}e.target.value=''};
+window.rotamapaImportRows=async function(rows,fileName){const file={name:fileName};const originalHeaders=rows[0].map((h,i)=>String(h??'').trim()||'Coluna '+(i+1));const headers=originalHeaders.map(norm),index=(...keys)=>headers.findIndex(h=>keys.includes(h));const ni=index('nome','razaosocial','cliente','nomefantasia','fantasia'),ai=index('endereco','rua','logradouro'),ci=index('cidade','municipio'),cepi=index('cep'),lati=index('lat','latitude'),loni=index('lon','lng','longitude');if(ni<0)throw Error('Coluna Nome ou Razão Social não encontrada');let count=0,located=0;const importedIds=[];for(const r of rows.slice(1)){const val=i=>i<0?'':String(r[i]??'').trim();if(!r.some(v=>String(v??'').trim()))continue;const lat=num(val(lati)),lon=num(val(loni)),has=lat!==null&&lon!==null&&valid(lat,lon);const fields=originalHeaders.map((label,i)=>({label,value:val(i)}));const importedId=uid();importedIds.push(importedId);clients.push(TraxioGeo.structured({id:importedId,name:val(ni)||val(index('nomefantasia','razaosocial'))||'Cliente sem nome',address:[val(ai),val(ai)?val(ci):''].filter(Boolean).join(', '),city:val(ci),neighborhood:val(index('bairro','distrito')),state:val(index('estado','uf')),houseNumber:val(index('numero','nro','num')),cep:val(cepi),locationVerification:has?'imported_coordinates':'pending',lat:has?lat:null,lon:has?lon:null,priority:2,importFields:fields,importSource:file.name}));count++;if(has)located++}save();$('importStatus').textContent=count+' importados com todas as colunas preservadas; '+located+' com coordenadas; '+(count-located)+' aguardando localização. A localização dos endereços será consultada em sequência; mantenha esta aba aberta.';queueClientGeocode(importedIds).then(()=>{const added=clients.filter(c=>importedIds.includes(c.id));const ready=added.filter(c=>TraxioPlanner.location(c).ready).length;const review=added.filter(c=>!TraxioPlanner.location(c).ready&&TraxioPlanner.hasSavedPoint(c)).length;$('importStatus').textContent=count+' importados com todas as colunas preservadas; '+ready+' confirmados; '+review+' pontos salvos para conferir; '+(count-ready-review)+' sem resultado. Selecione os clientes em Mapa e Rotas para conferir as sugestões.';});enrichUI('Planilha importada.');if(confirm('Deseja consultar agora os CNPJs importados para guardar os dados empresariais? Mantenha a página aberta; o processo pode levar vários minutos.'))enrichRun(false)};
+$('sheetFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>8_000_000)throw Error('Arquivo acima de 8 MB');let rows;const ext=file.name.split('.').pop().toLowerCase();if(ext==='csv')rows=parseCSV(await file.text());else{if(!window.XLSX)throw Error('Biblioteca de Excel indisponível; conecte-se à internet ou exporte CSV');const book=XLSX.read(await file.arrayBuffer(),{type:'array'});rows=XLSX.utils.sheet_to_json(book.Sheets[book.SheetNames[0]],{header:1,defval:'',raw:false})}if(rows.length<2)throw Error('Nenhum registro');if(!rows[0].map(norm).some(h=>['nome','razaosocial','cliente','nomefantasia','fantasia'].includes(h)))throw Error('Coluna Nome ou Razão Social não encontrada');window.RotaMapaPortfolios.beginImport({rows,fileName:file.name});}catch(err){$('importStatus').textContent='Erro na importação: '+err.message;}e.target.value='';};
 function download(content,name,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
 $('exportCSV').onclick=()=>{const rows=[['Nome','Endereço','CEP','Latitude','Longitude','Prioridade'],...clients.map(c=>[c.name,c.address,c.cep||'',c.lat??'',c.lon??'',c.priority])];download('\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\r\n'),'projeto_rota_clientes.csv','text/csv;charset=utf-8')};
 $('backup').onclick=()=>download(JSON.stringify({version:1,clients},null,2),'projeto_rota_backup.json','application/json');
@@ -582,6 +583,7 @@ async function authInitialize(){
  if(generation!==authGeneration)return;
  try{
   if(!authClient)authClient=window.supabase.createClient(cfg.url||AUTH_DEFAULT_URL,cfg.key,{
+   global:{headers:RotaMapaPortfolioScope.headers()},
    auth:{storageKey:'traxio-auth-v3',persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'pkce'}
   });
   const params=new URLSearchParams(location.search);
@@ -660,7 +662,7 @@ function cloudRow(c,userId){
  const id=String(c.id??'').trim();if(!id)throw Error('Cliente sem ID local: '+String(c.name||''));
  const data=JSON.parse(JSON.stringify(c));
  const latitude=num(c.lat),longitude=num(c.lon);
- return {user_id:userId,local_id:id,name:String(c.name||'Cliente sem nome'),cnpj:clientCNPJ(c)||null,
+ return {user_id:userId,portfolio_id:RotaMapaPortfolioScope.loadedId,local_id:id,name:String(c.name||'Cliente sem nome'),cnpj:clientCNPJ(c)||null,
  city:regionParts(c).city||null,neighborhood:regionParts(c).district||null,address:c.address||null,zip_code:c.cep||null,
  latitude:valid(latitude,longitude)?latitude:null,longitude:valid(latitude,longitude)?longitude:null,
  data,updated_at:new Date().toISOString()};
@@ -673,7 +675,7 @@ async function cloudTask(fn){
 }
 $('cloudCheck').onclick=()=>cloudTask(async userId=>{
  cloudNotice('Verificando acesso à tabela...');
- const {count,error}=await authClient.from('clients').select('id',{count:'exact',head:true}).eq('user_id',userId);
+ const {count,error}=await authClient.from('clients').select('id',{count:'exact',head:true}).eq('user_id',userId).eq('portfolio_id',RotaMapaPortfolioScope.loadedId);
  if(error)throw error;
  cloudNotice('Conexão autenticada e consulta permitida. Registros na nuvem: '+count+'. Clientes neste dispositivo: '+clients.length+'.');
 });
@@ -687,7 +689,7 @@ const cloudCanonical=v=>{
 async function cloudReadAll(userId){
  let offset=0,rows=[];
  while(true){
-  const {data,error}=await authClient.from('clients').select('local_id,data,revision,deleted_at').eq('user_id',userId).order('local_id',{ascending:true}).range(offset,offset+499);
+  const {data,error}=await authClient.from('clients').select('local_id,data,revision,deleted_at').eq('user_id',userId).eq('portfolio_id',RotaMapaPortfolioScope.loadedId).order('local_id',{ascending:true}).range(offset,offset+499);
   if(error)throw error;
   rows.push(...(data||[]));if(!data||data.length<500)break;
   offset+=500;if(offset>50000)throw Error('Limite de 50 mil registros atingido');
@@ -715,7 +717,7 @@ $('cloudUpload').onclick=()=>cloudTask(async userId=>{
   }
   if(i%20===0)cloudNotice('Conferindo segurança: '+(i+1)+'/'+localSnapshot.length+'...');
  }
- const {count,error}=await authClient.from('clients').select('id',{count:'exact',head:true}).eq('user_id',userId);
+ const {count,error}=await authClient.from('clients').select('id',{count:'exact',head:true}).eq('user_id',userId).eq('portfolio_id',RotaMapaPortfolioScope.loadedId);
  if(error)throw error;
  cloudNotice('Concluído: '+inserted+' novos, '+identical+' idênticos, '+conflicts+' divergentes bloqueados, '+failures.length+' falhas. Total na nuvem: '+count+'. '+(conflicts?'Os divergentes precisam de revisão manual; não foram sobrescritos. ':'')+(failures.length?'Erros: '+failures.slice(0,3).join(' | '):'Dados locais preservados.'),!!failures.length);
 });
@@ -724,7 +726,7 @@ $('cloudDownload').onclick=()=>cloudTask(async userId=>{
  let offset=0,all=[];
  while(true){
   cloudNotice('Buscando registros da nuvem: '+all.length+'...');
-  const {data,error}=await authClient.from('clients').select('local_id,data').eq('user_id',userId).order('local_id',{ascending:true}).range(offset,offset+499);
+  const {data,error}=await authClient.from('clients').select('local_id,data').eq('user_id',userId).eq('portfolio_id',RotaMapaPortfolioScope.loadedId).order('local_id',{ascending:true}).range(offset,offset+499);
   if(error)throw error;
   all.push(...(data||[]));
   if(!data||data.length<500)break;
@@ -750,9 +752,9 @@ const TRAXIO_SYNC_BASE='traxio_sync_baseline_v29_';
 const TRAXIO_SYNC_OWNER='traxio_sync_owner_v29';
 let traxioSyncTimer=null,traxioSyncDue=Infinity,traxioSyncRequested=false,traxioSyncRunning=false,traxioSyncSuspended=false;
 function traxioReadBase(userId){
- try{const obj=JSON.parse(localStorage.getItem(TRAXIO_SYNC_BASE+userId)||'{}');return obj&&typeof obj==='object'&&!Array.isArray(obj)?obj:{}}catch{return {}}
+ try{const obj=JSON.parse(localStorage.getItem(RotaMapaPortfolioScope.key(TRAXIO_SYNC_BASE+userId,userId))||'{}');return obj&&typeof obj==='object'&&!Array.isArray(obj)?obj:{}}catch{return {}}
 }
-function traxioWriteBase(userId,base){localStorage.setItem(TRAXIO_SYNC_BASE+userId,JSON.stringify(base))}
+function traxioWriteBase(userId,base){localStorage.setItem(RotaMapaPortfolioScope.key(TRAXIO_SYNC_BASE+userId,userId),JSON.stringify(base))}
 function traxioScheduleSync(delay=4500){
  if(traxioSyncSuspended||!authClient||document.body.classList.contains('auth-locked'))return;
  // Keep the earliest requested flush: background lookup saves cannot postpone a confirmed pin.
@@ -897,7 +899,7 @@ el('accountContent').addEventListener('submit',async e=>{
 (function(){
 const $=id=>document.getElementById(id);
 const key='traxio.route.history.v1';
-function userKey(){try{return key+':'+(authClient?.auth?($('authIdentity')?.textContent||'account'):'local')}catch{return key+':local'}}
+function userKey(){try{return RotaMapaPortfolioScope.key(key+':'+(authClient?.auth?($('authIdentity')?.textContent||'account'):'local'),RotaMapaPortfolioScope.loadedOwner)}catch{return key+':local'}}
 function load(){try{const d=JSON.parse(localStorage.getItem(userKey())||'[]');return Array.isArray(d)?d:[]}catch{return []}}
 function save(d){localStorage.setItem(userKey(),JSON.stringify(d))}
 function render(){
@@ -983,5 +985,5 @@ e.preventDefault();const form=e.currentTarget,b=form.querySelector('[type=submit
 try{const {error}=await authClient.auth.updateUser({password:new FormData(form).get('password')});if(error)throw error;msg.textContent='Senha atualizada com sucesso.';setTimeout(()=>{document.getElementById('traxioResetPanel').hidden=true;form.reset()},1000)}catch(err){msg.textContent='Não foi possível atualizar: '+err.message}finally{b.disabled=false}
 });
 </script><nav id="traxio-legal-links" aria-label="Documentos legais"><a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a><a href="termos.html" target="_blank" rel="noopener noreferrer">Termos de Serviço</a></nav><script src="assets/traxio-ui.js"></script><script src="assets/traxelo-updates.js"></script><script src="assets/traxio-route-ui.js"></script><script src="assets/traxelo-geo-recovery.js"></script>
-<link rel="stylesheet" href="assets/traxelo-premium.css"><script src="assets/traxelo-location-ui.js"></script><script src="assets/traxelo-map-actions.js"></script><script src="assets/traxelo-visits-model.js"></script><script src="assets/traxelo-visit-store.js"></script><script src="assets/traxelo-visit-report.js"></script><script src="assets/traxelo-visits-ui.js"></script><script src="assets/traxelo-premium-model.js"></script><script src="assets/traxelo-workspace-store.js"></script><script src="assets/traxelo-workspace-ui.js"></script><link rel="stylesheet" href="assets/rotamapa-commerce.css"><script src="assets/rotamapa-commerce-model.js"></script><script src="assets/rotamapa-commerce-store.js"></script><script src="assets/rotamapa-commerce-ui.js"></script><script src="assets/rotamapa-install-identity.js"></script><!-- iphone-pwa:start --><script src="assets/traxelo-iphone-pwa.js"></script><!-- iphone-pwa:end --></body></html>
+<link rel="stylesheet" href="assets/traxelo-premium.css"><script src="assets/traxelo-location-ui.js"></script><script src="assets/traxelo-map-actions.js"></script><script src="assets/traxelo-visits-model.js"></script><script src="assets/traxelo-visit-store.js"></script><script src="assets/traxelo-visit-report.js"></script><script src="assets/traxelo-visits-ui.js"></script><script src="assets/traxelo-premium-model.js"></script><script src="assets/traxelo-workspace-store.js"></script><script src="assets/traxelo-workspace-ui.js"></script><link rel="stylesheet" href="assets/rotamapa-commerce.css"><script src="assets/rotamapa-commerce-model.js"></script><script src="assets/rotamapa-commerce-store.js"></script><script src="assets/rotamapa-commerce-ui.js"></script><script src="assets/rotamapa-install-identity.js"></script><link rel="stylesheet" href="assets/rotamapa-portfolios.css"><script src="assets/rotamapa-portfolios.js"></script><link rel="stylesheet" href="assets/rotamapa-visit-details.css"><script src="assets/rotamapa-visit-details-model.js"></script><script src="assets/rotamapa-visit-details.js"></script><!-- iphone-pwa:start --><script src="assets/traxelo-iphone-pwa.js"></script><!-- iphone-pwa:end --></body></html>
 
