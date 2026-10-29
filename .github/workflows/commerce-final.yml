@@ -1,0 +1,178 @@
+name: RotaMapa final backup scope and Android verification
+# Browser fixtures remain authoritative across WebKit reloads.
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/commerce-final.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: rotamapa-commerce-final-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - run: npm ci && npm run check && npm run test:geolocation && node scripts/check-rotamapa-art.mjs
+      - name: Install browser engines
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"; else npx playwright install chromium; fi
+          timeout 180s npx playwright install --with-deps webkit
+      - name: Verify unchanged financial and navigation source against full browser proof
+        run: |
+          git fetch --depth=1 origin 56b378b47e8df151fc0dc9a4ac416e426e473a67
+          python - <<'PYPROOF'
+          import subprocess
+          changes=subprocess.check_output(['git','diff','--name-only','56b378b47e8df151fc0dc9a4ac416e426e473a67','HEAD','--','assets/','index.html','mobile/native/','mobile/capacitor.config.json'],text=True).splitlines()
+          assert changes==['assets/rotamapa-install-identity.js'],changes
+          print('Only the shortcut backup scope changed; previous full browser proof passed 161 tests')
+          PYPROOF
+      - run: npx playwright test --config=playwright.commerce.config.js --grep "launcher guide" --max-failures=2
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: commerce-browser
+          path: test-results-commerce/
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci --prefix mobile --ignore-scripts
+      - name: Build current UI and RotaMapa launcher resources
+        run: |
+          TRAXELO_UPDATE_OUTPUT=candidate/updateweb node scripts/build-mobile.mjs
+          cp candidate/updateweb/manifest.json candidate/update-manifest.json
+      - run: npx cap sync android
+        working-directory: mobile
+      - run: bash gradlew assembleDebug
+        working-directory: mobile/android
+      - name: Verify package, label, complete bundle and original installer
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,zipfile,os,subprocess
+          assert hashlib.sha256(Path('downloads/traxio-android-testes.apk').read_bytes()).hexdigest()=='6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2'
+          m=json.loads(Path('candidate/update-manifest.json').read_text())
+          apk='mobile/android/app/build/outputs/apk/debug/app-debug.apk'
+          with zipfile.ZipFile(apk) as z:
+            for name,digest in m['files'].items():assert hashlib.sha256(z.read('assets/public/'+name)).hexdigest()==digest,name
+          aapt=sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/aapt'))[-1]
+          badging=subprocess.check_output([str(aapt),'dump','badging',apk],text=True)
+          assert "package: name='app.traxio.mobile'" in badging
+          assert "application-label:'RotaMapa'" in badging
+          print('Verified native RotaMapa label, stable package and',len(m['files']),'bundled files')
+          PY
+          mkdir -p candidate/apk updates/android/bundles
+          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk candidate/apk/rotamapa-android-testes.apk
+          cp candidate/updateweb/bundles/* updates/android/bundles/
+          cp candidate/updateweb/manifest.json updates/android/candidate.json
+          # Restore only generated resources in this disposable CI worker after preserving its APK.
+          git restore --worktree -- mobile/android
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs scripts/prepare-rotamapa-brand.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/android/candidate.json updates/android/bundles/
+          git commit -m "build: stage RotaMapa commerce candidate [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: commerce-candidates
+          retention-days: 30
+          path: |
+            candidate/update-manifest.json
+            candidate/apk/rotamapa-android-testes.apk
+  installed-android:
+    needs: [browser, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: commerce-candidates
+          path: candidate
+      - run: npm ci
+      - name: Prepare isolated emulator renderer
+        run: |
+          sudo chmod a+rw /dev/kvm
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/rotamapa-xvfb.log 2>&1 &
+      - name: Verify existing installation and first-install APK
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb install downloads/traxio-android-testes.apk
+            adb shell am start -n app.traxio.mobile/.MainActivity
+            adb shell pm disable-user --user 0 com.google.android.apps.nexuslauncher
+            adb shell run-as app.traxio.mobile mkdir -p shared_prefs
+            ROTAMAPA_COMMERCE_PROOF=1 ROTAMAPA_CAMERA_PROOF=1 TRAXELO_VISITS_PROOF=1 TRAXELO_FIELD_NAVIGATION_PROOF=1 TRAXELO_PREMIUM_PROOF=1 TRAXELO_INTERFACE_THEME_PROOF=1 node scripts/android-updates.mjs
+            adb uninstall app.traxio.mobile
+            adb install candidate/apk/rotamapa-android-testes.apk
+            adb shell run-as app.traxio.mobile mkdir -p shared_prefs
+            adb shell run-as app.traxio.mobile cp /data/local/tmp/traxelo-ota-qa.xml shared_prefs/traxelo_web_releases_v1.xml
+            adb shell am start -n app.traxio.mobile/.MainActivity
+            adb shell settings put secure location_mode 3
+            node scripts/android-smoke.mjs
+            ROTAMAPA_COMMERCE_PROOF=1 ROTAMAPA_CAMERA_PROOF=1 node scripts/android-fresh-interface.mjs
+      - name: Publish only Android-tested artifacts
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs scripts/prepare-rotamapa-brand.mjs downloads/traxio-android-testes.apk
+          mkdir -p downloads docs/captures/commerce-android
+          cp candidate/apk/rotamapa-android-testes.apk downloads/rotamapa-android-testes.apk
+          cp candidate/update-manifest.json updates/android/manifest.json
+          cp mobile/evidence/* docs/captures/commerce-android/
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          apk=Path('downloads/rotamapa-android-testes.apk');m=json.loads(Path('candidate/update-manifest.json').read_text())
+          digest=hashlib.sha256(apk.read_bytes()).hexdigest()
+          Path('downloads/rotamapa-android-testes.sha256').write_text(digest+'  rotamapa-android-testes.apk\n')
+          Path('downloads/rotamapa-android-testes.json').write_text(json.dumps({'name':'RotaMapa','packageId':'app.traxio.mobile','release':m['version'],'sha256':digest,'bytes':apk.stat().st_size,'purpose':'first_installation','existingInstallations':'Keep the installed app and its local data. Use its compatible web update. Launcher resources require a compatibly signed native package.'},indent=2))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/rotamapa-android-testes.* updates/android/manifest.json docs/captures/commerce-android/
+          git commit -m "build: publish tested RotaMapa catalog and sales APK [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: commerce-installed-android
+          path: mobile/evidence/
