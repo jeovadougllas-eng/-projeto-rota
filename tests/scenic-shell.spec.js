@@ -14,14 +14,14 @@ test('approved dashboard contains actual translucent actions and no duplicate cu
  await page.locator('.tabs [data-tab=painel]').click();await page.locator('#allClientsShortcut').click();await expect(page.locator('#registryRows .client-link')).toHaveCount(7);
 });
 test('five contextual scenes retain original icons and usable pages without horizontal overflow',async({page},info)=>{
- await setup(page,info);const icons=await page.locator('.tabs .kit-nav-icon').evaluateAll(nodes=>nodes.map(n=>n.innerHTML));
+ await setup(page,info);const icons=await page.locator('.tabs>button>svg').evaluateAll(nodes=>nodes.map(n=>n.innerHTML));
  const capture=['desktop-light','tablet-portrait-light','tablet-landscape-dark','phone-light'].includes(info.project.name);
  const dir='docs/captures/scenic-after';if(capture)await mkdir(dir,{recursive:true});
  for(const tab of ['painel','clientes','mapa','historico','dados']){
   await page.locator(`.tabs [data-tab=${tab}]`).click();
   await expect(page.locator('.app-scenery img')).toHaveAttribute('src',`assets/scenes/${tab}.webp`);
   await expect.poll(()=>page.locator('.app-scenery img').evaluate(n=>n.complete&&n.naturalWidth>0)).toBe(true);
-  expect(await page.locator('.tabs .kit-nav-icon').evaluateAll(nodes=>nodes.map(n=>n.innerHTML))).toEqual(icons);
+  expect(await page.locator('.tabs>button>svg').evaluateAll(nodes=>nodes.map(n=>n.innerHTML))).toEqual(icons);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   if(capture)await page.screenshot({path:`${dir}/${info.project.name}-${tab}.png`});
  }
