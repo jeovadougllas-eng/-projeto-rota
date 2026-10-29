@@ -57,6 +57,7 @@ jobs:
       - name: Publish only Android-tested artifacts
         run: |
           git fetch origin "$GITHUB_REF_NAME"
+          git fetch --depth=1 origin af8dfed358cdd88af333d5265d20c2d945034fdf
           git diff --exit-code af8dfed358cdd88af333d5265d20c2d945034fdf FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs scripts/prepare-rotamapa-brand.mjs downloads/traxio-android-testes.apk
           mkdir -p downloads docs/captures/rotamapa-android
           cp candidate/apk/rotamapa-android-testes.apk downloads/rotamapa-android-testes.apk
