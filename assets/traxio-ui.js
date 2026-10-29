@@ -30,8 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Key only the crop background, then intersect with source alpha. The final
   // composite preserves transparent input pixels instead of creating black frames.
   const cropFilters=document.createElementNS('http://www.w3.org/2000/svg','svg');cropFilters.classList.add('kit-filter-defs');cropFilters.setAttribute('aria-hidden','true');
-  const keyFilter=(id,alpha,slope,intercept)=>`<filter id="${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  ${alpha}"/><feComponentTransfer result="keyed"><feFuncA type="linear" slope="${slope}" intercept="${intercept}"/></feComponentTransfer><feComposite in="keyed" in2="SourceGraphic" operator="in"/></filter>`;
-  cropFilters.innerHTML='<defs>'+keyFilter('kit-crop-light','-1 -1 -1 0 3',4,-.4)+keyFilter('kit-crop-dark','1 1 1 0 -.6',2,0)+keyFilter('kit-crop-nav','1 1 1 0 -1.8',2,0)+keyFilter('rotamapa-brand-key','1 1 1 0 -.7',2.5,0)+'</defs>';document.body.append(cropFilters);
+  const keyFilter=(id,alpha,slope,intercept,weight=0)=>`<filter id="${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  ${alpha}"/><feComponentTransfer result="keyed"><feFuncA type="linear" slope="${slope}" intercept="${intercept}"/></feComponentTransfer><feComposite in="keyed" in2="SourceGraphic" operator="in"/>${weight?`<feMorphology operator="dilate" radius="${weight}"/>`:""}</filter>`;
+  cropFilters.innerHTML='<defs>'+keyFilter('kit-crop-light','-1 -1 -1 0 3',4,-.4)+keyFilter('kit-crop-dark','1 1 1 0 -.6',2,0)+keyFilter('kit-crop-nav','1 1 1 0 -1.8',2,0,.45)+keyFilter('rotamapa-brand-key','1 1 1 0 -.7',2.5,0)+'</defs>';document.body.append(cropFilters);
   const node = (tag, className, text) => {
     const n = document.createElement(tag);
     if (className) n.className = className;
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const navArt = node('div','nav-art'); navArt.setAttribute('aria-hidden','true');
   navArt.innerHTML = '<img src="assets/scenes/painel.webp" alt="" width="1024" height="1536"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
   const navPattern=node('div','nav-pattern');navPattern.setAttribute('aria-hidden','true');navPattern.innerHTML='<img src="assets/visual-kit/reference/1411.png" alt="" width="1536" height="1024">';nav.append(navPattern);
-  [...nav.querySelectorAll(':scope>button')].forEach((b,i)=>{b.querySelector('svg')?.remove();const [x,y]=[[19,90],[19,134],[19,177],[19,220],[19,261]][i];b.insertAdjacentHTML('afterbegin',i===0?glyph('clients_mockup_reference.png',565,388,15,53,18,19,'kit-nav-icon'):glyph('dashboard_mockup_reference.png',858,635,x,y,24,25,'kit-nav-icon'));});
+  [...nav.querySelectorAll(':scope>button')].forEach((b,i)=>{b.querySelector('svg')?.remove();if(b.dataset.tab==='dados'){b.insertAdjacentHTML('afterbegin',icon('upload'));return;}const [x,y]=[[19,90],[19,134],[19,177],[19,220],[19,261]][i];b.insertAdjacentHTML('afterbegin',i===0?glyph('clients_mockup_reference.png',565,388,15,53,18,19,'kit-nav-icon'):glyph('dashboard_mockup_reference.png',858,635,x,y,24,25,'kit-nav-icon'));});
   const originalSwitch = switchTab;
   switchTab = id => {
     originalSwitch(id); const actual = id === 'rotas' ? 'mapa' : id;
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
     el('retryMap').addEventListener('click',()=>location.reload());
   }
 
-  el('dados').prepend(title('Planilhas','Importe, consulte, exporte e proteja sua carteira.'));
+  el('dados').prepend(title('Importar carteira','Importe sua planilha, consulte cadastros e proteja suas carteiras.'));
   const guide = document.querySelector('.traxio-data-guide'), guideEntries = [...guide.children]; guide.replaceChildren();
   guideEntries.forEach((old,i)=>{
     const b=button('',()=>{
