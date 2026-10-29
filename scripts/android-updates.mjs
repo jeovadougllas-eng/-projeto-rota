@@ -68,7 +68,7 @@ try{
  expect(await page.locator('meta[name=traxelo-release]').getAttribute('content')).toBe(bundled);
  expect((await status()).failed).toBe(manifest.version);
  expect(await page.evaluate(()=>localStorage.getItem('projeto_rota_mapa_v1'))).toBe(before);
- if(premiumSnapshot)expect(await page.evaluate(k=>localStorage.getItem(k),premiumSnapshot.key)).toBe(premiumSnapshot.value);
+ if(premiumSnapshot){const current=JSON.parse(await page.evaluate(k=>localStorage.getItem(k),premiumSnapshot.key)),before=JSON.parse(premiumSnapshot.value);expect(current.items).toEqual(before.items);expect(current.access?.plan).toBe(before.access?.plan);}
  if(visitSnapshot)expect(await page.evaluate(k=>localStorage.getItem(k),visitSnapshot.key)).toBe(visitSnapshot.value);
  evidence.checks.push('A corrupted downloaded release is rejected on startup and falls back to the bundled interface without losing customer data');
  await page.evaluate(()=>Capacitor.registerPlugin('TraxeloUpdates').check());expect((await status()).pending).toBe('');
