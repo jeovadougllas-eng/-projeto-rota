@@ -11,9 +11,9 @@ const evidence={physicalDevice:false,realHTTPSDownload:true,checks:[],expected:m
 let page,visitSnapshot=null,premiumSnapshot=null;
 async function attach(){
  let lastError;
- for(let attempt=0;attempt<20;attempt++){
+ for(let attempt=0;attempt<5;attempt++){
   try{
-   const view=await device.webView({pkg:'app.traxio.mobile'});page=await view.page();
+   const view=await device.webView({pkg:'app.traxio.mobile'},{timeout:15000});page=await view.page();
    if(page.isClosed())throw Error('Waiting for the replacement WebView');
    await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
    await prepare(page,{records,liveMaps:true});await page.reload();await page.locator('body.traxio-ui-ready').waitFor({timeout:60000});
@@ -54,10 +54,12 @@ try{
  expect((await status()).failed).toBe('');evidence.checks.push('Healthy startup acknowledgement keeps the release on subsequent launches');
  if(process.env.TRAXELO_LOCATION_PROOF==='1'){const {verifyLocations}=await import('./android-location-checks.mjs');before=await verifyLocations({page,device,evidence});}
  if(process.env.TRAXELO_FIELDS_PROOF==='1'){const {verifyClientFields}=await import('./android-client-fields.mjs');before=await verifyClientFields({page,device,evidence});}
- if(process.env.TRAXELO_VISITS_PROOF==='1'){const {verifyVisits}=await import('./android-visit-checks.mjs');visitSnapshot=await verifyVisits({page,device,evidence});}
  if(process.env.TRAXELO_FIELD_NAVIGATION_PROOF==='1'){const {verifyFieldNavigation}=await import('./android-field-navigation.mjs');before=await verifyFieldNavigation({page,device,evidence});}
  if(process.env.TRAXELO_PREMIUM_PROOF==='1'){const {verifyPremium}=await import('./android-premium.mjs');premiumSnapshot=await verifyPremium({page,device,evidence});}
  if(process.env.TRAXELO_INTERFACE_THEME_PROOF==='1'){const {verifyInterfaceTheme}=await import('./android-interface-theme.mjs');await verifyInterfaceTheme({page,evidence});}
+ // The workbook proof opens a native external browser. Run it after in-app
+ // interaction checks; the next step deliberately cold-starts the application.
+ if(process.env.TRAXELO_VISITS_PROOF==='1'){const {verifyVisits}=await import('./android-visit-checks.mjs');visitSnapshot=await verifyVisits({page,device,evidence});}
  // Corrupt a downloaded file only inside this isolated emulator, then prove the native loader refuses it.
  await device.shell('am force-stop app.traxio.mobile');
  await device.shell("run-as app.traxio.mobile sh -c 'echo corrupted > files/traxelo-web-releases/"+manifest.version+"/index.html'");
@@ -71,5 +73,7 @@ try{
  await page.evaluate(()=>Capacitor.registerPlugin('TraxeloUpdates').check());expect((await status()).pending).toBe('');
  evidence.checks.push('A failed release is quarantined rather than reinstalled in a restart loop');
  console.log(JSON.stringify(evidence));
-}catch(error){evidence.error=error.stack;evidence.lastStatus=await status().catch(()=>null);console.error(JSON.stringify(evidence));console.error(String(await device.shell('logcat -d -t 300 AndroidRuntime:E Capacitor/Console:E *:S').catch(()=>'')));throw error;}
+}catch(error){
+ try{await writeFile('mobile/evidence/android-failure.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));await writeFile('mobile/evidence/android-failure-logcat.txt',execFileSync('adb',['logcat','-d','-t','1500'],{maxBuffer:10000000}));await writeFile('mobile/evidence/android-failure-activities.txt',execFileSync('adb',['shell','dumpsys','activity','activities'],{maxBuffer:5000000}));}catch{}
+ evidence.error=error.stack;evidence.lastStatus=await status().catch(()=>null);console.error(JSON.stringify(evidence));console.error(String(await device.shell('logcat -d -t 300 AndroidRuntime:E Capacitor/Console:E *:S').catch(()=>'')));throw error;}
 finally{await mkdir('mobile/evidence',{recursive:true});await writeFile('mobile/evidence/android-updates.json',JSON.stringify(evidence,null,2));await device.close();}
