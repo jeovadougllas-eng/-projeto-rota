@@ -32,3 +32,7 @@ body .auth-brand-panel>.auth-original-logo.traxelo-approved-brand{left:calc(20 *
  .auth-original-logo .traxelo-brand-tagline{font-size:8px}
  .registry-location-tools select{width:100%}
 }
+/* Approved RotaMapa raster: same brand box, typography and original scene layout.
+   Key only the dark artwork background; no synthetic font replaces the wordmark. */
+body .brand-crop.rotamapa-approved-brand{aspect-ratio:600/150;position:relative;mask-image:none}
+body .rotamapa-approved-brand img.rotamapa-brand-image{position:absolute;display:block;left:0;top:50%;width:100%;height:auto;max-width:none;object-fit:contain;transform:translateY(-50%);filter:url(#rotamapa-brand-key)}

@@ -1,6 +1,6 @@
 {
   "appId": "app.traxio.mobile",
-  "appName": "Traxelo.IA",
+  "appName": "RotaMapa",
   "webDir": "www",
   "server": {
     "androidScheme": "https"

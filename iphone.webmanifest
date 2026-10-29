@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Traxelo.IA",
-  "short_name": "Traxelo.IA",
+  "name": "RotaMapa",
+  "short_name": "RotaMapa",
   "description": "Planeje suas visitas, organize clientes e acompanhe suas rotas comerciais.",
   "lang": "pt-BR",
   "start_url": "/?source=iphone-pwa",
@@ -10,7 +10,7 @@
   "background_color": "#052b36",
   "theme_color": "#052b36",
   "icons": [
-    {"src": "/assets/iphone/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "/assets/iphone/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+    {"src": "/assets/rotamapa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/assets/rotamapa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
   ]
 }
