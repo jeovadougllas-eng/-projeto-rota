@@ -45,5 +45,6 @@ $('closeVisitDetails').onclick=()=>d.close();$('visitDetailsRange').onchange=()=
 d.addEventListener('close',()=>{if(opener?.isConnected)opener.focus();selectedKey=null;owner=null;kind=null;});
 new MutationObserver(()=>{if(!d.open)return;if(document.body.classList.contains('auth-locked')||TraxeloVisits.getStore()?.owner!==owner)d.close();else render();}).observe(document.body,{attributes:true,attributeFilter:['class']});
 new MutationObserver(()=>{if(d.open){if(TraxeloVisits.getStore()?.owner!==owner)d.close();else render();}}).observe($('visitMetrics'),{childList:true});
+window.addEventListener('rotamapa:visit-report-rendered',()=>{if(d.open){if(TraxeloVisits.getStore()?.owner!==owner)d.close();else render();}});
 window.RotaMapaVisitDetails={open,render};
 })();
