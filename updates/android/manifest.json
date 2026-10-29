@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "71c13fca55ebac3e9ad02d244293f0b62fb0a7bdbde1ce2b4eb17befd2332aa9",
+  "version": "ca629e9b773633441029609710ef25ed6ce2ab7fda7747f9c98f3a8535e32b6e",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -26,7 +26,7 @@
     "assets/rotamapa-commerce-store.js": "eb15f9bbda64b102b87fe08d763ccb36eda0ced7c6ab7d7a04972e5a2515f577",
     "assets/rotamapa-commerce-ui.js": "1dc705ff567d8c5f7acbdca5b30cd103f8dcfc58c772b715c6be72e3d8e50727",
     "assets/rotamapa-commerce.css": "77d574180884da77af8b1731f5706e59278cf9b5f25aa2b095beabd01fca7096",
-    "assets/rotamapa-install-identity.js": "bc8308f847aabce929b0706d1c73c5e2db872974c10178b46381c1767cb1d8f4",
+    "assets/rotamapa-install-identity.js": "9e7b8acbb5f6abf3676d21aadf77b80c4be13fe597563ad7f9bcbcb55885213c",
     "assets/rotamapa-portfolio-scope.js": "4f99a0ab43f5b5138204a0d8f2eaa7d95325d5cfdf3a759dd5cfc3a7d3c4d7d4",
     "assets/rotamapa-portfolios.css": "ac14460c49bca76ef36f1b00f99813aa85d2f8ca50e2200b9f7de66cf9bf9d05",
     "assets/rotamapa-portfolios.js": "a6e2da60c3d513a28680d03603f16180ec0ce93168169ccb5496b36177091558",
@@ -46,7 +46,7 @@
     "assets/traxelo-geo-recovery.js": "dc763d26d79b8a1a9c4c60430142b699bf3ef7e0e8c8013e9536b89e4b04badb",
     "assets/traxelo-glass.css": "32ee18cbaba79452a40b68ecf686fb1ba6227e07757fff010f1ada59fe2b63e1",
     "assets/traxelo-iphone-pwa.css": "3540f983fe46ffbbd3e4e3694c9a22c6c99e016c36b35f1a267fa3ca9a38cfb6",
-    "assets/traxelo-iphone-pwa.js": "e28a72b4bbf56efde7c54246a364d937289d1abe3ad6be30e4be5c64045fe2f0",
+    "assets/traxelo-iphone-pwa.js": "99f2ad23ee4278e8a1dcef3b533fed32b29b51924f96ee9ece134b7d37ececf8",
     "assets/traxelo-location-ui.js": "1a8d7d4c22c69c9824780559f8bef6de44bfa5e8c65eaa2b4a888700aac42962",
     "assets/traxelo-map-actions.js": "3446594d850b666090b09578a2d643b2336ace695a8e2f51b044489d8750e39a",
     "assets/traxelo-navigation-model.js": "47fd386d12d625089112a783758cf5a65d43ca6063ff856b483732af39e88eaa",
@@ -76,9 +76,9 @@
     "assets/traxio-route-scene.svg": "428a7abbba4612536c3c657d559ccf1cf50a2af684f15a4f806401d10db65dac",
     "assets/traxio-route-ui.js": "c5ec7140cef4e262ed5ba63d33390dc1bc12140832535d32139e436fa52ac2e1",
     "assets/traxio-routes.css": "80dd87fd22e076e03058470d973a84e0a373f0dc0e173850cceaea3812734992",
-    "assets/traxio-ui.js": "a1d9ed713256250b38b4ceb76f6c1f2fcb7adb78e04a4aee9783a28e7c49478d",
+    "assets/traxio-ui.js": "9199b426ed5e0fffd9a122324c5cc6e6dd662007ee27f08465cf8ecd90889d7c",
     "assets/traxio-wordmark-ui.svg": "cb92ddcdb81c7bb0e5ead9963a46ace9a870e22de53f9c5f077e1765ac9b34a9",
-    "assets/traxio.css": "a6f8865dc9346597cbb07547a4026bcf5325c2339f571342b8c9d096e48cb8c5",
+    "assets/traxio.css": "ed9cb4a7bb2851a7c2d2e459ea40e115c724d5f4a2cca84e3630f75962c5c42a",
     "assets/visual-kit/README.md": "b1a68efec1ac748c17e606183d10986fb2ec7cae7597e73e845b72c9bc6f6dd0",
     "assets/visual-kit/assets/app_icon_dark.png": "ff16b9d03373e64f40a54e698bc8454192495b49297a9dba98322409d9dae9bf",
     "assets/visual-kit/assets/app_icon_light.png": "8a5428324000eb02ee1f35687ca553ebe916bf4a7bb4abe560a1747d4df6ae69",
@@ -96,9 +96,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "f3550c12440eedc1ef5102228e2202a7b00505d204c2e94fede957bdf73610ee"
+    "index.html": "94502bb890f54532fcaac11be5d8d9e8b6ef103a36a181587a83ed80de04e4dc"
   },
-  "bundle": "/updates/android/bundles/71c13fca55ebac3e9ad02d244293f0b62fb0a7bdbde1ce2b4eb17befd2332aa9.zip",
-  "sha256": "83af67e1fa7d2fdfae2a7f590028bde5d4eba6a92aa627b13f63aa5682de57bf",
-  "bytes": 11474321
+  "bundle": "/updates/android/bundles/ca629e9b773633441029609710ef25ed6ce2ab7fda7747f9c98f3a8535e32b6e.zip",
+  "sha256": "b9424f81f7ad8bc86431800b9fce5e9148f80d5c0d826600a31efb44aa26cb35",
+  "bytes": 11474406
 }
