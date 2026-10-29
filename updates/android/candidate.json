@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "0bf5100dd641588cc15a576c27c998358dfa275a8486f33545edfa2df9ba7d9f",
+  "version": "5037ad86e85c11d85aef91176e2d09edc20a0fdf2c2eea6bce40cbe5ddc92f8a",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -22,6 +22,11 @@
     "assets/reconstructed/login-art-mask.svg": "941161fbe269003002232e030b2d4e91496fd890ff4bfa0ed393ae6cfe81d9e4",
     "assets/reconstructed/login-background.png": "3119c79c60498219d06528a0eca59685d858a115fda09301daf3e598bad4b7a5",
     "assets/roboto-condensed.ttf": "dace262afcee68a5276f200d8026c57221735c0118ab5fda8c2c0d3dc409a8d0",
+    "assets/rotamapa-commerce-model.js": "f11b06433e2b9db7112fb42a2271fb2eb7f9b4f0c742abb4cadc6e63baf21e9f",
+    "assets/rotamapa-commerce-store.js": "8b3c707cbf6cd4960d1bf195f7492f16246b916682cecbedc56db5442a242943",
+    "assets/rotamapa-commerce-ui.js": "d5587b5c8cebbef241cbe701a76c8af922629d80ba1a65886dae2ecf623007a0",
+    "assets/rotamapa-commerce.css": "77d574180884da77af8b1731f5706e59278cf9b5f25aa2b095beabd01fca7096",
+    "assets/rotamapa-install-identity.js": "1502af3f70d8d490dc90b1845776b2c30c5475b2cd3797d72733d46a713e7915",
     "assets/rotamapa/icon-180.png": "d62628a139eac0190ebc9e8f145f1f9eab80d43c6597ce28b40b8081195ae9aa",
     "assets/rotamapa/icon-192.png": "b178dac50cc607d5e28f232be8ec4df63b34f59c60629bcb15d590256ca82694",
     "assets/rotamapa/icon-32.png": "ad0832315be7a267ecc461376735b4aa4c5e62cc793d115cf867474dc656d867",
@@ -45,10 +50,10 @@
     "assets/traxelo-shell.css": "550323634389ee8d270fc4b78074e85e5fd7db6c5bf655737a66e86ad0a0f745",
     "assets/traxelo-theme.css": "7a521211cf20c0626ced4b220cdf04f447fd569b80f527e2c5aeead5864e55b8",
     "assets/traxelo-updates.js": "4e855cf5af80451e0254728f93b1d55a8af5fb13b13ee4f004310f13e1cd658c",
-    "assets/traxelo-visit-report.js": "f7ff709d04367d9507eabe880d53f73061006659ad7f863a609a3bbcf4900e7a",
+    "assets/traxelo-visit-report.js": "c9556dec2ee0d47b3f5d5232ffe6e5cb5561a7b24fe53cddd7bbcf4e3f498988",
     "assets/traxelo-visit-store.js": "4af4cc808836e6fef4704eeb8b659d0fd31924333ab1658665c2cdaf89f85e97",
     "assets/traxelo-visits-model.js": "b25a190d3e07cd826e4a9faebaa608e9ad108e20fff0e91b4d51fbce7522e4e1",
-    "assets/traxelo-visits-ui.js": "bddfb9973916137bf1c29f286c5c2a3f5550f478b541a56c818cb662863c6600",
+    "assets/traxelo-visits-ui.js": "58f1e1e12b2e5e0d71aec3af5fc674a5b9b3ca3b5121c18a2b6c763aac14e3e9",
     "assets/traxelo-workspace-store.js": "b917b7b3cfb83f873bdb527752f3890f2129bb6f9539592e6ec555aea5bf3efb",
     "assets/traxelo-workspace-ui.js": "81b9a384e554a694b5fceddf4aed47cb22d17079f1249a6cdb2e29ebcf7a68ac",
     "assets/traxelo/approved/vector/README.md": "f40136673131642bd2daf74f0f3d1fa8d45efeb815594975f9213c5f9e409b71",
@@ -85,9 +90,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "c16ce5b714daedba3973e8f94715601cb9915c8ed228a8878f12150f4d408bf8"
+    "index.html": "eb97a810e14efc30a8e8202f2c404a57eebfe6e0670315c7ed90d9b5a0b01099"
   },
-  "bundle": "/updates/android/bundles/0bf5100dd641588cc15a576c27c998358dfa275a8486f33545edfa2df9ba7d9f.zip",
-  "sha256": "7d50188fad5f3dc8d750ab838987b0125d5251c2240b2f90b0b0fcae0bf0c35f",
-  "bytes": 11444516
+  "bundle": "/updates/android/bundles/5037ad86e85c11d85aef91176e2d09edc20a0fdf2c2eea6bce40cbe5ddc92f8a.zip",
+  "sha256": "ceb89fbf2cc84d2c3cf4e45729cb8ca86b4a57c69ecd7d9fe372a0d3177e5c1a",
+  "bytes": 11463228
 }
