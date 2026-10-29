@@ -14,10 +14,12 @@ Migração `rotamapa_named_portfolios`, arquivo `docs/sql/enable-portfolios.sql`
 - Visitas: `ad2468fe36d30415576e9eccfd85d8f1`
 - Comércio: `09799312e7950fee59b6f0ad610234d6`
 
-RLS combina o proprietário autenticado com a carteira do cabeçalho da requisição; consultas também usam filtro explícito. Sem cabeçalho, instalações anteriores enxergam somente a carteira inicial. FK composta impede vínculo com carteira de outra conta. A carteira de um registro é imutável; catálogo/campanha/visita de outra carteira não pode ser usado em uma venda. A escrita de rotas mantém validação, concorrência e cota global sob bloqueio por conta.
+RLS combina o proprietário autenticado com a carteira do cabeçalho da requisição; consultas também usam filtro explícito. Sem cabeçalho, instalações anteriores enxergam somente a carteira inicial. FK composta impede vínculo com carteira de outra conta. A carteira de um registro é imutável; catálogo/campanha/visita de outra carteira não pode ser usado em uma venda. A escrita de rotas mantém validação, concorrência e cota global sob bloqueio por conta. A migração complementar `rotamapa_private_portfolio_plan_access` mantém a soma privilegiada da cota no esquema privado, com uma função pública invocadora e verificação do usuário.
 
 Dados locais antigos permanecem nas mesmas chaves para a carteira inicial. Novas carteiras usam chaves separadas; caixas de saída não são apagadas na troca. O backup do aparelho identifica e exporta a carteira atual sem tokens de autenticação.
 
 ## Validação
 
 Testes de modelo mantêm 11 visitas / 8 PDVs distintos / 3 revisitas; testes de navegador verificam filtros, venda sem nova visita, navegação individual e contraste claro/escuro. Testes de carteira usam o mesmo CNPJ com endereços/pins diferentes, importação nomeada, catálogo/visitas/rotas isolados e retorno à carteira inicial, incluindo dados locais pendentes. SQL local descartável testa a migração, RLS, FK de proprietário e rejeição de referências e RPCs entre carteiras. Os testes de navegador e Android usam dados fictícios; não criam visitas ou vendas reais.
+
+Validação local concluída: 98 testes de unidade, 88 cenários em WebKit (Safari/Chrome iOS, tela pequena e paisagem), 18 cenários focados em Chrome Android/desktop, migração e isolamento SQL e cota Free global entre carteiras.
