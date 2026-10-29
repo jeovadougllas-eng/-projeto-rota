@@ -60,6 +60,7 @@ try{
  // The workbook proof opens a native external browser. Run it after in-app
  // interaction checks; the next step deliberately cold-starts the application.
  if(process.env.TRAXELO_VISITS_PROOF==='1'){const {verifyVisits}=await import('./android-visit-checks.mjs');visitSnapshot=await verifyVisits({page,device,evidence});}
+ if(process.env.ROTAMAPA_COMMERCE_PROOF==='1'){const {verifyCommerce}=await import('./android-commerce.mjs');await verifyCommerce({page,device,evidence});}
  // Corrupt a downloaded file only inside this isolated emulator, then prove the native loader refuses it.
  await device.shell('am force-stop app.traxio.mobile');
  await device.shell("run-as app.traxio.mobile sh -c 'echo corrupted > files/traxelo-web-releases/"+manifest.version+"/index.html'");
