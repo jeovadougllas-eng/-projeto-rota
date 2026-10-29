@@ -6,7 +6,7 @@ const canonical=o=>JSON.stringify(o,(_k,v)=>v&&typeof v==='object'&&!Array.isArr
 function create(owner,storage=root.localStorage){
  if(!owner)throw Error('Entre na sua conta para acessar as vendas.');
  const key='rotamapa.commerce.v1:'+owner;let state={schema:1,events:[],outbox:[],baseline:{},legacyLinks:{}};
- try{const saved=JSON.parse(storage.getItem(key)||'null');if(saved&&saved.schema===1&&Array.isArray(saved.events))state={...state,...saved};}catch{throw Error('O histórico local não pôde ser lido. Preserve os dados deste aparelho antes de continuar.');}
+ try{const saved=JSON.parse(storage.getItem(key)||'null');if(saved&&saved.schema===1&&Array.isArray(saved.events)&&Array.isArray(saved.outbox)&&saved.baseline&&typeof saved.baseline==='object')state={...state,...saved};else if(storage.getItem(key)!==null)throw Error('Formato local não reconhecido.');}catch{throw Error('O histórico local não pôde ser lido. Preserve os dados deste aparelho antes de continuar.');}
  let busy=false;
  function commit(next){storage.setItem(key,JSON.stringify(next));state=next;return state;}
  function add(event){if(!event?.id||!event.kind)throw Error('Registro inválido.');RotaMapaCommerceModel.validate(event.kind,event);const existing=state.events.find(e=>e.id===event.id);if(existing)return clone(existing);const value={...clone(event),version:1};commit({...state,events:[...state.events,value],outbox:[...new Set([...state.outbox,value.id])]});return clone(value);}

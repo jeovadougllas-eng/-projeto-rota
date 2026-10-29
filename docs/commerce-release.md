@@ -13,3 +13,5 @@ Launcher identity: native/PWA metadata already say RotaMapa. A new account menu 
 Database changes add a separate commerce table and extend only the allowed MIME types of the existing private export bucket. Existing client and visit rows are unchanged. Synthetic tests never create sales for a real account.
 
 Shortcut backup includes only UUID-scoped ledgers, and includes the shared customer cache only when its recorded owner matches the current account. Legacy route histories keyed by display name and all authentication storage are excluded. Native preservation checks compare saved route/agenda items and effective plan, while allowing refreshed plan-check timestamps and derived access counters.
+
+Slow visit uploads notify the dependent sales outbox on completion, so pending sales resume automatically without another user action. An unreadable or unsupported local ledger is preserved and surfaced instead of silently replaced by an empty cache.
