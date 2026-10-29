@@ -1,4 +1,4 @@
-name: RotaMapa final backup scope and Android verification
+name: RotaMapa final sales sync and Android verification
 # Browser fixtures remain authoritative across WebKit reloads.
 on:
   push:
@@ -33,15 +33,15 @@ jobs:
           python - <<'PYPROOF'
           import subprocess
           changes=subprocess.check_output(['git','diff','--name-only','56b378b47e8df151fc0dc9a4ac416e426e473a67','HEAD','--','assets/','index.html','mobile/native/','mobile/capacitor.config.json'],text=True).splitlines()
-          assert changes==['assets/rotamapa-install-identity.js'],changes
-          print('Only the shortcut backup scope changed; previous full browser proof passed 161 tests')
+          assert set(changes)=={'assets/rotamapa-install-identity.js','assets/rotamapa-commerce-ui.js','assets/rotamapa-commerce-store.js','assets/traxelo-visits-ui.js'},changes
+          print('Focused changes: owned backup, durable cache guard and dependent sales sync; all commerce and visit flows are retested. Navigation and financial calculation source match the 161-pass full proof.')
           PYPROOF
-      - run: npx playwright test --config=playwright.commerce.config.js --grep "launcher guide" --max-failures=2
+      - run: npx playwright test --config=playwright.commerce-final.config.js --max-failures=2
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: commerce-browser
-          path: test-results-commerce/
+          path: test-results-commerce-final/
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 18
