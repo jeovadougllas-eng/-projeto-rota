@@ -1,4 +1,5 @@
 name: RotaMapa catalog campaigns and visit sales
+# Browser fixtures remain authoritative across WebKit reloads.
 on:
   push:
     branches: [dev/traxelo-android-routes]
