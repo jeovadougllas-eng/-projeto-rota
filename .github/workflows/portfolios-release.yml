@@ -1,5 +1,5 @@
 name: RotaMapa portfolios, history and Android release
-# Verify first-access owner association before each wallet reload.
+# Verify stable metric taps during sync and first-access owner association.
 on:
   push:
     branches: [dev/traxelo-android-routes]
