@@ -1,5 +1,5 @@
 name: RotaMapa portfolios, history and Android release
-# Browser fixtures remain authoritative across WebKit reloads.
+# Verify first-access owner association before each wallet reload.
 on:
   push:
     branches: [dev/traxelo-android-routes]
@@ -50,7 +50,7 @@ jobs:
           PGPASSWORD: fixture-only
         run: |
           psql -h localhost -U postgres -v ON_ERROR_STOP=1 -c 'create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls;'
-          for file in test-db/portfolios-base.sql docs/sql/enable-visit-history.sql docs/sql/enable-saved-routes-and-plans.sql docs/sql/enable-commerce.sql docs/sql/enable-portfolios.sql test-db/portfolios.sql; do psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f "$file"; done
+          for file in test-db/portfolios-base.sql docs/sql/enable-visit-history.sql docs/sql/enable-saved-routes-and-plans.sql docs/sql/enable-commerce.sql docs/sql/enable-portfolios.sql docs/sql/enable-portfolio-plan-access.sql test-db/portfolios.sql test-db/portfolio-quota.sql; do psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f "$file"; done
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 18
