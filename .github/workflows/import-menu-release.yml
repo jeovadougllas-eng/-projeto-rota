@@ -1,4 +1,5 @@
 name: RotaMapa import menu and sidebar icon release
+# Keep sidebar strokes consistent in WebKit as well as Chromium.
 on:
   push:
     branches: [dev/traxelo-android-routes]
@@ -66,7 +67,7 @@ jobs:
           with zipfile.ZipFile(apk) as z:
             for name,digest in m['files'].items():assert hashlib.sha256(z.read('assets/public/'+name)).hexdigest()==digest,name
             assert 'Importar carteira' in z.read('assets/public/index.html').decode()
-            assert 'feMorphology' in z.read('assets/public/assets/traxio-ui.js').decode()
+            assert 'svg.classList.add' in z.read('assets/public/assets/traxio-ui.js').decode()
             assert 'stroke-width:2.2' in z.read('assets/public/assets/traxio.css').decode()
           aapt=sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/aapt'))[-1]
           badging=subprocess.check_output([str(aapt),'dump','badging',apk],text=True)
