@@ -23,3 +23,13 @@ Dados locais antigos permanecem nas mesmas chaves para a carteira inicial. Novas
 Testes de modelo mantêm 11 visitas / 8 PDVs distintos / 3 revisitas; testes de navegador verificam filtros, venda sem nova visita, navegação individual e contraste claro/escuro. Testes de carteira usam o mesmo CNPJ com endereços/pins diferentes, importação nomeada, catálogo/visitas/rotas isolados e retorno à carteira inicial, incluindo dados locais pendentes. SQL local descartável testa a migração, RLS, FK de proprietário e rejeição de referências e RPCs entre carteiras. Os testes de navegador e Android usam dados fictícios; não criam visitas ou vendas reais.
 
 Validação local concluída: 98 testes de unidade, 88 cenários em WebKit (Safari/Chrome iOS, tela pequena e paisagem), 18 cenários focados em Chrome Android/desktop, migração e isolamento SQL e cota Free global entre carteiras.
+
+## Versão entregue
+
+- Aplicação e instalador: commit `e96e6ec8a18856dc8e8d8c62db77b8f561e6a09c`.
+- Versão interna: `71c13fca55ebac3e9ad02d244293f0b62fb0a7bdbde1ce2b4eb17befd2332aa9`, 92 arquivos.
+- APK: 17.162.903 bytes, SHA-256 `fa72f01dfef32b4c3569764e7ea6bd40342f7bf86ed6e132027080ae3de9d68c`.
+- [Validação completa](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40912851534): 144 cenários de navegador, 98 testes de unidade e SQL de isolamento/cota global aprovados.
+- [Android instalado](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/40914490113): 14 verificações sobre a instalação original com atualização HTTPS, oito verificações na instalação nova. Emulador Android 15/API 35; não é teste em aparelho físico.
+- A aplicação do APK é idêntica à versão aprovada nos navegadores. O teste Android usa o mesmo artefato e aguarda a inicialização dos stores após cada recarga de carteira. Cenários cobrem perda de foco/toque durante sincronização e associação do proprietário no primeiro acesso.
+- Aplicação web e PWA: https://traxio-preview.vercel.app/ . Nova instalação Android: https://traxio-preview.vercel.app/downloads/rotamapa-android-testes.apk . Instalações antigas mantêm seus dados e recebem a atualização interna compatível; o instalador original permanece intacto.
