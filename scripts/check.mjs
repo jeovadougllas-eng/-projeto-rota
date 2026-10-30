@@ -25,3 +25,5 @@ for(const file of ['rotamapa-portfolio-scope.js','rotamapa-portfolios.js','rotam
 
 if(!html.includes('KEY=RotaMapaPortfolioScope.clientsKey()'))throw Error('Missing portfolio client isolation');
 if(!(await readFile(new URL('../assets/rotamapa-portfolio-scope.js',import.meta.url),'utf8')).includes("?'projeto_rota_mapa_v1'"))throw Error('Legacy client storage must remain available');
+
+for(const file of ['rotamapa-scheduling-model.js','rotamapa-scheduling.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});

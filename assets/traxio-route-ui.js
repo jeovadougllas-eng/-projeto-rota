@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   signal.throwIfAborted();displayRoadGeometry(geometry);
   if(!map.getSource('route')||!map.getLayer('route-line'))throw Error('Não foi possível renderizar o itinerário no mapa.');
  }
- async function calculate(strategy='distance',{existing=null,destination=null}={}){
+ async function calculate(strategy='distance',{existing=null,destination=null,scheduled=null}={}){
   if(routeBusy){el('mapStatus').textContent='Já há uma operação em andamento. Aguarde ou limpe o trajeto para cancelar.';return;}
   cancel('Verificando os clientes selecionados…');const run=generation;controller=new AbortController();const signal=controller.signal;
   routeBusy=true;phase('checking-locations','Verificando as localizações antes de calcular…');
@@ -203,23 +203,28 @@ document.addEventListener('DOMContentLoaded',()=>{
    if(destination){if(!valid(destination.lat,destination.lon)){phase('location-error','Confirme um destino com coordenadas válidas.');return;}try{start=await requestGPS();if(current(run)){gpsOrigin={...start};showGpsOrigin();}}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message);return;}}
    else if(existing)start=existing.start;
    else if(el('origin').value==='manual'){if(!manualOrigin){phase('awaiting-origin','Busque e confirme o endereço ou marque a origem no mapa.');return;}start={...manualOrigin};}
-   else if(el('origin').value==='gps'){try{start=gpsOrigin?{...gpsOrigin}:await requestGPS();if(current(run)){gpsOrigin={...start};showGpsOrigin();}}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');return;}}
+   else if(el('origin').value==='gps'){try{start=!scheduled&&gpsOrigin?{...gpsOrigin}:await requestGPS();if(current(run)){gpsOrigin={...start};showGpsOrigin();}}catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');return;}}
    else start=points[0];
    if(!current(run)||snapshot!==planSignature())return;
    const nodes=existing?[start,...existing.points]:[start,...TraxeloNavigationModel.canonical(points.filter(c=>!(start.id!==undefined&&String(c.id)===String(start.id))))];
    if(nodes.length<2){phase('impossible','A origem já é o único cliente selecionado. Escolha GPS ou uma origem manual para traçar o percurso.');return;}
    phase('calculating','Calculando sequência e trajeto pelas ruas…');
    const matrix=existing||destination?null:await roadDistances(nodes,signal);if(!current(run))return;
-   const arranged=existing?existing.points:destination?[destination]:optimizeStrategy(nodes,matrix,strategy).slice(1).map(i=>nodes[i]);
-   preparedRoute={start,points:arranged,excluded:[...state.excluded],strategy,allowUnverified};
+   scheduled=scheduled||existing?.scheduled;
+   const sequence=existing||destination?null:scheduled?RotaMapaSchedulingModel.order(nodes,matrix,strategy,optimizeStrategy,scheduled.appointments):optimizeStrategy(nodes,matrix,strategy);
+   const arranged=existing?existing.points:destination?[destination]:sequence.slice(1).map(i=>nodes[i]);
+   if(scheduled&&!scheduled.isCurrent())throw Error('Os agendamentos mudaram. Gere novamente a rota do dia.');
+   preparedRoute={start,points:arranged,excluded:[...state.excluded],strategy,allowUnverified,...(scheduled?{scheduled}: {})};
    const road=await fetchRoadRoute([start,...arranged],{signal});
    if(!current(run)||snapshot!==planSignature())return;
+   if(scheduled&&!scheduled.isCurrent())throw Error('Os agendamentos mudaram. Gere novamente a rota do dia.');
    await waitForGeometry(road.geometry,signal);if(!current(run))return;
    lastRoute={...preparedRoute};preparedRoute=null;calculationPlan=null;activeSelection=JSON.stringify([...selectedIds].sort());activeFingerprint=P.signature(clients,[...arranged.map(c=>c.id),...(start.id!==undefined?[start.id]:[])],originSignature());showOrder(arranged);renderMarkers();
    window.traxioBeginNavigation?.(arranged,road.geometry,{legs:road.legs,origin:start});
    const partial=state.excluded.length>0;
    phase(partial?'partial':'calculated',(destination?(strategy==='single'?'Visita individual · Trajeto por ruas: ':'Destino avulso · Trajeto por ruas: '):'Trajeto por ruas: ')+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+' clientes excluídos com sua confirmação. ':'')+(allowUnverified?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
    window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:arranged.map(c=>c.name),strategy,at:new Date().toISOString(),excluded:[...state.excluded]};
+   if(scheduled){const timeline=RotaMapaSchedulingModel.timeline(arranged,road.legs,scheduled.appointments,scheduled.departure);window.dispatchEvent(new CustomEvent('rotamapa:scheduled-route',{detail:timeline}));}
    window.traxioShowSaveTrip?.();window.TraxeloWorkspace?.routeReady();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});return lastRoute;
   }catch(e){
    if(!current(run)||signal.aborted)return;

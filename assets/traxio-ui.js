@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Approved full-screen scenes, with real controls rather than baked-in UI.
   const scenery = node('div','app-scenery'); scenery.setAttribute('aria-hidden','true');
   const scene = node('img'); scene.src='assets/scenes/painel.webp'; scene.alt=''; scene.decoding='async'; scenery.append(scene); document.body.prepend(scenery);
-  const updateScene=()=>{const screen=document.body.dataset.screen||'painel';const src='assets/scenes/'+screen+'.webp';if(scene.getAttribute('src')!==src)scene.src=src;navArt.querySelector('img').src=src;};
+  const updateScene=()=>{const screen=document.body.dataset.screen||'painel';const src='assets/scenes/'+(screen==='agendamentos'?'historico':screen)+'.webp';if(scene.getAttribute('src')!==src)scene.src=src;navArt.querySelector('img').src=src;};
   new MutationObserver(updateScene).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
   const hero=document.querySelector('.traxio-hero');hero.querySelector('h2').innerHTML='Seu território<br>em <em>movimento.</em>';
   hero.querySelector('p').textContent='Planeje suas visitas com inteligência.';
