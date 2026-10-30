@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "6236ad6f924cb3b8a78ca0e6a0f62aa99bd466acd24e68835cfa779594c3d9bb",
+  "version": "51cdc6bf86f925374044048989a050ebe89fd899b753d903fb952b9202a9a8d0",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -22,11 +22,13 @@
     "assets/reconstructed/login-art-mask.svg": "941161fbe269003002232e030b2d4e91496fd890ff4bfa0ed393ae6cfe81d9e4",
     "assets/reconstructed/login-background.png": "3119c79c60498219d06528a0eca59685d858a115fda09301daf3e598bad4b7a5",
     "assets/roboto-condensed.ttf": "dace262afcee68a5276f200d8026c57221735c0118ab5fda8c2c0d3dc409a8d0",
-    "assets/rotamapa-commerce-model.js": "08bf9274242cf03aec92cc012d6c8a5e84c080474642c918ef8f8db0f88f542c",
+    "assets/rotamapa-commerce-model.js": "9d39472d1ca2b218f0fa27c8d322609548468a63e6265fe1ef20457ff0772b6a",
     "assets/rotamapa-commerce-store.js": "eb15f9bbda64b102b87fe08d763ccb36eda0ced7c6ab7d7a04972e5a2515f577",
-    "assets/rotamapa-commerce-ui.js": "7d76e7a7a29a2378375e6a7570f8eb43ac95cec686e6db85a2f35a67425313b6",
-    "assets/rotamapa-commerce.css": "77d574180884da77af8b1731f5706e59278cf9b5f25aa2b095beabd01fca7096",
+    "assets/rotamapa-commerce-ui.js": "5de65dfc6a40072cef8e40d5962dd42eef29fd456f780ce92f74fedc45c914a0",
+    "assets/rotamapa-commerce.css": "e252e12c3a7080347dbd48a613ab0fd00065cb2c75a4a397bcdc38cf1517097b",
     "assets/rotamapa-install-identity.js": "9e7b8acbb5f6abf3676d21aadf77b80c4be13fe597563ad7f9bcbcb55885213c",
+    "assets/rotamapa-order-pdf-model.js": "c4d3c53641fbb5d5e1e2ddb6693f9feabd82bf455bc618fe6eed2f1c4def259d",
+    "assets/rotamapa-order-pdf-ui.js": "9c0d4b0d62fad804b6d2b43cc3f027f1c2b3c49973353faf092e84048cef452a",
     "assets/rotamapa-portfolio-scope.js": "4f99a0ab43f5b5138204a0d8f2eaa7d95325d5cfdf3a759dd5cfc3a7d3c4d7d4",
     "assets/rotamapa-portfolios.css": "ac14460c49bca76ef36f1b00f99813aa85d2f8ca50e2200b9f7de66cf9bf9d05",
     "assets/rotamapa-portfolios.js": "a6e2da60c3d513a28680d03603f16180ec0ce93168169ccb5496b36177091558",
@@ -59,7 +61,7 @@
     "assets/traxelo-shell.css": "550323634389ee8d270fc4b78074e85e5fd7db6c5bf655737a66e86ad0a0f745",
     "assets/traxelo-theme.css": "7a521211cf20c0626ced4b220cdf04f447fd569b80f527e2c5aeead5864e55b8",
     "assets/traxelo-updates.js": "4e855cf5af80451e0254728f93b1d55a8af5fb13b13ee4f004310f13e1cd658c",
-    "assets/traxelo-visit-report.js": "c9556dec2ee0d47b3f5d5232ffe6e5cb5561a7b24fe53cddd7bbcf4e3f498988",
+    "assets/traxelo-visit-report.js": "7bfebbb9f5262cff8c50d116824b7d8b19cf9ff696ad421081e035319741fdb0",
     "assets/traxelo-visit-store.js": "5341bd3a5eca0d2b08aef3329ba1482e94f1eed2fe41bef4863a1c9824c557e9",
     "assets/traxelo-visits-model.js": "b25a190d3e07cd826e4a9faebaa608e9ad108e20fff0e91b4d51fbce7522e4e1",
     "assets/traxelo-visits-ui.js": "990cbfb330f2795437d005730b7a9e28a4aea78d6f7f7c1e888ce7f691a2b54a",
@@ -82,6 +84,9 @@
     "assets/traxio-ui.js": "007c9959939170584caecb95916ed2ace2c04d73e6c0926e7cdfd1ddb1607bfa",
     "assets/traxio-wordmark-ui.svg": "cb92ddcdb81c7bb0e5ead9963a46ace9a870e22de53f9c5f077e1765ac9b34a9",
     "assets/traxio.css": "ed9cb4a7bb2851a7c2d2e459ea40e115c724d5f4a2cca84e3630f75962c5c42a",
+    "assets/vendor/pdfjs/LICENSE.txt": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+    "assets/vendor/pdfjs/pdf.min.js": "44ec6f011027ee77791386b66c14876a5fc29e20bf0433c07c6726fff7212b72",
+    "assets/vendor/pdfjs/pdf.worker.min.js": "bd88805178a26c729db8c0107a5b630cb900ec070f4d8c7529a3e45530afd41d",
     "assets/visual-kit/README.md": "b1a68efec1ac748c17e606183d10986fb2ec7cae7597e73e845b72c9bc6f6dd0",
     "assets/visual-kit/assets/app_icon_dark.png": "ff16b9d03373e64f40a54e698bc8454192495b49297a9dba98322409d9dae9bf",
     "assets/visual-kit/assets/app_icon_light.png": "8a5428324000eb02ee1f35687ca553ebe916bf4a7bb4abe560a1747d4df6ae69",
@@ -99,9 +104,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "bfa5f18505a5c835ebc485cfeaf8d660ba358d64aefab8440e322d77bcbe16b6"
+    "index.html": "42cfd6ab6221040f1cd87275efcb0a5436e80d73ea6cf9199b3a7641e682b862"
   },
-  "bundle": "/updates/android/bundles/6236ad6f924cb3b8a78ca0e6a0f62aa99bd466acd24e68835cfa779594c3d9bb.zip",
-  "sha256": "d700e79dfb50f030413203a6f7fbc96e6204b9f33d6e5befcad660c58b6c6bdf",
-  "bytes": 11488196
+  "bundle": "/updates/android/bundles/51cdc6bf86f925374044048989a050ebe89fd899b753d903fb952b9202a9a8d0.zip",
+  "sha256": "8073cc5c08296731aff9d570f45a58e858d34886135aa8091f7cea9652a8e1de",
+  "bytes": 12033070
 }
