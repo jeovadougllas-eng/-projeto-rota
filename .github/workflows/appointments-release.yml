@@ -1,5 +1,5 @@
 name: RotaMapa appointments and reminders release
-# Exercise appointment times, reminder lifecycle, portfolio isolation and existing route planning.
+# Exercise appointment times, reminder lifecycle and stable wallet scope, including small-screen labels.
 on:
   push:
     branches: [dev/traxelo-android-routes]
