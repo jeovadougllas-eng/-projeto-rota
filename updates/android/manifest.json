@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "1f58d3f569637396c7ff51340a68f94754e3653cf15bce02642b09499ae932f5",
+  "version": "8811f874231943f93d9444cae9c87d5a22ee9aac2fc705964798dae606073265",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -30,6 +30,9 @@
     "assets/rotamapa-portfolio-scope.js": "4f99a0ab43f5b5138204a0d8f2eaa7d95325d5cfdf3a759dd5cfc3a7d3c4d7d4",
     "assets/rotamapa-portfolios.css": "ac14460c49bca76ef36f1b00f99813aa85d2f8ca50e2200b9f7de66cf9bf9d05",
     "assets/rotamapa-portfolios.js": "a6e2da60c3d513a28680d03603f16180ec0ce93168169ccb5496b36177091558",
+    "assets/rotamapa-scheduling-model.js": "a1b471afcc3c9d60224d2224ff373ea68a3433a5a34a8613c71c794729a1fb96",
+    "assets/rotamapa-scheduling.css": "7a5194357ad2241cbed6d729ae70d6419563dd3e3f8440fe03322c604323f9bc",
+    "assets/rotamapa-scheduling.js": "3f99fa48a54f9de166c52a95d688ea4760f02035fd60f08b7d24ea7ea65b42dc",
     "assets/rotamapa-visit-details-model.js": "5a1acb7c880c4b1f560fba4c32e2e81ef54044bd23cdb0dd0f13e477910e69fc",
     "assets/rotamapa-visit-details.css": "ad0d8906f36d532170ab520a4ab3cbd50e3195aee00cc44f67abbdb48e390d71",
     "assets/rotamapa-visit-details.js": "0c063f9aee7d2a63ee7a4cf4dbb7678a9cd7dcd5afb49601446fb390f42aa037",
@@ -61,7 +64,7 @@
     "assets/traxelo-visits-model.js": "b25a190d3e07cd826e4a9faebaa608e9ad108e20fff0e91b4d51fbce7522e4e1",
     "assets/traxelo-visits-ui.js": "990cbfb330f2795437d005730b7a9e28a4aea78d6f7f7c1e888ce7f691a2b54a",
     "assets/traxelo-workspace-store.js": "68d1fb29d929f4990bf2a829a4e8d575f574215725ab9e13f2f84d5ea279029e",
-    "assets/traxelo-workspace-ui.js": "0d53b06451492a96ef1f8c83ee016d1f802e7f665cd537c13d5a3ce2de1a292a",
+    "assets/traxelo-workspace-ui.js": "7872347490ecb55a3d5d0e4f2e42f2fe124b62227a1248008847e3cfbd748f5b",
     "assets/traxelo/approved/vector/README.md": "f40136673131642bd2daf74f0f3d1fa8d45efeb815594975f9213c5f9e409b71",
     "assets/traxelo/approved/vector/manifest.json": "e107b2f9fccf49a293940d786098dfbaaba4a995cd742433b2bce3df6e4cb4d9",
     "assets/traxelo/approved/vector/png_transparente/simbolo_estrada_pin.png": "ebfe996c8d86f616b7ce5668937b04a63a9aa3ace5588c4832d0aead931c7f2d",
@@ -74,9 +77,9 @@
     "assets/traxio-native.js": "5e3b460a10a70836c19d20a309e6c180de869d9a6de1fbbcd4c148922676ed04",
     "assets/traxio-planner.js": "ea1fbf8e2037d1ced814c50b376ac6de4ba336c81f0e0502f8e30cf9eca88840",
     "assets/traxio-route-scene.svg": "428a7abbba4612536c3c657d559ccf1cf50a2af684f15a4f806401d10db65dac",
-    "assets/traxio-route-ui.js": "c5ec7140cef4e262ed5ba63d33390dc1bc12140832535d32139e436fa52ac2e1",
+    "assets/traxio-route-ui.js": "cb11770afd84dbfb3f42cab02d83a143c865e5cb66d5626992b59cd3d91b0092",
     "assets/traxio-routes.css": "80dd87fd22e076e03058470d973a84e0a373f0dc0e173850cceaea3812734992",
-    "assets/traxio-ui.js": "f3f45088b2549b5ada327905552f18d3db2694b0a19036a7d7189cb0fa673875",
+    "assets/traxio-ui.js": "007c9959939170584caecb95916ed2ace2c04d73e6c0926e7cdfd1ddb1607bfa",
     "assets/traxio-wordmark-ui.svg": "cb92ddcdb81c7bb0e5ead9963a46ace9a870e22de53f9c5f077e1765ac9b34a9",
     "assets/traxio.css": "ed9cb4a7bb2851a7c2d2e459ea40e115c724d5f4a2cca84e3630f75962c5c42a",
     "assets/visual-kit/README.md": "b1a68efec1ac748c17e606183d10986fb2ec7cae7597e73e845b72c9bc6f6dd0",
@@ -96,9 +99,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "5157a351a518cb6b4c85c98dbc2bced64dbe0d66dcdc8241360bd465781b3927"
+    "index.html": "426ddbb5bc5468589dcf9a6ac96ef6abae11b4fc077a10f322ac5c37ede1f0b1"
   },
-  "bundle": "/updates/android/bundles/1f58d3f569637396c7ff51340a68f94754e3653cf15bce02642b09499ae932f5.zip",
-  "sha256": "3d61a5fed9291d5a454cdcd389933b5b46d394beeac58768b3715e757ddbf910",
-  "bytes": 11474314
+  "bundle": "/updates/android/bundles/8811f874231943f93d9444cae9c87d5a22ee9aac2fc705964798dae606073265.zip",
+  "sha256": "9cc8ce8ebed2fa1469aa5e2bc0fe01fdaad2508196767aaf47855dd1f6af1e27",
+  "bytes": 11487036
 }
