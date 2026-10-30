@@ -1,5 +1,5 @@
 name: RotaMapa exact unit prices and table item release
-# Verify exact currency arithmetic, direct table items and quantity conditions.
+# Verify exact prices, direct table items and stable Safari calculation taps.
 on:
   push:
     branches: [dev/traxelo-android-routes]
