@@ -19,7 +19,7 @@ for(const file of ['traxelo-iphone-pwa.js','traxelo-geo-recovery.js','traxelo-up
 
 for(const file of ['traxelo-premium-model.js','traxelo-workspace-store.js','traxelo-workspace-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
-for(const file of ['rotamapa-commerce-model.js','rotamapa-commerce-store.js','rotamapa-commerce-ui.js','rotamapa-install-identity.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+for(const file of ['rotamapa-commerce-model.js','rotamapa-commerce-store.js','rotamapa-commerce-ui.js','rotamapa-order-pdf-model.js','rotamapa-order-pdf-ui.js','rotamapa-install-identity.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
 for(const file of ['rotamapa-portfolio-scope.js','rotamapa-portfolios.js','rotamapa-visit-details-model.js','rotamapa-visit-details.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
