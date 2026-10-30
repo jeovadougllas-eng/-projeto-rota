@@ -11,7 +11,7 @@ const day=s=>typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(D
 function tiers(input){
  if(!Array.isArray(input)||input.length<1||input.length>3)throw Error('Cadastre de uma a três faixas.');
  const direct=input[0]?.unitPriceCents!==undefined;
- const rows=input.map((r,i)=>{if((r.unitPriceCents!==undefined)!==direct)throw Error('Use o mesmo modo de cálculo em todas as faixas.');return {label:input.length===1?'Faixa única':'Faixa '+(i+1),minQty:integer(r.minQty,1,1000000,'Quantidade mínima'),discountBps:direct?0:integer(r.discountBps,0,10000,'Desconto'),...(direct?{unitPriceCents:integer(r.unitPriceCents,1,1000000000,'Preço unitário da faixa')}: {})};});
+ const rows=input.map((r,i)=>{if((r.unitPriceCents!==undefined)!==direct)throw Error('Use o mesmo modo de cálculo em todas as faixas.');return {label:/^Faixa [123]$/.test(r.label)||(input.length===1&&r.label==='Faixa única')?r.label:input.length===1?'Faixa única':'Faixa '+(i+1),minQty:integer(r.minQty,1,1000000,'Quantidade mínima'),discountBps:direct?0:integer(r.discountBps,0,10000,'Desconto'),...(direct?{unitPriceCents:integer(r.unitPriceCents,1,1000000000,'Preço unitário da faixa')}: {})};});
  for(let i=1;i<rows.length;i++)if(rows[i].minQty<=rows[i-1].minQty||(direct?rows[i].unitPriceCents>rows[i-1].unitPriceCents:rows[i].discountBps<rows[i-1].discountBps))throw Error('As faixas devem ter mínimos crescentes e preços que não aumentem ou descontos que não diminuam.');return rows;
 }
 function product(p){if(!p?.id||!String(p.name||'').trim()||p.name.length>160)throw Error('Informe o nome e a apresentação do produto.');integer(p.priceCents,1,1000000000,'Preço de tabela');return {...clone(p),name:p.name.trim()};}

@@ -9,6 +9,10 @@ console.log("select test_commerce.ensure((select data->'lines'->0->>'unitCents'=
 console.log("select test_commerce.ensure((select data->'lines'->0->>'unitCents'='900' from public.rotamapa_commerce_items where id='31000000-0000-4000-8000-000000000001'),'below minimum remains table');");
 const expensive={...p,id:'11000000-0000-4000-8000-000000000002',priceCents:1000000000},offer=M.campaign({...c,id:'21000000-0000-4000-8000-000000000002',productId:expensive.id,tiers:[{minQty:6,unitPriceCents:999999999}]});console.log(insert(expensive),insert(offer),insert(sale('31000000-0000-4000-8000-000000000005',6,expensive,offer)));
 console.log("select test_commerce.ensure((select data->>'totalCents'='5999999994' from public.rotamapa_commerce_items where id='31000000-0000-4000-8000-000000000005'),'large integer exact price');");
+for(const [i,tiers]of [[{label:'Faixa 2',minQty:6,unitPriceCents:856}],[{label:'Faixa 1',minQty:6,discountBps:500},{label:'Faixa 3',minQty:18,discountBps:1000}]].entries()){
+ const sparse=M.campaign({...c,id:'22000000-0000-4000-8000-'+String(i+1).padStart(12,'0'),tiers}),order=sale('32000000-0000-4000-8000-'+String(i+1).padStart(12,'0'),18,p,sparse);
+ console.log(insert(sparse),insert(order));console.log(`select test_commerce.ensure((select data->'lines'->0->>'label'=${quote(tiers.at(-1).label)} from public.rotamapa_commerce_items where id=${quote(order.id)}),'sparse numbered tier remains valid');`);
+}
 const invalid=[{...c,id:'21000000-0000-4000-8000-000000000003',tiers:[{label:'Faixa única',minQty:6,discountBps:0,unitPriceCents:901}]},{...c,id:'21000000-0000-4000-8000-000000000004',tiers:[{label:'Faixa única',minQty:6,discountBps:0,unitPriceCents:0}]}];
 const tampered=sale('31000000-0000-4000-8000-000000000006',6);tampered.lines[0].unitCents=855;tampered.lines[0].totalCents=5130;tampered.totalCents=5130;invalid.push(tampered);
 for(const o of invalid)console.log(`do $test$ begin begin ${insert(o)} raise exception 'INVALID_ACCEPTED';exception when raise_exception then if sqlerrm='INVALID_ACCEPTED' then raise;end if;end;end;$test$;`);
