@@ -1,5 +1,5 @@
 name: RotaMapa reviewed invoice PDF import release
-# Verify reviewed invoiced totals, duplicate protection, isolated history and native packaging.
+# Verify reviewed invoiced totals, duplicate protection, review cleanup on account changes and native packaging.
 on:
   push:
     branches: [dev/traxelo-android-routes]
