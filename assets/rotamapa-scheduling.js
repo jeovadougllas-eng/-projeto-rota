@@ -18,7 +18,7 @@ page.innerHTML=`<div class="tab-title"><h2>Agendamentos</h2><p>Planeje suas visi
  <p>Amarelo: até 3 dias · Laranja: amanhã · Vermelho: hoje. Os registros de datas passadas continuam disponíveis.</p><div class="row"><button id="appointmentSync" type="button" class="secondary">Sincronizar agendamentos</button><button id="appointmentSelectDay" type="button" class="secondary">Selecionar clientes desta data</button></div><div id="appointmentList" class="premium-grid"></div>
  <div class="appointment-route"><h3>Gerar rota dos agendamentos</h3><p>Escolha uma data e marque as visitas. Os horários têm preferência; o critério organiza as visitas com o mesmo horário.</p><div class="appointment-fields"><label>Critério<select id="appointmentStrategy"><option value="distance">Menor deslocamento</option><option value="priority">Prioridade dos clientes</option><option value="balanced">Equilíbrio entre os dois</option></select></label><label>Saída prevista<input id="appointmentDeparture" type="time" value="08:00" required></label></div><p>Origem: sua localização atual. A previsão considera o percurso pelas ruas e a duração informada de cada visita, sem trânsito em tempo real.</p><button id="appointmentGenerateRoute" type="button">Gerar rota dos agendados</button></div></section>`;
 $('appointmentDate').value=$('appointmentFilterDate').value=V.day(new Date(),M.DEFAULT_ZONE);
-let identity='',draft=new Map(),chosen=new Set(),dismissed={},noticeRows=[],busy=false,listSignature='',noticeSignature='';
+let identity='',draft=new Map(),chosen=new Set(),dismissed={},noticeRows=[],busy=false,listSignature='',noticeSignature='',clientsSignature='';
 const currentStore=()=>document.body.classList.contains('auth-locked')?null:TraxeloWorkspace.getStore();
 function allowed(){const s=currentStore(),local=localStorage.getItem('traxio_sync_owner_v29');if(!s||local&&local!==s.owner)throw Error('Entre na conta desta carteira antes de agendar.');if(RotaMapaPortfolioScope.active(s.owner)!==s.portfolio)throw Error('A carteira mudou em outra janela. Reabra o app antes de agendar.');TraxeloPlans.require('agenda');return s;}
 function status(text){$('appointmentStatus').textContent=text;}
@@ -93,6 +93,7 @@ function renderNotices(){
 }
 function render(){
  const s=currentStore(),id=s?s.owner+':'+s.portfolio:'';if(id!==identity){identity=id;draft.clear();chosen.clear();dismissed={};listSignature=noticeSignature='';if(inbox.open)inbox.close();try{dismissed=JSON.parse(localStorage.getItem(dismissalKey())||'{}');}catch{}if(!dismissed||typeof dismissed!=='object'||Array.isArray(dismissed))dismissed={};clientChoices();status('');}
+ const nextClients=JSON.stringify([s?.owner,clients.map(c=>[c.id,c.name,c.city,c.neighborhood,c.active,c.deleted_at])]);if(nextClients!==clientsSignature){clientsSignature=nextClients;clientChoices();}
  $('appointmentSave').disabled=busy||!TraxeloPlans.can('agenda');$('appointmentGenerateRoute').disabled=!TraxeloPlans.can('agenda');if(s&&!TraxeloPlans.can('agenda'))status('Agendamentos estão disponíveis a partir do Plus. Os compromissos salvos continuam disponíveis para consulta.');renderList();renderNotices();
 }
 window.RotaMapaScheduling={render,openList:()=>{tab('list');render();},setEditReminders:ns=>editReminders.set(ns),editReminders:()=>editReminders.get()};
