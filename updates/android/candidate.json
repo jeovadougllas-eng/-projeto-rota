@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "8811f874231943f93d9444cae9c87d5a22ee9aac2fc705964798dae606073265",
+  "version": "0dfb548263bef894f20172b30f3d7ffd3f44b2f4719b91339f2c3daabcc56487",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -22,9 +22,9 @@
     "assets/reconstructed/login-art-mask.svg": "941161fbe269003002232e030b2d4e91496fd890ff4bfa0ed393ae6cfe81d9e4",
     "assets/reconstructed/login-background.png": "3119c79c60498219d06528a0eca59685d858a115fda09301daf3e598bad4b7a5",
     "assets/roboto-condensed.ttf": "dace262afcee68a5276f200d8026c57221735c0118ab5fda8c2c0d3dc409a8d0",
-    "assets/rotamapa-commerce-model.js": "f11b06433e2b9db7112fb42a2271fb2eb7f9b4f0c742abb4cadc6e63baf21e9f",
+    "assets/rotamapa-commerce-model.js": "5e277f44a751be0cfb253486b2a4c1fd6292a630216421efb15daf8e7f5b3a4e",
     "assets/rotamapa-commerce-store.js": "eb15f9bbda64b102b87fe08d763ccb36eda0ced7c6ab7d7a04972e5a2515f577",
-    "assets/rotamapa-commerce-ui.js": "1dc705ff567d8c5f7acbdca5b30cd103f8dcfc58c772b715c6be72e3d8e50727",
+    "assets/rotamapa-commerce-ui.js": "7d116296a714e1273aea2afe90f6b808b47e642cb9f6ee135ad464bc71ae70e1",
     "assets/rotamapa-commerce.css": "77d574180884da77af8b1731f5706e59278cf9b5f25aa2b095beabd01fca7096",
     "assets/rotamapa-install-identity.js": "9e7b8acbb5f6abf3676d21aadf77b80c4be13fe597563ad7f9bcbcb55885213c",
     "assets/rotamapa-portfolio-scope.js": "4f99a0ab43f5b5138204a0d8f2eaa7d95325d5cfdf3a759dd5cfc3a7d3c4d7d4",
@@ -99,9 +99,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "426ddbb5bc5468589dcf9a6ac96ef6abae11b4fc077a10f322ac5c37ede1f0b1"
+    "index.html": "7303cb58fa47a158c3c32a79fad7af2638fb16bd9eb1b03884d57e3bbf341d44"
   },
-  "bundle": "/updates/android/bundles/8811f874231943f93d9444cae9c87d5a22ee9aac2fc705964798dae606073265.zip",
-  "sha256": "9cc8ce8ebed2fa1469aa5e2bc0fe01fdaad2508196767aaf47855dd1f6af1e27",
-  "bytes": 11487036
+  "bundle": "/updates/android/bundles/0dfb548263bef894f20172b30f3d7ffd3f44b2f4719b91339f2c3daabcc56487.zip",
+  "sha256": "bbd1111c2afe9b0425962b8a5377ea17de9dc404998bf5696fcc50e8f81b48c7",
+  "bytes": 11487790
 }

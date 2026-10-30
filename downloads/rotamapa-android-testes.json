@@ -1,9 +1,9 @@
 {
   "name": "RotaMapa",
   "packageId": "app.traxio.mobile",
-  "release": "8811f874231943f93d9444cae9c87d5a22ee9aac2fc705964798dae606073265",
-  "sha256": "ba12326b2c2b8dd0db54b264c900c9a4a293a1415bbf94ac6ae8fa693eb2bb15",
-  "bytes": 17177045,
+  "release": "0dfb548263bef894f20172b30f3d7ffd3f44b2f4719b91339f2c3daabcc56487",
+  "sha256": "6267a63963a95b68d976415d069de9085d8e6f043aa7bc2238cf8c20a78bccfd",
+  "bytes": 17177945,
   "purpose": "first_installation",
   "existingInstallations": "Keep the installed app and its local data. Use its compatible web update. Launcher resources require a compatibly signed native package."
 }
