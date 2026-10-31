@@ -1,0 +1,75 @@
+name: Traxelo route repair
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['index.html', 'assets/**', 'tests/**', 'test-unit/**', 'scripts/check*', 'playwright*.js', '.github/workflows/route-repair.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: traxelo-routes-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  routes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Use the runner browser without a slow package-index refresh
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
+      - run: npm run check
+      - run: npm run test:geolocation
+      - name: Route transaction acceptance tests across desktop and tablet
+        run: npm test -- tests/routes.spec.js --output=test-results-routes
+      - name: Existing functional regression
+        run: npm test -- tests/auth.spec.js tests/flows.spec.js tests/geolocation.spec.js tests/native-bridge.spec.js
+      - name: Reproduce the baseline and capture before screens
+        run: |
+          git fetch --depth=1 origin f9305d71c24830e3252c437420e1aa58383ce34c
+          mkdir -p /tmp/traxelo-before
+          git archive f9305d71c24830e3252c437420e1aa58383ce34c | tar -x -C /tmp/traxelo-before
+          PORT=4174 node /tmp/traxelo-before/scripts/serve.mjs &
+          baseline_pid=$!
+          trap 'kill "$baseline_pid"' EXIT
+          TRAXIO_CAPTURE_BEFORE=1 npm test -- tests/routes-before.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark
+      - name: Prove real street routing and capture after screens
+        run: npm test -- tests/routes-live.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark --workers=1
+      - name: Verify the live Brazilian address provider
+        run: npm test -- tests/live-geocoding.spec.js --project=desktop-light
+      - name: Preserve reproducible before and after evidence
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/captures/routes-before/ docs/captures/routes-after/
+          if ! git diff --cached --quiet; then
+            git commit -m "test: capture route planning before and after with real road services [skip ci]"
+            for attempt in 1 2 3; do
+              git pull --rebase origin "$GITHUB_REF_NAME"
+              if git push origin "HEAD:$GITHUB_REF_NAME"; then break; fi
+              if [ "$attempt" = 3 ]; then exit 1; fi
+            done
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: traxelo-route-browser-evidence
+          retention-days: 30
+          path: |
+            playwright-report/
+            test-results/
+            test-results-routes/
+            docs/captures/routes-before/
+            docs/captures/routes-after/
+

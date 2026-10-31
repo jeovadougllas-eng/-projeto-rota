@@ -1,0 +1,267 @@
+/* Approved scenic pages. Icons and application actions remain the existing controls. */
+body.traxio-ui-ready{
+ --ink:#f1faf9;--panel:rgba(3,42,55,.9);--soft:rgba(6,58,70,.8);
+ --text:#f1faf9;--muted:#c2d9da;--bg:#042b37;--card:#063340db;--line:#70c8cd55;
+ --glass:rgba(3,42,55,.78);--glass-soft:rgba(6,58,70,.72);--glass-border:rgba(123,223,224,.46);
+ color:var(--text);background:#042b37;
+}
+body.traxio-ui-ready.traxio-dark{--glass:rgba(0,26,37,.88);--glass-soft:rgba(3,42,55,.83);--glass-border:rgba(123,223,224,.35)}
+.app-scenery{position:fixed;inset:var(--header-h) 0 0;z-index:0;overflow:hidden;background:#042b37;pointer-events:none}
+.app-scenery img{width:100%;height:100%;object-fit:cover;object-position:center bottom}
+.app-scenery:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#02263255,transparent 65%),linear-gradient(#02263233,transparent 75%)}
+.auth-locked .app-scenery{visibility:hidden}
+body.traxio-ui-ready>main{z-index:1;background:transparent;padding:24px;scrollbar-gutter:auto}
+body.traxio-ui-ready>header{background:linear-gradient(100deg,#012a37f5,#023946ef);border-bottom:1px solid #71c7c855;gap:14px}
+body.traxio-ui-ready .header-brand{margin-right:auto}
+body.traxio-ui-ready .theme-toggle{flex:none;margin-left:auto}
+body.traxio-ui-ready .tabs{background:linear-gradient(#002b37ef,#022d3bba);border-right:1px solid #8ad2d444}
+body.traxio-ui-ready[data-screen] .nav-art>img{inset:auto 0 0;width:100%;height:100%;object-fit:cover;object-position:left bottom;clip-path:none;transform:none;opacity:.3}
+body.traxio-ui-ready[data-screen] .nav-caption{display:none}
+body.traxio-ui-ready .nav-art:after{background:linear-gradient(#022d3b,transparent 70%)}
+body.traxio-ui-ready .card,body.traxio-ui-ready .traxio-data-expand,
+body.traxio-ui-ready .route-mode-panel,body.traxio-ui-ready .traxio-client-disclosure{
+ background:var(--glass);border:1px solid var(--glass-border);color:var(--text);
+ box-shadow:0 8px 26px #00151f22;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+}
+body.traxio-ui-ready :is(h1,h2,h3,h4,.client-link,.tab-title h2,.registry-count,.registry-footer,.registry-location-tools label,.route-stop,.traxio-data-guide strong){color:var(--text)}
+body.traxio-ui-ready :is(.muted,.tab-title p,.traxio-section-note,.registry-location-status,.traxio-data-guide span,.route-hint,.map-hint,.map-disclaimer){color:var(--muted)}
+body.traxio-ui-ready main :is(input:not([type=checkbox]):not([type=radio]),select,textarea){background:#042d39d9;color:#f1faf9;border:1px solid #8bcfd170;min-height:44px;min-width:0;font-size:15px;color-scheme:dark}
+body.traxio-ui-ready main input::placeholder{color:#b6cecf;opacity:1}
+body.traxio-ui-ready :is(button,a.secondary){min-height:44px}
+body.traxio-ui-ready main button.secondary,body.traxio-ui-ready main a.secondary,body.traxio-ui-ready .traxio-data-guide>button{
+ background:var(--glass-soft);color:#e6f7f4;border:1px solid #7ccecf55;
+}
+body.traxio-ui-ready main button:disabled{opacity:.5}
+body.traxio-ui-ready :is(button,a,[role=button],summary,input,select):focus-visible{outline:3px solid #d1f42f;outline-offset:3px}
+body.traxio-ui-ready .tab-title{margin:0 0 20px}
+body.traxio-ui-ready .tab-title h2{font-size:clamp(25px,2.6vw,34px)}
+body.traxio-ui-ready .tab-title p{font-size:15px;line-height:1.5}
+body.traxio-ui-ready .registry-card{overflow:hidden}
+body.traxio-ui-ready .client-table{background:transparent;color:var(--text)}
+body.traxio-ui-ready .client-table :is(th,td){background:transparent;border-bottom-color:#85b8bd44;font-size:14px;line-height:1.45}
+body.traxio-ui-ready .client-table thead{background:#042d39c9;color:#d9efed}
+body.traxio-ui-ready .client-table tbody tr:hover{background:#00b5a91a}
+body.traxio-ui-ready .client-table .client-link{font-size:14px}
+body.traxio-ui-ready :is(.registry-footer,.registry-controls){background:transparent;border-color:#82c7ca44}
+body.traxio-ui-ready .registry-location-status{font-size:12px}
+body.traxio-ui-ready .table-scroll{max-width:100%;overflow:auto}
+body.traxio-ui-ready :is(.traxio-data-guide>button,.approved-sync-bar,.history-stats>div,.route-mode-tabs button,.strategy-option,.route-stop,.route-status,.planner-message){background:var(--glass-soft);border-color:#83c9cf44;color:var(--text)}
+body.traxio-ui-ready .history-stats span{color:var(--muted)}
+body.traxio-ui-ready .route-mode-tabs button[aria-selected=true]{background:#008f86;color:white}
+body.traxio-ui-ready .workspace-map{background:var(--glass);border-color:var(--glass-border)}
+body.traxio-ui-ready :is(.map-status,.map-selection-status,.approved-selection-count,.workspace-route .route-summary,.route-summary){color:var(--text)}
+body.traxio-ui-ready .map{background:#dde9e5;color:#183c44}
+body.traxio-ui-ready .map .map-unavailable{background:#052e3bea;color:#f0faf8}
+body.traxio-ui-ready .maplibregl-popup-content{color:#123841;background:#f5fbfa}
+body.traxio-ui-ready .maplibregl-ctrl button{min-height:29px}
+body.traxio-ui-ready .maplibregl-ctrl-attrib{color:#243f43}
+/* Dialogs stay readable even when the scene behind them is bright. */
+body.traxio-ui-ready :is(dialog,.account-dialog,.traxio-dialog){background:#062f3df5;color:#effaf7;border:1px solid #81cdd066}
+body.traxio-ui-ready dialog .card{background:transparent;border:0;backdrop-filter:none}
+body.traxio-ui-ready dialog :is(label,p,.muted,.detail-label){color:#cce2e1}
+body.traxio-ui-ready dialog :is(input,select,textarea){background:#012531;color:white;border-color:#709fa9}
+body.traxio-ui-ready dialog .detail-inner :is(h2,h3,strong){color:#f0fafa}
+body.traxio-ui-ready :is(dialog::backdrop){background:#001521b0}
+/* Dashboard: the approved composition without a duplicated customer catalogue. */
+body.traxio-ui-ready #painel{min-height:calc(100dvh - var(--header-h) - 48px);max-width:1100px;margin:0 auto;padding:12px 0 28px}
+body.traxio-ui-ready #painel .traxio-hero{background:none;border:0;border-radius:0;box-shadow:none;aspect-ratio:auto;min-height:0;margin:0 0 28px;padding:0;overflow:visible}
+body.traxio-ui-ready #painel :is(.hero-art,.traxio-hero-symbol){display:none}
+body.traxio-ui-ready #painel .traxio-hero>div:first-child{padding:0;position:static}
+body.traxio-ui-ready #painel .traxio-hero>div:first-child:before{display:none}
+body.traxio-ui-ready #painel .traxio-kicker{font-size:clamp(11px,1.25vw,15px);letter-spacing:1.4px;color:#d6f629;margin:0 0 10px}
+body.traxio-ui-ready #painel .traxio-hero h2{font-family:'Roboto Condensed',Arial,sans-serif;font-size:clamp(32px,4.8vw,64px);line-height:1.03;max-width:850px;margin:0 0 12px;color:#f4fbfa;letter-spacing:-.035em}
+body.traxio-ui-ready #painel .traxio-hero em{font-style:normal;color:#c8f329}
+body.traxio-ui-ready #painel .traxio-hero p{font-size:clamp(15px,1.8vw,22px);max-width:none;margin:0;color:#e2f1ef}
+body.traxio-ui-ready #painel .dashboard-overview{padding:0;border:0;background:none;backdrop-filter:none;box-shadow:none;margin:0 0 22px}
+body.traxio-ui-ready #painel :is(.dashboard-overview>h2,.quick-actions>h3){font-size:clamp(21px,2.1vw,28px);line-height:1.25;padding-left:14px;margin:0 0 14px;position:relative;color:#f1fbf7}
+body.traxio-ui-ready #painel :is(.dashboard-overview>h2,.quick-actions>h3):before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:4px;border-radius:4px;background:#caf532}
+body.traxio-ui-ready #painel .stats-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+body.traxio-ui-ready #painel .stat{display:flex;align-items:center;gap:12px;flex-direction:row;min-height:92px;padding:16px 14px;background:var(--glass);backdrop-filter:blur(9px);border:1px solid var(--glass-border);border-radius:14px;box-shadow:0 5px 18px #001f2822;cursor:pointer}
+body.traxio-ui-ready #painel .stat strong{font-size:clamp(27px,3.3vw,39px);line-height:1.1;color:#fff;display:block}
+body.traxio-ui-ready #painel .stat .muted{font-size:clamp(12px,1.5vw,16px);color:#e0efec;line-height:1.25;white-space:normal}
+body.traxio-ui-ready #painel .kit-metric-icon{width:clamp(26px,3vw,40px);flex:none}
+body.traxio-ui-ready #painel .stat-chevron{margin-left:auto;color:#e8f7f1;font-size:27px}
+body.traxio-ui-ready #painel .overview-note{display:none}
+body.traxio-ui-ready #painel .quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;background:none;border:0;padding:0;margin:0;box-shadow:none}
+body.traxio-ui-ready #painel .quick-actions>h3{grid-column:1/-1;margin-bottom:1px}
+body.traxio-ui-ready #painel .glass-action{display:flex;align-items:center;text-align:left;gap:14px;min-height:90px;padding:18px;border:1px solid var(--glass-border);border-radius:14px;background:var(--glass-soft);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);box-shadow:0 5px 18px #001f2822;color:#f1faf7}
+body.traxio-ui-ready #painel .glass-action:hover{background:#08757bb8;border-color:#b0f5eb}
+body.traxio-ui-ready #painel .glass-action .kit-quick-icon{width:35px;flex:none}
+body.traxio-ui-ready #painel .quick-action-copy{display:flex;flex-direction:column;gap:5px}
+body.traxio-ui-ready #painel .quick-action-copy strong{font-size:clamp(16px,1.8vw,21px);color:white}
+body.traxio-ui-ready #painel .quick-action-copy small{font-size:clamp(12px,1.4vw,15px);color:#d5e9e8;font-weight:400;line-height:1.3}
+body.traxio-ui-ready #painel .action-chevron{margin-left:auto;font-size:28px}
+body.traxio-ui-ready #painel .location-recovery{margin:12px 0 0;padding:12px 14px;border:1px solid #b2d88766;border-radius:12px;background:#033443d9;display:flex;align-items:center;gap:12px}
+body.traxio-ui-ready #painel .location-recovery[hidden]{display:none}
+body.traxio-ui-ready #painel .location-recovery p{font-size:14px;line-height:1.4;margin:0;color:#e5f3e9}
+body.traxio-ui-ready #painel .location-recovery button{flex:none;font-size:13px;padding:9px}
+body.traxio-ui-ready #painel .dashboard-service-note{background:#022d397d;border:0;color:#d3e5e1;font-size:11px;line-height:1.45;max-width:700px;margin-top:18px;padding:8px 10px;border-radius:8px}
+@media(min-aspect-ratio:11/10){
+ .app-scenery img{object-fit:contain;object-position:right bottom;mask-image:linear-gradient(90deg,transparent 15%,#000 55%)}
+ body.traxio-ui-ready #painel{margin-left:0;max-width:900px;padding-right:20px}
+}
+@media(max-width:1000px){
+ body.traxio-ui-ready>main{padding:20px}
+ body.traxio-ui-ready #painel{padding-top:12px}
+ body.traxio-ui-ready #painel .stat{padding:14px 10px;gap:8px}
+ body.traxio-ui-ready #painel .glass-action{padding:15px 12px;gap:10px}
+}
+@media(max-width:650px){
+ body.traxio-ui-ready>main{padding:14px 10px}
+ body.traxio-ui-ready #painel{padding:8px 0 22px;min-height:calc(100dvh - var(--header-h) - 28px)}
+ body.traxio-ui-ready #painel .traxio-hero{margin-bottom:22px}
+ body.traxio-ui-ready #painel .traxio-hero h2{font-size:clamp(29px,6vw,38px)}
+ body.traxio-ui-ready #painel .traxio-kicker{font-size:9px;letter-spacing:.8px}
+ body.traxio-ui-ready #painel .traxio-hero p{font-size:14px}
+ body.traxio-ui-ready #painel .stats-row{gap:7px}
+ body.traxio-ui-ready #painel .stat{min-height:100px;padding:10px 7px;flex-wrap:wrap;gap:5px;border-radius:10px}
+ body.traxio-ui-ready #painel .kit-metric-icon{width:24px}
+ body.traxio-ui-ready #painel .stat>div{width:100%}
+ body.traxio-ui-ready #painel .stat strong{font-size:27px}
+ body.traxio-ui-ready #painel .stat .muted{font-size:11px}
+ body.traxio-ui-ready #painel .stat-chevron{display:none}
+ body.traxio-ui-ready #painel .quick-actions{gap:9px}
+ body.traxio-ui-ready #painel .glass-action{min-height:110px;padding:12px 9px;flex-wrap:wrap;gap:8px}
+ body.traxio-ui-ready #painel .glass-action .kit-quick-icon{width:25px}
+ body.traxio-ui-ready #painel .quick-action-copy{width:100%;gap:4px}
+ body.traxio-ui-ready #painel .quick-action-copy strong{font-size:15px}
+ body.traxio-ui-ready #painel .quick-action-copy small{font-size:11px}
+ body.traxio-ui-ready #painel .action-chevron{display:none}
+ body.traxio-ui-ready #painel .location-recovery{display:block}
+ body.traxio-ui-ready #painel .location-recovery[hidden]{display:none}
+ body.traxio-ui-ready #painel .location-recovery button{margin-top:8px;width:100%}
+ body.traxio-ui-ready .tab-title p{font-size:13px}
+}
+@media(prefers-reduced-transparency:reduce){body.traxio-ui-ready{--glass:#053340;--glass-soft:#073d49}}
+/* Navigation is a sibling of the scroll container, keeping fixed controls visible in WebKit. */
+body.traxio-ui-ready>nav.tabs{z-index:50;visibility:visible}
+body.auth-locked>nav.tabs{visibility:hidden}
+.mobile-nav-toggle,.nav-backdrop{display:none}
+.client-location-search{margin:0 0 16px;padding:16px!important}
+.client-location-search>summary{font-weight:700;cursor:pointer;min-height:44px;line-height:1.4;display:list-item!important}
+.client-location-search p{font-size:14px;line-height:1.5}
+.location-search-controls{display:flex;align-items:end;flex-wrap:wrap;gap:12px}
+.location-search-controls label{display:flex;flex-direction:column;gap:6px;flex:1 1 200px;font-size:14px}
+.location-search-controls button{flex:1 1 210px}
+#locationSearchReviewList{max-height:320px;overflow:auto;overscroll-behavior:contain}
+.location-search-review{padding:14px 0;border-top:1px solid #72c8ce55;overflow-wrap:anywhere}
+.location-search-review p{margin:6px 0}
+.traxelo-saved-pin{background:#087e73!important;border:2px solid white!important;border-radius:50%;color:#d5fa51!important;width:30px;height:30px;min-height:30px!important;padding:0!important;box-shadow:0 2px 6px #001b38aa;cursor:pointer}
+.location-save-notice{position:sticky;top:0;z-index:35;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin:0 0 12px;background:#073944f5;border:1px solid #bce67c;border-radius:12px;font-size:14px;line-height:1.45;color:#f1fbf6}
+.location-save-notice>span{flex:1 1 200px}
+.location-save-notice button{min-height:44px}
+.pin-confirm-panel{position:fixed;z-index:80;bottom:12px;left:calc(var(--sidebar-w) + 16px);right:16px;background:#033340f7;border:2px solid #c8f329;border-radius:14px;padding:14px 18px;box-shadow:0 5px 35px #001c2f99;color:white;max-height:40dvh;overflow:auto}
+.pin-confirm-panel strong{font-size:17px;display:block;overflow-wrap:anywhere}
+.pin-confirm-panel p{font-size:14px;line-height:1.4;margin:6px 0 10px;color:#e2efeb}
+.pin-confirm-panel .row{display:flex;flex-wrap:wrap;gap:10px}
+.pin-confirm-panel button{min-height:48px;font-size:16px;flex:1 1 180px}
+body.pin-mode #backToClient{display:inline-flex;align-items:center;justify-content:center}
+body.pin-mode #mapa :is(#routePlannerPanel,#clientLocationSearch,.route-mode-tabs,#routeActionBar){display:none!important}
+body.pin-mode #mapa .workspace-map{grid-column:1/-1;grid-row:1}
+body.pin-mode #mapa .workspace{padding-bottom:190px}
+body.pin-mode #mapa #map{height:clamp(260px,calc(100dvh - var(--header-h) - 210px),620px)}
+body.pin-mode #mapa .workspace-map>.map-hint{display:none}
+body.auth-locked #pinConfirmPanel{display:none!important}
+body.traxio-ui-ready [hidden]{display:none!important}
+@media(max-width:650px){
+ body.traxio-ui-ready>header{gap:6px;padding:5px 8px;z-index:110}
+ body.traxio-ui-ready .mobile-nav-toggle{display:inline-flex;align-items:center;justify-content:center;flex:none;background:#06444d;color:white;border:1px solid #80c9c766;border-radius:8px;width:44px;height:44px;min-height:44px;padding:0;font-size:25px}
+ body.traxio-ui-ready .header-brand{flex:0 1 125px;min-width:90px;margin-right:0}
+ body.traxio-ui-ready .header-brand .brand-crop{width:100%;max-width:125px}
+ body.traxio-ui-ready .theme-toggle{width:44px;min-height:44px;margin-left:auto}
+ body.traxio-ui-ready #accountToggle{min-height:44px;max-width:100px;min-width:44px;padding:4px 6px}
+ body.traxio-ui-ready #authIdentity{max-width:50px;font-size:10px;overflow:hidden;text-overflow:ellipsis}
+ body.traxio-ui-ready .account-avatar{width:22px;height:22px;flex:none}
+ body.traxio-ui-ready>nav.tabs{top:var(--header-h);bottom:0;left:0;width:var(--sidebar-w);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+ body.traxio-ui-ready.nav-expanded>nav.tabs{width:min(280px,84vw);z-index:100;background:#032f3df5;padding:16px 12px}
+ body.traxio-ui-ready.nav-expanded>nav.tabs>button{min-height:56px;flex-direction:row;justify-content:flex-start;text-align:left;gap:12px;font-size:17px;padding:12px 14px}
+ body.traxio-ui-ready.nav-expanded .kit-nav-icon{width:24px}
+ body.traxio-ui-ready.nav-expanded .nav-backdrop:not([hidden]){display:block;position:fixed;z-index:95;inset:var(--header-h) 0 0;border:0;border-radius:0;background:#001b2c99;padding:0}
+ body.traxio-ui-ready.nav-expanded main{pointer-events:none}
+ .pin-confirm-panel{left:calc(var(--sidebar-w) + 8px);right:8px;bottom:max(8px,env(safe-area-inset-bottom));padding:12px;max-height:45dvh}
+ .pin-confirm-panel strong{font-size:15px}
+ .pin-confirm-panel p{font-size:13px}
+ .pin-confirm-panel .row{gap:6px}
+ .pin-confirm-panel button{flex-basis:100%;min-height:44px;font-size:14px;padding:10px}
+ body.pin-mode #mapa .workspace{padding-bottom:230px}
+}
+/* Visit coverage reports retain the approved scenes, logo and palette. */
+.visit-report-panel{margin-bottom:24px!important}
+.visit-report-controls{display:flex;flex-wrap:wrap;gap:14px;align-items:end}
+.visit-report-controls label{flex:1 1 180px;display:flex;flex-direction:column;gap:6px}
+.visit-report-panel label{font-size:15px}
+.visit-report-panel details{margin:14px 0}
+.visit-report-panel summary{cursor:pointer;min-height:44px;padding:10px 0}
+.visit-working-days{display:flex;flex-wrap:wrap;gap:12px}
+.visit-working-days label,.visit-confirm-check{display:flex;align-items:center;gap:8px;min-height:44px}
+.visit-working-days input,.visit-confirm-check input{width:22px;height:22px}
+.visit-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:18px 0}
+.visit-metrics>div{padding:16px;background:#063c49bf;border:1px solid #80c5c455;border-radius:12px}
+.visit-metrics strong{font-size:30px;display:block;color:#d4f566}
+.visit-metrics span{display:block;font-size:14px;line-height:1.4;color:#deefed}
+.visit-chart{margin:20px 0;padding:14px;background:#042d39a6;border:1px solid #84c9c344;border-radius:12px}
+.visit-chart svg{display:block;width:100%;height:auto;max-height:280px;color:#e6f2ef}
+.visit-chart h3{font-size:18px;margin:0 0 8px}
+.visit-review-item{padding:14px 0;border-top:1px solid #8ac3c544}
+.visit-review-item button{margin:6px 8px 0 0}
+.visit-entry-dialog{width:min(560px,calc(100vw - 24px));max-height:90dvh;overflow:auto;padding:24px}
+.visit-entry-dialog label{display:flex;flex-direction:column;gap:6px;margin:12px 0}
+.visit-entry-dialog .visit-confirm-check{flex-direction:row}
+.visit-entry-dialog :is(input,select,textarea,button){font-size:16px;min-height:44px;max-width:100%;width:100%;box-sizing:border-box}
+.visit-entry-dialog input[type=checkbox]{width:22px;min-height:22px;flex:none}
+.visit-entry-dialog .row{display:flex;gap:10px;flex-wrap:wrap}
+.visit-entry-dialog #visitEntryError{color:#ffd0b5}
+body.auth-locked #visitEntryDialog{display:none!important}
+@media(max-width:650px){.visit-report-panel{padding:14px!important}.visit-report-controls{display:block}.visit-report-controls label{margin-bottom:12px}.visit-metrics{grid-template-columns:1fr 1fr;gap:8px}.visit-metrics>div{padding:12px}.visit-metrics strong{font-size:26px}.visit-report-panel>.row>button{width:100%}.visit-entry-dialog{padding:16px}.visit-chart{padding:6px}}
+body.pin-review-active #mapa :is(#routePlannerPanel,#clientLocationSearch,.route-mode-tabs,#routeActionBar){display:none!important}
+body.pin-review-active #mapa .workspace-map{grid-column:1/-1;grid-row:1}
+body.pin-review-active #mapa .workspace{padding-bottom:210px}
+#pinClientAddress{font-size:13px;line-height:1.4;color:#d6ebe7;margin:4px 0}
+#pinReviewNext,#pinReviewSkip{min-height:44px}
+/* An obvious, keyboard-operable entry to the actual filtered results. */
+body.traxio-ui-ready #mapClientListDisclosure{margin-top:18px;border:2px solid #43ddc2;border-radius:12px;overflow:hidden}
+body.traxio-ui-ready #mapClientListDisclosure>summary{display:flex;align-items:center;gap:12px;list-style:none;min-height:66px;padding:15px 16px;background:linear-gradient(100deg,#007e79ed,#055263ed);color:#fff;font-size:18px;font-weight:700;line-height:1.3;cursor:pointer}
+#mapClientListDisclosure>summary::-webkit-details-marker{display:none}
+#mapClientListDisclosure>summary:before{content:'▸';font-size:25px;flex:none}
+#mapClientListDisclosure[open]>summary:before{content:'▾'}
+#mapClientListDisclosure .filtered-client-heading{flex:1;min-width:0}
+#mapClientListDisclosure .filtered-client-heading small{display:block;margin-top:4px;font-size:13px;font-weight:400;color:#dbf8ee}
+#mapClientListDisclosure #mapClientListCount{display:inline-flex;align-items:center;justify-content:center;min-width:32px;min-height:32px;padding:3px 7px;border-radius:20px;background:#e4ffed;color:#064844;font-size:16px}
+body.traxio-ui-ready #mapClientListDisclosure>.compact-list{max-height:min(65dvh,650px);padding:10px}
+body.traxio-ui-ready #clientRegionCorrection{margin:12px 0}
+body.traxio-ui-ready #clientRegionCorrection>summary{min-height:44px;font-weight:600;cursor:pointer}
+/* Pin-first navigation, independent of multi-customer planning. */
+#focusedClientActions{margin:10px;padding:14px;border:1px solid #79ded0;border-radius:12px;background:#043b46f5;color:#effaf7}
+#focusedClientActions>strong{font-size:18px;line-height:1.3;display:block}
+#focusedClientActions>p{font-size:14px;margin:7px 0 12px;color:#cbe9e1}
+#focusedClientActions .row{display:flex;flex-wrap:wrap;gap:8px}
+#focusedClientActions button{font-size:16px;min-height:46px;flex:1 1 140px}
+#focusedClientActions #focusedClientNavigate{flex-basis:100%}
+.traxelo-focused-pin{outline:4px solid #d3f431;outline-offset:2px}
+#gpsOriginPanel{margin:8px 0 14px;padding:10px;border:1px solid #76cbbb55;border-radius:9px;background:#02424b99}
+#gpsOriginLabel{font-size:13px;line-height:1.45;margin:0 0 8px;color:#d8eeea}
+#routePlannerPanel>summary{position:static}
+/* Move the existing map into a non-modal top layer; a minimized map leaves all
+   five app pages usable and never promises an iOS system-wide picture-in-picture window. */
+body.traxio-ui-ready #traxioNavOverlay:not([hidden]){position:fixed;inset:0;margin:0;padding:0;border:0;box-sizing:border-box;width:100%;height:var(--route-visible-height,100dvh);max-width:none;max-height:none;z-index:300;display:flex;flex-direction:column;background:#042b37;color:#effaf7;overflow:hidden}
+body.traxio-ui-ready #traxioNavOverlay::backdrop{background:transparent;pointer-events:none}
+#traxioNavOverlay .traxio-nav-top{flex:none;gap:8px;flex-wrap:wrap;padding:calc(8px + var(--iphone-safe-top,env(safe-area-inset-top,0px))) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));min-height:56px;box-sizing:border-box}
+#traxioNavOverlay .traxio-nav-top>strong{font-size:17px;flex:1;min-width:90px}
+#traxioNavOverlay .traxio-nav-actions{gap:7px;flex-wrap:wrap}
+#traxioNavOverlay .traxio-nav-actions button{font-size:15px;min-height:44px;min-width:44px;padding:8px 10px;background:#065965;color:#f4faf8;border:1px solid #b6e5d177}
+#traxioNavOverlay .traxio-nav-map-host{flex:1 1 0%;position:relative;min-height:100px;overflow:hidden}
+#traxioNavOverlay #map{position:absolute;inset:0;width:100%;height:100%;min-height:0;max-height:none;border-radius:0}
+#traxioNavOverlay .traxio-nav-controls{flex:0 1 auto;max-height:34dvh;overflow:auto;padding:0 8px max(8px,var(--iphone-safe-bottom,env(safe-area-inset-bottom,0px)));background:#042b37;overscroll-behavior:contain}
+#traxioNavOverlay .live-navigation{margin:0;padding:10px;font-size:15px;background:transparent;color:#eaf9f5;border:0}
+#traxioNavOverlay .live-navigation .row{display:flex;flex-wrap:wrap;gap:8px}
+#traxioNavOverlay .live-navigation :is(button,a){font-size:15px;min-height:44px;padding:9px 11px;color:#f5faf8;background:#07515c;border:1px solid #82cbb966;border-radius:8px;flex:1 1 150px;box-sizing:border-box;text-align:center}
+#traxioNavOverlay .live-head{display:block;font-size:15px}#traxioNavOverlay #liveGPSState{display:block;font-size:14px;color:#b7eadb;margin-top:6px}
+body.traxio-navigating #routeActionBar{visibility:hidden}
+body.traxio-ui-ready #traxioNavOverlay.traxio-mini:not([hidden]){inset:auto max(10px,env(safe-area-inset-right)) calc(12px + var(--iphone-safe-bottom,env(safe-area-inset-bottom,0px)) + var(--route-keyboard-inset,0px)) auto;width:min(330px,calc(100vw - 24px));height:min(290px,calc(var(--route-visible-height,100dvh) * .45));max-height:calc(var(--route-visible-height,100dvh) - var(--header-h) - 24px);border:2px solid #81e1ca;border-radius:15px;box-shadow:0 10px 35px #001b2ca8;overflow:hidden}
+#traxioNavOverlay.traxio-mini .traxio-nav-top{padding:6px 8px;min-height:52px;flex-wrap:nowrap}
+#traxioNavOverlay.traxio-mini .traxio-nav-top>strong{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+#traxioNavOverlay.traxio-mini .traxio-nav-actions{flex-wrap:nowrap}
+#traxioNavOverlay.traxio-mini .traxio-nav-actions button{font-size:13px;padding:6px;min-height:40px}
+#traxioNavOverlay.traxio-mini .traxio-nav-controls{display:none}
+#traxioNavExpand{min-height:48px;font-size:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:120}
+@media(max-height:500px){#traxioNavOverlay .traxio-nav-controls{max-height:30dvh}#traxioNavOverlay .traxio-nav-top{padding-top:max(6px,var(--iphone-safe-top,env(safe-area-inset-top,0px)))}}

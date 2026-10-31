@@ -1,0 +1,48 @@
+import {test,expect} from 'playwright/test';
+import {prepare,ready} from './fixtures/browser.js';
+import {records,fakeMap} from './fixtures/routing.js';
+const rows=records.map((c,i)=>({...c,phone:'0000'+i,address:c.address,importFields:[{label:'Código comercial',value:'PRESERVAR-'+i}],...(i<3?{}:{lat:null,lon:null,locationVerification:'pending'}),...(i===4?{locationCandidate:{lat:-5.814,lon:-35.214,error:'Aproximado; confira a entrada',provider:'fixture'}}:{})}));
+async function setup(page){await prepare(page,{records:rows});if(process.env.TRAXELO_LOCATIONS_BASE)await page.route(process.env.TRAXELO_LOCATIONS_BASE+'/**',r=>r.continue());await ready(page);await page.locator('#clientLocationSearch').waitFor({state:'attached'});await fakeMap(page);await page.locator('.tabs [data-tab="mapa"]').click();}
+async function openPin(page,id=5){await page.evaluate(id=>window.traxeloReviewClient(id),id);await expect(page.locator('#pinConfirmPanel')).toBeVisible();}
+async function cloud(page){await page.evaluate(async()=>{
+ window.__rows=clients.map(c=>({local_id:String(c.id),data:structuredClone(c),revision:1,deleted_at:null}));window.__writes=[];
+ authClient.from=()=>{const chain={then:(yes,no)=>Promise.resolve({data:structuredClone(window.__rows),error:null}).then(yes,no)};for(const k of ['select','eq','order','range'])chain[k]=()=>chain;return chain;};
+ authClient.rpc=async(name,args)=>{window.__writes.push({name,args});if(window.__denyCloud)throw Error('Rede indisponível no teste');const r=window.__rows.find(r=>r.local_id===args.p_local_id);if(r.revision!==args.p_expected_revision)return {data:[{result:'conflict',current_revision:r.revision}],error:null};r.data=structuredClone(args.p_data);r.revision++;return {data:[{result:'updated',current_revision:r.revision}],error:null};};
+ localStorage.removeItem('traxio_sync_baseline_v29_00000000-0000-4000-8000-000000000001');await traxioAutoSync();
+ });}
+test('permanent sidebar stays clickable after scrolling all five pages without a duplicate phone menu',async({page},info)=>{
+ await setup(page);expect(await page.locator('.tabs').evaluate(n=>n.parentElement===document.body)).toBe(true);
+ for(const tab of ['painel','clientes','mapa','historico','dados']){
+  await page.locator(`.tabs [data-tab="${tab}"]`).click();await expect(page.locator('body')).toHaveAttribute('data-screen',tab);await page.locator('main').evaluate(n=>n.scrollTop=n.scrollHeight);
+  const accessible=await page.locator(`.tabs [data-tab="${tab}"]`).evaluate(n=>{const r=n.getBoundingClientRect();return n.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));});expect(accessible).toBe(true);
+ }
+ await expect(page.locator('#mobileNavToggle,.nav-backdrop')).toHaveCount(0);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:info.outputPath('navigation-restored.png')});
+});
+test('approximate client opens map directly and confirms only coordinates, preserving original commercial and address data',async({page},info)=>{
+ await setup(page);await cloud(page);await page.locator('#clientLocationSearch').evaluate(n=>n.open=true);await page.locator('#locationSearchReviewList [data-client-id="5"] button').click();await expect(page.locator('#pinConfirmPanel')).toBeVisible();await expect(page.locator('#clientEditDialog')).not.toBeVisible();
+ await page.evaluate(()=>setDraft(-5.812345,-35.212345));const button=await page.locator('#backToClient').boundingBox();expect(button.y+button.height).toBeLessThanOrEqual(info.project.use.viewport.height+1);await page.screenshot({path:info.outputPath('direct-pin-confirmation.png')});await page.locator('#backToClient').click();
+ await expect(page.locator('#pinConfirmPanel')).toBeHidden();await expect(page.locator('body')).toHaveAttribute('data-screen','mapa');
+ const record=await page.evaluate(()=>clients.find(c=>String(c.id)==='5'));expect(record.lat).toBe(-5.812345);expect(record.lon).toBe(-35.212345);expect(record.locationVerification).toBe('manual_reviewed');expect(record.address).toBe(rows[4].address);expect(record.phone).toBe(rows[4].phone);expect(record.importFields).toEqual(rows[4].importFields);
+ await expect(page.locator('#locationSaveMessage')).toContainText('sincronizada com sua conta');expect(await page.evaluate(()=>window.__rows[4].data.lat)).toBe(-5.812345);expect(await page.evaluate(()=>window.__writes.every(w=>w.name==='traxio_update_client_safe'))).toBe(true);
+ await page.reload();await page.locator('#clientLocationSearch').waitFor({state:'attached'});expect(await page.evaluate(()=>clients[4].lat)).toBe(-5.812345);
+});
+test('cancel and storage failure never claim that a customer location was saved',async({page})=>{
+ await setup(page);await openPin(page);await page.evaluate(()=>setDraft(-5.85,-35.25));await page.locator('#cancelClientPin').click();expect(await page.evaluate(()=>clients[4].lat)).toBeNull();
+ await openPin(page);await page.evaluate(()=>{const original=Storage.prototype.setItem;window.__restoreStorage=()=>Storage.prototype.setItem=original;Storage.prototype.setItem=function(k,v){if(k==='projeto_rota_mapa_v1')throw Error('Storage full');return original.call(this,k,v);};});await page.locator('#backToClient').click();await expect(page.locator('#pinHelp')).toContainText('Não foi possível salvar');await expect(page.locator('#pinConfirmPanel')).toBeVisible();expect(await page.evaluate(()=>clients[4].lat)).toBeNull();await page.evaluate(()=>window.__restoreStorage());
+});
+test('offline confirmation remains durable locally and explicitly reports pending cloud persistence',async({page})=>{
+ await setup(page);await page.evaluate(()=>Object.defineProperty(navigator,'onLine',{configurable:true,value:false}));await openPin(page);await page.evaluate(()=>setDraft(-5.86,-35.26));await page.locator('#backToClient').click();await expect(page.locator('#locationSaveMessage')).toContainText('envio à sua conta está pendente');expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1'))[4].lat)).toBe(-5.86);await expect(page.locator('#syncLocationNow')).toBeVisible();
+});
+test('explicit batch lookup retries unverified coordinates, preserves confirmed clients and renders saved map points without selecting a route',async({page})=>{
+ await setup(page);await page.evaluate(()=>{clients[3].lat=-5.89;clients[3].lon=-35.29;clients[3].locationVerification='imported_coordinates';window.__lookups=[];TraxioGeo.locate=async c=>{window.__lookups.push(c.id);if(c.id===4)return {status:'matched',best:{lat:-5.82,lon:-35.22,provider:'fixture'},candidates:[]};if(c.id===5)return {status:'review',best:{lat:-5.83,lon:-35.23},reason:'Confirme o número',candidates:[]};return {status:'not_found',candidates:[],reason:'Não encontrado'};};});
+ await page.locator('#clientLocationSearch').evaluate(n=>n.open=true);await page.locator('#locationSearchProvider').selectOption('current');await page.locator('#startClientLocationSearch').click();await expect(page.locator('#clientLocationSearchProgress')).toContainText('Busca terminada.');expect(await page.evaluate(()=>window.__lookups)).toEqual([4,5,6,7]);expect(await page.evaluate(()=>clients[0].lat)).toBe(rows[0].lat);expect(await page.evaluate(()=>clients[3].locationVerification)).toBe('automatic_housenumber');expect(await page.evaluate(()=>clients[4].lat)).toBeNull();expect(await page.evaluate(()=>[...selectedIds])).toEqual([]);expect(await page.evaluate(()=>{renderMarkers();return markers.length;})).toBe(4);await expect(page.locator('#clientLocationSearchCounts')).toContainText('4 confirmados');
+});
+test('two-provider lookup saves only precise matching buildings and presents TomTom-only records for direct manual confirmation',async({page})=>{
+ await setup(page);await page.evaluate(()=>{selectedIds=new TraxioPlanner.IdSet([4,5]);geoToken=async()=> 'synthetic-auth-token';TraxioGeo.locate=async()=>({status:'not_found',candidates:[]});});
+ await page.route('**/api/geolocation-benchmark',route=>{const q=route.request().postDataJSON(),isBuilding=q.name.endsWith('4'),point={lat:-5.82,lon:-35.22,label:'Endereço do teste',provider:isBuilding?'geoapify':'tomtom',precisionEvidence:isBuilding?'building_record':'address_record',interpolated:false};const p={status:'compatible',best:point,candidates:[point],attempts:[{method:'address',status:'ok'}],requests:1};return route.fulfill({json:{combined:'compatible',query:q,results:{geoapify:isBuilding?p:{status:'not_found',candidates:[],attempts:[]},tomtom:p}}});});
+ await page.locator('#clientLocationSearch').evaluate(n=>n.open=true);await page.locator('#locationSearchScope').selectOption('selected');await page.locator('#startClientLocationSearch').click();await expect(page.locator('#clientLocationSearchProgress')).toContainText('Busca terminada.',{timeout:20000});expect(await page.evaluate(()=>clients[3].locationVerification)).toBe('automatic_housenumber');expect(await page.evaluate(()=>TraxioPlanner.location(clients[4]).ready)).toBe(false);await expect(page.locator('#locationSearchReviewList [data-client-id="5"] button')).toHaveText('Confirmar pin no mapa');
+});
+test('cloud failure preserves manual pin and never claims it was saved in the account',async({page})=>{
+ await setup(page);await cloud(page);await page.evaluate(()=>window.__denyCloud=true);await openPin(page);await page.locator('#backToClient').click();await expect(page.locator('#locationSaveMessage')).toContainText('Salvo neste aparelho.');await expect(page.locator('#locationSaveMessage')).not.toContainText('sincronizada com sua conta');expect(await page.evaluate(()=>clients[4].locationVerification)).toBe('manual_reviewed');
+});

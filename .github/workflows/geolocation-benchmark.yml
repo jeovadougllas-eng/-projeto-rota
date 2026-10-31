@@ -1,0 +1,33 @@
+name: Read-only Geoapify and TomTom comparison
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['lib/geolocation-benchmark.mjs','api/geolocation-benchmark.js','assets/geolocation-benchmark-ui.js','geolocation-test.html','test-unit/geolocation-benchmark.test.mjs','tests/geolocation-benchmark.spec.js','.github/workflows/geolocation-benchmark.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: geolocation-benchmark-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  comparison:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run check && npm run test:geolocation
+      - run: npx playwright install --with-deps chromium
+      - name: Read-only comparison, privacy, failures and tablet layouts
+        run: npx playwright test tests/geolocation-benchmark.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark --workers=2 --timeout=30000
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: geolocation-benchmark-evidence
+          retention-days: 14
+          path: |
+            playwright-report/
+            test-results/

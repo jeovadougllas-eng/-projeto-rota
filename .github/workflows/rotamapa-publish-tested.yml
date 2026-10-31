@@ -1,0 +1,62 @@
+name: Publish verified RotaMapa artifacts
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: [".github/workflows/rotamapa-publish-tested.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rotamapa-candidates
+          path: candidate
+          run-id: 40800952322
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rotamapa-installed-android
+          path: mobile/evidence
+          run-id: 40804501856
+          github-token: ${{ github.token }}
+      - name: Publish only Android-tested artifacts
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git fetch --depth=1 origin af8dfed358cdd88af333d5265d20c2d945034fdf
+          git diff --exit-code af8dfed358cdd88af333d5265d20c2d945034fdf FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs scripts/prepare-rotamapa-brand.mjs downloads/traxio-android-testes.apk
+          python - <<'PYVERIFY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('candidate/update-manifest.json').read_text())
+          ota=json.loads(Path('mobile/evidence/android-updates.json').read_text())
+          fresh=json.loads(Path('mobile/evidence/fresh-apk-interface.json').read_text())
+          native=json.loads(Path('mobile/evidence/android-runtime.json').read_text())
+          assert not ota.get('error') and ota['expected']==m['version'] and len(ota['checks'])>=11
+          assert not fresh.get('error') and fresh['release']==m['version'] and len(fresh['checks'])>=5
+          assert native['native']['native'] and native['native']['geo'] and native['simulated']
+          print('Verified completed Android update, camera, data preservation, fresh install and native GPS evidence')
+          PYVERIFY
+          mkdir -p downloads docs/captures/rotamapa-android
+          cp candidate/apk/rotamapa-android-testes.apk downloads/rotamapa-android-testes.apk
+          cp candidate/update-manifest.json updates/android/manifest.json
+          cp mobile/evidence/* docs/captures/rotamapa-android/
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          apk=Path('downloads/rotamapa-android-testes.apk');m=json.loads(Path('candidate/update-manifest.json').read_text())
+          digest=hashlib.sha256(apk.read_bytes()).hexdigest()
+          Path('downloads/rotamapa-android-testes.sha256').write_text(digest+'  rotamapa-android-testes.apk\n')
+          Path('downloads/rotamapa-android-testes.json').write_text(json.dumps({'name':'RotaMapa','packageId':'app.traxio.mobile','release':m['version'],'sha256':digest,'bytes':apk.stat().st_size,'purpose':'first_installation','existingInstallations':'Keep the installed app and its local data. Use its compatible web update. Launcher resources require a compatibly signed native package.'},indent=2))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/rotamapa-android-testes.* updates/android/manifest.json docs/captures/rotamapa-android/
+          git commit -m "build: publish tested RotaMapa APK and course-up update [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"

@@ -1,0 +1,195 @@
+name: Sidebar simplicity and distinct light and dark surfaces
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/interface-theme.yml','assets/traxelo-theme.css','assets/traxelo-location-ui.js','docs/interface-theme-art.json','tests/interface-theme.spec.js','playwright.interface-theme.config.js']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: interface-theme-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm run check
+      - name: Verify approved art stays byte-for-byte unchanged
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib
+          for name,digest in json.loads(Path('docs/interface-theme-art.json').read_text()).items():
+            assert hashlib.sha256(Path(name).read_bytes()).hexdigest()==digest,name
+          PY
+      - name: Install browsers
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"; else npx playwright install chromium; fi
+          timeout 180s npx playwright install --with-deps webkit
+      - run: npx playwright test --config=playwright.interface-theme.config.js --max-failures=2
+      - run: npx playwright test --config=playwright.locations.config.js --project=phone --project=desktop --max-failures=1
+      - name: Preserve paired theme captures
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import shutil
+          root=Path('docs/captures/interface-theme');root.mkdir(parents=True,exist_ok=True)
+          for image in Path('test-results-interface-theme').rglob('*.png'):
+            for device in ['iphone-safari','iphone-chrome','iphone-small','iphone-landscape','android-browser','desktop']:
+              if image.parent.name.endswith(device):shutil.copyfile(image,root/(device+'-'+image.name))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/captures/interface-theme/
+          if ! git diff --cached --quiet; then
+            git commit -m "test: capture clear light and dark surfaces with identical scenic art [skip ci]"
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: interface-theme-browser
+          path: |
+            test-results-interface-theme/
+            test-results-locations/
+  build:
+    needs: browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci --prefix mobile --ignore-scripts
+      - name: Build the same current UI for fresh installs and compatible updates
+        run: |
+          TRAXELO_UPDATE_OUTPUT=candidate/updateweb node scripts/build-mobile.mjs
+          cp candidate/updateweb/manifest.json candidate/update-manifest.json
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          path=Path('mobile/android/app/src/main/res/values/strings.xml')
+          root=ET.parse(path)
+          for item in root.getroot():
+            if item.get('name') in ['app_name','title_activity_main']:item.text='Traxelo.IA'
+          root.write(path,encoding='utf-8',xml_declaration=True)
+          PY
+      - run: npx cap sync android
+        working-directory: mobile
+      - run: bash gradlew assembleDebug
+        working-directory: mobile/android
+      - name: Verify freshly bundled APK and retain the original signed installer
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,zipfile
+          assert hashlib.sha256(Path('downloads/traxio-android-testes.apk').read_bytes()).hexdigest()=='6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2'
+          m=json.loads(Path('candidate/update-manifest.json').read_text())
+          with zipfile.ZipFile('mobile/android/app/build/outputs/apk/debug/app-debug.apk') as z:
+            for name,digest in m['files'].items():assert hashlib.sha256(z.read('assets/public/'+name)).hexdigest()==digest,name
+          PY
+          mkdir -p candidate/apk updates/android/bundles
+          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk candidate/apk/traxelo-ia-testes-atualizado.apk
+          cp candidate/updateweb/bundles/* updates/android/bundles/
+          cp candidate/updateweb/manifest.json updates/android/candidate.json
+          # Native sync/label generation is local to this disposable build worker; the compiled APK is already preserved.
+          git restore --worktree -- mobile/android
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/android/candidate.json updates/android/bundles/
+          git commit -m "build: stage distinct themes and matching first-install APK [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: interface-theme-candidates
+          retention-days: 30
+          path: |
+            candidate/update-manifest.json
+            candidate/apk/traxelo-ia-testes-atualizado.apk
+  installed-android:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: interface-theme-candidates
+          path: candidate
+      - run: npm ci
+      - name: Prepare emulator renderer
+        run: |
+          sudo chmod a+rw /dev/kvm
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-theme-xvfb.log 2>&1 &
+      - name: Verify existing installations and the new first-install APK
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb install downloads/traxio-android-testes.apk
+            adb shell am start -n app.traxio.mobile/.MainActivity
+            adb shell pm disable-user --user 0 com.google.android.apps.nexuslauncher
+            adb shell run-as app.traxio.mobile mkdir -p shared_prefs
+            TRAXELO_LOCATION_PROOF=1 TRAXELO_FIELDS_PROOF=1 TRAXELO_VISITS_PROOF=1 TRAXELO_FIELD_NAVIGATION_PROOF=1 TRAXELO_PREMIUM_PROOF=1 TRAXELO_INTERFACE_THEME_PROOF=1 node scripts/android-updates.mjs
+            adb uninstall app.traxio.mobile
+            adb install candidate/apk/traxelo-ia-testes-atualizado.apk
+            adb shell run-as app.traxio.mobile mkdir -p shared_prefs
+            adb shell run-as app.traxio.mobile cp /data/local/tmp/traxelo-ota-qa.xml shared_prefs/traxelo_web_releases_v1.xml
+            adb shell am start -n app.traxio.mobile/.MainActivity
+            adb shell settings put secure location_mode 3
+            node scripts/android-smoke.mjs
+            node scripts/android-fresh-interface.mjs
+      - name: Publish only the tested update and fresh-install APK
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs downloads/traxio-android-testes.apk
+          mkdir -p downloads updates/android docs/captures/interface-theme-android
+          cp candidate/apk/traxelo-ia-testes-atualizado.apk downloads/traxelo-ia-testes-atualizado.apk
+          cp candidate/update-manifest.json updates/android/manifest.json
+          cp mobile/evidence/* docs/captures/interface-theme-android/
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          apk=Path('downloads/traxelo-ia-testes-atualizado.apk');m=json.loads(Path('candidate/update-manifest.json').read_text())
+          digest=hashlib.sha256(apk.read_bytes()).hexdigest()
+          Path('downloads/traxelo-ia-testes-atualizado.sha256').write_text(digest+'  traxelo-ia-testes-atualizado.apk\n')
+          Path('downloads/traxelo-ia-testes-atualizado.json').write_text(json.dumps({'name':'Traxelo.IA','packageId':'app.traxio.mobile','release':m['version'],'sha256':digest,'bytes':apk.stat().st_size,'purpose':'first_installation','existingInstallations':'Use the compatible automatic web update; keep the original signed app and its local data.'},indent=2))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads/traxelo-ia-testes-atualizado.* updates/android/manifest.json docs/captures/interface-theme-android/
+          git commit -m "build: publish tested current APK and compatible theme update [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: interface-theme-installed-android
+          path: mobile/evidence/

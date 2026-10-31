@@ -14,6 +14,7 @@
     "test:geolocation": "node --test test-unit/*.test.mjs"
   },
   "devDependencies": {
+    "pdfjs-dist": "4.10.38",
     "playwright": "1.62.1"
   }
 }

@@ -1,0 +1,13 @@
+{
+  "name": "RotaMapa",
+  "slogan": "Sua rota com inteligência.",
+  "sourceLogoSha256": "37fbe3bd31a32eea6e024f1a748dc8f4b5d0bcce9aaf0b24b9d9b2a28b5e99a5",
+  "sourceIconSha256": "9db5b24f27a199a4d63b14d2b3b795b688a46cfc12e4b99ed7db0c0846b2c3d5",
+  "files": {
+    "assets/rotamapa/logo.webp": "1ca67c0b1e22fb336fb8f89f3c373c203a076431f434b8255abf3cd2cc6fe07e",
+    "assets/rotamapa/icon-32.png": "ad0832315be7a267ecc461376735b4aa4c5e62cc793d115cf867474dc656d867",
+    "assets/rotamapa/icon-180.png": "d62628a139eac0190ebc9e8f145f1f9eab80d43c6597ce28b40b8081195ae9aa",
+    "assets/rotamapa/icon-192.png": "b178dac50cc607d5e28f232be8ec4df63b34f59c60629bcb15d590256ca82694",
+    "assets/rotamapa/icon-512.png": "233f32ca1ef7d291c50efe994c048dbb2532a07179166974deedb0fbcbe6210b"
+  }
+}

@@ -1,0 +1,14 @@
+/* Target only the requested light-mode notice; dark-mode rendering is unchanged. */
+body.traxio-ui-ready:not(.traxio-dark) #painel #locationRecoveryText{color:#f1faf7;font-weight:500}
+#visitMetrics>div:has(>button.visit-metric-action){padding:0}
+#visitMetrics button.visit-metric-action{position:relative;display:block;box-sizing:border-box;width:100%;height:100%;min-height:100px;padding:16px 30px 16px 16px;border:0;border-radius:12px;background:transparent;color:inherit;text-align:left;font:inherit;box-shadow:none;cursor:pointer}
+#visitMetrics button.visit-metric-action::after{content:'›';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:25px;color:var(--surface-ink)}
+#visitMetrics button.visit-metric-action:hover{background:var(--surface-hover)}
+#visitMetrics button.visit-metric-action:focus-visible{outline:3px solid var(--surface-focus);outline-offset:3px}
+#visitDetailsRows button.visit-details-row{display:block;width:100%;min-height:64px;text-align:left;padding:14px;white-space:normal;overflow-wrap:anywhere}
+#visitDetailsRows .visit-details-row strong,#visitDetailsRows .visit-details-row span{display:block}
+#visitDetailsRows .visit-details-row span{font-size:14px;margin-top:5px}
+#visitDetailsRows .visit-details-row[aria-pressed=true]{outline:2px solid var(--surface-selected);outline-offset:1px}
+#visitDetailsSelection{margin:14px 0;overflow-wrap:anywhere}
+#visitDetailsSelection button{margin:6px 8px 0 0}
+@media(max-width:650px){#visitMetrics button.visit-metric-action{padding:12px 26px 12px 12px;min-height:104px}}

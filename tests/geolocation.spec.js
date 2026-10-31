@@ -1,5 +1,6 @@
 import {test,expect} from 'playwright/test';
 import {prepare,ready} from './fixtures/browser.js';
+import {fakeMap} from './fixtures/routing.js';
 
 const geometry={type:'LineString',coordinates:[[-35.22,-5.81],[-35.21,-5.81],[-35.20,-5.81]]};
 const stops=[{id:'a',name:'Cliente A',lat:-5.81,lon:-35.21},{id:'b',name:'Cliente B',lat:-5.81,lon:-35.20}];
@@ -43,10 +44,10 @@ test('CSV import geocodes a numbered address and keeps an approximate street pen
  expect(queries.every(u=>u.searchParams.get('lang')==='default')).toBe(true);expect(queries.some(u=>(u.searchParams.get('q')||u.searchParams.get('housenumber')||'').includes('10'))).toBe(true);
  await page.reload();await page.locator('body.traxio-ui-ready').waitFor();
  await page.locator('.tabs [data-tab="mapa"]').click();await page.locator('#mapClientListDisclosure summary').click();
- await page.getByRole('button',{name:'Conferir pin sugerido',exact:true}).click();
- await expect(page.locator('#clientEditDialog')).toBeVisible();await expect(page.locator('#lat')).toHaveValue('-5.810000');
- await page.locator('#adjustPin').click();await page.locator('#backToClient').click();await page.locator('#saveClient').click();
- const confirmed=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1'))[1]);expect(confirmed.locationVerification).toBe('manual_reviewed');expect(confirmed.lat).toBe(-5.81);expect(confirmed.locationCandidate).toBeUndefined();
+ await page.locator('#mapClientList .client-tile').filter({hasText:'CLIENTE REVISAR'}).getByRole('button',{name:'Confirmar pin no mapa',exact:true}).first().click();
+ await expect(page.locator('#clientEditDialog')).not.toBeVisible();await expect(page.locator('#pinConfirmPanel')).toBeVisible();await expect(page.locator('#lat')).toHaveValue('-5.810000');
+ await page.locator('#backToClient').click();await expect(page.locator('#pinConfirmPanel')).toBeHidden();
+ const confirmed=await page.evaluate(()=>JSON.parse(localStorage.getItem('projeto_rota_mapa_v1'))[1]);expect(confirmed.locationVerification).toBe('manual_reviewed');expect(confirmed.lat).toBe(-5.81);expect(confirmed.locationCandidate).toBeUndefined();expect(confirmed.address).toBe(rows[1].address);expect(confirmed.importFields).toEqual(rows[1].importFields);
  await page.locator('.tabs [data-tab="mapa"]').click();
  await page.locator('#mapClientList input[type="checkbox"]').nth(0).check();await page.locator('#mapClientList input[type="checkbox"]').nth(1).check();
  await page.locator('#origin').selectOption('gps');
@@ -55,7 +56,7 @@ test('CSV import geocodes a numbered address and keeps an approximate street pen
   if(u.pathname.includes('/table/'))await route.fulfill({json:{code:'Ok',distances:coords.map((_,i)=>coords.map((_,j)=>i===j?0:1000))}});
   else await route.fulfill({json:routeReply(coords)});
  });
- await page.locator('#calcRoute').click();await expect(page.locator('#routeResult')).toContainText('Trajeto por ruas');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(2);
+ await fakeMap(page);await page.locator('#calcRoute').click();await expect(page.locator('#routeResult')).toContainText('Trajeto por ruas');await expect(page.locator('#liveStopList .live-stop')).toHaveCount(2);
  const path=info.outputPath('importacao-localizacao-rota.png');await page.screenshot({path});await info.attach('Importação, confirmação e rota',{path,contentType:'image/png'});
 });
 
@@ -84,7 +85,7 @@ test('GPS builds missing geometry, retries a failed recalculation and cancels la
  await page.route('https://router.project-osrm.org/route/**',async route=>{calls++;if(calls===1){await route.abort();return;}if(calls===3){await late;await route.fulfill({json:routeReply(geometry.coordinates)}).catch(()=>{});lateFinished=true;return;}await route.fulfill({json:routeReply(geometry.coordinates)});});
  await navigation(page,{missingGeometry:true});await page.clock.install();await emit(page,-5.812,-35.218);
  await expect(page.locator('#liveGPSState')).toContainText('Sem conexão');expect(calls).toBe(1);
- await page.clock.fastForward(15100);await emit(page,-5.812,-35.217);await expect(page.locator('#liveGPSState')).toContainText('Nova rota calculada');expect(calls).toBe(2);
+ await page.clock.fastForward(3100);await expect(page.locator('#liveGPSState')).toContainText('Nova rota calculada');expect(calls).toBe(2);
  await page.clock.fastForward(15100);await emit(page,-5.82,-35.217);await page.clock.fastForward(3100);await emit(page,-5.82,-35.216);await expect.poll(()=>calls).toBe(3);
  page.on('dialog',d=>d.accept());await page.locator('#liveStop').click();await expect(page.locator('#routeResult')).toContainText('encerrada antecipadamente');lateResolve();await expect.poll(()=>lateFinished).toBe(true);
  await expect(page.locator('#liveNavigation')).toBeHidden();await expect(page.locator('#routeResult')).toContainText('encerrada antecipadamente');
@@ -108,3 +109,4 @@ test('Apple Maps handoff sends exact coordinates, keeps Traxio open and advances
  page.once('dialog',d=>d.accept());await page.locator('#confirmVisit').click();await expect(page.locator('#liveStopList .visited')).toHaveCount(1);
  url=new URL(await link.getAttribute('href'));expect(url.searchParams.get('daddr')).toBe('-5.81,-35.2');await expect(page.locator('#liveNextStop')).toContainText('Cliente B');expect(new URL(await page.locator('#openGoogleMaps').getAttribute('href')).searchParams.get('destination')).toBe('-5.81,-35.2');expect(new URL(await page.locator('#openWaze').getAttribute('href')).searchParams.get('ll')).toBe('-5.81,-35.2');
 });
+

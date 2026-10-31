@@ -1,0 +1,38 @@
+name: Map customer lookup, visible navigation and direct pin confirmation
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/location-workflow.yml','assets/traxelo-location-ui.js','assets/traxelo-glass.css','index.html','tests/location-workflow.spec.js','playwright.locations.config.js']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: location-workflow-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run check && npm run test:geolocation
+      - name: Use the runner browser without a slow package-index refresh
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
+      - name: Phone WebKit, desktop and Android-sized tablets; synthetic customer data only
+        run: npx playwright test --config=playwright.locations.config.js --project=desktop --project=tablet-portrait --project=tablet-landscape --project=phone
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: customer-location-workflow-evidence
+          retention-days: 30
+          path: test-results-locations/

@@ -1,0 +1,17 @@
+# RotaMapa — personal catalog, campaigns and sales
+
+Doug's 44 EMS presentations and prices are seeded only in his Supabase account, not in a public JavaScript asset. Other users can create their own catalog. Monetary amounts use integer BRL cents; discount percentages use basis points. The highest configured minimum reached applies to every unit of the same SKU, without stacking. The final unit is rounded to a cent (half up), then multiplied by quantity. Different presentations cannot be mixed to qualify. Dia D lasts one date; Acelera spans a calendar month. User enters actual campaign conditions: none are inferred from old offer cards.
+
+Products, campaigns and sale decisions use an account-scoped durable outbox and a separate RLS-protected table. The server validates campaign eligibility, catalog prices, tiers and totals, enforces optimistic revisions, prevents duplicate active sale outcomes for the same visit, and preserves confirmed snapshots. Cancellation retains the record but excludes it from metrics. Local pending changes survive network loss; cross-device conflicts remain protected and visible.
+
+After a confirmed manual visit (including explicit navigation visit confirmation), ask whether a sale occurred; GPS arrival alone does not create a sale. Deferred/no-sale decisions can later be completed from history. Sales can also be entered without a visit, explicitly labelled as unlinked; no route relationship is inferred. Client detail opens its purchase history. Catalog/campaigns live in Planilhas and sales totals in Histórico; backgrounds, menu icons and existing navigation are preserved.
+
+Exports include private XLSX with 7 sheets and 2 editable Excel charts, CSV and JSON backup. Orders, items, actual linked route executions and sync states are exported. Cancelled or unreported orders do not inflate confirmed totals. Sold amounts are not labelled as profit; commissions and expenses are outside this release. Android uses the existing private export bucket and short-lived signed HTTPS URLs. Browser/PWA can generate files offline.
+
+Launcher identity: native/PWA metadata already say RotaMapa. A new account menu action explains safe shortcut renewal, offers account-scoped backup and copies only the clean origin URL. Existing iOS shortcuts cannot be renamed by JavaScript; existing Android launcher resources require a compatibly signed native installer. Never claim OTA changes launcher resources or remove old installations/storage. Original installer and existing app id, runtime and storage keys remain unchanged.
+
+Database changes add a separate commerce table and extend only the allowed MIME types of the existing private export bucket. Existing client and visit rows are unchanged. Synthetic tests never create sales for a real account.
+
+Shortcut backup includes only UUID-scoped ledgers, and includes the shared customer cache only when its recorded owner matches the current account. Legacy route histories keyed by display name and all authentication storage are excluded. Native preservation checks compare saved route/agenda items and effective plan, while allowing refreshed plan-check timestamps and derived access counters.
+
+Slow visit uploads notify the dependent sales outbox on completion, so pending sales resume automatically without another user action. An unreadable or unsupported local ledger is preserved and surfaced instead of silently replaced by an empty cache.

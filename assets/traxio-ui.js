@@ -24,14 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.pin}</svg>`;
   };
-  const brand = className => `<span class="brand-crop ${className || ''}"><img src="assets/visual-kit/assets/logo_dark_background.png" alt="Logotipo original Traxio — substituição por Traxelo.IA pendente" width="497" height="141"></span>`;
+  const brand = className => `<span class="brand-crop traxelo-approved-brand rotamapa-approved-brand ${className || ''}" role="img" aria-label="RotaMapa — Sua rota com inteligência."><img class="rotamapa-brand-image" src="assets/rotamapa/logo.webp" alt="" width="1540" height="306"></span>`;
   // Display unmodified original pixels from the supplied reference crops.
   const glyph=(source,sourceWidth,sourceHeight,x,y,w,h,className='')=>`<span class="kit-glyph ${className}" aria-hidden="true" style="aspect-ratio:${w}/${h}"><img src="assets/visual-kit/assets/${source}" alt="" width="${sourceWidth}" height="${sourceHeight}" style="width:${100*sourceWidth/w}%;height:${100*sourceHeight/h}%;left:${-100*x/w}%;top:${-100*y/h}%"></span>`;
   // Key only the crop background, then intersect with source alpha. The final
   // composite preserves transparent input pixels instead of creating black frames.
   const cropFilters=document.createElementNS('http://www.w3.org/2000/svg','svg');cropFilters.classList.add('kit-filter-defs');cropFilters.setAttribute('aria-hidden','true');
   const keyFilter=(id,alpha,slope,intercept)=>`<filter id="${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  ${alpha}"/><feComponentTransfer result="keyed"><feFuncA type="linear" slope="${slope}" intercept="${intercept}"/></feComponentTransfer><feComposite in="keyed" in2="SourceGraphic" operator="in"/></filter>`;
-  cropFilters.innerHTML='<defs>'+keyFilter('kit-crop-light','-1 -1 -1 0 3',4,-.4)+keyFilter('kit-crop-dark','1 1 1 0 -.6',2,0)+keyFilter('kit-crop-nav','1 1 1 0 -1.8',2,0)+'</defs>';document.body.append(cropFilters);
+  cropFilters.innerHTML='<defs>'+keyFilter('kit-crop-light','-1 -1 -1 0 3',4,-.4)+keyFilter('kit-crop-dark','1 1 1 0 -.6',2,0)+keyFilter('kit-crop-nav','1 1 1 0 -1.8',2,0)+keyFilter('rotamapa-brand-key','1 1 1 0 -.7',2.5,0)+'</defs>';document.body.append(cropFilters);
   const node = (tag, className, text) => {
     const n = document.createElement(tag);
     if (className) n.className = className;
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Login uses the existing forms and their original event handlers.
   const authBrand = node('div', 'auth-brand-panel');
-  authBrand.innerHTML = '<span class="brand-crop auth-original-logo"><img src="assets/visual-kit/assets/login_hero_reference.png" alt="Identidade visual anterior — substituição por Traxelo.IA pendente" width="354" height="632"></span>' + `<div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
+  authBrand.innerHTML = brand('auth-original-logo') + `<div class="auth-features">${[[59,216,'Organize<br>sua carteira'],[58,276,'Otimize<br>seus trajetos'],[58,336,'Conquiste<br>mais resultados']].map(([x,y,text])=>`<div class="auth-feature">${glyph('login_hero_reference.png',354,632,x,y,33,33,'kit-benefit-icon')}<span>${text}</span></div>`).join('')}</div>`;
   el('authScreen').prepend(authBrand);
   const approvedScene = node('div','auth-approved-scene'); approvedScene.setAttribute('aria-hidden','true');
   approvedScene.innerHTML='<img class="reconstructed-login-plate" src="assets/reconstructed/login-background.png" alt=""><img class="original-login-art" src="assets/visual-kit/assets/login_hero_reference.png" alt="" width="354" height="632">';
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el('rememberEmail').checked) localStorage.setItem('traxio.remembered-email.v1', el('authEmail').value.trim());
     else localStorage.removeItem('traxio.remembered-email.v1');
   });
-  el('authLogin').innerHTML = 'Entrar no Traxelo.IA ' + icon('arrow');
+  el('authLogin').innerHTML = 'Entrar no RotaMapa ' + icon('arrow');
   document.querySelector('.traxio-auth-links').prepend(node('span','','Ainda não tem uma conta?'));
 
   // Fixed shell, account menu and shared persisted theme preference.
@@ -89,10 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const headerBrand = node('a','header-brand'); headerBrand.href = '#painel';
   headerBrand.innerHTML = brand()+'<span class="header-motto">SUA ROTA<br>COM INTELIGÊNCIA.</span>';
   headerBrand.addEventListener('click', e => { e.preventDefault(); switchTab('painel'); }); header.prepend(headerBrand);
-  const search = node('form','header-search'); search.setAttribute('role','search');
-  search.innerHTML = '<input id="globalSearch" type="search" placeholder="Buscar cliente, endereço ou cidade..." aria-label="Buscar na carteira">' + icon('search');
-  search.addEventListener('submit', e => { e.preventDefault(); switchTab('painel'); el('dashboardSearch').value = el('globalSearch').value; el('dashboardSearch').dispatchEvent(new Event('input')); });
-  header.insertBefore(search, el('accountArea'));
   const theme = button('', () => {
     const dark = document.body.classList.toggle('traxio-dark');
     let prefs = {}; try { prefs = JSON.parse(localStorage.getItem('traxio.account.preferences.v1') || '{}'); } catch {}
@@ -109,9 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
   new MutationObserver(updateAvatar).observe(el('authIdentity'),{childList:true,characterData:true,subtree:true}); updateAvatar();
   const nav = document.querySelector('.tabs'); nav.setAttribute('aria-label','Navegação principal');
   const navArt = node('div','nav-art'); navArt.setAttribute('aria-hidden','true');
-  navArt.innerHTML = '<img src="assets/visual-kit/assets/dashboard_mockup_reference.png" alt="" width="858" height="635"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
+  navArt.innerHTML = '<img src="assets/scenes/painel.webp" alt="" width="1024" height="1536"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);
   const navPattern=node('div','nav-pattern');navPattern.setAttribute('aria-hidden','true');navPattern.innerHTML='<img src="assets/visual-kit/reference/1411.png" alt="" width="1536" height="1024">';nav.append(navPattern);
-  [...nav.querySelectorAll(':scope>button')].forEach((b,i)=>{b.querySelector('svg')?.remove();const [x,y]=[[19,90],[19,134],[19,177],[19,220],[19,261]][i];b.insertAdjacentHTML('afterbegin',i===0?glyph('clients_mockup_reference.png',565,388,15,53,18,19,'kit-nav-icon'):glyph('dashboard_mockup_reference.png',858,635,x,y,24,25,'kit-nav-icon'));});
+  // Keep the original sidebar symbols as vectors so their heavier strokes stay crisp on iOS and Android.
+  nav.querySelectorAll(':scope>button>svg').forEach(svg=>svg.classList.add('ui-icon'));
   const originalSwitch = switchTab;
   switchTab = id => {
     originalSwitch(id); const actual = id === 'rotas' ? 'mapa' : id;
@@ -122,32 +119,30 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.tabs [data-tab="painel"]').setAttribute('aria-current','page');
   document.body.dataset.screen='painel';
 
-  // Dashboard: approved hero, three metrics, wallet cards and quick actions.
-  const hero = document.querySelector('.traxio-hero');
-  hero.querySelector('h2').innerHTML = 'Seu território<br>em <em>movimento.</em>';
-  const heroArt = node('div','hero-art'); heroArt.setAttribute('aria-hidden','true');
-  heroArt.innerHTML = '<img class="reconstructed-hero-plate" src="assets/reconstructed/dashboard-background.png" alt=""><img class="original-hero-art" src="assets/visual-kit/assets/dashboard_hero_reference.png" alt="" width="687" height="136">'; hero.append(heroArt);
-  const overview = el('painel').querySelector('.card'); overview.classList.add('dashboard-overview');
-  const stats = overview.querySelector('.row'); stats.className = 'stats-row';
-  stats.querySelectorAll('.stat').forEach((stat,i) => {
-    const wrap = node('div'); while(stat.firstChild) wrap.append(stat.firstChild);
+  // Approved full-screen scenes, with real controls rather than baked-in UI.
+  const scenery = node('div','app-scenery'); scenery.setAttribute('aria-hidden','true');
+  const scene = node('img'); scene.src='assets/scenes/painel.webp'; scene.alt=''; scene.decoding='async'; scenery.append(scene); document.body.prepend(scenery);
+  const updateScene=()=>{const screen=document.body.dataset.screen||'painel';const src='assets/scenes/'+(screen==='agendamentos'?'historico':screen)+'.webp';if(scene.getAttribute('src')!==src)scene.src=src;navArt.querySelector('img').src=src;};
+  new MutationObserver(updateScene).observe(document.body,{attributes:true,attributeFilter:['data-screen']});
+  const hero=document.querySelector('.traxio-hero');hero.querySelector('h2').innerHTML='Seu território<br>em <em>movimento.</em>';
+  hero.querySelector('p').textContent='Planeje suas visitas com inteligência.';
+  const overview=el('painel').querySelector('.card');overview.classList.add('dashboard-overview');
+  const stats=overview.querySelector('.row');stats.className='stats-row';
+  stats.querySelectorAll('.stat').forEach((stat,i)=>{
+    const wrap=node('div');while(stat.firstChild)wrap.append(stat.firstChild);
     const [x,y,w,h]=[[188,278,35,36],[346,278,32,36],[496,278,32,36]][i];
-    stat.innerHTML = glyph('dashboard_mockup_reference.png',858,635,x,y,w,h,'kit-metric-icon'); stat.append(wrap);
+    stat.innerHTML=glyph('dashboard_mockup_reference.png',858,635,x,y,w,h,'kit-metric-icon');stat.append(wrap);
+    stat.append(node('span','stat-chevron','›'));
   });
-  stats.nextElementSibling.className = 'overview-note';
-  const portfolioHeading = node('div','portfolio-heading');
-  const walletTitle = overview.querySelector('h3'); walletTitle.before(portfolioHeading); portfolioHeading.append(walletTitle, overview.querySelector('.traxio-section-note'));
-  const dashboardSearch = el('dashboardSearch'), dashboardField = dashboardSearch.parentElement; dashboardField.classList.add('search-field'); dashboardField.insertAdjacentHTML('afterbegin',icon('search'));
-  dashboardSearch.setAttribute('aria-label','Buscar cliente no painel');
-  const dashboardLayout = node('div','dashboard-layout'), dashboardMain = node('div','dashboard-main'); overview.before(dashboardLayout); dashboardMain.append(overview); dashboardLayout.append(dashboardMain);
-  const quick = node('aside','card quick-actions'); quick.innerHTML = '<h3>Ações rápidas</h3>';
-  [['Planejar rota','clients','mapa'],['Ver no mapa','map','mapa'],['Importar clientes','upload','dados'],['Sincronizar dados','sync','dados']].forEach(([text,ico,target], i) => {
-    const b = button(text, () => { switchTab(target); if(i === 2) el('sheetFile').focus(); if(i === 3) el('cloudCheck').click(); }); b.setAttribute('aria-label',text); b.insertAdjacentHTML('afterbegin',glyph('dashboard_mockup_reference.png',858,635,668,[266,306,347,389][i],25,25,'kit-quick-icon')); quick.append(b);
+  stats.nextElementSibling.className='overview-note';
+  const quick=node('aside','quick-actions');quick.innerHTML='<h3>Ações rápidas</h3>';
+  [['Planejar rota','Organize suas visitas','mapa'],['Ver no mapa','Explore seus clientes','mapa'],['Importar clientes','Adicione sua planilha','dados'],['Sincronizar dados','Atualize sua carteira','dados']].forEach(([text,description,target],i)=>{
+    const b=button('',()=>{switchTab(target);if(i===2)el('sheetFile').focus();if(i===3)el('cloudCheck').click();},'glass-action');
+    b.setAttribute('aria-label',text);b.insertAdjacentHTML('afterbegin',glyph('dashboard_mockup_reference.png',858,635,668,[266,306,347,389][i],25,25,'kit-quick-icon'));
+    const content=node('span','quick-action-copy');content.append(node('strong','',text),node('small','',description));b.append(content,node('span','action-chevron','›'));quick.append(b);
   });
-  const overviewTop=node('div','overview-top'), overviewSummary=node('div','overview-summary');
-  const walletCards=el('dashboardClients');
-  [...overview.children].forEach(child=>{if(child!==walletCards&&!child.classList.contains('notice'))overviewSummary.append(child);});
-  overviewTop.append(overviewSummary,quick);overview.prepend(overviewTop);
+  overview.after(quick);
+  const serviceNote=overview.querySelector('.notice');serviceNote.classList.add('dashboard-service-note');quick.after(serviceNote);
 
   // Clients: retain the exact original edit form, expose it in a native modal.
   const clientSection = el('clientes'), editCard = clientSection.querySelector('.card');
@@ -160,19 +155,19 @@ document.addEventListener('DOMContentLoaded', () => {
   clientSection.prepend(title('Clientes','Gerencie sua carteira e planeje suas visitas.'));
   const sectionActions = node('div','section-title'); sectionActions.append(node('h2','','Minha carteira'),button('+ Novo cliente',() => {
     editingClientId = null;
-    for(const id of ['name','address','houseNumber','complement','cep','lat','lon']) el(id).value = '';
+    for(const id of ['name','address','houseNumber','complement','pharmacyNetwork','cep','lat','lon','clientCity','clientNeighborhood','clientState']) el(id).value = '';
     el('priority').value='2'; el('saveStatus').textContent=''; editorTitle.textContent='Cadastrar cliente'; editor.showModal();
   },'')); clientSection.append(sectionActions);
   sectionActions.classList.add('registry-title-actions');sectionActions.querySelector('h2').remove();
   const registry = node('div','card registry-card');
-  registry.innerHTML = `<div class="registry-controls"><div class="registry-search-row"><div class="search-field">${icon('search')}<input id="registrySearch" type="search" placeholder="Buscar cliente por nome, cidade, bairro ou endereço..." aria-label="Buscar clientes"></div><button type="button" id="registryFilterToggle" class="secondary icon-button" aria-label="Mostrar ou ocultar filtros" aria-expanded="true" aria-controls="registryFilters">${icon('filter')}</button></div><div class="registry-filters" id="registryFilters"><select id="registryCity" aria-label="Filtrar por cidade"><option value="">Todas as cidades</option></select><select id="registryNeighborhood" aria-label="Filtrar por bairro"><option value="">Todos os bairros</option></select><select id="registryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select><button type="button" id="registryClear" class="secondary">Limpar filtros</button></div><p class="registry-count" id="registryCount" aria-live="polite"></p></div><div class="table-scroll"><table class="client-table"><thead><tr><th><input id="registrySelectAll" type="checkbox" aria-label="Selecionar todos os clientes filtrados"></th><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Bairro</th><th scope="col">Categoria</th><th scope="col">Prioridade</th></tr></thead><tbody id="registryRows"></tbody></table></div><div class="registry-footer"><span id="registrySelection" aria-live="polite"></span><button type="button" id="registryPlan" class="secondary">Planejar visitas selecionadas →</button></div>`;
+  registry.innerHTML = `<div class="registry-controls"><div class="registry-search-row"><div class="search-field">${icon('search')}<input id="registrySearch" type="search" placeholder="Buscar por nome, CNPJ, cidade ou endereço..." aria-label="Buscar clientes"></div><button type="button" id="registryFilterToggle" class="secondary icon-button" aria-label="Mostrar ou ocultar filtros" aria-expanded="true" aria-controls="registryFilters">${icon('filter')}</button></div><div class="registry-filters" id="registryFilters"><select id="registryCity" aria-label="Filtrar por cidade"><option value="">Todas as cidades</option></select><select id="registryNeighborhood" aria-label="Filtrar por bairro"><option value="">Todos os bairros</option></select><select id="registryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select><button type="button" id="registryClear" class="secondary">Limpar filtros</button></div><div class="registry-location-tools"><label for="registryLocation">Localização</label><select id="registryLocation"><option value="">Todos os clientes</option><option value="confirmed">Localização confirmada</option><option value="review">Aguardando confirmação</option><option value="saved">Pontos salvos para revisar</option><option value="missing">Sem ponto salvo</option></select><div id="confirmedPortfolioActions" hidden><button type="button" id="registryPlanConfirmed">Criar rota com estes confirmados</button><button type="button" id="registrySuggestConfirmed" class="secondary">Sugerir rota com estes confirmados</button></div></div><p class="registry-count" id="registryCount" aria-live="polite"></p></div><div class="table-scroll"><table class="client-table"><thead><tr><th><input id="registrySelectAll" type="checkbox" aria-label="Selecionar todos os clientes filtrados"></th><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Bairro</th><th scope="col">Categoria</th><th scope="col">Prioridade</th></tr></thead><tbody id="registryRows"></tbody></table></div><div class="registry-footer"><span id="registrySelection" aria-live="polite"></span><button type="button" id="registryPlan" class="secondary">Planejar visitas selecionadas →</button></div>`;
   clientSection.append(registry);
   const category = c => regionField(c,['categoria','segmento','ramo','atividade']) || c.category || '—';
   const filteredClients = () => {
     const q = norm(el('registrySearch').value), city = el('registryCity').value, district = el('registryNeighborhood').value, cat = el('registryCategory').value;
     return clients.filter(c => {
-      const r = regionParts(c);
-      return (!q || norm([c.name,c.address,r.city,r.district,category(c)].join(' ')).includes(q)) && (!city || r.city === city) && (!district || r.district === district) && (!cat || category(c) === cat);
+      const r = regionParts(c), location = el('registryLocation').value, ready = TraxioPlanner.location(c).ready;
+      return (!location || (location === 'confirmed' ? ready : location === 'saved' ? !ready && TraxioPlanner.hasSavedPoint(c) : location === 'missing' ? !TraxioPlanner.hasSavedPoint(c) : !ready)) && RotaMapaClientIdentity.matches(c,q,r.city,r.district,category(c)) && (!city || r.city === city) && (!district || r.district === district) && (!cat || category(c) === cat);
     });
   };
   function updateOptions(id, values, initial) {
@@ -185,32 +180,66 @@ document.addEventListener('DOMContentLoaded', () => {
     el('registrySelectAll').checked = !!filtered.length && count === filtered.length;
     el('registrySelectAll').indeterminate = count > 0 && count < filtered.length;
     el('registrySelection').textContent = `${selectedIds.size} cliente${selectedIds.size === 1 ? '' : 's'} selecionado${selectedIds.size === 1 ? '' : 's'}`;
-    el('registryPlan').disabled = !selectedIds.size;
+    const reviewMode=['saved','review'].includes(el('registryLocation').value);
+    const reviewCount=clients.filter(c=>selectedIds.has(c.id)&&!TraxioPlanner.location(c).ready&&TraxioPlanner.hasSavedPoint(c)).length;
+    el('registryPlan').textContent=reviewMode?'Confirmar pontos no mapa'+(reviewCount?' ('+reviewCount+')':''):'Planejar visitas selecionadas →';
+    el('registryPlan').disabled = reviewMode?!reviewCount:!selectedIds.size;
   }
   function renderRegistry(refreshOptions = false) {
     if(refreshOptions) { updateOptions('registryCity',clients.map(c=>regionParts(c).city),'Todas as cidades'); updateOptions('registryCategory',clients.map(category),'Todas as categorias'); }
     updateOptions('registryNeighborhood',clients.filter(c=>!el('registryCity').value || regionParts(c).city === el('registryCity').value).map(c=>regionParts(c).district),'Todos os bairros');
     const filtered = filteredClients(), root = el('registryRows'); root.replaceChildren();
+    const confirmed = clients.filter(c=>TraxioPlanner.location(c).ready).length;
+    const saved=clients.filter(c=>!TraxioPlanner.location(c).ready&&TraxioPlanner.hasSavedPoint(c)).length;
+    el('locationRecovery').hidden=!saved;
+    el('locationRecoveryText').textContent=saved+' cliente'+(saved===1?' possui ponto salvo':'s possuem pontos salvos')+' para revisar. Esses pontos não foram apagados; precisam de confirmação para entrar na rota.';
+    el('locatedShortcut').setAttribute('aria-label',`Ver ${confirmed} clientes com localização confirmada`);
+    el('pendingShortcut').setAttribute('aria-label',`Ver ${clients.length-confirmed} clientes aguardando confirmação`);
+    el('confirmedPortfolioActions').hidden = el('registryLocation').value !== 'confirmed';
+    for(const id of ['registryPlanConfirmed','registrySuggestConfirmed'])el(id).disabled = !filtered.length;
     el('registryCount').textContent = `${filtered.length} cliente${filtered.length === 1 ? '' : 's'}${filtered.length !== clients.length ? ' de ' + clients.length : ''}`;
     for(const c of filtered) {
       const row = node('tr'), checkCell = node('td'), check = node('input'); check.type='checkbox'; check.checked=selectedIds.has(c.id); check.setAttribute('aria-label','Selecionar '+c.name);
       check.addEventListener('change',()=>{ if(check.checked) selectedIds.add(c.id); else selectedIds.delete(c.id); updateSelectedCount(); renderWorkspace(); registrySelection(); }); checkCell.append(check); row.append(checkCell);
-      const nameCell = node('td'); nameCell.append(button(c.name,()=>viewClient(c.id),'client-link')); row.append(nameCell);
+      const nameCell = node('td'); nameCell.append(button(c.name,()=>viewClient(c.id),'client-link')); RotaMapaClientIdentity.append(nameCell,c); const point=TraxioPlanner.location(c); nameCell.append(node('small','registry-location-status',point.ready?'Localização confirmada':point.kind==='unavailable'?'Sem localização':point.kind==='approximate'?'Localização aproximada · confirmar':'Coordenadas não verificadas')); row.append(nameCell);
       const r = regionParts(c); [r.city || '—',r.district || '—',category(c)].forEach(v=>row.append(node('td','',v)));
       const p = node('td'); p.append(makePriority(c.priority)); row.append(p); root.append(row);
     }
     if(!filtered.length) { const row=node('tr'), cell=node('td','empty-state',clients.length?'Nenhum cliente corresponde aos filtros.':'Sua carteira está vazia. Importe uma planilha ou cadastre um cliente.'); cell.colSpan=6; row.append(cell);root.append(row); }
     registrySelection();
   }
-  ['registrySearch','registryCity','registryNeighborhood','registryCategory'].forEach(id=>el(id).addEventListener(id==='registrySearch'?'input':'change',()=>renderRegistry()));
-  el('registryClear').addEventListener('click',()=>{ for(const id of ['registrySearch','registryCity','registryNeighborhood','registryCategory']) el(id).value=''; renderRegistry(); });
+  ['registrySearch','registryCity','registryNeighborhood','registryCategory','registryLocation'].forEach(id=>el(id).addEventListener(id==='registrySearch'?'input':'change',()=>renderRegistry()));
+  el('registryClear').addEventListener('click',()=>{ for(const id of ['registrySearch','registryCity','registryNeighborhood','registryCategory','registryLocation']) el(id).value=''; renderRegistry(); });
   el('registryFilterToggle').addEventListener('click',()=>{ const hidden=el('registryFilters').hidden=!el('registryFilters').hidden; el('registryFilterToggle').setAttribute('aria-expanded',String(!hidden)); });
   el('registrySelectAll').addEventListener('change',()=>{ for(const c of filteredClients()) { if(el('registrySelectAll').checked) selectedIds.add(c.id); else selectedIds.delete(c.id); } renderRegistry(); updateSelectedCount(); renderWorkspace(); });
-  el('registryPlan').addEventListener('click',()=>switchTab('mapa'));
+  el('registryPlan').addEventListener('click',()=>{if(['saved','review'].includes(el('registryLocation').value)&&window.TraxeloLocations?.beginReview)window.TraxeloLocations.beginReview([...selectedIds]);else switchTab('mapa');});
+  function showLocationClients(mode) {
+    for(const id of ['registrySearch','registryCity','registryNeighborhood','registryCategory'])el(id).value='';
+    el('registryLocation').value=mode;el('registryFilters').hidden=false;
+    el('registryFilterToggle').setAttribute('aria-expanded','true');
+    renderRegistry();switchTab('clientes');el('registryLocation').focus({preventScroll:true});
+  }
+  el('reviewSavedLocations').addEventListener('click',()=>showLocationClients('saved'));
+  for(const [metric,id,mode] of [['total','allClientsShortcut',''],['located','locatedShortcut','confirmed'],['pending','pendingShortcut','review']]){
+    const shortcut=el(metric).closest('.stat');shortcut.id=id;shortcut.setAttribute('role','button');shortcut.tabIndex=0;
+    shortcut.title='Clique para visualizar estes clientes';
+    shortcut.addEventListener('click',()=>showLocationClients(mode));
+    shortcut.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();showLocationClients(mode);}});
+  }
+  function planConfirmed(suggest) {
+    const confirmed=filteredClients().filter(c=>TraxioPlanner.location(c).ready);if(!confirmed.length)return;
+    selectedIds=new TraxioPlanner.IdSet(confirmed.map(c=>c.id));selectionInitialized=true;
+    updateSelectedCount();renderWorkspace();registrySelection();switchTab('mapa');
+    const disclosure=el('routePlannerPanel');if(disclosure)disclosure.open=true;
+    if(suggest&&el('strategyPanel').hidden)el('suggestToggle').click();
+    if(!suggest)el('origin').focus({preventScroll:true});
+  }
+  el('registryPlanConfirmed').addEventListener('click',()=>planConfirmed(false));
+  el('registrySuggestConfirmed').addEventListener('click',()=>planConfirmed(true));
   el('detailEdit').addEventListener('click',()=>{ editorTitle.textContent='Editar cliente'; editor.showModal(); });
   el('saveClient').addEventListener('click',()=>{ if(el('saveStatus').textContent === 'Cliente salvo.') editor.close(); });
   el('adjustPin').addEventListener('click',()=>{if(adjustingPin)editor.close();});
-  el('backToClient').addEventListener('click',()=>{editorTitle.textContent=editingClientId?'Editar cliente':'Cadastrar cliente';if(!editor.open)editor.showModal();});
+  el('backToClient').addEventListener('click',()=>{if(window.traxeloPinController)return;editorTitle.textContent=editingClientId?'Editar cliente':'Cadastrar cliente';if(!editor.open)editor.showModal();});
   const originalOpenClientLocation=openClientLocation;
   openClientLocation=(...args)=>{originalOpenClientLocation(...args);editorTitle.textContent='Localizar cliente';if(!editor.open)editor.showModal();el('address').focus();};
   const remove = button('Excluir cliente',()=>{
@@ -294,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     el('retryMap').addEventListener('click',()=>location.reload());
   }
 
-  el('dados').prepend(title('Planilhas','Importe, consulte, exporte e proteja sua carteira.'));
+  el('dados').prepend(title('Importar carteira','Importe sua planilha, consulte cadastros e proteja suas carteiras.'));
   const guide = document.querySelector('.traxio-data-guide'), guideEntries = [...guide.children]; guide.replaceChildren();
   guideEntries.forEach((old,i)=>{
     const b=button('',()=>{
@@ -328,3 +357,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.body.classList.add('traxio-ui-ready');
 });
+
