@@ -6,4 +6,8 @@ The registry, map, appointment and recommendation search inputs include the CNPJ
 
 No database, address/geolocation, brand or background changes are required. The pending CEP/manual-pin request remains excluded.
 
-Release evidence will be recorded after CI and public verification. Tests use synthetic client identifiers.
+Published at https://traxio-preview.vercel.app/ from `b40b170195bd3934edf1ab985e68c9743bdbd567`; deployment `dpl_ksbxjUu6uBeZUjE4Vmss8rSZQLz1` READY. [CI run 41166841741](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/41166841741) passed: 115 unit checks; 30 CNPJ browser cases across six profiles; nine existing client-form/CEP/filter checks on Safari, Android and desktop; native compilation and all 102 bundled-file hashes. Tests use synthetic client identifiers.
+
+The public browser verified immediate partial/formatted CNPJ filtering, smaller document text below the name in light/dark themes, the same identifier in the client detail and map list, no page errors and unchanged client storage. Downloaded public assets, APK and update ZIP match local source and manifests. No database migration or actual customer/account writes were performed. Approved scenic backgrounds and brand assets passed their original checks.
+
+Compatible Android web update: `dbd60f54643b8a50f3eb9d8093ecfea36a0687e044aceeed21a3f33b9d8ff4be`, runtime `capacitor8-20261026`, native version 2. New-install APK: 17823249 bytes; SHA256 `7984415edac84e6592a0b6a51efd3e84f29963636d2d4f61a5bda18fab62dfd7`. Existing compatible installations receive the internal update, preserving their data. No physical-phone/emulator installation was performed for this release.
