@@ -3,10 +3,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 'use strict';
 const el=id=>document.getElementById(id),P=TraxioPlanner;let focusId=null,feedback='';
 const panel=document.createElement('section');panel.id='focusedClientActions';panel.hidden=true;panel.setAttribute('aria-label','Ações do cliente no mapa');
-panel.innerHTML='<strong id="focusedClientName"></strong><p id="focusedClientStatus" role="status"></p><div class="row"><button type="button" id="focusedClientNavigate">Iniciar navegação</button><button type="button" id="focusedClientAdjust" class="secondary">Ajustar pin</button><button type="button" id="focusedClientDetails" class="secondary">Ver cadastro</button></div>';
+panel.innerHTML='<strong id="focusedClientName"></strong><small id="focusedClientCnpj" class="client-cnpj"></small><p id="focusedClientStatus" role="status"></p><div class="row"><button type="button" id="focusedClientNavigate">Iniciar navegação</button><button type="button" id="focusedClientAdjust" class="secondary">Ajustar pin</button><button type="button" id="focusedClientDetails" class="secondary">Ver cadastro</button></div>';
 el('map').after(panel);
 const client=()=>clients.find(c=>String(c.id)===focusId);
-function refresh(){if(routeBusy)feedback='';const c=client();panel.hidden=!c;if(!c)return;el('focusedClientName').textContent=c.name;el('focusedClientStatus').textContent=feedback||(P.location(c).ready?'Destino individual · localização confirmada.':'Confira e confirme a localização antes de iniciar a navegação.');el('focusedClientNavigate').textContent=P.location(c).ready?'Iniciar navegação':'Confirmar ponto para navegar';el('focusedClientNavigate').disabled=routeBusy;}
+function refresh(){if(routeBusy)feedback='';const c=client();panel.hidden=!c;if(!c)return;el('focusedClientName').textContent=c.name;el('focusedClientCnpj').textContent=RotaMapaClientIdentity.formatted(c)||'CNPJ não informado';el('focusedClientStatus').textContent=feedback||(P.location(c).ready?'Destino individual · localização confirmada.':'Confira e confirme a localização antes de iniciar a navegação.');el('focusedClientNavigate').textContent=P.location(c).ready?'Iniciar navegação':'Confirmar ponto para navegar';el('focusedClientNavigate').disabled=routeBusy;}
 function showClient(id,{fly=true}={}){
  const c=clients.find(c=>String(c.id)===String(id));if(!c)return;
  focusId=String(c.id);feedback='';refresh();switchTab('mapa');initMap();renderMarkers();
