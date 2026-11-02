@@ -29,8 +29,25 @@ The photo is account-wide rather than portfolio-specific. Account changes clear 
 - Mocked account browser tests block service workers to keep synthetic Auth/Storage routes authoritative after reload; public PWA installation behavior remains in its dedicated suite. No real account is mutated by browser fixtures.
 - Local PostgreSQL fixture and CI exercise owner read/upload/delete, foreign-account rejection, path traversal, wrong extension, authenticated anonymous and anon denial even in the presence of an unrelated permissive policy. Fixtures always roll back.
 - Release CI verifies the six browser profiles, affected theme/install/scheduling flows, all model tests, art hashes, native package label/runtime and every bundled file against the OTA manifest before publishing.
-- Public deployment and generated artifact verification will be recorded after the release completes. Browser/device emulation does not claim physical-phone installation testing.
+- Public deployment and generated artifact checks passed as recorded below. Browser/device emulation does not claim physical-phone installation testing.
 
 ## Android delivery
 
 The established package remains `app.traxio.mobile`, RotaMapa launcher name, native version 2 and compatible runtime `capacitor8-20261026`. Existing compatible installations use the internal web update and retain local data. The generated test APK is for new installations because the original signing key is unavailable. The original installer remains byte-for-byte unchanged.
+
+## Published verification
+
+Published web/PWA: https://traxio-preview.vercel.app/ — version **1.1.0**, artifact commit `43bc248fe8c58096efda8a093d9419b92fd961ce`, Vercel deployment `dpl_7sxssB1XpUTLNcX6WgVU9X1jkSqi` READY with the canonical alias.
+
+[CI run 41383444713](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/41383444713) passed all jobs: 119 unit cases, 72 new account browser cases across six profiles, nine existing interface/theme checks, three installation/backup checks, four appointment batch checks, isolated PostgreSQL ownership tests, native compilation and all **106 bundled-file hashes**. Original scenic/brand files and the original Android installer passed their unchanged-byte checks.
+
+Public browser verification passed in emulated iPhone standalone PWA and Android Chromium using the actual deployed HTML, CSS, scripts and release JSON. Provider/private photos and Auth writes use isolated synthetic SDK/storage fixtures; no real account, password, photo or customer was changed. The checks exercised crop/upload/reload, account preferences, support labelling, the update button and unchanged customer storage, with zero page errors. The local browser environment trusted its configured session CA for TLS; certificate verification was retained.
+
+The downloaded public APK and OTA ZIP match their manifests. Every one of the 106 APK/ZIP files matches the manifest hash; 12 public source/PWA files match the checked-out source bytes. APK content type and no-store delivery were verified.
+
+- Compatible update: `54b51b4895299e28e93720985cd974436fafe9ae7c90965de5f4e7a5845e1816`.
+- Runtime: `capacitor8-20261026`, native version 2.
+- APK: 17,839,013 bytes; SHA256 `76f08cfe3de71ade37da3e6db9a64c1749da0968c8870d1aa1382e3b22637b92`.
+- ZIP: 12,049,300 bytes; SHA256 `f5846690caa8659b3a1fead8ff1c8217a489e17e8bf28e3d19aeae77f96af2a8`.
+
+Supabase readback confirmed the private bucket, JPEG-only 1 MiB limit and five avatar policies. The security advisor reported only the unchanged preexisting leaked-password-protection notice. No customer, portfolio, sales or visit schema or rows were modified for this feature. The previously paused CEP/manual-pin request remains excluded.
