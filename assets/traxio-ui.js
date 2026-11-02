@@ -90,9 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
   headerBrand.innerHTML = brand()+'<span class="header-motto">SUA ROTA<br>COM INTELIGÊNCIA.</span>';
   headerBrand.addEventListener('click', e => { e.preventDefault(); switchTab('painel'); }); header.prepend(headerBrand);
   const theme = button('', () => {
-    const dark = document.body.classList.toggle('traxio-dark');
-    let prefs = {}; try { prefs = JSON.parse(localStorage.getItem('traxio.account.preferences.v1') || '{}'); } catch {}
-    localStorage.setItem('traxio.account.preferences.v1', JSON.stringify({...prefs, theme: dark ? 'dark' : 'light'})); updateThemeButton();
+    const dark = !document.body.classList.contains('traxio-dark');
+    window.RotaMapaAccount.setTheme(dark?'dark':'light'); updateThemeButton();
   }, 'theme-toggle'); theme.id = 'themeToggle'; header.insertBefore(theme, el('accountArea'));
   function updateThemeButton() {
     const dark = document.body.classList.contains('traxio-dark'); theme.innerHTML = icon(dark ? 'moon' : 'sun');
@@ -100,9 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   updateThemeButton();
   new MutationObserver(updateThemeButton).observe(document.body,{attributes:true,attributeFilter:['class']});
-  const avatar = node('span','account-avatar','T'); avatar.setAttribute('aria-hidden','true'); el('accountToggle').prepend(avatar);
-  const updateAvatar = () => { avatar.textContent = (el('authIdentity').textContent || 'T').slice(0,1).toUpperCase(); };
-  new MutationObserver(updateAvatar).observe(el('authIdentity'),{childList:true,characterData:true,subtree:true}); updateAvatar();
+  window.RotaMapaAccount?.attachHeader();
   const nav = document.querySelector('.tabs'); nav.setAttribute('aria-label','Navegação principal');
   const navArt = node('div','nav-art'); navArt.setAttribute('aria-hidden','true');
   navArt.innerHTML = '<img src="assets/scenes/painel.webp" alt="" width="1024" height="1536"><span class="nav-caption">Seu parceiro<br>na rota do<br>crescimento.</span>'; nav.append(navArt);

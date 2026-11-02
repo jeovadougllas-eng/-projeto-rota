@@ -249,6 +249,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const c=clients.find(c=>String(c.id)===String(id));if(!c)return false;
   if(!P.location(c).ready){window.traxeloReviewClient?.(c.id);return false;}
   if(window.TraxeloNavigation?.isTracking()){if(!confirm('Trocar a navegação atual por uma rota somente até '+c.name+'? As visitas já registradas serão preservadas.'))return false;window.TraxeloNavigation.finish('partial');}
+  if(window.RotaMapaAccount?.openExternalNavigation(c)){el('routeResult').textContent='Destino aberto no aplicativo de navegação escolhido nas preferências.';return true;}
   el('origin').value='gps';gpsOrigin=null;originForm.hidden=true;showGpsOrigin();selectedIds=new P.IdSet([c.id]);selectionInitialized=true;syncRouteChoices();renderWorkspace();switchTab('mapa');
   const result=await calculate('single',{destination:{...c,lat:Number(c.lat),lon:Number(c.lon)}});
   if(!result)return false;window.TraxeloNavigation?.start();return true;

@@ -15,7 +15,7 @@ function showClient(id,{fly=true}={}){
  if(fly)map?.flyTo({center:[Number(c.lon),Number(c.lat)],zoom:16});
  setTimeout(()=>{if(focusId!==String(id)||adjustingPin)return;map?.resize();panel.scrollIntoView({block:'nearest'});},220);
 }
-async function navigate(c){feedback='';const started=await window.TraxioRouteUI.singleClient(c.id);if(!started&&P.location(c).ready)feedback=el('routeResult').textContent;refresh();return started;}
+async function navigate(c){feedback='';const started=await window.TraxioRouteUI.singleClient(c.id);if(P.location(c).ready&&(!started||window.RotaMapaAccount?.preferences().navigation!=='internal'))feedback=el('routeResult').textContent;refresh();return started;}
 el('focusedClientNavigate').onclick=async()=>{const c=client();if(c)await navigate(c);};
 el('focusedClientAdjust').onclick=()=>{const c=client();if(c){window.TraxeloNavigation?.preparePinEdit();window.traxeloReviewClient?.(c.id);}};
 el('focusedClientDetails').onclick=()=>{const c=client();if(c)viewClient(c.id);};
