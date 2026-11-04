@@ -1,4 +1,4 @@
-name: RotaMapa Cripel and Meireles distributor selection release
+name: RotaMapa Acripel and Meirelles distributor selection release
 # Verify text recognition, manual choice and independent distributors per PDF before publishing.
 on:
   push:
@@ -75,7 +75,7 @@ jobs:
             for name,digest in m['files'].items():assert hashlib.sha256(z.read('assets/public/'+name)).hexdigest()==digest,name
             assert 'data-tab="agendamentos"' in z.read('assets/public/index.html').decode()
             assert b'data-pdf-distributor' in z.read('assets/public/assets/rotamapa-order-pdf-ui.js')
-            assert b'Cripel' in z.read('assets/public/assets/rotamapa-order-pdf-model.js') and b'Meireles' in z.read('assets/public/assets/rotamapa-order-pdf-model.js')
+            assert b'Acripel' in z.read('assets/public/assets/rotamapa-order-pdf-model.js') and b'Meirelles' in z.read('assets/public/assets/rotamapa-order-pdf-model.js')
             assert 'RotaMapaAccount' in z.read('assets/public/assets/rotamapa-account-ui.js').decode()
             assert 'account-menu-row' in z.read('assets/public/assets/rotamapa-account.css').decode()
             assert json.loads(z.read('assets/public/assets/rotamapa-release.json'))['version']==json.loads(Path('package.json').read_text())['version']
@@ -144,5 +144,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads/rotamapa-android-testes.* updates/android/manifest.json updates/android/candidate.json updates/android/bundles/
-          git commit -m "build: publish Cripel and Meireles distributor selection [skip ci]"
+          git commit -m "build: publish Acripel and Meirelles distributor selection [skip ci]"
           git push origin "HEAD:$GITHUB_REF_NAME"
