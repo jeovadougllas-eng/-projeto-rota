@@ -14,3 +14,16 @@ A identificação de produtos, a confirmação manual de apresentações e os c�
 A versão 1.2.1 usa a publicação web/PWA e a atualização compatível já existente no Android, sem alterar componentes nativos. Durante esta entrega, o [GitHub Actions estava em indisponibilidade parcial](https://www.githubstatus.com/), mantendo a geração do instalador na fila. O instalador anterior foi preservado; aparelhos compatíveis recebem os novos arquivos em **Menu da conta → Sobre e atualizações → Verificar atualizações**.
 
 A atualização foi gerada localmente pelo mesmo script do projeto, com identificação exclusiva para manter os pacotes já publicados imutáveis. Todos os 114 arquivos foram conferidos contra o manifesto. Em relação à versão 1.2.0, apenas o modelo de leitura de PDF, a interface de importação, os dados de versão e a identificação de atualização no HTML mudaram. Os demais arquivos e a compatibilidade nativa permanecem iguais. Os testes de regras e de importação usam dados sintéticos; os três modelos enviados pelo usuário foram comparados localmente e seus produtos/valores permaneceram iguais. Nenhum PDF real foi publicado.
+
+
+### Publicação confirmada
+
+Web/PWA: https://traxio-preview.vercel.app/ — versão 1.2.1.
+
+Commit publicado: `7fb895b389249651319d8ccfc26b39426074ebad`. Implantação: `dpl_35WzAGyYCjQKSuehQkWMFDTNTnWZ`, no projeto de testes existente.
+
+Passaram 136 testes de regras, 36 casos de importação PDF nos seis perfis de navegador e duas regressões de pedidos em processamento/atualização de faturamento. No endereço publicado, passaram seis verificações: reconhecimento de cada distribuidora e seleção manual persistente em Android, desktop e Safari/iPhone. As identidades e os serviços externos são simulados nos testes de interface, sem alterações nos clientes reais.
+
+O ZIP publicado teve os 114 arquivos verificados contra o manifesto e os módulos web correspondentes também conferem. Compatibilidade: `capacitor8-20261026`, versão nativa 2. Não se afirma instalação física ou compilação de um novo APK nesta entrega; o Android instalado usa a atualização interna compatível e o instalador anterior permanece preservado.
+
+A conferência dos produtos foi mantida conforme solicitado. Não foi aplicada migração nem reescrita de registros no banco de dados.
