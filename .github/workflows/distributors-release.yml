@@ -74,7 +74,7 @@ jobs:
           with zipfile.ZipFile(apk) as z:
             for name,digest in m['files'].items():assert hashlib.sha256(z.read('assets/public/'+name)).hexdigest()==digest,name
             assert 'data-tab="agendamentos"' in z.read('assets/public/index.html').decode()
-            assert b'data-pdf-distributor' in z.read('assets/public/assets/rotamapa-order-pdf-ui.js')
+            assert b'dataset.pdfDistributor' in z.read('assets/public/assets/rotamapa-order-pdf-ui.js')
             assert b'Acripel' in z.read('assets/public/assets/rotamapa-order-pdf-model.js') and b'Meirelles' in z.read('assets/public/assets/rotamapa-order-pdf-model.js')
             assert 'RotaMapaAccount' in z.read('assets/public/assets/rotamapa-account-ui.js').decode()
             assert 'account-menu-row' in z.read('assets/public/assets/rotamapa-account.css').decode()

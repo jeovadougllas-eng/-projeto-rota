@@ -1,0 +1,11 @@
+{
+  "version": "1.2.1",
+  "delivery": "web_pwa_and_compatible_android_update",
+  "nativeInstaller": "previous_verified_installer_preserved",
+  "nativeVersion": 2,
+  "runtime": "capacitor8-20261026",
+  "bundleVersion": "280327bac5bed4d3576bb805e8e2fec327f7eba4ed49ea1f04e250b615763fc3",
+  "sha256": "03936321f63970c7dd6ed1215acd33500c14c428935538dbd395a52edd1415c6",
+  "bytes": 12079942,
+  "files": 114
+}
