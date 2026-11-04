@@ -4,7 +4,7 @@
 const M=root.RotaMapaCommerceModel,normalize=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(),digits=s=>String(s||'').replace(/\D/g,'');
 const cents=s=>{if(!/^\d{1,3}(?:\.\d{3})*,\d{2}$|^\d+,\d{2}$/.test(s))throw Error('Valor monetário do PDF inválido.');return M.money(s.replaceAll('.',''));};
 function date(s){const a=s?.match(/^(\d{2})\/(\d{2})\/(\d{4})$/),value=a?`${a[3]}-${a[2]}-${a[1]}`:'';if(!M.day(value))throw Error('Data de faturamento não encontrada ou inválida.');return value;}
-const distributors=['Cripel','Meireles'];
+const distributors=['Acripel','Meirelles'];
 function distributor(text){
  const lines=normalize(text).split(/\r?\n/).map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean),identified=new Set(),explicit=[];
  const names=value=>distributors.filter(name=>new RegExp('\\b'+normalize(name)+'\\b').test(value));
@@ -12,7 +12,7 @@ function distributor(text){
  // A labelled supplier takes precedence over unlabelled branding. Never guess from a customer's name.
  if(explicit.length)return new Set(explicit).size===1?explicit[0]:'';
  if(lines.some(s=>/^(?:DISTRIBUIDORA?|FORNECEDORA?)(?:\b|:)/.test(s)||/\b(?:DISTRIBUIDORA?|FORNECEDORA?)\s*:/.test(s)))return '';
- for(let i=0;i<lines.length;i++){const line=lines[i];if(line==='ITENS')break;if(/\b(?:CLIENTE|CNPJ|RAZAO SOCIAL|NOME FANTASIA)\s*:/.test(line)||/^(?:CLIENTE|CNPJ|RAZAO SOCIAL|NOME FANTASIA)\s*:$/.test(lines[i-1]||''))continue;if(/^(?:CRIPEL|MEIRELES)$/.test(line)||/\b(?:DISTRIBUIDORA?|DISTRIBUICAO)\b/.test(line))for(const name of names(line))identified.add(name);}
+ for(let i=0;i<lines.length;i++){const line=lines[i];if(line==='ITENS')break;if(/\b(?:CLIENTE|CNPJ|RAZAO SOCIAL|NOME FANTASIA)\s*:/.test(line)||/^(?:CLIENTE|CNPJ|RAZAO SOCIAL|NOME FANTASIA)\s*:$/.test(lines[i-1]||''))continue;if(/^(?:ACRIPEL|MEIRELLES)$/.test(line)||/\b(?:DISTRIBUIDORA?|DISTRIBUICAO)\b/.test(line))for(const name of names(line))identified.add(name);}
  return identified.size===1?[...identified][0]:'';
 }
 function parseText(text){
