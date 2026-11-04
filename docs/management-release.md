@@ -34,7 +34,7 @@ Natal usa o mapeamento de bairros/zonas da [Prefeitura/SEMURB, PPA 2026–2029](
 | Agenda, PDFs, relatórios completos, ranking | — | Sim | Sim |
 | Potencial de compra, projeções avançadas e comparativos | — | — | Sim |
 
-Registros existentes ficam acessíveis ao reiniciar o teste no Free; novas operações respeitam os limites. A recuperação de faturamentos já cadastrados continua disponível. Limites de carteiras/rotas e importação PDF também são validados no banco; o endpoint de compradores verifica a sessão e o plano no servidor.
+A primeira planilha pode nomear e preencher a carteira inicial vazia, sem consumir uma segunda carteira. Se a carteira já tem clientes, use Atualizar carteira para comparar uma substituição. Registros existentes ficam acessíveis ao reiniciar o teste no Free; novas operações respeitam os limites. A recuperação de faturamentos já cadastrados continua disponível. Limites de carteiras/rotas e importação PDF também são validados no banco; o endpoint de compradores verifica a sessão e o plano no servidor.
 
 O convite privado exige o e-mail confirmado da conta autorizada. Essa conta começa em Free; em **Menu da conta → Meu plano** pode simular Plus, depois Pro, ou reiniciar Free. Nenhum cartão, checkout real ou cobrança é criado. O convite expira em sete dias; o teste ativado vale trinta dias. A conta do responsável e o acesso beta geral não são alterados. Parâmetros de URL apenas abrem o diálogo; não concedem plano.
 
