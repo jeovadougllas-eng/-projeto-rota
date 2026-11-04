@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.management.config.js';export default defineConfig({...base,testMatch:'management-published.spec.js',use:{...base.use,baseURL:'https://traxio-preview.vercel.app'},webServer:undefined,reporter:[['list']],outputDir:'test-results-management-published',timeout:60000});
