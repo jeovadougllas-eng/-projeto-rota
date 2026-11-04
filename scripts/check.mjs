@@ -29,3 +29,5 @@ if(!(await readFile(new URL('../assets/rotamapa-portfolio-scope.js',import.meta.
 for(const file of ['rotamapa-scheduling-model.js','rotamapa-scheduling.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
 if(JSON.parse(await readFile(new URL('../assets/rotamapa-release.json',import.meta.url),'utf8')).version!==JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8')).version)throw Error('Account release version differs from package version');
+
+for(const file of ['rotamapa-billing-model.js','rotamapa-billing-ui.js','rotamapa-buyer-model.js','rotamapa-buyer-ui.js','rotamapa-plan-testing.js','rotamapa-portfolio-version-model.js','rotamapa-portfolio-version-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});

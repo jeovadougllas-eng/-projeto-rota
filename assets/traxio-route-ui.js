@@ -183,6 +183,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  }
  async function calculate(strategy='distance',{existing=null,destination=null,scheduled=null}={}){
   if(routeBusy){el('mapStatus').textContent='Já há uma operação em andamento. Aguarde ou limpe o trajeto para cancelar.';return;}
+  let buyer=existing?.buyer||null;
+  if(strategy==='potential'&&!existing&&!destination){try{buyer=await RotaMapaBuyers.prepare();}catch(e){phase('review',e.message);return;}}
+  if(buyer){try{RotaMapaBuyers.verify(buyer);}catch(e){phase('review',e.message);return;}}
   cancel('Verificando os clientes selecionados…');const run=generation;controller=new AbortController();const signal=controller.signal;
   routeBusy=true;phase('checking-locations','Verificando as localizações antes de calcular…');
   try{
@@ -211,18 +214,21 @@ document.addEventListener('DOMContentLoaded',()=>{
    phase('calculating','Calculando sequência e trajeto pelas ruas…');
    const matrix=existing||destination?null:await roadDistances(nodes,signal);if(!current(run))return;
    scheduled=scheduled||existing?.scheduled;
-   const sequence=existing||destination?null:scheduled?RotaMapaSchedulingModel.order(nodes,matrix,strategy,optimizeStrategy,scheduled.appointments):optimizeStrategy(nodes,matrix,strategy);
+   const potential=buyer&&!existing?RotaMapaBuyerModel.select(nodes.map(c=>({...c,buyerScore:buyer.scores[String(c.id)]||0})),matrix,buyer.limits):null;
+   const sequence=existing||destination?null:potential?potential.sequence:scheduled?RotaMapaSchedulingModel.order(nodes,matrix,strategy,optimizeStrategy,scheduled.appointments):optimizeStrategy(nodes,matrix,strategy);
    const arranged=existing?existing.points:destination?[destination]:sequence.slice(1).map(i=>nodes[i]);
    if(scheduled&&!scheduled.isCurrent())throw Error('Os agendamentos mudaram. Gere novamente a rota do dia.');
-   preparedRoute={start,points:arranged,excluded:[...state.excluded],strategy,allowUnverified,...(scheduled?{scheduled}: {})};
+   if(potential)state.excluded.push(...potential.excluded);
+   preparedRoute={...(buyer?{buyer}:{}),start,points:arranged,excluded:[...state.excluded],strategy,allowUnverified,...(scheduled?{scheduled}: {})};
    const road=await fetchRoadRoute([start,...arranged],{signal});
    if(!current(run)||snapshot!==planSignature())return;
    if(scheduled&&!scheduled.isCurrent())throw Error('Os agendamentos mudaram. Gere novamente a rota do dia.');
+   if(buyer){RotaMapaBuyers.verify(buyer);RotaMapaBuyerModel.verifyRoad(road,arranged.length,buyer.limits);}
    await waitForGeometry(road.geometry,signal);if(!current(run))return;
    lastRoute={...preparedRoute};preparedRoute=null;calculationPlan=null;activeSelection=JSON.stringify([...selectedIds].sort());activeFingerprint=P.signature(clients,[...arranged.map(c=>c.id),...(start.id!==undefined?[start.id]:[])],originSignature());showOrder(arranged);renderMarkers();
    window.traxioBeginNavigation?.(arranged,road.geometry,{legs:road.legs,origin:start});
    const partial=state.excluded.length>0;
-   phase(partial?'partial':'calculated',(destination?(strategy==='single'?'Visita individual · Trajeto por ruas: ':'Destino avulso · Trajeto por ruas: '):'Trajeto por ruas: ')+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+' clientes excluídos com sua confirmação. ':'')+(allowUnverified?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
+   phase(partial?'partial':'calculated',(destination?(strategy==='single'?'Visita individual · Trajeto por ruas: ':'Destino avulso · Trajeto por ruas: '):'Trajeto por ruas: ')+(road.distance/1000).toFixed(1)+' km · '+Math.round(road.duration/60)+' min estimados · '+arranged.length+' paradas'+(start.id!==undefined?' + cliente de origem':'')+'. '+(partial?state.excluded.length+(buyer?' clientes fora dos limites ou do máximo de visitas. ':' clientes excluídos com sua confirmação. '):'')+(allowUnverified?'Coordenadas não verificadas incluídas com sua confirmação. ':'')+'Sem trânsito em tempo real.');
    window.traxioPendingTrip={distanceKm:road.distance/1000,durationMin:Math.round(road.duration/60),names:arranged.map(c=>c.name),strategy,at:new Date().toISOString(),excluded:[...state.excluded]};
    if(scheduled){const timeline=RotaMapaSchedulingModel.timeline(arranged,road.legs,scheduled.appointments,scheduled.departure);window.dispatchEvent(new CustomEvent('rotamapa:scheduled-route',{detail:timeline}));}
    window.traxioShowSaveTrip?.();window.TraxeloWorkspace?.routeReady();map?.resize();mapPanel.scrollIntoView({block:'start',behavior:'smooth'});return lastRoute;
@@ -263,7 +269,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   resolved=TraxeloPremiumModel.resolve(saved,clients,{currentOrigin});if(resolved.missing.length||resolved.pending.length)throw Error('Os cadastros mudaram durante a abertura. Revise os clientes e suas localizações antes de tentar novamente.');if(!currentOrigin)start=resolved.start;
   cancel();el('origin').value='manual';manualOrigin={...start};manualDraft={...start};originForm.hidden=false;el('routeOriginAddress').value=start.name||'Origem da rota salva';showGpsOrigin();
   selectedIds=new P.IdSet(resolved.points.map(c=>c.id).filter(id=>id!=null));selectionInitialized=true;syncRouteChoices();renderWorkspace();switchTab('mapa');
-  const result=await calculate(saved.strategy||'distance',{existing:{start,points:resolved.points,excluded:[],allowUnverified:false,strategy:saved.strategy||'distance'}});
+  const savedStrategy=saved.strategy==='potential'?'distance':saved.strategy||'distance';
+  const result=await calculate(savedStrategy,{existing:{start,points:resolved.points,excluded:[],allowUnverified:false,strategy:saved.strategy||'distance'}});
+  if(result&&saved.strategy==='potential')el('routeResult').textContent+=' Sequência salva reaberta; gere nova sugestão para reavaliar compras do mês e limites atuais.';
   if(result&&resolved.changed.length)el('routeResult').textContent+=' Posições atualizadas: '+resolved.changed.join(', ')+'.';return !!result;
  }
  window.TraxioRouteUI={calculate,singleClient,cancel,openSaved,getRoute:()=>lastRoute?JSON.parse(JSON.stringify(lastRoute)):null,adHoc:destination=>calculate('avulso',{destination:{...destination}}),retrace:()=>{const existing=lastRoute||preparedRoute;if(!existing){phase('impossible','Calcule uma rota antes de atualizar o trajeto.');return;}return calculate(existing.strategy||'distance',{existing});},state,refresh};

@@ -1,8 +1,8 @@
 /* Saved planning and commercial tiers. Pure rules; never manufactures visits. */
 (function(root){
 'use strict';
-const tiers={free:{label:'Free',routes:3,rank:0},plus:{label:'Plus',routes:20,rank:1},pro:{label:'Pro',routes:null,rank:2}};
-const features={organize:1,agenda:1,reports:1,forecast:2,comparison:2,suggestions:2};
+const tiers={free:{label:'Free',routes:3,portfolios:1,rank:0},plus:{label:'Plus',routes:20,portfolios:3,rank:1},pro:{label:'Pro',routes:null,portfolios:null,rank:2}};
+const features={organize:1,agenda:1,reports:1,forecast:2,comparison:2,suggestions:2,pdf:1,ranking:1,potential:2};
 const copy=o=>JSON.parse(JSON.stringify(o));
 function can(plan,feature){return (tiers[plan]?.rank??0)>=(features[feature]??99);}
 function point(p){return p&&Number.isFinite(Number(p.lat))&&Number.isFinite(Number(p.lon))&&p.lat!==null&&p.lon!==null&&Math.abs(Number(p.lat))<=90&&Math.abs(Number(p.lon))<=180&&!(Number(p.lat)===0&&Number(p.lon)===0);}

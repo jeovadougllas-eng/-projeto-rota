@@ -22,15 +22,16 @@ function create(owner,storage=root.localStorage){
    const byId=new Map(remote.map(r=>[r.id,r]));
    for(const row of remote){if(!isCurrent())break;if(!row.data||row.data.id!==row.id)continue;RotaMapaCommerceModel.validate(row.data.kind,row.data);const local=state.events.find(e=>e.id===row.id),hash=canonical(row.data),dirty=state.outbox.includes(row.id);if(!local){commit({...state,events:[...state.events,clone(row.data)],baseline:{...state.baseline,[row.id]:{hash,revision:row.revision}}});received++;}else if(canonical(local)===hash){commit({...state,outbox:state.outbox.filter(id=>id!==row.id),baseline:{...state.baseline,[row.id]:{hash,revision:row.revision}}});}else if(!dirty){commit({...state,events:state.events.map(e=>e.id===row.id?clone(row.data):e),baseline:{...state.baseline,[row.id]:{hash,revision:row.revision}}});received++;}}
    for(const id of [...state.outbox].sort((a,b)=>{const rank={product:0,campaign:1,sale:2};return rank[state.events.find(e=>e.id===a)?.kind]-rank[state.events.find(e=>e.id===b)?.kind];})){
-    if(!isCurrent())break;const event=clone(state.events.find(e=>e.id===id)),hash=canonical(event),row=byId.get(id),prior=state.baseline[id];let revision;
+    if(!isCurrent())break;const event=clone(state.events.find(e=>e.id===id)),hash=canonical(event),row=byId.get(id),prior=state.baseline[id];let revision,serverData=null;
     const payload={kind:event.kind,data:event};
-    if(!row){const result=await client.from('rotamapa_commerce_items').insert({user_id:owner,portfolio_id:portfolio,id,...payload}).select('revision').single();if(result.error){if(result.error.code==='23505'){conflicts++;continue;}throw result.error;}revision=result.data?.revision;}
+    if(!row){const result=await client.from('rotamapa_commerce_items').insert({user_id:owner,portfolio_id:portfolio,id,...payload}).select('revision,data').single();if(result.error){if(result.error.code==='23505'){conflicts++;continue;}throw result.error;}revision=result.data?.revision;serverData=result.data?.data||null;}
     else if(prior&&prior.revision===row.revision&&prior.hash===canonical(row.data)){
-     const result=await client.from('rotamapa_commerce_items').update({data:event,revision:row.revision+1,updated_at:new Date().toISOString()}).eq('user_id',owner).eq('portfolio_id',portfolio).eq('id',id).eq('revision',row.revision).select('revision');if(result.error)throw result.error;if(!result.data?.length){conflicts++;continue;}revision=result.data[0].revision;
+     const result=await client.from('rotamapa_commerce_items').update({data:event,revision:row.revision+1,updated_at:new Date().toISOString()}).eq('user_id',owner).eq('portfolio_id',portfolio).eq('id',id).eq('revision',row.revision).select('revision,data');if(result.error)throw result.error;if(!result.data?.length){conflicts++;continue;}revision=result.data[0].revision;serverData=result.data[0].data||null;
     }else{conflicts++;continue;}
     if(!Number.isSafeInteger(Number(revision)))throw Error('A nuvem não confirmou a revisão gravada.');
     const unchanged=canonical(state.events.find(e=>e.id===id))===hash;
-    commit({...state,outbox:unchanged?state.outbox.filter(x=>x!==id):state.outbox,baseline:{...state.baseline,[id]:{hash,revision:Number(revision)}}});sent++;
+    if(serverData){RotaMapaCommerceModel.validate(serverData.kind,serverData);if(serverData.id!==id)throw Error('O servidor retornou outro registro.');}
+    commit({...state,events:unchanged&&serverData?state.events.map(e=>e.id===id?clone(serverData):e):state.events,outbox:unchanged?state.outbox.filter(x=>x!==id):state.outbox,baseline:{...state.baseline,[id]:{hash:serverData?canonical(serverData):hash,revision:Number(revision)}}});sent++;
    }
    return {sent,received,conflicts,pending:state.outbox.length};
   }finally{busy=false;}

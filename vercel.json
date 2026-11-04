@@ -134,6 +134,9 @@
   "functions": {
     "api/geolocation-benchmark.js": {
       "maxDuration": 45
+    },
+    "api/buyer-insights.js": {
+      "maxDuration": 60
     }
   }
 }
