@@ -1,5 +1,5 @@
 name: RotaMapa billing, portfolio versions and plan simulation release
-# Validate account and portfolio isolation, management flows and current release identity before publishing the compatible Android package.
+# Validate first Free import, account isolation and complete management flows before publishing the compatible Android package.
 on:
   push:
     branches: [dev/traxelo-android-routes]
