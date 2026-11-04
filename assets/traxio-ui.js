@@ -139,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const content=node('span','quick-action-copy');content.append(node('strong','',text),node('small','',description));b.append(content,node('span','action-chevron','›'));quick.append(b);
   });
   overview.after(quick);
-  const serviceNote=overview.querySelector('.notice');serviceNote.classList.add('dashboard-service-note');quick.after(serviceNote);
 
   // Clients: retain the exact original edit form, expose it in a native modal.
   const clientSection = el('clientes'), editCard = clientSection.querySelector('.card');
