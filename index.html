@@ -227,17 +227,29 @@ function updateMapSelection(){
 
 function fit(){if(!map)return;const located=clients.filter(c=>selectedIds.has(c.id)&&valid(c.lat,c.lon));if(!located.length)return;const bounds=new maplibregl.LngLatBounds();located.forEach(c=>bounds.extend([c.lon,c.lat]));map.fitBounds(bounds,{padding:55,maxZoom:15})}
 $('fitBtn').onclick=fit;
-function requestGPS(){return new Promise((resolve,reject)=>{
+function requestGPS({forPin=false}={}){return new Promise((resolve,reject)=>{
  if(!navigator.geolocation)return reject(Error('Geolocalização indisponível.'));
  navigator.geolocation.getCurrentPosition(p=>{
   const {latitude:lat,longitude:lon,accuracy}=p.coords;
   if(!valid(lat,lon))return reject(Error('O GPS retornou coordenadas inválidas.'));
-  if(Number.isFinite(accuracy)&&accuracy>100)return reject(Error('Sinal GPS impreciso (±'+Math.round(accuracy)+' m). Aguarde um sinal melhor ou escolha uma origem manual.'));
+  if(!forPin&&Number.isFinite(accuracy)&&accuracy>100)return reject(Error('Sinal GPS impreciso (±'+Math.round(accuracy)+' m). Aguarde um sinal melhor ou escolha uma origem manual.'));
   if(p.timestamp&&Date.now()-p.timestamp>20000)return reject(Error('Sinal GPS antigo. Aguarde uma posição atual ou escolha uma origem manual.'));
-  gps={lat,lon,accuracy,timestamp:p.timestamp};resolve(gps);
+  const point={lat,lon,accuracy,timestamp:p.timestamp};if(!forPin)gps=point;resolve(point);
  },reject,{enableHighAccuracy:true,timeout:12000,maximumAge:10000});
 })}
-$('gpsBtn').onclick=async()=>{try{const p=await requestGPS();setDraft(p.lat,p.lon);$('saveStatus').textContent='Posição aproximada preenchida; confirme o ponto antes de salvar.'}catch(e){$('saveStatus').textContent='GPS indisponível: '+e.message}};
+$('gpsBtn').onclick=async()=>{
+ const button=$('gpsBtn'),clientId=editingClientId,editor=$('clientEditDialog');
+ clearTimeout(searchTimer);searchController?.abort();const seq=++searchSequence;
+ button.disabled=true;$('saveStatus').textContent='Obtendo sua posição para ajustar o pin no mapa…';
+ try{
+  const p=await requestGPS({forPin:true});
+  if(seq!==searchSequence||editingClientId!==clientId||document.body.classList.contains('auth-locked')||(editor&&!editor.open))return;
+  selectedPrecision='approx';setDraft(p.lat,p.lon);$('suggestions').replaceChildren();
+  $('saveStatus').textContent='Posição aproximada obtida. Arraste o pin e confirme a localização do cliente.';
+  $('adjustPin').click();
+ }catch(e){if(seq===searchSequence&&editingClientId===clientId)$('saveStatus').textContent='Não foi possível obter sua posição. Permita o acesso à localização e tente novamente. '+e.message;}
+ finally{button.disabled=false;}
+};
 $('myLocation').onclick=async()=>{try{const p=await requestGPS();initMap();map?.flyTo({center:[p.lon,p.lat],zoom:15})}catch(e){$('mapStatus').textContent='GPS indisponível: '+e.message}};
 $('cepBtn').onclick=async()=>{const cep=$('cep').value.replace(/\D/g,'');if(cep.length!==8){$('cepStatus').textContent='Digite 8 dígitos.';return}const status=$('cepStatus');status.textContent='Consultando…';try{const r=await fetch('https://viacep.com.br/ws/'+cep+'/json/',{signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error('Serviço indisponível');const d=await r.json();if(d.erro)throw Error('CEP não encontrado');$('address').value=d.logradouro||'';$('clientNeighborhood').value=d.bairro||'';$('clientCity').value=d.localidade||'';$('clientState').value=d.uf||'';resetLocation();$('suggestions').replaceChildren();status.textContent='CEP encontrado. Informe o número e confirme o ponto no mapa.'}catch(e){status.textContent='Falha: '+e.message}};
 let searchTimer=null, searchController=null, searchSequence=0, selectedPrecision='none';

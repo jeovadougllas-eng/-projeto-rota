@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "99059c12cd318e9fb6e4b036710983795de60f9fa528514925d2e5ec162a2189",
+  "version": "395892c6f5a73b3177a517838adb7dbf59ddcea62cce9780f93a3a5f6d1ade5a",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -45,7 +45,7 @@
     "assets/rotamapa-portfolio-version-ui.js": "c101f011289d8f6471b8cc4e9c5b0c4c20ed1c6ce783a068e1f1ec7da751e0f3",
     "assets/rotamapa-portfolios.css": "ac14460c49bca76ef36f1b00f99813aa85d2f8ca50e2200b9f7de66cf9bf9d05",
     "assets/rotamapa-portfolios.js": "78bb05117fd88e83a4112407d17c49e082f0d2fe425b34b8522c65affb75548a",
-    "assets/rotamapa-release.json": "e41cda8abb85daeee4cfea126543c1644a3d3e550155aa5573b5ea04718001bc",
+    "assets/rotamapa-release.json": "975cb3d6e57d5fd17ef7ed9189df31863d34742f5c9a26c79448f1d562b04e66",
     "assets/rotamapa-scheduling-model.js": "a1b471afcc3c9d60224d2224ff373ea68a3433a5a34a8613c71c794729a1fb96",
     "assets/rotamapa-scheduling.css": "7a5194357ad2241cbed6d729ae70d6419563dd3e3f8440fe03322c604323f9bc",
     "assets/rotamapa-scheduling.js": "19fd121e3f25a119d9a67153d8c9bc5ac3bd693ea719a088101bbdd45d934ca4",
@@ -118,9 +118,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "42412912c75ac358117394c0ef69e4df3792ccbd84330d92de4c78e90bac9e6d"
+    "index.html": "8eedffabafe01c42e51b1c221dc9fd51b56f1c22a033b0483d84cfa1b09c8feb"
   },
-  "bundle": "/updates/android/bundles/99059c12cd318e9fb6e4b036710983795de60f9fa528514925d2e5ec162a2189.zip",
-  "sha256": "aff2a82f64859c63e9d29219c108950863f00a40ffb0bb1a39ecede61566158a",
-  "bytes": 12079847
+  "bundle": "/updates/android/bundles/395892c6f5a73b3177a517838adb7dbf59ddcea62cce9780f93a3a5f6d1ade5a.zip",
+  "sha256": "841facfe5e14ef1d54aae9ac85ad0e0313c80fa64478d8bb7b765da5c3b51cbe",
+  "bytes": 12080125
 }
