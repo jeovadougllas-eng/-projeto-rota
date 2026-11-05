@@ -31,3 +31,7 @@ for(const file of ['rotamapa-scheduling-model.js','rotamapa-scheduling.js'])new 
 if(JSON.parse(await readFile(new URL('../assets/rotamapa-release.json',import.meta.url),'utf8')).version!==JSON.parse(await readFile(new URL('../package.json',import.meta.url),'utf8')).version)throw Error('Account release version differs from package version');
 
 for(const file of ['rotamapa-billing-model.js','rotamapa-billing-ui.js','rotamapa-buyer-model.js','rotamapa-buyer-ui.js','rotamapa-plan-testing.js','rotamapa-portfolio-version-model.js','rotamapa-portfolio-version-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+new Script(await readFile(new URL('../assets/rotamapa-field-ui.js',import.meta.url),'utf8'),{filename:'rotamapa-field-ui.js'});
+if(!html.includes('assets/rotamapa-field-ui.css')||!html.includes('assets/rotamapa-field-ui.js'))throw Error('Missing approved field UI');
+const nativeHtml=html.replace(/<!-- iphone-pwa:start -->[\s\S]*?<!-- iphone-pwa:end -->/g,'');if(!nativeHtml.includes('assets/rotamapa-field-ui.js'))throw Error('Field UI must also ship in Android');

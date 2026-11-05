@@ -182,13 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
     el('registryPlan').disabled = reviewMode?!reviewCount:!selectedIds.size;
   }
   function renderRegistry(refreshOptions = false) {
-    if(refreshOptions) { updateOptions('registryCity',clients.map(c=>regionParts(c).city),'Todas as cidades'); updateOptions('registryCategory',clients.map(category),'Todas as categorias'); }
-    updateOptions('registryNeighborhood',clients.filter(c=>!el('registryCity').value || regionParts(c).city === el('registryCity').value).map(c=>regionParts(c).district),'Todos os bairros');
+    if(refreshOptions) { updateOptions('registryCity',clients.map(c=>regionParts(c).city),'Cidade'); updateOptions('registryCategory',clients.map(category),'Categoria'); }
+    updateOptions('registryNeighborhood',clients.filter(c=>!el('registryCity').value || regionParts(c).city === el('registryCity').value).map(c=>regionParts(c).district),'Bairro');
     const filtered = filteredClients(), root = el('registryRows'); root.replaceChildren();
     const confirmed = clients.filter(c=>TraxioPlanner.location(c).ready).length;
     const saved=clients.filter(c=>!TraxioPlanner.location(c).ready&&TraxioPlanner.hasSavedPoint(c)).length;
     el('locationRecovery').hidden=!saved;
-    el('locationRecoveryText').textContent=saved+' cliente'+(saved===1?' possui ponto salvo':'s possuem pontos salvos')+' para revisar. Esses pontos não foram apagados; precisam de confirmação para entrar na rota.';
+    el('locationRecoveryText').textContent=saved+' ponto'+(saved===1?'':'s')+' para revisar';
+    el('locationRecoveryText').title='Os pontos salvos foram preservados. Confirme a localização no mapa para incluí-los nas rotas.';
     el('locatedShortcut').setAttribute('aria-label',`Ver ${confirmed} clientes com localização confirmada`);
     el('pendingShortcut').setAttribute('aria-label',`Ver ${clients.length-confirmed} clientes aguardando confirmação`);
     el('confirmedPortfolioActions').hidden = el('registryLocation').value !== 'confirmed';

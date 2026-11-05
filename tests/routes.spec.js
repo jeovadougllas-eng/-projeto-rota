@@ -4,7 +4,7 @@ import {records,fakeMap,services} from './fixtures/routing.js';
 async function setup(page,theme,rows=records){
  await prepare(page,{records:rows,theme});
  await page.addInitScript(()=>{Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition:ok=>ok({coords:{latitude:-5.8,longitude:-35.22,accuracy:8}}),watchPosition:()=>1,clearWatch(){}}});});
- await ready(page);await fakeMap(page);await page.locator('.tabs [data-tab="mapa"]').click();
+ await ready(page);await fakeMap(page);await page.locator('.tabs [data-tab="mapa"]').click();await page.locator('#routePlannerPanel').evaluate(n=>n.open=true);await page.locator('#mapClientListDisclosure').evaluate(n=>n.open=true);
 }
 async function select(page){await page.locator('#selectEntirePortfolio').click();await expect(page.locator('#selectedCount')).toContainText('7 selecionados');}
 test('seven selected clients produce an itinerary, road geometry, distance and GPS navigation',async({page},info)=>{
@@ -147,6 +147,6 @@ test('large Android portrait viewport uses map-first layout and keeps the single
  await page.setViewportSize({width:1200,height:1920});await setup(page,info.project.metadata.theme);
  const mapBox=await page.locator('.workspace-map').boundingBox(),planBox=await page.locator('#routePlannerPanel').boundingBox();expect(mapBox.y).toBeLessThan(planBox.y);
  const action=await page.locator('#routeActionBar').boundingBox();expect(action.y+action.height).toBeLessThanOrEqual(1921);
- await page.setViewportSize({width:1920,height:1200});const landscapeMap=await page.locator('.workspace-map').boundingBox(),landscapePlan=await page.locator('#routePlannerPanel').boundingBox();expect(landscapeMap.x).toBeGreaterThan(landscapePlan.x);
+ await page.setViewportSize({width:1920,height:1200});const landscapeMap=await page.locator('.workspace-map').boundingBox(),landscapePlan=await page.locator('#routePlannerPanel').boundingBox();expect(landscapeMap.x).toBeLessThan(landscapePlan.x);
 });
 
