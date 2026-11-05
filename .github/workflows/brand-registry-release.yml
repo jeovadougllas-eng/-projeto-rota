@@ -1,4 +1,5 @@
 name: RotaMapa RM brand, commercial categories and complete Natal districts
+# Accept SDK-range prefixes when reading verified signing certificates.
 on:
   push:
     branches: [dev/traxelo-android-routes]

@@ -36,7 +36,10 @@ const b=await sharp('assets/rotamapa/icon-512.png').removeAlpha().raw().toBuffer
 """],check=True)
 def certificate(path):
  output=call('apksigner','verify','--print-certs',path)
- return re.search(r'Signer #1 certificate SHA-256 digest: (\w+)',output)[1]
+ # Current SDKs may prefix the signer with its Android SDK range.
+ fingerprints=set(re.findall(r'certificate SHA-256 digest:\s*([a-fA-F0-9]{64})',output,re.I))
+ assert len(fingerprints)==1,'Expected one verified signing certificate: '+output
+ return fingerprints.pop().lower()
 cert=certificate(apk);oldcert=certificate(previous)
 proof={'source':os.environ.get('GITHUB_SHA'),'run':os.environ.get('GITHUB_RUN_ID'),'version':'1.3.1','nativeVersion':3,'packageId':'app.traxio.mobile','apkSha256':sha(apk.read_bytes()),'apkBytes':apk.stat().st_size,'signerSha256':cert,'previousSignerSha256':oldcert,'inPlaceUpgradeFromPreviousInstaller':cert==oldcert,'otaVersion':m['version'],'otaSha256':m['sha256'],'otaBytes':m['bytes'],'bundledFiles':len(m['files']),'launcherResource':icon,'originalInstallerPreserved':True,'backgroundHashesVerified':True}
 Path('candidate/brand-registry-proof.json').write_text(json.dumps(proof,indent=2)+'\n')
