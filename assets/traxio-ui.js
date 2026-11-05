@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.pin}</svg>`;
   };
-  const brand = className => `<span class="brand-crop traxelo-approved-brand rotamapa-approved-brand ${className || ''}" role="img" aria-label="RotaMapa — Sua rota com inteligência."><img class="rotamapa-brand-image" src="assets/rotamapa/logo.webp" alt="" width="1540" height="306"></span>`;
+  const brand = className => `<span class="brand-crop traxelo-approved-brand rotamapa-approved-brand ${className || ''}" role="img" aria-label="RotaMapa — Sua rota com inteligência."><img class="rotamapa-brand-image" src="assets/rotamapa/logo.webp?v=1.3.1" alt="" width="1540" height="306"></span>`;
   // Display unmodified original pixels from the supplied reference crops.
   const glyph=(source,sourceWidth,sourceHeight,x,y,w,h,className='')=>`<span class="kit-glyph ${className}" aria-hidden="true" style="aspect-ratio:${w}/${h}"><img src="assets/visual-kit/assets/${source}" alt="" width="${sourceWidth}" height="${sourceHeight}" style="width:${100*sourceWidth/w}%;height:${100*sourceHeight/h}%;left:${-100*x/w}%;top:${-100*y/h}%"></span>`;
   // Key only the crop background, then intersect with source alpha. The final
@@ -159,17 +159,21 @@ document.addEventListener('DOMContentLoaded', () => {
   registry.innerHTML = `<div class="registry-controls"><div class="registry-search-row"><div class="search-field">${icon('search')}<input id="registrySearch" type="search" placeholder="Buscar por nome, CNPJ, cidade ou endereço..." aria-label="Buscar clientes"></div><button type="button" id="registryFilterToggle" class="secondary icon-button" aria-label="Mostrar ou ocultar filtros" aria-expanded="true" aria-controls="registryFilters">${icon('filter')}</button></div><div class="registry-filters" id="registryFilters"><select id="registryCity" aria-label="Filtrar por cidade"><option value="">Todas as cidades</option></select><select id="registryNeighborhood" aria-label="Filtrar por bairro"><option value="">Todos os bairros</option></select><select id="registryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select><button type="button" id="registryClear" class="secondary">Limpar filtros</button></div><div class="registry-location-tools"><label for="registryLocation">Localização</label><select id="registryLocation"><option value="">Todos os clientes</option><option value="confirmed">Localização confirmada</option><option value="review">Aguardando confirmação</option><option value="saved">Pontos salvos para revisar</option><option value="missing">Sem ponto salvo</option></select><div id="confirmedPortfolioActions" hidden><button type="button" id="registryPlanConfirmed">Criar rota com estes confirmados</button><button type="button" id="registrySuggestConfirmed" class="secondary">Sugerir rota com estes confirmados</button></div></div><p class="registry-count" id="registryCount" aria-live="polite"></p></div><div class="table-scroll"><table class="client-table"><thead><tr><th><input id="registrySelectAll" type="checkbox" aria-label="Selecionar todos os clientes filtrados"></th><th scope="col">Cliente</th><th scope="col">Cidade</th><th scope="col">Bairro</th><th scope="col">Categoria</th><th scope="col">Prioridade</th></tr></thead><tbody id="registryRows"></tbody></table></div><div class="registry-footer"><span id="registrySelection" aria-live="polite"></span><button type="button" id="registryPlan" class="secondary">Planejar visitas selecionadas →</button></div>`;
   clientSection.append(registry);
   const category = c => regionField(c,['categoria','segmento','ramo','atividade']) || c.category || '—';
+  // Commercial priority is independent of optional business categories in the spreadsheet.
+  const commercialPriority = c => String(Number(c.priority) === 3 ? 3 : Number(c.priority) === 1 ? 1 : 2);
   const filteredClients = () => {
     const q = norm(el('registrySearch').value), city = el('registryCity').value, district = el('registryNeighborhood').value, cat = el('registryCategory').value;
     return clients.filter(c => {
       const r = regionParts(c), location = el('registryLocation').value, ready = TraxioPlanner.location(c).ready;
-      return (!location || (location === 'confirmed' ? ready : location === 'saved' ? !ready && TraxioPlanner.hasSavedPoint(c) : location === 'missing' ? !TraxioPlanner.hasSavedPoint(c) : !ready)) && RotaMapaClientIdentity.matches(c,q,r.city,r.district,category(c)) && (!city || r.city === city) && (!district || r.district === district) && (!cat || category(c) === cat);
+      return (!location || (location === 'confirmed' ? ready : location === 'saved' ? !ready && TraxioPlanner.hasSavedPoint(c) : location === 'missing' ? !TraxioPlanner.hasSavedPoint(c) : !ready)) && RotaMapaClientIdentity.matches(c,q,r.city,r.district,category(c)) && (!city || norm(r.city) === norm(city)) && (!district || norm(r.district) === norm(district)) && (!cat || commercialPriority(c) === cat);
     });
   };
   function updateOptions(id, values, initial) {
     const select = el(id), value = select.value; select.replaceChildren(new Option(initial,''));
-    [...new Set(values.filter(x => x && x !== '—'))].sort((a,b) => a.localeCompare(b,'pt-BR')).forEach(v => select.add(new Option(v,v)));
-    if([...select.options].some(o => o.value === value)) select.value = value;
+    const unique = new Map();
+    for(const v of values) if(v && v !== '—' && !unique.has(norm(v))) unique.set(norm(v),v);
+    [...unique.values()].sort((a,b) => a.localeCompare(b,'pt-BR')).forEach(v => select.add(new Option(v,v)));
+    select.value = [...select.options].find(o => norm(o.value) === norm(value))?.value || '';
   }
   function registrySelection() {
     const filtered = filteredClients(), count = filtered.filter(c => selectedIds.has(c.id)).length;
@@ -182,8 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
     el('registryPlan').disabled = reviewMode?!reviewCount:!selectedIds.size;
   }
   function renderRegistry(refreshOptions = false) {
-    if(refreshOptions) { updateOptions('registryCity',clients.map(c=>regionParts(c).city),'Cidade'); updateOptions('registryCategory',clients.map(category),'Categoria'); }
-    updateOptions('registryNeighborhood',clients.filter(c=>!el('registryCity').value || regionParts(c).city === el('registryCity').value).map(c=>regionParts(c).district),'Bairro');
+    if(refreshOptions) {
+      updateOptions('registryCity',clients.map(c=>regionParts(c).city),'Cidade');
+      const select=el('registryCategory'), value=select.value;
+      select.replaceChildren(new Option('Categoria',''),new Option('Alta','3'),new Option('Média','2'),new Option('Baixa','1'));
+      select.value=value;
+    }
+    const city=norm(el('registryCity').value);
+    const officialDistricts=['natal','natalrn'].includes(city) ? Object.values(window.RotaMapaBuyerModel?.natal || {}).flat() : [];
+    const importedDistricts=clients.filter(c=>!city || norm(regionParts(c).city)===city).map(c=>regionParts(c).district);
+    updateOptions('registryNeighborhood',[...officialDistricts,...importedDistricts],'Bairro');
     const filtered = filteredClients(), root = el('registryRows'); root.replaceChildren();
     const confirmed = clients.filter(c=>TraxioPlanner.location(c).ready).length;
     const saved=clients.filter(c=>!TraxioPlanner.location(c).ready&&TraxioPlanner.hasSavedPoint(c)).length;

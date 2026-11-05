@@ -1,9 +1,19 @@
-// Production-size exports from the approved source art; no lettering is redrawn.
+// Production-size exports; preserve the existing wordmark and slogan pixels.
 import {createRequire} from 'node:module';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 const root=new URL('../',import.meta.url),sharp=createRequire(new URL('mobile/package.json',root))('sharp');
 const dir=new URL('assets/rotamapa/',root);
+if(process.env.ROTAMAPA_APPROVED_MARK){
+ // New RM symbol: pin in R and three road dashes in the right stem of M.
+ const mark=process.env.ROTAMAPA_APPROVED_MARK;
+ const previous=await readFile(new URL('logo.webp',dir));
+ const lettering=await sharp(previous).extract({left:490,top:0,width:1050,height:306}).png().toBuffer();
+ const symbol=await sharp(mark).extract({left:202,top:380,width:851,height:495}).resize({width:465,height:280,fit:'contain',background:'#033b49'}).png().toBuffer();
+ await sharp({create:{width:1540,height:306,channels:3,background:'#033b49'}})
+  .composite([{input:symbol,left:0,top:13},{input:lettering,left:490,top:0}]).webp({lossless:true}).toFile(fileURLToPath(new URL('logo.webp',dir)));
+ for(const size of [32,180,192,512])await sharp(mark).resize(size,size).png().toFile(fileURLToPath(new URL(`icon-${size}.png`,dir)));
+}
 if(process.env.ROTAMAPA_APPROVED_LOGO&&process.env.ROTAMAPA_APPROVED_ICON){
  await mkdir(dir,{recursive:true});
  await sharp(process.env.ROTAMAPA_APPROVED_LOGO).extract({left:130,top:286,width:1540,height:306}).webp({lossless:true}).toFile(fileURLToPath(new URL('logo.webp',dir)));
