@@ -1,0 +1,18 @@
+{
+  "version": "1.2.3",
+  "bundleVersion": "395892c6f5a73b3177a517838adb7dbf59ddcea62cce9780f93a3a5f6d1ade5a",
+  "bundleSha256": "841facfe5e14ef1d54aae9ac85ad0e0313c80fa64478d8bb7b765da5c3b51cbe",
+  "bytes": 12080125,
+  "filesVerified": 114,
+  "sourceCommit": "23cc6d2c81090d5fffd59b70994cd76a0238ffb9",
+  "deployment": "dpl_HsVnmKHEZxGLBUmoaeHn7npH7SHS",
+  "publicWebVerified": true,
+  "publicBundleVerified": true,
+  "nativeInstaller": "preserved; compatible in-app update",
+  "localChromiumCasesPassed": 24,
+  "localWebKitCasesPassed": 5,
+  "publishedChromiumCasesPassed": 10,
+  "sourceChecksPassed": true,
+  "productionCustomerWrites": false,
+  "publishedWebKitCasesPassed": 5
+}
