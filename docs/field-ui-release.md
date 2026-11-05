@@ -17,4 +17,6 @@ No database migration, auth change, new subscription rule or customer-data migra
 
 Syntax/integration checks pass. Original scenic and brand files are byte-for-byte unchanged. The Android bundle is verified against every listed file hash and contains both new presentation assets in native HTML. Package, runtime, native version, signing and existing installers remain unchanged; delivery uses the compatible in-app update.
 
+Appointment bell urgency keeps yellow/orange/red treatments in the compact header. Priority filter state changes do not animate through intermediate text/background combinations with insufficient contrast; the selected state updates immediately. Focused header-urgency and theme/selection checks pass on both Chromium profiles.
+
 Browser fixtures use synthetic accounts and intercepted writes. No real customer records were modified during verification. Physical iPhone or Android devices were not available for automated testing. Published verification details are recorded separately after deployment.

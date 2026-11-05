@@ -32,6 +32,12 @@ test('dashboard puts the real portfolio and main route action before live counte
  await page.locator('#fieldPortfolioManagement>summary').click();await expect(page.locator('#updatePortfolio')).toBeVisible();await expect(page.locator('#portfolioVersions')).toBeVisible();
  await page.locator('#fieldNextStep button').click();await expect(page.locator('body')).toHaveAttribute('data-screen','mapa');
 });
+test('appointment urgency remains visually distinct in the compact header',async({page})=>{
+ await setupAgenda(page,{rows:[appointment('a','1','2026-11-05','18:00')],clock:'2026-11-05T10:00:00-03:00'});
+ await expect(page.locator('#appointmentBell')).toHaveAttribute('data-urgency','red');
+ const bell=await page.locator('#appointmentBell').evaluate(n=>({fg:getComputedStyle(n).color,bg:getComputedStyle(n).backgroundColor}));
+ expect(bell).toEqual({fg:'rgb(255, 215, 215)',bg:'rgb(98, 35, 42)'});
+});
 test('customer cards retain CNPJ search, selection, contrast and complete client details',async({page})=>{
  await setup(page);await page.locator('[data-tab=clientes]').click();
  await page.locator('#registrySearch').fill('12.345.678/0001-91');await expect(page.locator('#registryRows tr')).toHaveCount(1);

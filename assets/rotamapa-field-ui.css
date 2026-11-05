@@ -396,3 +396,9 @@ body.rm-field #fieldRegistryExtra select{width:100%}
 body.rm-field .registry-location-tools>label{display:none}
 body.rm-field .registry-location-tools{margin-top:0}
 @media(max-width:370px){body.rm-field.traxio-ui-ready #registryFilters{grid-template-columns:1fr 1fr}body.rm-field #registryLocation{grid-column:1/-1}}
+/* Keep functional urgency and priority states stronger than generic button styles. */
+body.rm-field.traxio-ui-ready #priorityFilters button{background:var(--glass-soft);color:var(--surface-ink);border:1px solid var(--surface-line);transition:none}
+body.rm-field.traxio-ui-ready #priorityFilters button.selected{background:#00c2ad;color:#002b31;border-color:#00c2ad}
+body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=yellow]{background:#42370c;color:#ffe371}
+body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=orange]{background:#523018;color:#ffd2a8}
+body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=red]{background:#62232a;color:#ffd7d7}
