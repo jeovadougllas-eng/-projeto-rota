@@ -35,3 +35,6 @@ for(const file of ['rotamapa-billing-model.js','rotamapa-billing-ui.js','rotamap
 new Script(await readFile(new URL('../assets/rotamapa-field-ui.js',import.meta.url),'utf8'),{filename:'rotamapa-field-ui.js'});
 if(!html.includes('assets/rotamapa-field-ui.css')||!html.includes('assets/rotamapa-field-ui.js'))throw Error('Missing approved field UI');
 const nativeHtml=html.replace(/<!-- iphone-pwa:start -->[\s\S]*?<!-- iphone-pwa:end -->/g,'');if(!nativeHtml.includes('assets/rotamapa-field-ui.js'))throw Error('Field UI must also ship in Android');
+
+new Script(await readFile(new URL('../assets/rotamapa-ranking-ui.js',import.meta.url),'utf8'),{filename:'rotamapa-ranking-ui.js'});
+if(!nativeHtml.includes('assets/rotamapa-ranking-ui.js')||!nativeHtml.includes('assets/rotamapa-ranking.css'))throw Error('Ranking must ship on web and Android');

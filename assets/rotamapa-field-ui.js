@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  'use strict';
  const $=id=>document.getElementById(id),make=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n;};
  const paths={
+  trophy:'<path d="M8 3h8v5a4 4 0 0 1-8 0V3ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 12v6m-5 3h10m-8 0v-3h6v3"/>',
   home:'<path d="m3 10 9-7 9 7v11h-6v-7H9v7H3Z"/>',
   people:'<circle cx="9" cy="7" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M16 4a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v2"/>',
   pin:'<path d="M19 10c0 5-7 12-7 12S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="9" r="2.5"/>',
@@ -29,9 +30,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  function sceneTitle(page,scene){const title=page.querySelector(':scope>.tab-title');if(!title)return;title.classList.add('field-page-hero');const image=make('img','field-hero-image');image.src='assets/scenes/'+scene+'.webp';image.alt='';image.width=1024;image.height=1536;image.decoding='async';title.prepend(image);}
 
  document.body.classList.add('rm-field');
- const navNames=['home','people','pin','calendar','history','cloud'];
- document.querySelectorAll('.tabs>button>svg').forEach((svg,i)=>{svg.innerHTML=paths[navNames[i]];});
- for(const [tab,scene]of Object.entries({clientes:'clientes',mapa:'mapa',agendamentos:'historico',historico:'historico',dados:'dados'}))sceneTitle($(tab),scene);
+ const navNames={painel:'home',clientes:'people',mapa:'pin',agendamentos:'calendar',historico:'history',ranking:'trophy',dados:'cloud'};
+ document.querySelectorAll('.tabs>button>svg').forEach(svg=>{svg.innerHTML=paths[navNames[svg.parentElement.dataset.tab]]||paths.pin;});
+ for(const [tab,scene]of Object.entries({clientes:'clientes',mapa:'mapa',agendamentos:'historico',historico:'historico',ranking:'historico',dados:'dados'}))sceneTitle($(tab),scene);
 
  // Dashboard: illustration, compact account-scoped portfolio, next action, then the metrics.
  const home=$('painel'),hero=home.querySelector('.traxio-hero'),overview=home.querySelector('.dashboard-overview'),quick=home.querySelector('.quick-actions');
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  for(const id of ['newVisit','backupVisits','syncVisits','saveVisitPreferences'])reportSettings.append($(id));
  reportSettings.append($('visitForecastNote'));historyActions.after(reportSettings);
  reportSettings.prepend(forecastToggle);reportSettings.after($('visitSyncStatus'),$('visitFeedback'));
- for(const [id,label]of [['billingPanel','Conferência de faturamento'],['commerceReport','Vendas registradas'],['buyerRanking','Top compradores'],['proInsights','Evolução da carteira']]){const section=$(id);if(section){const d=disclosure(label,'field-'+id,section);history.append(d);}}
+ for(const [id,label]of [['billingPanel','Conferência de faturamento'],['commerceReport','Vendas registradas'],['proInsights','Evolução da carteira']]){const section=$(id);if(section){const d=disclosure(label,'field-'+id,section);history.append(d);}}
  function barChart(){
   const model=window.TraxeloVisits?.getModel();if(!model)return;
   const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 600 218');svg.setAttribute('role','img');svg.setAttribute('aria-label','Visitas realizadas por dia no mês');

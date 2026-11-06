@@ -11,13 +11,13 @@ async function setup(page,theme='dark'){
  if(process.env.TRAXELO_PWA_BASE)await page.route(process.env.TRAXELO_PWA_BASE+'/**',r=>r.continue());
  await ready(page);await page.waitForFunction(()=>!!window.RotaMapaFieldUI);await fakeMap(page);
 }
-test('all six screens keep the approved scenes, responsive navigation and readable themes',async({page},info)=>{
+test('all seven screens keep the approved scenes, responsive navigation and readable themes',async({page},info)=>{
  await setup(page);const original=await page.evaluate(()=>localStorage.getItem('projeto_rota_mapa_v1'));
  for(const theme of ['dark','light']){
   if((await page.locator('body').evaluate(b=>b.classList.contains('traxio-dark')))!==(theme==='dark'))await page.locator('#themeToggle').click();
-  for(const tab of ['painel','clientes','mapa','agendamentos','historico','dados']){
+  for(const tab of ['painel','clientes','mapa','agendamentos','historico','ranking','dados']){
    await page.locator(`nav.tabs [data-tab=${tab}]`).click();await expect(page.locator('#'+tab)).toBeVisible();
-   await expect(page.locator('#'+tab+' .field-hero-image')).toHaveAttribute('src',new RegExp('assets/scenes/'+({agendamentos:'historico'}[tab]||tab)+'.webp'));
+   await expect(page.locator('#'+tab+' .field-hero-image')).toHaveAttribute('src',new RegExp('assets/scenes/'+({agendamentos:'historico',ranking:'historico'}[tab]||tab)+'.webp'));
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
    expect(await page.locator('.tabs [aria-current=page]').getAttribute('data-tab')).toBe(tab);
    await page.screenshot({path:info.outputPath(tab+'-'+theme+'.png')});

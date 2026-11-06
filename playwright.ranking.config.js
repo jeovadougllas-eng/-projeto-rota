@@ -1,0 +1,3 @@
+import {defineConfig} from 'playwright/test';import base from './playwright.iphone.config.js';
+const tablet=base.projects.find(p=>p.name==='desktop');
+export default defineConfig({...base,testMatch:['ranking.spec.js'],timeout:45000,reporter:'list',outputDir:'test-results-ranking',workers:2,projects:[...base.projects.filter(p=>['iphone-safari','iphone-small','iphone-landscape','android-browser','desktop'].includes(p.name)),{...tablet,name:'tablet-vertical',use:{...tablet.use,viewport:{width:834,height:1194}}},{...tablet,name:'tablet-horizontal',use:{...tablet.use,viewport:{width:1194,height:834}}}]});
