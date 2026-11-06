@@ -12,12 +12,12 @@ with zipfile.ZipFile(bundle) as z:
 with zipfile.ZipFile(apk) as z:
  for n,h in m['files'].items():assert sha(z.read('assets/public/'+n))==h,n
  html=z.read('assets/public/index.html').decode();assert 'assets/rotamapa-ranking-ui.js' in html and 'assets/rotamapa-ranking.css' in html and 'iphone.webmanifest' not in html
- assert json.loads(z.read('assets/public/assets/rotamapa-release.json'))['version']=='1.4.0'
+ assert json.loads(z.read('assets/public/assets/rotamapa-release.json'))['version']=='1.5.0'
  assert z.read('assets/public/assets/rotamapa/icon-512.png')==Path('assets/rotamapa/icon-512.png').read_bytes()
 tools=sorted(Path(os.environ['ANDROID_HOME']).glob('build-tools/*/aapt'))[-1].parent
 call=lambda tool,*args:subprocess.check_output([str(tools/tool),*map(str,args)],text=True)
 badging=call('aapt','dump','badging',apk)
-assert "package: name='app.traxio.mobile' versionCode='4' versionName='1.4.0'" in badging
+assert "package: name='app.traxio.mobile' versionCode='5' versionName='1.5.0'" in badging
 assert "application-label:'RotaMapa'" in badging
 icon=re.search(r"application-icon-\d+:'([^']+)'",badging)[1]
 with zipfile.ZipFile(apk) as z:Path('candidate/packaged-launcher.png').write_bytes(z.read(icon))
@@ -26,7 +26,7 @@ import{createRequire}from'node:module';import{strict as assert}from'node:assert'
 """],check=True)
 def cert(path):
  values=set(re.findall(r'certificate SHA-256 digest:\s*([a-fA-F0-9]{64})',call('apksigner','verify','--print-certs',path),re.I));assert len(values)==1;return values.pop().lower()
-signer=cert(apk);previous=cert('downloads/rotamapa-android-1.3.1-testes.apk');stable=cert('downloads/rotamapa-android-testes.apk')
+signer=cert(apk);previous=cert('downloads/rotamapa-android-1.4.0-testes.apk');stable=cert('downloads/rotamapa-android-testes.apk')
 assert sha(Path('downloads/traxio-android-testes.apk').read_bytes())=='6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2'
-proof={'version':'1.4.0','source':os.environ['GITHUB_SHA'],'run':os.environ['GITHUB_RUN_ID'],'packageId':'app.traxio.mobile','nativeVersion':4,'apkSha256':sha(apk.read_bytes()),'apkBytes':apk.stat().st_size,'signerSha256':signer,'previous131SignerSha256':previous,'inPlaceUpgradeFrom131':signer==previous,'inPlaceUpgradeFromStable':signer==stable,'otaVersion':m['version'],'otaSha256':m['sha256'],'otaBytes':m['bytes'],'bundledFiles':len(m['files']),'minimumOtaNativeVersion':m['nativeVersion'],'launcherResource':icon,'originalInstallerPreserved':True}
+proof={'version':'1.5.0','source':os.environ['GITHUB_SHA'],'run':os.environ['GITHUB_RUN_ID'],'packageId':'app.traxio.mobile','nativeVersion':5,'apkSha256':sha(apk.read_bytes()),'apkBytes':apk.stat().st_size,'signerSha256':signer,'previous140SignerSha256':previous,'inPlaceUpgradeFrom140':signer==previous,'inPlaceUpgradeFromStable':signer==stable,'otaVersion':m['version'],'otaSha256':m['sha256'],'otaBytes':m['bytes'],'bundledFiles':len(m['files']),'minimumOtaNativeVersion':m['nativeVersion'],'launcherResource':icon,'originalInstallerPreserved':True}
 Path('candidate/ranking-release-proof.json').write_text(json.dumps(proof,indent=2)+'\n');print(json.dumps(proof))

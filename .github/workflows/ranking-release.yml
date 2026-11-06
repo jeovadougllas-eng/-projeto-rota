@@ -1,4 +1,4 @@
-name: RotaMapa Top 10 Ranking release
+name: RotaMapa Top 5 Clients and Products Ranking release
 on:
   push:
     branches: [dev/traxelo-android-routes]
@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 22
       - run: npm ci --ignore-scripts && npm run check && node scripts/check-rotamapa-art.mjs
-      - run: node --test test-unit/buyers.test.mjs test-unit/buyer-api.test.mjs test-unit/billing.test.mjs test-unit/commerce.test.mjs
+      - run: node --test test-unit/buyers.test.mjs test-unit/buyer-api.test.mjs test-unit/ranking-top5.test.mjs test-unit/billing.test.mjs test-unit/commerce.test.mjs
       - name: Use the installed Chrome engine
         run: |
           browser_path=$(command -v google-chrome-stable || command -v google-chrome)
@@ -50,13 +50,13 @@ jobs:
           path: ~/.android/debug.keystore
           key: traxelo-test-debug-signing-v1
       - run: npm ci --prefix mobile --ignore-scripts
-      - run: TRAXELO_RELEASE_TAG=ranking-1.4.0 TRAXELO_UPDATE_OUTPUT=candidate/updateweb node scripts/build-mobile.mjs
+      - run: TRAXELO_RELEASE_TAG=ranking-1.5.0 TRAXELO_UPDATE_OUTPUT=candidate/updateweb node scripts/build-mobile.mjs
       - run: npx cap sync android
         working-directory: mobile
       - run: bash gradlew assembleDebug --no-daemon
         working-directory: mobile/android
       - run: python scripts/verify-ranking-apk.py
-      - run: cp mobile/android/app/build/outputs/apk/debug/app-debug.apk candidate/rotamapa-android-1.4.0-testes.apk
+      - run: cp mobile/android/app/build/outputs/apk/debug/app-debug.apk candidate/rotamapa-android-1.5.0-testes.apk
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ranking-candidate
@@ -76,20 +76,20 @@ jobs:
         run: |
           git fetch origin "$GITHUB_REF_NAME"
           test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
-          cp candidate/rotamapa-android-1.4.0-testes.apk downloads/
+          cp candidate/rotamapa-android-1.5.0-testes.apk downloads/
           cp candidate/updateweb/bundles/* updates/android/bundles/
           cp candidate/updateweb/manifest.json updates/android/manifest.json
           cp candidate/updateweb/manifest.json updates/android/candidate.json
-          cp candidate/ranking-release-proof.json docs/ranking-release-verification.json
+          cp candidate/ranking-release-proof.json docs/ranking-top5-release-verification.json
           python - <<'PY'
           import json,hashlib,shutil
           from pathlib import Path
           p=json.loads(Path('candidate/ranking-release-proof.json').read_text())
-          assert hashlib.sha256(Path('downloads/rotamapa-android-1.4.0-testes.apk').read_bytes()).hexdigest()==p['apkSha256']
-          if p['inPlaceUpgradeFromStable']:shutil.copyfile('candidate/rotamapa-android-1.4.0-testes.apk','downloads/rotamapa-android-testes.apk')
+          assert hashlib.sha256(Path('downloads/rotamapa-android-1.5.0-testes.apk').read_bytes()).hexdigest()==p['apkSha256']
+          if p['inPlaceUpgradeFromStable']:shutil.copyfile('candidate/rotamapa-android-1.5.0-testes.apk','downloads/rotamapa-android-testes.apk')
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add downloads/rotamapa-android-1.4.0-testes.apk downloads/rotamapa-android-testes.apk updates/android/ docs/ranking-release-verification.json
-          git commit -m "build: publish verified Top 10 Ranking APK and Android update [skip ci]"
+          git add downloads/rotamapa-android-1.5.0-testes.apk downloads/rotamapa-android-testes.apk updates/android/ docs/ranking-top5-release-verification.json
+          git commit -m "build: publish verified Top 5 Clients and Products Ranking APK and Android update [skip ci]"
           git push origin "HEAD:$GITHUB_REF_NAME"
