@@ -1,0 +1,59 @@
+{
+  "version": "1.5.0",
+  "source": "07ee097ca1458b4828bd599f7fb75e3127715e82",
+  "run": "42294954527",
+  "packageId": "app.traxio.mobile",
+  "nativeVersion": 5,
+  "apkSha256": "8665a85416cd75ad7bf9485bdcced228508ee3cabba60f35d12566692f47a9a9",
+  "apkBytes": 17914900,
+  "signerSha256": "62bcd9ec297c6e7d2e7502f16ab4100c22eb01b5c330305bf4b41455db8c09c8",
+  "previous140SignerSha256": "60ab60c21dbdf4aa42890b17694a8c1269b59b6e89fafaae7ae432725c67a701",
+  "inPlaceUpgradeFrom140": false,
+  "inPlaceUpgradeFromStable": false,
+  "otaVersion": "c67cba1792f0bd9fbb6a03e3196fddf9139a6c796e6b8444889360435fce8c14",
+  "otaSha256": "5c67dc8f2033e814c4f1ea6855746fec074a63b89d68650e12219b27ead1b622",
+  "otaBytes": 12113475,
+  "bundledFiles": 118,
+  "minimumOtaNativeVersion": 2,
+  "launcherResource": "res/drawable/traxio_icon.png",
+  "originalInstallerPreserved": true,
+  "deploymentId": "dpl_4B4Fag8itxdpvTm9ZW4dWZr2UEbR",
+  "publishedSource": "83562b933b5885df021936689e028d458fa7bbea",
+  "canonicalUrl": "https://traxio-preview.vercel.app/",
+  "publicByteVerification": true,
+  "publicBundleFilesVerified": 118,
+  "anonymousAndOriginChecks": [
+    401,
+    403
+  ],
+  "physicalDeviceTested": false,
+  "ciBrowserChecks": 46,
+  "ciUnitChecks": 37,
+  "localBrowserProfiles": [
+    "Chromium desktop",
+    "Chromium Android viewport",
+    "Chromium tablet portrait",
+    "Chromium tablet landscape",
+    "WebKit iPhone Safari",
+    "WebKit small iPhone",
+    "WebKit landscape iPhone"
+  ],
+  "localUnitChecks": 142,
+  "browserData": "Synthetic fixtures; actual buyer-insights handler with mocked Supabase responses; published UI assets.",
+  "extraVerification": {
+    "lazyRows": 80,
+    "searchAcrossUnrenderedRows": true,
+    "productCsv": "RotaMapa_Ranking_Produtos_2026-11.csv",
+    "darkColors": {
+      "background": "rgb(3, 49, 59)",
+      "text": "rgb(243, 251, 250)"
+    },
+    "overflow": false
+  },
+  "publicBrowserChecks": 30,
+  "publicBrowserProfiles": [
+    "Chromium desktop",
+    "Chromium Android viewport",
+    "WebKit iPhone Safari"
+  ]
+}
