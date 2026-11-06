@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "cbf58f1a7efc6467e900c880a35b0509297094742486086cb4702181053d0a6e",
+  "version": "c67cba1792f0bd9fbb6a03e3196fddf9139a6c796e6b8444889360435fce8c14",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -27,7 +27,7 @@
     "assets/rotamapa-account.css": "b4f77e7e6c1af26954adb697ce97f2ba2f79e2d8ff85f826c92e3429435da311",
     "assets/rotamapa-billing-model.js": "010e088a0c1d74f3161b3d277346e42852e298027c54960db2a1e7a9d929fc5e",
     "assets/rotamapa-billing-ui.js": "9749622e3940f6503c8cc6a45093732ef09bbbe92922975125c3696495999120",
-    "assets/rotamapa-buyer-model.js": "817897bddd6c3f2f43acbca75785091daf86c0b47a2cde657a7d2f3c270bed01",
+    "assets/rotamapa-buyer-model.js": "7da7a7006fbc7b870da69d4c15fdcc9f7fb3c950e1212823dfec6847e91da300",
     "assets/rotamapa-buyer-ui.js": "4582e7cebc96c8a92fae53a559289cc060f8ed2ebc3e73421b438a832e585637",
     "assets/rotamapa-client-identity.css": "044b444f464e79f8bc9340690da3f71e70165b82711d1c4a91018b24877ce4bc",
     "assets/rotamapa-client-identity.js": "7da607c62c391380d822044d2d56dc23d3e7488c6e0aafb85aaa566a27f66503",
@@ -47,9 +47,9 @@
     "assets/rotamapa-portfolio-version-ui.js": "c101f011289d8f6471b8cc4e9c5b0c4c20ed1c6ce783a068e1f1ec7da751e0f3",
     "assets/rotamapa-portfolios.css": "ac14460c49bca76ef36f1b00f99813aa85d2f8ca50e2200b9f7de66cf9bf9d05",
     "assets/rotamapa-portfolios.js": "78bb05117fd88e83a4112407d17c49e082f0d2fe425b34b8522c65affb75548a",
-    "assets/rotamapa-ranking-ui.js": "01ce8e5037330e55b1f327fba391cb2e7a35f144462503f29b3f0e3f60d4637b",
-    "assets/rotamapa-ranking.css": "a356dbc5fb510439c1d73816c3352ce8e748f072327d2a2f5ffefdb7ab0b88aa",
-    "assets/rotamapa-release.json": "ec8452f7f5a8a0fc0937190a04f2b7c3ce2f414dc74c652aaeb72447598fa208",
+    "assets/rotamapa-ranking-ui.js": "4b1642afcf32a758af288d7586ab585a74a1a2176034963eb08e8fd469e75fcc",
+    "assets/rotamapa-ranking.css": "d03ec74228f871f5d91ceb92971342d4bc9b760e579a01713d75217289393e55",
+    "assets/rotamapa-release.json": "0c8174653be7895a7629f237ed990f0f7f5cefb58deb5aada2c9803eb3ee7bf5",
     "assets/rotamapa-scheduling-model.js": "a1b471afcc3c9d60224d2224ff373ea68a3433a5a34a8613c71c794729a1fb96",
     "assets/rotamapa-scheduling.css": "7a5194357ad2241cbed6d729ae70d6419563dd3e3f8440fe03322c604323f9bc",
     "assets/rotamapa-scheduling.js": "19fd121e3f25a119d9a67153d8c9bc5ac3bd693ea719a088101bbdd45d934ca4",
@@ -122,9 +122,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "63b51ed89adba49485164821c080e7f0297be6967f82fec7c5df22192170b077"
+    "index.html": "91da93eaeeb9d2bbabd372c5bea327281c58ebd7c4b7639ec1bcadc2a2010daf"
   },
-  "bundle": "/updates/android/bundles/cbf58f1a7efc6467e900c880a35b0509297094742486086cb4702181053d0a6e.zip",
-  "sha256": "2396fb65c796fe3abc0ca92b85affa35874c2dc89c49be9c48df46d4cddbba21",
-  "bytes": 12108399
+  "bundle": "/updates/android/bundles/c67cba1792f0bd9fbb6a03e3196fddf9139a6c796e6b8444889360435fce8c14.zip",
+  "sha256": "5c67dc8f2033e814c4f1ea6855746fec074a63b89d68650e12219b27ead1b622",
+  "bytes": 12113475
 }
