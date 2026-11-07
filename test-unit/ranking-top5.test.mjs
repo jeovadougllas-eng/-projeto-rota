@@ -19,3 +19,14 @@ test('city scope applies before limits and zeros; CNPJ aliases merge and histori
  const r=M.rankings(copy,[a,b,invoice(1)],catalog,month,{city:'NATAL'});assert.equal(r.allClients.length,1);assert.equal(r.ranking[0].totalCents,2000);assert.deepEqual(r.ranking[0].clientIds,['1','alias']);assert.equal(r.productRanking.length,1);assert.equal(r.productRanking[0].units,20);assert.equal(r.allProducts.find(p=>p.productId==='p1').units,0);
  const archived=M.rankings(clients,[{...invoice(0),lines:[{...invoice(0).lines[0],productId:'archived',name:'Produto antigo 60ml'}]}],catalog,month);assert.equal(archived.allProducts.length,10);assert.equal(archived.productRanking[0].inCurrentCatalog,false);
 });
+test('owner-confirmed manual invoicing counts real amounts and units without inventing PDF origin',()=>{
+ const owner='11111111-1111-4111-8111-111111111111',s={...invoice(0,24),source:undefined};delete s.lines[0].sourceReceipt;delete s.lines[0].sourceItem;
+ assert.equal(M.rankings(clients,[s],catalog,month,{ownerId:owner}).summary.totalOrders,0);
+ s.manualBilling={version:1,state:'invoiced',method:'owner_confirmation',confirmedBy:owner,confirmedAt:'2026-11-07T12:00:00Z',totalCents:2400};
+ const r=M.rankings(clients,[s],catalog,month,{ownerId:owner});assert.equal(r.summary.totalCents,2400);assert.equal(r.summary.totalOrders,1);assert.equal(r.productRanking[0].units,24);assert.equal(s.source,undefined);assert.equal(s.lines[0].sourceReceipt,undefined);
+ assert.equal(M.rankings(clients,[s],catalog,month,{ownerId:'another-owner'}).summary.totalOrders,0);
+ assert.equal(M.rankings(clients,[{...s,status:'cancelled'}],catalog,month,{ownerId:owner}).summary.totalOrders,0);
+ assert.equal(M.rankings(clients,[{...s,manualBilling:{...s.manualBilling,totalCents:2500}}],catalog,month,{ownerId:owner}).summary.totalOrders,0);
+ assert.equal(M.rankings(clients,[s],catalog,'2026-10',{ownerId:owner}).summary.totalOrders,0);
+ assert.equal(M.rankings(clients,[s],catalog,month).summary.totalOrders,0);
+});

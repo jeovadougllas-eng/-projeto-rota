@@ -35,6 +35,11 @@ function analyze(clients,sales,month,options={}){const dates=months(month),byId=
 }
 // Rankings use receipt-level invoicing, including the quantities actually settled.
 // Unverified manual declarations never become invoiced merely by saving a sale.
+function confirmedManual(s,owner){
+ const b=s.manualBilling;
+ if(!owner||s.source||b?.version!==1||b.state!=='invoiced'||b.method!=='owner_confirmation'||b.confirmedBy!==owner||!Number.isFinite(Date.parse(b.confirmedAt))||!Number.isSafeInteger(b.totalCents)||b.totalCents<1||b.totalCents!==s.totalCents)return false;
+ return Array.isArray(s.lines)&&s.lines.length>0&&s.lines.every(l=>Number.isSafeInteger(l.quantity)&&l.quantity>0&&Number.isSafeInteger(l.unitCents)&&l.unitCents>=0)&&s.lines.reduce((n,l)=>n+l.quantity*l.unitCents,0)===b.totalCents;
+}
 function rankings(clients,sales,catalog,month,options={}){
  const dates=months(month),cityKey=v=>v==='__unknown__'?'__unknown__':normalize(v)||'__unknown__',city=options.city?cityKey(options.city):'';
  const active=new Map(),byId=new Map(clients.map(c=>[String(c.id),c])),buyers=new Map(),products=new Map(),cities=new Map();
@@ -49,13 +54,13 @@ function rankings(clients,sales,catalog,month,options={}){
  let totalCents=0,totalOrders=0,totalUnits=0;
  for(const s of sales){
   if(s.kind!=='sale'||s.status!=='confirmed'||s.date<dates.start||s.date>=dates.end)continue;
-  const billed=B().receipts(s).filter(r=>r.state==='invoiced');if(!billed.length)continue;
+  const manual=confirmedManual(s,options.ownerId),billed=manual?[{state:'invoiced',amountCents:s.totalCents}]:B().receipts(s).filter(r=>r.state==='invoiced');if(!billed.length)continue;
   const c=byId.get(String(s.clientId)),cnpj=root.RotaMapaClientIdentity.cnpj({cnpj:s.source?.receipts?.[0]?.cnpj})||c&&root.RotaMapaClientIdentity.cnpj(c),id=cnpj||'id:'+String(s.clientId),g=buyers.get(id)||buyer(id,c,s);
   if(city&&cityKey(g.city)!==city)continue;
   const value=billed.reduce((n,r)=>n+r.amountCents,0);if(value<=0)continue;
   g.totalCents+=value;g.orders++;g.clientIds.add(String(s.clientId));g.purchases.push({id:String(s.id),clientId:String(s.clientId),date:s.date,totalCents:value});buyers.set(id,g);totalCents+=value;totalOrders++;
   for(const l of s.lines||[]){
-   const r=billed.find(r=>r.index===l.sourceReceipt);if(!r)continue;
+   const r=manual?billed[0]:billed.find(r=>r.index===l.sourceReceipt);if(!r)continue;
    const settled=r.settlement?.items?.[l.sourceItem],quantity=settled?.quantity??l.quantity,unitCents=settled?.unitCents??l.unitCents;
    if(!Number.isSafeInteger(quantity)||quantity<=0||!Number.isSafeInteger(unitCents)||unitCents<0)continue;
    const id=String(l.productId||'name:'+normalize(l.name)),p=products.get(id)||{key:id,productId:String(l.productId||''),name:l.name||'Produto arquivado',code:l.code||'',inCurrentCatalog:false,units:0,totalCents:0,sales:new Set(),buyers:new Set()};
