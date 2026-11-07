@@ -3,7 +3,7 @@
   "packageId": "app.traxio.mobile",
   "runtime": "capacitor8-20261026",
   "nativeVersion": 2,
-  "version": "097635a57c4b89d4fae85f3a63557b062df4d19544ea57c0383557a25c5d4f46",
+  "version": "f6dfbc71ce564b73d91fc9a5671f514774654461de5670a4c3e5d6768e3e476a",
   "files": {
     "assets/RobotoCondensed-OFL.txt": "9404a24740ce5b0b2563a495c2aa69f7013a95a3bae4ba5c930af7cf3e70712b",
     "assets/approved-identity.jpg": "4467c53c1f9aa56ce9a7a756ebb99807a9444ef69896cee7b80f24dbdbc8c120",
@@ -27,7 +27,7 @@
     "assets/rotamapa-account.css": "b4f77e7e6c1af26954adb697ce97f2ba2f79e2d8ff85f826c92e3429435da311",
     "assets/rotamapa-billing-model.js": "010e088a0c1d74f3161b3d277346e42852e298027c54960db2a1e7a9d929fc5e",
     "assets/rotamapa-billing-ui.js": "0422ad5bfcef9120b328549f7c13d39854a843145ad794281585145a41600c94",
-    "assets/rotamapa-buyer-model.js": "7da7a7006fbc7b870da69d4c15fdcc9f7fb3c950e1212823dfec6847e91da300",
+    "assets/rotamapa-buyer-model.js": "c71f8d271a6653c82d968b2e49dbb0c0b03093fba65ae50d73d6312f30ed7c14",
     "assets/rotamapa-buyer-ui.js": "4582e7cebc96c8a92fae53a559289cc060f8ed2ebc3e73421b438a832e585637",
     "assets/rotamapa-client-identity.css": "044b444f464e79f8bc9340690da3f71e70165b82711d1c4a91018b24877ce4bc",
     "assets/rotamapa-client-identity.js": "7da607c62c391380d822044d2d56dc23d3e7488c6e0aafb85aaa566a27f66503",
@@ -38,8 +38,8 @@
     "assets/rotamapa-field-ui.css": "80481c846d8389720c2062a8128726f0f1bf55a5da5b9e9278651720d7e3e8c4",
     "assets/rotamapa-field-ui.js": "a8a79d399d171f7c458aa10fd5dc13a8366c10e15f88dbaab9154ebbd10035e8",
     "assets/rotamapa-install-identity.js": "004e93877d34f8921a5720aa90b7781ad6098ceadc22fa9b4b32dd17a45d841f",
-    "assets/rotamapa-links-model.js": "93597441e012d09bff965d23b807d5b53efdc2ae2ea0f6faaa94cde9d6cf6cf6",
-    "assets/rotamapa-links-ui.js": "a613440d47d855e76b3f01693e144514a6f73266f8231030d29de6464e825daf",
+    "assets/rotamapa-links-model.js": "96c664e3a279d35a0a5c4532a3482ea647ea060bd56bc462748b2db3c4b1a24c",
+    "assets/rotamapa-links-ui.js": "d55a38c9807784c1caa62dd04739d1300da895f1e75b5af6c74ad7d8c6e460e8",
     "assets/rotamapa-links.css": "0236964198d724f8e924d65c3d8238111749bc1c27e1ec1a9cc7e7f4f3f84835",
     "assets/rotamapa-management.css": "5412f9c1d5d0ca0ff2c077c611ae69f4f69156ba11b977acc0725480f571d759",
     "assets/rotamapa-order-pdf-model.js": "cf832b6881658e0c9b4cf26281a5e6f681c279139646b3a35d013d3eabcfcfb1",
@@ -52,7 +52,7 @@
     "assets/rotamapa-portfolios.js": "78bb05117fd88e83a4112407d17c49e082f0d2fe425b34b8522c65affb75548a",
     "assets/rotamapa-ranking-ui.js": "a97f02ea26665409cc4f6d2af4121c55fbdcb10d9232abf6a00ad00fa50cd7b1",
     "assets/rotamapa-ranking.css": "d03ec74228f871f5d91ceb92971342d4bc9b760e579a01713d75217289393e55",
-    "assets/rotamapa-release.json": "549d7bb506fa6340bbaac91d4a3475a338dcb107a1afd48c292b8b7cbddd9e9b",
+    "assets/rotamapa-release.json": "774a79bfd03da4d6d72cc4d3e6e3a668a1b56e1ea2257c526ae8ae75d558912d",
     "assets/rotamapa-scheduling-model.js": "a1b471afcc3c9d60224d2224ff373ea68a3433a5a34a8613c71c794729a1fb96",
     "assets/rotamapa-scheduling.css": "7a5194357ad2241cbed6d729ae70d6419563dd3e3f8440fe03322c604323f9bc",
     "assets/rotamapa-scheduling.js": "4da02d1afc1ae8ece96f8495d1644029b9c224a9165f01caf91c5ef2bfbab892",
@@ -128,9 +128,9 @@
     "assets/visual-kit/manifest.json": "02fe72defb3c7aadb41423bd98090973d49ad9af7a349d8d1d73471b89f0854c",
     "assets/visual-kit/reference/1411.png": "d91ee7784b5e45c9a62873605287dcd9247ddfc3403f47fa95bd0482ee3aedd9",
     "assets/visual-kit/reference/839.png": "811d579fdec13a04051d5314ea12b27e50179d3217e1168c61980efe5d3fc3c5",
-    "index.html": "d55ff466388098c43198645f84912fb46e5249cc725d956208743176fbd40752"
+    "index.html": "ce403f68d09f6eaf74a092ac03a4906d2450843930584bb8793a47ff956fc016"
   },
-  "bundle": "/updates/android/bundles/097635a57c4b89d4fae85f3a63557b062df4d19544ea57c0383557a25c5d4f46.zip",
-  "sha256": "e63e1a70df66150de6f0a238fd6eb92f6a556ce72e97ea6eb90d766027b845d9",
-  "bytes": 12133808
+  "bundle": "/updates/android/bundles/f6dfbc71ce564b73d91fc9a5671f514774654461de5670a4c3e5d6768e3e476a.zip",
+  "sha256": "d084e78c3b15df07624fe305951e818e183a323de4641bc45462adfb58c8e123",
+  "bytes": 12134256
 }

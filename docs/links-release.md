@@ -1,5 +1,11 @@
 # RotaMapa 1.6.0 — Links úteis e consulta ao Mercado Farma
 
+## Atualização de atalhos — 07/11/2026
+
+FAROL — https://farol-comercial-pb-rn.arthurdepaula51767.chatgpt.site/#clients — passa a integrar os atalhos EMS. A leitura das preferências anteriores inclui somente esse novo atalho, preservando links personalizados, nomes editados e exclusões anteriores. A versão dos atalhos fica salva ao editar as preferências, permitindo remover FAROL sem que ele reapareça. Um endereço já cadastrado não é duplicado. A URL mantém o destino `#clients`.
+
+A atualização foi validada com 150 testes unitários e 24 testes de navegador em desktop e Android, incluindo uma carteira EMS anterior à inclusão de FAROL e exclusão persistente após reabrir. O bundle Android compatível foi conferido por hashes dos 124 arquivos, incluindo igualdade dos módulos de links e ranking com a origem. A atualização usa o mecanismo interno existente; não exige reinstalação ou novos plugins.
+
 A oitava tela, Links úteis, fica entre Ranking e Importar carteira. Mantém marca, paleta e cenários existentes. Os cartões seguem o mockup aprovado, com nome, descrição/domínio, abertura no navegador e edição. Adicionar link recebe nome e URL; é possível renomear, mudar o endereço e remover atalhos. A interface usa os modos claro e escuro e funciona nos planos Free, Plus e Pro.
 
 A empresa é uma preferência da carteira, não uma inferência do e-mail ou do catálogo. Carteiras existentes mostram Identificar empresa em Links úteis. Também há Empresa desta carteira em Painel → Gerenciar carteira. EMS Marcas, Outra empresa (nome opcional) e Informar depois estão disponíveis, sem reimportar clientes. Selecionar EMS pela primeira vez inclui exatamente:
