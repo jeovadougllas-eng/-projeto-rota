@@ -24,7 +24,8 @@ jobs:
         run: |
           browser_path=$(command -v google-chrome-stable || command -v google-chrome)
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
-      - run: npx playwright test --config=playwright.subscriptions.config.js --project=desktop --project=android-browser --project=tablet-vertical --project=tablet-horizontal --max-failures=2
+      - name: Verify responsive subscriptions and sidebar navigation
+        run: npx playwright test --config=playwright.subscriptions.config.js --project=desktop --project=android-browser --project=tablet-vertical --project=tablet-horizontal --max-failures=2
       - run: npx playwright test --config=playwright.account.config.js --project=desktop --project=android-browser --max-failures=2
       - run: npx playwright test --config=playwright.management.config.js --project=desktop --project=android-browser tests/plan-testing.spec.js --max-failures=2
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

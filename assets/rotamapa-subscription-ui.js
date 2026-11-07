@@ -19,5 +19,5 @@
   window.RotaMapaPlanTesting?.render();if(focus)$('subscription-tab-'+tab)?.focus();
  }
  function select(value,focus=false){if(!buttons.some(x=>x[0]===value))return;tab=value;draw(focus);}
- window.RotaMapaSubscriptions={render(context){ctx=context;last=JSON.stringify(context);tab='plan';draw();},refresh(access){if(!ctx||!$('subscriptionRoot'))return;const next={...ctx,access};if(JSON.stringify(next)!==last){ctx=next;last=JSON.stringify(next);draw();}},open(value='plan'){window.RotaMapaAccount?.open('subscriptions');select(value);},select};
+ window.RotaMapaSubscriptions={render(context){ctx=context;last=JSON.stringify(context);tab='plan';draw();},refresh(access){if(!ctx||!$('subscriptionRoot'))return;const next={...ctx,access};if(JSON.stringify(next)!==last){ctx=next;last=JSON.stringify(next);draw();}},async open(value='plan'){await window.RotaMapaAccount?.open('subscriptions');select(value);},select};
 })();
