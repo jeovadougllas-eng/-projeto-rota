@@ -19,3 +19,15 @@ Model tests cover prices, honorary identity and permitted test progression. Brow
 A real server RPC check confirms exactly two founders with permanent Pro access, Signature identity, no billing and unlimited stored-route/portfolio quotas; other accounts cannot obtain Signature by supplying user metadata. Private QA tables intentionally have RLS with no client policies; no new exposed tables were added. The preexisting leaked-password-protection advisory remains unchanged.
 
 CI builds and compares every bundled file in the OTA archive and the native installer, checks package ID/name/version, original launcher pixels and signing certificates. The existing stable installer is only replaced when its signing identity matches. Existing installations should use the internal update flow to preserve data.
+
+## Published result
+
+- Source commit: `7d5e3c479b428ae86ee73878a69015cb97bbeb99`.
+- Artifact commit: `f7a2a5f0d6c335ae65ccf0457f86c1f8a21282cc`.
+- [Release CI 42336400446](https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/42336400446): all jobs successful; 148 model tests, 32 responsive subscription cases, 24 account regressions and six authorized test-progression cases.
+- Local WebKit: 16 subscription scenarios passed. The final public Safari check also verifies sidebar navigation and direct comparison opening after the last navigation fix.
+- Deployment `dpl_715HtTwpkZ1XyAaND5UzmPv4jkXd` is READY at https://traxio-preview.vercel.app/ with the exact artifact commit.
+- Public tests use isolated synthetic identities, not the founders' sessions. Server RPC checks independently verify the two actual founder grants and exclusion of other accounts.
+- Remote migration version `20261107035047` is reflected in the repository filename; no additional database change is required for this filename alignment.
+- The versioned APK has a different signing identity from 1.6.0 and the stable installer. Existing installers were preserved. Existing devices should use **Conta → Sobre e atualizações → Verificar atualizações** instead of reinstalling. Physical-device installation was not performed during this release.
+- The preexisting [leaked-password-protection advisory](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) is unrelated to this release. Private QA tables intentionally deny direct client access; no new exposed tables or permissive RLS policies were added.

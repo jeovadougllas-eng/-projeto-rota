@@ -1,0 +1,64 @@
+{
+  "url": "https://traxio-preview.vercel.app",
+  "version": "1.7.0",
+  "checkedAt": "2026-11-07T04:04:08.826Z",
+  "accounts": "synthetic browser identities; no real customer records or payment requests",
+  "cases": [
+    {
+      "name": "desktop-signature",
+      "pass": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "phone-essential",
+      "pass": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "desktop-executive",
+      "pass": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "tablet-elite",
+      "pass": true,
+      "consoleErrors": []
+    },
+    {
+      "name": "private-simulation-essential-executive-elite-reset",
+      "pass": true
+    }
+  ],
+  "safari": {
+    "name": "iphone-safari-public-signature-and-navigation",
+    "pass": true,
+    "consoleErrors": [],
+    "syntheticIdentity": true
+  },
+  "deployment": "dpl_715HtTwpkZ1XyAaND5UzmPv4jkXd",
+  "deployedCommit": "f7a2a5f0d6c335ae65ccf0457f86c1f8a21282cc",
+  "sourceCommit": "7d5e3c479b428ae86ee73878a69015cb97bbeb99",
+  "ciRun": 42336400446,
+  "serverVerification": {
+    "signatureFounders": 2,
+    "permanentProGrants": 2,
+    "qaTestEmailPreserved": true,
+    "clientsCanChangePlanGrants": false,
+    "anonymousCanReadEntitlement": false,
+    "billingEnabled": false
+  },
+  "downloads": [
+    {
+      "path": "/downloads/rotamapa-android-1.7.0-testes.apk",
+      "bytes": 17937361,
+      "sha256": "6a43c2504e9fb99c5e3b5eb69f1315ddb6ca787de3723d122b2a5964e1ca7218",
+      "pass": true
+    },
+    {
+      "path": "/updates/android/bundles/097635a57c4b89d4fae85f3a63557b062df4d19544ea57c0383557a25c5d4f46.zip",
+      "bytes": 12133808,
+      "sha256": "e63e1a70df66150de6f0a238fd6eb92f6a556ce72e97ea6eb90d766027b845d9",
+      "pass": true
+    }
+  ]
+}
