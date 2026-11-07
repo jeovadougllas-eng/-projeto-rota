@@ -1,0 +1,38 @@
+name: Confirmed locations and usable partial routes
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/confirmed-locations.yml', 'tests/confirmed-locations.spec.js', 'assets/traxio-route-ui.js', 'assets/traxio-ui.js', 'assets/traxelo-shell.css', 'index.html']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Use the runner browser without a slow operating-system package refresh
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install --with-deps chromium
+          fi
+      - run: npm run check
+      - run: npm run test:geolocation
+      - name: Confirmed point persistence, safe sync, partial routes and street retry
+        run: npx playwright test tests/confirmed-locations.spec.js --project=desktop-light --project=tablet-portrait-light --project=tablet-landscape-dark --workers=2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: confirmed-locations-browser
+          retention-days: 30
+          path: |
+            test-results/
+            playwright-report/

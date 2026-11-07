@@ -13,6 +13,6 @@ await device.shell('pm grant app.traxio.mobile android.permission.ACCESS_FINE_LO
 const emit=()=>execFileSync('adb',['emu','geo','fix','-35.211','-5.795'],{stdio:'ignore'});emit();const gpsTimer=setInterval(emit,2000);
 let position;try{position=await page.evaluate(()=>new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lon:p.coords.longitude,accuracy:p.coords.accuracy}),reject,{enableHighAccuracy:true,timeout:30000,maximumAge:10000})));}finally{clearInterval(gpsTimer);}
 if(Math.abs(position.lat+5.795)>.01||Math.abs(position.lon+35.211)>.01)throw Error('Unexpected simulated GPS location.');
-await mkdir('mobile/evidence',{recursive:true});await page.screenshot({path:'mobile/evidence/android-login.png'});await writeFile('mobile/evidence/android-runtime.json',JSON.stringify({native,position,simulated:true},null,2));
+await mkdir('mobile/evidence',{recursive:true});await writeFile('mobile/evidence/android-login.png',execFileSync('adb',['exec-out','screencap','-p'],{maxBuffer:20000000}));await writeFile('mobile/evidence/android-runtime.json',JSON.stringify({native,position,simulated:true},null,2));
 console.log('Android installed and launched: approved interface, OAuth buttons, native bridge, GPS permission and simulated coordinates verified.');
 await device.close();

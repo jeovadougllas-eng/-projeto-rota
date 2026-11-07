@@ -1,0 +1,25 @@
+{
+  "syntheticClients": true,
+  "physicalDevice": false,
+  "realMap": true,
+  "realRouter": true,
+  "capture": "ADB compositor after camera and paint settle",
+  "phase": "Rota parcialmente calculada",
+  "summary": "Trajeto por ruas: 7.1 km · 11 min estimados · 6 paradas. 1 clientes excluídos com sua confirmação. Sem trânsito em tempo real.",
+  "stops": [
+    4,
+    3,
+    2,
+    1,
+    5,
+    6
+  ],
+  "excluded": [
+    "7"
+  ],
+  "renderedFeatures": 2,
+  "streetCoordinates": 199,
+  "moving": false,
+  "width": 1280,
+  "height": 800
+}

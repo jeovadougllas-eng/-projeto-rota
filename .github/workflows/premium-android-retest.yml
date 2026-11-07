@@ -1,0 +1,76 @@
+name: Original APK clean evidence for saved routes
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/premium-android-retest.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: premium-clean-android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  installed-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Use the exact already-verified update
+        run: |
+          mkdir -p candidate
+          python - <<'PYFETCH'
+          from pathlib import Path
+          import urllib.request,json
+          raw=urllib.request.urlopen('https://traxio-preview.vercel.app/updates/android/candidate.json').read()
+          assert json.loads(raw)['version']=='004a7d951f4d865b10a7b45c231297bd19526e148b56f9d2c35182368b6207fb'
+          Path('candidate/update-manifest.json').write_bytes(raw)
+          PYFETCH
+      - run: npm ci
+      - name: Preserve exact APK and prepare emulator renderer
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          assert hashlib.sha256(Path('downloads/traxio-android-testes.apk').read_bytes()).hexdigest()=='6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2'
+          PY
+          sudo chmod a+rw /dev/kvm
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-fields-xvfb.log 2>&1 &
+      - name: Test real HTTPS update in original APK with synthetic data only
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb install downloads/traxio-android-testes.apk
+            adb shell am start -n app.traxio.mobile/.MainActivity
+            adb shell pm disable-user --user 0 com.google.android.apps.nexuslauncher
+            adb shell run-as app.traxio.mobile mkdir -p shared_prefs
+            TRAXELO_LOCATION_PROOF=1 TRAXELO_FIELDS_PROOF=1 TRAXELO_VISITS_PROOF=1 TRAXELO_FIELD_NAVIGATION_PROOF=1 TRAXELO_PREMIUM_PROOF=1 node scripts/android-updates.mjs
+      - name: Preserve clean original-APK evidence without changing the update
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs downloads/traxio-android-testes.apk
+          mkdir -p updates/android docs/captures/premium-android
+          cp mobile/evidence/* docs/captures/premium-android/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/captures/premium-android/
+          git commit -m "test: capture saved routes in the original APK without the emulator launcher [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: premium-installed-android-clean
+          path: mobile/evidence/

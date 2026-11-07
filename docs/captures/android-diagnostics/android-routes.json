@@ -1,0 +1,19 @@
+{
+  "syntheticClients": true,
+  "realAndroidWebView": true,
+  "realRoutingService": true,
+  "simulatedGPS": true,
+  "physicalDevice": false,
+  "checks": [],
+  "calls": [
+    {
+      "url": "https://router.project-osrm.org/table/v1/driving/-35.2109983,-5.7949983;-35.208,-5.805;-35.208999999999996,-5.806;-35.21,-5.8069999999999995;-35.211,-5.808;-35.211999999999996,-5.808999999999999;-35.213,-5.81;-35.214,-5.811?annotations=distance&sources=0;1;2;3;4;5;6;7&destinations=0;1;2;3;4;5;6;7",
+      "status": 200
+    },
+    {
+      "url": "https://router.project-osrm.org/route/v1/driving/-35.2109983,-5.7949983;-35.211999999999996,-5.808999999999999;-35.211,-5.808;-35.21,-5.8069999999999995;-35.208999999999996,-5.806;-35.208,-5.805;-35.213,-5.81;-35.214,-5.811?overview=full&geometries=geojson",
+      "status": 200
+    }
+  ],
+  "error": "Error: expect(locator).toHaveText(expected) failed\n\nLocator:  locator('#plannerState')\nExpected: \"Rota calculada\"\nReceived: \"Falha de comunicação\"\nTimeout:  60000ms\n\nCall log:\n  - Expect \"to.have.text\" with timeout 60000ms\n  - waiting for locator('#plannerState')\n    3 × locator resolved to <p role=\"status\" id=\"plannerState\" aria-live=\"polite\" data-phase=\"awaiting-origin\">Aguardando origem</p>\n      - unexpected value \"Aguardando origem\"\n    38 × locator resolved to <p role=\"status\" id=\"plannerState\" aria-live=\"polite\" data-phase=\"calculating\">Calculando rota</p>\n       - unexpected value \"Calculando rota\"\n    75 × locator resolved to <p role=\"status\" id=\"plannerState\" aria-live=\"polite\" data-phase=\"communication-error\">Falha de comunicação</p>\n       - unexpected value \"Falha de comunicação\"\n\n    at captureRawStack (/home/runner/work/-projeto-rota/-projeto-rota/node_modules/playwright-core/lib/coreBundle.js:9681:17)\n    at callMatcherAsStep (/home/runner/work/-projeto-rota/-projeto-rota/node_modules/playwright/lib/matchers/expect.js:13310:57)\n    at Object.toHaveText (/home/runner/work/-projeto-rota/-projeto-rota/node_modules/playwright/lib/matchers/expect.js:13300:23)\n    at /home/runner/work/-projeto-rota/-projeto-rota/scripts/android-routes.mjs:25:46"
+}

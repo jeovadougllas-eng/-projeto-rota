@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.order-pdf.config.js';export default defineConfig({...base,testMatch:'distributors-published.spec.js',use:{...base.use,baseURL:'https://traxio-preview.vercel.app',serviceWorkers:'block'},webServer:undefined,reporter:[['list']],outputDir:'test-results-distributors-published',timeout:60000});

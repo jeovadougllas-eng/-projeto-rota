@@ -1,0 +1,104 @@
+name: Verify visits and geolocation update in the original Android APK
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/location-android-update.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: location-ota-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  stage-web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm ci --prefix mobile --ignore-scripts
+      - run: npm run check && npm run test:geolocation
+      - name: Create web update compatible with the previously installed native runtime
+        run: |
+          TRAXELO_UPDATE_OUTPUT=candidate/updateweb node scripts/build-mobile.mjs
+          mkdir -p updates/android/bundles
+          cp candidate/updateweb/bundles/* updates/android/bundles/
+          cp candidate/updateweb/manifest.json updates/android/candidate.json
+          cp candidate/updateweb/manifest.json candidate/update-manifest.json
+          node scripts/visit-workbook-fixture.mjs
+          mkdir -p docs/examples
+          cp test-results-visits/workbook-validation.xlsx docs/examples/visit-report-example.xlsx
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/android/ docs/examples/visit-report-example.xlsx
+          git commit -m "build: stage visits, Excel and resumable geolocation web update without replacing APK [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: location-web-candidate
+          path: candidate/update-manifest.json
+  installed-update:
+    needs: stage-web
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: location-web-candidate
+          path: candidate
+      - run: npm ci
+      - name: Preserve exact APK and use a stable emulator renderer
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+          assert hashlib.sha256(Path('downloads/traxio-android-testes.apk').read_bytes()).hexdigest() == '6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2'
+          PY
+          sudo chmod a+rw /dev/kvm
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/traxelo-location-xvfb.log 2>&1 &
+      - name: Download the real HTTPS candidate into the original installed APK and verify map workflow
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu host -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb shell wm size 1200x1920
+            adb shell wm density 240
+            adb install downloads/traxio-android-testes.apk
+            adb shell am start -n app.traxio.mobile/.MainActivity
+            adb shell run-as app.traxio.mobile mkdir -p shared_prefs
+            TRAXELO_LOCATION_PROOF=1 TRAXELO_VISITS_PROOF=1 node scripts/android-updates.mjs
+      - name: Activate only after installed update and direct pin checks succeed; keep APK unchanged
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git diff --exit-code HEAD FETCH_HEAD -- index.html assets/ mobile/native/ mobile/capacitor.config.json scripts/build-mobile.mjs downloads/traxio-android-testes.apk
+          mkdir -p updates/android docs/captures/location-android
+          cp candidate/update-manifest.json updates/android/manifest.json
+          cp mobile/evidence/* docs/captures/location-android/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates/android/ docs/examples/visit-report-example.xlsxmanifest.json docs/captures/location-android/
+          git commit -m "build: activate Android-tested visit reports and geolocation recovery [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: installed-location-update-evidence
+          retention-days: 30
+          path: mobile/evidence/

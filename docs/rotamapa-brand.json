@@ -1,0 +1,15 @@
+{
+  "name": "RotaMapa",
+  "slogan": "Sua rota com inteligência.",
+  "sourceLogoSha256": "37fbe3bd31a32eea6e024f1a748dc8f4b5d0bcce9aaf0b24b9d9b2a28b5e99a5",
+  "sourceIconSha256": "a1daba9573cee11e7aec4ad964a04148da24ba5eeaccbb967e1123efa75c4423",
+  "files": {
+    "assets/rotamapa/logo.webp": "cff24fbe65a3e978f9a9118b81a671175561c311aae541a1f7120ef3c1895dc2",
+    "assets/rotamapa/icon-32.png": "538d7502e1515eca661a9f2b71a4b834b664ee0a9c30e610086f04ed1d8df3f8",
+    "assets/rotamapa/icon-180.png": "ba9e125edef3b7b4453a7ad52197e7e07a23d30fd20a2a7ec3f8e5dd034ee404",
+    "assets/rotamapa/icon-192.png": "9b90b9cf832777c3539d7d49edcb0cec9f97ad88d6edf41b7a51b5807b8cdabb",
+    "assets/rotamapa/icon-512.png": "b4f80d48a98fa832d81f453e3661e411245ad4b316f5ab9bac1fbc8352198c66"
+  },
+  "symbol": "RM: pin no R; três marcações de estrada na haste direita do M.",
+  "sourceNote": "Ícone exportado a partir da imagem preparada com base na referência enviada; tipografia e slogan anteriores preservados."
+}

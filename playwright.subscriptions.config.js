@@ -1,0 +1,3 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.iphone.config.js';
+const chrome=process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?{launchOptions:{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH}}:{};
+export default defineConfig({...base,use:{...base.use,serviceWorkers:'block'},testMatch:'subscriptions.spec.js',timeout:50000,workers:2,outputDir:'test-results-subscriptions',reporter:[['list'],['json',{outputFile:'test-results-subscriptions/results.json'}]],projects:[...base.projects,{name:'tablet-vertical',use:{...chrome,browserName:'chromium',viewport:{width:820,height:1180}}},{name:'tablet-horizontal',use:{...chrome,browserName:'chromium',viewport:{width:1180,height:820}}}]});

@@ -1,0 +1,109 @@
+{
+  "project": "Traxelo.IA",
+  "tagline_approved": "Sua rota com inteligência.",
+  "source_branding": "reference/brand_APROVADA_TRAXELO_IA.png",
+  "source_mockup": "reference/interface_mockup_legacy_TRAXIO.png",
+  "source_original_branding": "reference/brand_original_legacy_TRAXIO.png",
+  "important": "Mockup and legacy cropped screenshots show TRAXIO and its old slogan. Update UI text to Traxelo.IA and new slogan; do not use old logo in production. Brand source has old slogan embedded: crop/replace as live text, do not present old tagline as new.",
+  "branding_assets": [
+    {
+      "file": "assets/branding/logo_principal_traxelo_ia.png",
+      "crop_box": [
+        35,
+        40,
+        1410,
+        470
+      ],
+      "transparent": false,
+      "vector": false
+    },
+    {
+      "file": "assets/branding/simbolo_estrada_pin.png",
+      "crop_box": [
+        35,
+        45,
+        475,
+        455
+      ],
+      "transparent": false,
+      "vector": false
+    },
+    {
+      "file": "assets/branding/wordmark_traxelo_ia.png",
+      "crop_box": [
+        455,
+        130,
+        1400,
+        330
+      ],
+      "transparent": false,
+      "vector": false
+    },
+    {
+      "file": "assets/branding/icone_app_escuro.png",
+      "crop_box": [
+        1410,
+        52,
+        1745,
+        449
+      ],
+      "transparent": false,
+      "vector": false
+    },
+    {
+      "file": "assets/branding/icone_app_claro.png",
+      "crop_box": [
+        1755,
+        52,
+        2100,
+        449
+      ],
+      "transparent": false,
+      "vector": false
+    },
+    {
+      "file": "assets/branding/logo_horizontal_claro.png",
+      "crop_box": [
+        75,
+        510,
+        630,
+        685
+      ],
+      "transparent": false,
+      "vector": false
+    },
+    {
+      "file": "assets/branding/logo_horizontal_fundo_escuro.png",
+      "crop_box": [
+        705,
+        490,
+        1405,
+        695
+      ],
+      "transparent": false,
+      "vector": false
+    },
+    {
+      "file": "assets/branding/logo_monocromatica.png",
+      "crop_box": [
+        1460,
+        510,
+        2110,
+        675
+      ],
+      "transparent": false,
+      "vector": false
+    }
+  ],
+  "mockup_assets": [
+    "assets/mockup_reference/clients_mockup_reference.png",
+    "assets/mockup_reference/dashboard_hero_reference.png",
+    "assets/mockup_reference/dashboard_mockup_reference.png",
+    "assets/mockup_reference/login_hero_reference.png",
+    "assets/mockup_reference/login_mockup_reference.png",
+    "assets/mockup_reference/routes_mockup_reference.png",
+    "assets/mockup_reference/spreadsheets_mockup_reference.png"
+  ],
+  "asset_provenance": "Cropped raster references; no original design sources, font files or vector logos.",
+  "notes": "Do not change Supabase auth, customer data, route algorithms or deploy main. Work in feature branch and verify screenshots."
+}

@@ -1,0 +1,404 @@
+/* Approved concept 03 — Foco em campo. Original scenic files and live controls. */
+body.rm-field.traxio-ui-ready{
+ --u:1px;--header-h:68px;--sidebar-w:92px;--field-brand:#c7f526;--field-teal:#00b6a0;
+ font:400 16px/1.45 Arial,Helvetica,sans-serif;background:#002832;
+ --glass:#f5fbf8;--glass-soft:#e5f2ed;--glass-border:#779a99;--surface-ink:#133e45;--surface-muted:#3d6268;
+ --surface-field:#fff;--surface-line:#779a99;--surface-hover:#d4ece4;--surface-focus:#00675f;
+}
+body.rm-field.traxio-dark{
+ --glass:#03313b;--glass-soft:#073e47;--glass-border:#5c8e92;--surface-ink:#f3fbfa;--surface-muted:#c3d9da;
+ --surface-field:#032a34;--surface-line:#5c8e92;--surface-hover:#10525a;--surface-focus:#d2f640;
+}
+body.rm-field.traxio-ui-ready>header{height:var(--header-h);padding:8px 18px;gap:10px;background:#002e38;border-color:#47767a;box-shadow:none}
+body.rm-field.traxio-ui-ready .header-brand{flex:0 1 240px;min-width:90px;max-width:240px;margin-right:auto}
+body.rm-field.traxio-ui-ready .header-brand .brand-crop{width:100%;max-width:240px;min-height:32px}
+body.rm-field .header-motto{display:none}
+body.rm-field :is(.theme-toggle,.appointment-bell){width:44px;height:44px;min-height:44px;padding:10px!important;border:0;border-radius:10px;box-shadow:none;background:transparent;color:#f0faf6}
+body.rm-field .theme-toggle{color:var(--field-brand)}
+body.rm-field #accountToggle{min-height:44px;border:1px solid #6a979c;border-radius:12px;background:#063c46;color:#f4faf8;font-size:14px;max-width:220px}
+body.rm-field .account-avatar{width:32px;height:32px;background:#00796e;color:#fff}
+body.rm-field.traxio-ui-ready>main{left:var(--sidebar-w);top:var(--header-h);padding:18px 22px 40px;scrollbar-width:thin;scrollbar-gutter:auto;background:rgba(0,35,43,.92)}
+body.rm-field.traxio-ui-ready>nav.tabs{width:var(--sidebar-w);top:var(--header-h);padding:8px 6px 18px;gap:5px;background:#002d36;border-right:1px solid #426a70;box-shadow:none;overflow-y:auto}
+body.rm-field.traxio-ui-ready[data-screen] .tabs>button{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:5px;width:100%;min-height:72px;padding:9px 2px;font-size:12px;line-height:1.15;color:#f2f9f7;border:0;border-radius:10px;background:transparent;box-shadow:none;white-space:normal}
+body.rm-field.traxio-ui-ready .tabs>button.active{background:#007f79;color:var(--field-brand);box-shadow:none;border:0}
+body.rm-field.traxio-ui-ready .tabs>button svg{width:25px;height:25px;stroke-width:2;fill:none;stroke:currentColor;flex:none}
+body.rm-field .tabs :is(.nav-art,.nav-pattern){display:none!important}
+body.rm-field.traxio-ui-ready :is(button,a.secondary,summary,[role=button]){touch-action:manipulation}
+body.rm-field.traxio-ui-ready :is(main,dialog) :is(button,a.secondary,summary){min-height:48px;line-height:1.3;font-family:inherit}
+body.rm-field.traxio-ui-ready :is(main,dialog) button{border-radius:10px;white-space:normal;box-shadow:none;font-size:16px;padding:11px 14px}
+body.rm-field.traxio-ui-ready :is(main,dialog) button:not(.secondary):not(.client-link):not(.visit-metric-action):not(.traxelo-saved-pin):not(.traxio-route-pin){background:#008674;color:#fff;border:1px solid #0fbca5}
+body.rm-field.traxio-ui-ready :is(main,dialog) :is(button.secondary,a.secondary){background:var(--glass-soft);color:var(--surface-ink);border:1px solid var(--surface-line)}
+body.rm-field.traxio-ui-ready :is(main,dialog) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:48px;font-family:inherit;font-size:16px;border-radius:9px;padding:10px 12px;background:var(--surface-field);color:var(--surface-ink);border-color:var(--surface-line)}
+body.rm-field.traxio-ui-ready :is(input[type=checkbox],input[type=radio]){width:22px;height:22px;min-width:22px;accent-color:#008b7a}
+body.rm-field.traxio-ui-ready :is(button,a,summary,input,select,textarea,[role=button]):focus-visible{outline:3px solid var(--surface-focus);outline-offset:3px}
+body.rm-field.traxio-ui-ready :is(.card,.premium-item,.route-mode-panel,.field-next-step,.field-disclosure){border:1px solid var(--surface-line);border-radius:12px;background:var(--glass);color:var(--surface-ink);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+body.rm-field.traxio-ui-ready :is(.card,.premium-item) :is(h2,h3,h4,strong,p,label,small){color:var(--surface-ink)}
+body.rm-field.traxio-ui-ready :is(.muted,.field-client-region){color:var(--surface-muted)}
+body.rm-field .field-icon{width:23px;height:23px;flex:0 0 23px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+body.rm-field .field-primary-action,body.rm-field #painel .field-primary-action{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:56px;background:#008674;color:white;border:1px solid #00bea5;border-radius:12px;font-size:20px;font-weight:700}
+body.rm-field .field-primary-action:disabled{opacity:.55}
+body.rm-field .field-primary-action svg:last-child{margin-left:auto}
+body.rm-field .field-primary-action .field-icon:first-child{margin-left:0}
+body.rm-field :is(.field-map-actions,.field-history-actions,.field-import-actions) button{display:flex;align-items:center;justify-content:center;gap:8px}
+body.rm-field .field-disclosure{padding:0 14px;margin:14px 0}
+body.rm-field .field-disclosure>summary{cursor:pointer;display:list-item;font-weight:700;padding:13px 0;min-height:48px;box-sizing:border-box}
+body.rm-field .field-disclosure[open]{padding-bottom:14px}
+body.rm-field .field-disclosure>.card{margin-top:0;border:0;padding:8px 0}
+body.rm-field .field-disclosure>button{margin:6px 6px 6px 0}
+/* Each page keeps its approved photographic illustration as a compact hero. */
+body.rm-field .field-page-hero{position:relative;isolation:isolate;overflow:hidden;height:164px;min-height:164px;padding:0 18px 15px;margin:0 0 14px;border:0;border-radius:12px;display:flex;flex-direction:column;justify-content:flex-end;background:#00313b}
+body.rm-field .field-hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 77%;z-index:-2;pointer-events:none}
+body.rm-field .field-page-hero:after,body.rm-field #painel .traxio-hero:after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#002a35 0%,#002a35e8 14%,#002a3550 60%,#002a3500);pointer-events:none}
+body.rm-field .field-page-hero h2{font-size:30px;margin:0;line-height:1.1;color:#fff;text-shadow:0 1px 3px #00252e;letter-spacing:-.025em}
+body.rm-field .field-page-hero p{display:none}
+body.rm-field .tab{max-width:1240px;margin:0 auto}
+/* Dashboard order and the compact portfolio switch match the approved concept. */
+body.rm-field.traxio-ui-ready #painel{max-width:980px;margin:0 auto;padding:0 0 24px;min-height:0}
+body.rm-field.traxio-ui-ready #painel .traxio-hero{position:relative;isolation:isolate;overflow:hidden;height:180px;min-height:180px;padding:0 18px 16px;margin:0 0 10px;border-radius:12px;background:#00313b;display:flex;align-items:flex-end}
+body.rm-field.traxio-ui-ready #painel .traxio-hero .field-hero-image{display:block;object-position:center 83%}
+body.rm-field #painel .traxio-hero :is(.traxio-kicker,p){display:none}
+body.rm-field.traxio-ui-ready #painel .traxio-hero h2{position:static;width:auto;height:auto;clip-path:none;overflow:visible;font-family:Arial,Helvetica,sans-serif;font-size:32px;line-height:1.06;max-width:400px;margin:0;letter-spacing:-.025em;color:#fff}
+body.rm-field #painel .traxio-hero h2 em{color:#fff}
+body.rm-field #portfolioPanel{display:block;padding:0;margin:0 0 12px;border:0;background:transparent;box-shadow:none}
+body.rm-field #portfolioPanel[hidden]{display:none}
+body.rm-field .field-portfolio-switch{position:relative;display:flex;align-items:center;min-height:48px;padding:10px 42px 10px 12px;background:var(--glass);color:var(--surface-ink);border:1px solid var(--surface-line);border-radius:10px;box-sizing:border-box}
+body.rm-field .field-portfolio-switch>div{min-width:0;flex:1}
+body.rm-field .field-portfolio-switch :is(p,.portfolio-caption){display:none}
+body.rm-field #activePortfolioName{font-size:16px;line-height:1.3;margin:0;overflow-wrap:anywhere;color:var(--surface-ink)}
+body.rm-field #choosePortfolio{position:absolute;inset:0;width:100%;height:100%;border:0!important;background:transparent!important;color:transparent!important;overflow:hidden;border-radius:10px}
+body.rm-field #choosePortfolio:after{content:'⌄';position:absolute;right:13px;top:10px;font-size:22px;color:var(--surface-ink)}
+body.rm-field #fieldPortfolioManagement{margin:4px 0 0;border:0;padding:0;background:transparent}
+body.rm-field #fieldPortfolioManagement>summary{font-size:13px;min-height:34px;padding:6px 0;color:#d9e8e7;text-align:right;list-style:none}
+body.rm-field #fieldPortfolioManagement[open]{padding:12px;background:var(--glass);border:1px solid var(--surface-line)}
+body.rm-field #fieldPortfolioManagement[open]>summary{color:var(--surface-ink);text-align:left}
+body.rm-field .field-next-step{padding:14px;margin:0 0 12px}
+body.rm-field .field-next-step h3{font-size:19px;color:var(--surface-ink);margin:0 0 10px}
+body.rm-field #fieldNextStep .glass-action{margin:0;min-height:56px;padding:12px 16px;flex-wrap:nowrap}
+body.rm-field #fieldNextStep .quick-action-copy{width:auto}
+body.rm-field #fieldNextStep .quick-action-copy strong{font-size:20px;color:#fff}
+body.rm-field #fieldNextStep .field-primary-action .field-icon{color:#fff;stroke:currentColor}
+body.rm-field #fieldNextStep .quick-action-copy small{display:none}
+body.rm-field #fieldNextStep .quick-action-copy{flex:1;text-align:center}
+body.rm-field.traxio-ui-ready #painel .dashboard-overview{margin:0 0 12px;padding:0;border:0;background:none}
+body.rm-field #painel .dashboard-overview>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0;padding:0}
+body.rm-field.traxio-ui-ready #painel .stats-row{gap:9px}
+body.rm-field.traxio-ui-ready #painel .stat{min-height:85px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 8px;border-radius:10px;gap:0;backdrop-filter:none;background:var(--glass);border-color:var(--surface-line)}
+body.rm-field #painel .stat :is(.kit-metric-icon,.stat-chevron){display:none}
+body.rm-field #painel .stat>div{width:100%}
+body.rm-field.traxio-ui-ready #painel .stat strong{font-size:32px;color:var(--surface-ink)}
+body.rm-field #painel .stat .muted{font-size:13px;color:var(--surface-muted)}
+body.rm-field.traxio-dark #painel #locatedShortcut strong{color:var(--field-brand)}
+body.rm-field.traxio-ui-ready #painel .location-recovery{display:flex;gap:9px;padding:12px;margin-top:10px;background:#fff1e6;border-color:#c98c65;color:#722a18}
+body.rm-field #painel .location-recovery>.field-icon{color:#b03823;width:22px}
+body.rm-field #painel .location-recovery p{flex:1;font-size:14px;color:#722a18;font-weight:700;margin:0;line-height:1.3}
+body.rm-field.traxio-dark #painel .location-recovery{background:#392825;border-color:#a45a49}
+body.rm-field.traxio-dark #painel .location-recovery p{color:#fff4ec}
+body.rm-field.traxio-ui-ready:not(.traxio-dark) #painel #locationRecoveryText{color:#722a18;font-weight:700}
+body.rm-field.traxio-ui-ready.traxio-dark #painel #locationRecoveryText{color:#fff4ec;font-weight:700}
+body.rm-field #painel #reviewSavedLocations{min-height:40px;padding:8px 10px;margin:0;width:auto;flex:0 0 auto;background:var(--field-brand);color:#15362a;border:0;font-size:14px;font-weight:700;white-space:normal}
+body.rm-field.traxio-ui-ready #painel .quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:0;margin:0 0 12px;border:0}
+body.rm-field #painel .quick-actions>h3{display:none}
+body.rm-field.traxio-ui-ready #painel .quick-actions .glass-action{display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;flex-wrap:nowrap;gap:7px;padding:12px 6px;min-height:94px;border-radius:10px;backdrop-filter:none;background:var(--glass);border-color:var(--surface-line)}
+body.rm-field #painel .quick-actions .quick-action-copy{width:100%}
+body.rm-field #painel .quick-actions :is(small,.action-chevron,.field-icon:last-child:not(:first-child)){display:none}
+body.rm-field #painel .quick-actions strong{font-size:14px;line-height:1.2;color:var(--surface-ink)}
+body.rm-field:not(.traxio-dark) #painel .quick-actions .field-icon{color:#007f70}
+body.rm-field #painel .field-agenda-shortcut{padding:14px;margin-top:12px}
+body.rm-field .field-agenda-shortcut h2{font-size:17px;display:flex;align-items:center;gap:9px;margin:0 0 8px}
+body.rm-field .field-agenda-shortcut :is(p,button){font-size:14px}
+/* Client name / CNPJ / region / status cards on phones; useful columns on larger screens. */
+body.rm-field #clientes{position:relative}
+body.rm-field #clientes>.tab-title{padding-right:110px;margin:0 0 12px}
+body.rm-field .registry-title-actions{top:103px;right:14px;margin:0;z-index:2}
+body.rm-field .registry-title-actions button{background:var(--field-brand)!important;color:#16362a!important;border:0!important;min-height:44px;padding:9px 12px;font-size:15px;line-height:1.1}
+body.rm-field .registry-card{background:transparent!important;border:0!important;overflow:visible}
+body.rm-field .registry-controls{padding:0;margin:0 0 12px}
+body.rm-field .registry-search-row{gap:8px}
+body.rm-field .registry-search-row .search-field{position:relative;min-width:0;flex:1}
+body.rm-field.traxio-ui-ready .registry-search-row .search-field input{padding-left:40px}
+body.rm-field.traxio-ui-ready #registrySearch{padding-left:40px}
+body.rm-field .registry-search-row .search-field>.ui-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:20px;height:20px;pointer-events:none}
+body.rm-field .registry-search-row :is(input,button){height:48px;min-height:48px;font-size:16px}
+body.rm-field .registry-filters{gap:8px;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:8px}
+body.rm-field .registry-filters :is(select,button){font-size:14px;padding:9px;min-height:44px}
+body.rm-field .registry-location-tools{display:flex;align-items:center;gap:6px;margin-top:8px}
+body.rm-field .registry-location-tools label{font-size:13px;font-weight:700}
+body.rm-field .registry-location-tools select{width:100%;min-height:44px;font-size:15px}
+body.rm-field .registry-count{font-size:13px;margin:8px 0;color:#e5f1ef}
+body.rm-field #clientes .table-scroll{max-height:none;overflow:visible}
+body.rm-field .client-table{min-width:0;width:100%}
+body.rm-field #registryRows .client-link{font-family:inherit;font-size:17px;font-weight:700;line-height:1.25;min-height:0;padding:0;text-align:left;display:block;color:var(--surface-ink)}
+body.rm-field #registryRows .client-cnpj{font-family:inherit;font-size:13px;line-height:1.35;color:var(--surface-muted);margin-top:4px;white-space:normal}
+body.rm-field .field-client-region{display:none;margin:3px 0;font-size:13px}
+body.rm-field.traxio-ui-ready #registryRows .registry-location-status{display:inline-block;margin-top:7px;padding:3px 8px;border-radius:5px;font-size:12px;font-weight:700;line-height:1.3;background:#ffe3b2;color:#753900}
+body.rm-field.traxio-ui-ready #registryRows .registry-location-status[data-ready=true]{background:#d4f3a7;color:#174c23}
+body.rm-field .registry-footer{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;padding:12px;border:1px solid var(--surface-line);border-radius:10px;background:var(--glass)}
+/* The map is the primary surface; advanced tools remain in explicit disclosures. */
+body.rm-field #mapa>.tab-title{height:96px;min-height:96px}
+body.rm-field .field-map-controls{padding:0 0 10px}
+body.rm-field #mapClientSearch{width:100%;margin-bottom:8px;min-height:44px;font-size:15px}
+body.rm-field #mapClientListDisclosure #mapClientSearch{width:calc(100% - 16px);margin:8px}
+body.rm-field #priorityFilters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:0 0 8px}
+body.rm-field #priorityFilters button{font-size:15px;padding:8px 4px;min-height:44px;border-radius:20px}
+body.rm-field #priorityFilters button.selected{background:#00c2ad;color:#002b31;border-color:#00c2ad}
+body.rm-field #mapClientListDisclosure{padding:0;margin:0 0 8px;border:1px solid var(--surface-line);border-radius:9px;background:var(--glass)}
+body.rm-field #mapClientListDisclosure>summary{display:list-item;background:var(--field-brand);color:#183427;border:0;border-radius:8px;padding:12px;font-size:16px;min-height:48px;box-shadow:none}
+body.rm-field #mapClientListDisclosure>summary strong{color:#183427;font-size:16px}
+body.rm-field #mapClientListDisclosure>summary :is(small,.filtered-client-list-hint){display:none}
+body.rm-field #mapClientListDisclosure .field-map-selection{padding:8px;display:flex;flex-wrap:wrap;gap:7px}
+body.rm-field .field-map-selection button{min-height:44px;padding:8px;font-size:13px;flex:1 1 125px}
+body.rm-field #regionPicker{padding:0 10px;margin:0;border:1px solid var(--surface-line);border-radius:9px;background:var(--glass);color:var(--surface-ink)}
+body.rm-field #regionPicker>summary{padding:10px 0;min-height:44px;font-size:14px}
+body.rm-field .workspace{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+body.rm-field .workspace-map{grid-column:1;grid-row:1;padding:0;border-radius:12px;overflow:hidden;margin:0;background:var(--glass);border-color:var(--surface-line)}
+body.rm-field.traxio-ui-ready #mapa .workspace-map{grid-column:1;grid-row:1}
+body.rm-field.traxio-ui-ready #mapa #routePlannerPanel{grid-column:1;grid-row:2}
+body.rm-field .workspace-map>h2,body.rm-field .workspace-map>.map-hint{display:none}
+body.rm-field .workspace-map>.row{position:static;display:flex;gap:8px;padding:8px;margin:0;pointer-events:auto}
+body.rm-field .workspace-map>.row button{min-height:44px;font-size:14px;padding:8px;flex:1}
+body.rm-field .map-layer-switch{display:flex;gap:6px;padding:0 8px 8px;margin:0}
+body.rm-field .map-layer-switch button{min-height:36px;padding:6px 10px;font-size:13px}
+body.rm-field .field-map-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px}
+body.rm-field .field-map-toolbar .map-layer-switch{padding:0;gap:5px;flex:1}
+body.rm-field .field-map-toolbar>.row{display:flex;gap:5px;margin:0}
+body.rm-field .field-map-toolbar :is(#fitBtn,#myLocation){display:grid;place-items:center;width:44px;min-width:44px;height:44px;min-height:44px;padding:9px;pointer-events:auto}
+body.rm-field .field-map-toolbar .map-layer-switch button{min-height:44px;padding:8px;font-size:13px}
+body.rm-field #map{width:100%;height:clamp(310px,42dvh,540px);min-height:310px;border-radius:0;margin:0}
+body.rm-field .maplibregl-ctrl button{width:40px;height:40px;min-height:40px;padding:6px;border-radius:0}
+body.rm-field #map .map-unavailable{min-height:100%;padding:24px;background:#073e47;color:#f3fbfa}
+body.rm-field #focusedClientActions{margin:10px;padding:14px;border-radius:10px;background:var(--glass);border-color:var(--surface-line)}
+body.rm-field #focusedClientName{font-size:19px;line-height:1.25}
+body.rm-field #focusedClientCnpj{font-size:13px}
+body.rm-field #focusedClientStatus{font-size:13px;line-height:1.35;margin:5px 0 10px}
+body.rm-field #focusedClientActions>.row{display:flex;flex-wrap:wrap;gap:8px}
+body.rm-field #focusedClientNavigate{display:flex;align-items:center;justify-content:center;gap:8px;flex:1 1 145px;min-height:52px;font-size:16px;font-weight:700;order:1}
+body.rm-field #focusedClientAdjust{display:flex;align-items:center;justify-content:center;gap:6px;flex:1 1 95px;order:0;padding-inline:8px}
+body.rm-field #focusedClientDetails{order:2;flex:1 1 100%}
+body.rm-field #focusedClientActions .row #focusedClientNavigate{flex:1.5 1 0;width:auto;min-width:0;padding:8px;font-size:15px;gap:6px}
+body.rm-field #focusedClientActions .row #focusedClientAdjust{flex:1 1 0;width:auto;min-width:0;padding:8px;font-size:14px;gap:6px}
+body.rm-field #focusedClientActions .row .field-icon{width:18px;height:18px;flex-basis:18px}
+body.rm-field #map .maplibregl-ctrl-group button{background:#fff!important;color:#173f47!important;border:0!important;border-radius:0}
+body.rm-field #map .maplibregl-ctrl-attrib{background:#fffffff0;color:#163e47}
+body.rm-field #map .maplibregl-ctrl-attrib a{color:#174d58}
+body.rm-field #routeActionBar{position:static;inset:auto;display:flex;flex-wrap:wrap;gap:8px;padding:10px;margin:0;background:var(--glass);border:0;box-shadow:none;backdrop-filter:none;width:auto;z-index:auto}
+body.rm-field #routeActionBar button{flex:1 1 130px;font-size:16px;min-height:48px;margin:0}
+body.rm-field #mapStatus,body.rm-field #mapSelectionStatus{font-size:12px;line-height:1.4;padding:0 10px;margin:6px 0;color:var(--surface-muted)}
+body.rm-field #routePlannerPanel{grid-row:2;grid-column:1;margin:0;padding:0 14px;background:var(--glass);border:1px solid var(--surface-line);border-radius:12px;color:var(--surface-ink)}
+body.rm-field #routePlannerPanel>summary{position:static;padding:14px 0;min-height:48px;font-size:17px;line-height:1.4;background:none;color:var(--surface-ink);border:0}
+body.rm-field #routePlannerPanel :is(.workspace-side,.workspace-route){padding:0;border:0;background:transparent;box-shadow:none;max-height:none;position:static}
+body.rm-field #routePlannerPanel .workspace-side> :is(h2,.section-kicker,.section-note,.approved-selection-count,.approved-trace-route){display:none}
+body.rm-field #routeSteps{font-size:13px;line-height:1.45;color:var(--surface-muted)}
+body.rm-field #calcRoute{width:100%;margin:0 0 12px}
+body.rm-field #fieldMapOptions{margin-top:14px}
+body.rm-field .route-mode-tabs{display:flex;flex-wrap:wrap;gap:8px}
+body.rm-field .route-mode-tabs button{font-size:14px}
+body.rm-field #fieldRouteLibrary .premium-item{padding:14px;margin:10px 0}
+body.rm-field #fieldRouteLibrary #savedRoutesPanel{border:0;padding:0;background:none}
+body.rm-field #fieldRouteLibrary #workspaceAgenda{margin-top:18px}
+body.rm-field.pin-mode #mapa .field-map-controls,body.rm-field.pin-mode #fieldMapOptions,body.rm-field.pin-mode #fieldRouteLibrary{display:none}
+body.rm-field.pin-mode #mapa #map{height:calc(100dvh - var(--header-h) - 250px);min-height:260px}
+body.rm-field .pin-confirm-panel{left:calc(var(--sidebar-w) + 12px);right:12px;border-color:#9ac71d;background:var(--glass);color:var(--surface-ink)}
+/* History shows four actionable counts, real daily bars, and one sales action. */
+body.rm-field #visitReportPanel{padding:16px;margin:0 0 14px}
+body.rm-field #visitReportPanel>:is(h2,p:first-of-type){display:none}
+body.rm-field .visit-report-controls{display:block;margin:0 0 12px}
+body.rm-field .visit-report-controls>label{font-size:13px;display:block}
+body.rm-field .visit-report-controls input{width:100%;margin-top:5px}
+body.rm-field #visitMetrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+body.rm-field #visitMetrics>div{padding:0;border-radius:10px;border:1px solid var(--surface-line);background:var(--glass-soft);min-width:0}
+body.rm-field #visitMetrics:not(.field-show-all)>div:nth-child(n+5){display:none}
+body.rm-field #visitMetrics .visit-metric-action{display:flex;align-items:flex-start;justify-content:center;flex-direction:column;width:100%;min-height:90px;padding:14px;background:transparent;border:0;color:var(--surface-ink);text-align:left}
+body.rm-field #visitMetrics strong{font-size:30px;line-height:1.1;display:block;color:var(--surface-ink)}
+body.rm-field #visitMetrics span{font-size:14px;line-height:1.25;margin-top:5px;color:var(--surface-muted)}
+body.rm-field #visitMetrics>div:nth-child(n+5){padding:12px}
+body.rm-field #fieldForecastToggle{min-height:40px;font-size:13px;padding:8px 10px;margin:0 0 12px;width:100%}
+body.rm-field #visitDailyChart{margin:0 0 12px;padding:12px;border:1px solid var(--surface-line);border-radius:10px;background:var(--glass)}
+body.rm-field #visitDailyChart h3{font-size:18px;margin:0 0 8px}
+body.rm-field #visitDailyChart svg{display:block;width:100%;height:auto;max-height:250px;color:var(--surface-muted)}
+body.rm-field .field-chart-grid{stroke:var(--surface-line);stroke-opacity:.35;fill:none}
+body.rm-field .field-chart-tick{font:14px Arial,sans-serif;fill:var(--surface-muted)}
+body.rm-field .field-chart-bar{fill:#007c6d}
+body.rm-field.traxio-dark .field-chart-bar{fill:var(--field-brand)}
+body.rm-field .field-chart-empty{font-size:13px;color:var(--surface-muted);margin:8px 0 0}
+body.rm-field .field-history-actions{display:grid;grid-template-columns:1fr;gap:9px}
+body.rm-field .field-history-actions #exportVisitWorkbook{width:100%;min-height:48px}
+body.rm-field #fieldReportSettings label{display:block;margin:10px 0;font-size:14px}
+body.rm-field #fieldReportSettings :is(input,select){display:block;width:100%;margin-top:5px}
+body.rm-field #fieldReportSettings .visit-working-days input{display:inline-block;width:22px}
+body.rm-field #visitReportPanel>.row:empty{display:none}
+body.rm-field #visitSyncStatus{font-size:13px;color:var(--surface-muted)}
+body.rm-field #historico>.field-disclosure{margin:14px 0}
+body.rm-field .visit-report-panel>.table-scroll{max-height:380px;overflow:auto;border:1px solid var(--surface-line);border-radius:10px}
+/* Upload keeps the original input and existing portfolio confirmation / parsing. */
+body.rm-field #fieldImportPanel{padding:16px;margin:0 0 14px}
+body.rm-field #fieldImportPanel>:is(h3,p.muted){display:none}
+body.rm-field .field-import-context{margin-bottom:12px}
+body.rm-field #fieldImportPortfolio{width:100%;display:flex;align-items:center;gap:8px;justify-content:space-between;text-align:left;font-size:16px}
+body.rm-field #fieldImportPortfolio .field-icon{order:2;width:18px}
+body.rm-field .field-upload{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:155px;padding:18px;border:2px dashed #4c9f98;border-radius:12px;background:var(--glass-soft);color:var(--surface-ink);cursor:pointer;box-sizing:border-box;text-align:center}
+body.rm-field .field-upload .field-icon{width:37px;height:37px;flex-basis:37px;margin-bottom:5px}
+body.rm-field .field-upload strong{font-size:21px}
+body.rm-field .field-upload small{font-size:14px}
+body.rm-field .field-file-input{position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;opacity:0;clip-path:inset(50%);overflow:hidden}
+body.rm-field .field-upload:focus-within{outline:3px solid var(--surface-focus);outline-offset:3px}
+body.rm-field .field-import-name{display:block;margin:14px 0;font-size:14px;font-weight:700}
+body.rm-field #fieldImportName{display:block;width:100%;margin-top:6px}
+body.rm-field .field-import-steps{counter-reset:import;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;list-style:none;margin:18px 0;padding:0;text-align:center}
+body.rm-field .field-import-steps li{counter-increment:import;position:relative;display:flex;align-items:center;flex-direction:column;gap:6px;font-size:14px;color:var(--surface-ink)}
+body.rm-field .field-import-steps li:before{content:counter(import);display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--surface-line);background:var(--glass-soft);border-radius:50%;font-weight:700;color:var(--surface-ink);z-index:1}
+body.rm-field .field-import-steps li:not(:last-child):after{content:'';position:absolute;top:15px;left:65%;right:-35%;height:1px;background:var(--surface-line)}
+body.rm-field .field-import-steps .field-step-current:before{background:var(--field-brand);color:#16372b;border-color:var(--field-brand)}
+body.rm-field .field-import-actions{display:grid;gap:8px}
+body.rm-field .field-import-actions button{justify-content:flex-start;min-height:48px;font-size:16px}
+body.rm-field .field-import-count{font-size:14px;padding:12px;margin:14px 0 0;border:1px solid var(--surface-line);border-radius:9px;color:var(--surface-muted)}
+body.rm-field #importStatus{margin:12px 0 0;font-size:14px;color:var(--surface-ink)}
+body.rm-field .traxio-data-guide{display:grid;grid-template-columns:1fr;gap:10px}
+body.rm-field .data-tools>.traxio-data-expand{margin:14px 0}
+/* Agenda: consistent tabs, cards and a visible timeline using the existing reminders. */
+body.rm-field .appointment-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;background:var(--glass);border:1px solid var(--surface-line);border-radius:12px}
+body.rm-field .appointment-tabs button{min-height:48px;font-size:15px;padding:9px 7px;flex:none;background:transparent;border:0;color:var(--surface-ink)}
+body.rm-field .appointment-tabs button[aria-pressed=true]{background:#008674;color:#fff;border:0}
+body.rm-field.traxio-ui-ready #agendamentos .appointment-tabs button[aria-pressed=false]{background:transparent;color:var(--surface-ink);border:0}
+body.rm-field .appointment-panel{padding:16px;margin:12px 0}
+body.rm-field .appointment-panel>h3{font-size:19px}
+body.rm-field .appointment-panel p{font-size:14px}
+body.rm-field .appointment-fields{gap:10px;margin-block:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+body.rm-field .appointment-panel label{font-size:14px}
+body.rm-field #appointmentList{display:flex;flex-direction:column;gap:14px;padding-left:15px;border-left:2px solid #93bd32;margin-left:6px}
+body.rm-field #appointmentList .appointment-item{position:relative;padding:14px;margin:0;background:var(--glass-soft);border-radius:10px;border:1px solid var(--surface-line)}
+body.rm-field #appointmentList .appointment-item:before{content:'';position:absolute;left:-23px;top:17px;width:12px;height:12px;border-radius:50%;background:var(--field-brand);border:2px solid #03313b}
+body.rm-field .field-appointment-time{display:block;font-size:22px;color:var(--surface-ink);line-height:1.2;margin:0 0 6px}
+body.rm-field #appointmentList h3{font-size:19px;margin:0 0 6px}
+body.rm-field #appointmentList .appointment-date{font-size:13px;padding:5px 8px;border-radius:6px;max-width:100%;box-sizing:border-box}
+body.rm-field .appointment-route{padding-top:14px;margin-top:14px}
+body.rm-field #appointmentListPanel>h3{display:none}
+body.rm-field .field-agenda-calendar{margin:0 0 16px}
+body.rm-field .field-agenda-month{text-transform:capitalize;text-align:center;font-weight:700;margin:0 0 12px}
+body.rm-field .field-agenda-week{display:grid;grid-template-columns:repeat(5,minmax(48px,1fr));gap:6px;overflow-x:auto;max-width:100%;padding:3px}
+body.rm-field .field-agenda-week button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 4px;min-height:66px}
+body.rm-field .field-agenda-week small{font-size:11px;text-transform:capitalize;color:inherit}
+body.rm-field .field-agenda-week strong{font-size:19px;color:inherit}
+body.rm-field.traxio-ui-ready #agendamentos .field-agenda-week button[aria-pressed=true]{background:var(--field-brand);color:#16372b;border-color:var(--field-brand)}
+body.rm-field #appointmentList .field-disclosure{margin:8px 0 0;padding:0 8px;background:none;border:0;border-top:1px solid var(--surface-line);border-radius:0}
+body.rm-field #appointmentList .field-disclosure>summary{font-size:13px;min-height:44px;padding:10px 0}
+body.rm-field #appointmentList .appointment-date{overflow-wrap:anywhere}
+body.rm-field #fieldAppointmentRouteSettings h3{font-size:17px}
+body.rm-field #appointmentSelectDay{width:100%;margin-bottom:8px}
+body.rm-field .appointment-panel .field-primary-action{font-size:18px}
+body.rm-field #appointmentStatus:empty{display:none}
+/* Large screens use the same composition with comfortable, bounded reading widths. */
+@media(min-width:1000px){
+ body.rm-field .field-page-hero{height:180px;min-height:180px}
+ body.rm-field #clientes .registry-title-actions{top:119px}
+ body.rm-field .registry-filters{grid-template-columns:repeat(4,minmax(0,1fr))}
+ body.rm-field .registry-location-tools select{width:auto;flex:1}
+ body.rm-field #registryRows td{background:var(--glass);padding:16px;border-bottom:1px solid var(--surface-line)}
+ body.rm-field #clientes .client-table thead th{padding:12px;background:var(--glass-soft);font-size:14px}
+ body.rm-field .field-map-controls{max-width:100%}
+ body.rm-field #mapa .workspace{grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);align-items:start}
+ body.rm-field #routePlannerPanel{grid-row:1;grid-column:2}
+ body.rm-field.traxio-ui-ready #mapa #routePlannerPanel{grid-row:1;grid-column:2}
+ body.rm-field #map{height:560px}
+ body.rm-field #historico #visitMetrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+ body.rm-field .field-history-actions{grid-template-columns:1fr 1fr}
+ body.rm-field #fieldImportPanel{max-width:780px;margin-inline:auto}
+ body.rm-field .field-import-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+ body.rm-field .registry-location-tools{max-width:700px}
+}
+@media(max-width:999px){
+ body.rm-field #clientes .client-table{display:block}
+ body.rm-field #clientes .client-table thead{display:block;padding:8px 10px;background:var(--glass);border-radius:8px;margin-bottom:8px}
+ body.rm-field #clientes .client-table thead tr{display:flex;align-items:center;gap:12px}
+ body.rm-field #clientes .client-table th{padding:0;border:0;font-size:13px;width:auto!important}
+ body.rm-field #clientes .client-table th:nth-child(n+3){display:none}
+ body.rm-field #registryRows{display:flex;flex-direction:column;gap:10px}
+ body.rm-field #registryRows tr{display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;padding:14px 12px;background:var(--glass);border:1px solid var(--surface-line);border-radius:10px}
+ body.rm-field #registryRows td{padding:0!important;border:0!important;width:auto!important;min-width:0}
+ body.rm-field #registryRows td:nth-child(n+3){display:none}
+ body.rm-field #registryRows td:first-child{display:flex;align-items:flex-start;padding-top:2px!important;justify-content:center}
+ body.rm-field #registryRows input[type=checkbox]{margin:0}
+ body.rm-field .field-client-region{display:block}
+ body.rm-field #registryRows .empty-state{grid-column:1/-1;padding:10px!important}
+}
+@media(min-width:1000px) and (max-aspect-ratio:1/1){body.rm-field #mapa .workspace{grid-template-columns:minmax(0,1fr)}body.rm-field.traxio-ui-ready #mapa #routePlannerPanel{grid-row:2;grid-column:1}}
+@media(max-width:650px){
+ body.rm-field.traxio-ui-ready[data-screen]{--header-h:62px;--sidebar-w:72px}
+ body.rm-field.traxio-ui-ready>header{padding:7px 8px;gap:5px}
+ body.rm-field.traxio-ui-ready .header-brand{flex:1 1 160px;max-width:190px;min-width:90px}
+ body.rm-field.traxio-ui-ready .header-brand .brand-crop{max-width:190px;width:100%}
+ body.rm-field #accountToggle{width:44px;min-width:44px;height:44px;padding:4px;justify-content:center;border:0;background:transparent;max-width:44px}
+ body.rm-field #accountToggle #authIdentity,body.rm-field #accountToggle>span:last-child{display:none}
+ body.rm-field .account-avatar{width:34px;height:34px}
+ body.rm-field.traxio-ui-ready>main{padding:10px 10px 28px}
+ body.rm-field.traxio-ui-ready>nav.tabs{padding:8px 5px 12px;gap:4px}
+ body.rm-field.traxio-ui-ready[data-screen] .tabs>button{min-height:68px;font-size:10.5px;padding:8px 1px}
+ body.rm-field.traxio-ui-ready[data-screen] .tabs>button[data-tab=agendamentos]{font-size:9px;letter-spacing:0}
+ body.rm-field .field-page-hero{height:155px;min-height:155px;padding:0 12px 13px;margin-bottom:12px}
+ body.rm-field .field-page-hero h2{font-size:28px}
+ body.rm-field #clientes>.tab-title{min-height:155px}
+ body.rm-field .registry-title-actions{top:99px;right:12px}
+ body.rm-field #painel .traxio-hero{height:165px;min-height:165px;padding:0 12px 13px}
+ body.rm-field.traxio-ui-ready #painel .traxio-hero h2{font-size:29px;max-width:250px}
+ body.rm-field #fieldNextStep{padding:12px}
+ body.rm-field #fieldNextStep .field-primary-action{font-size:20px;padding:12px}
+ body.rm-field #painel .quick-actions .glass-action{min-height:92px;padding:10px 4px}
+ body.rm-field #painel .quick-actions strong{font-size:13px}
+ body.rm-field #painel .location-recovery{flex-wrap:wrap}
+ body.rm-field #painel .location-recovery p{flex-basis:100px}
+ body.rm-field #painel #reviewSavedLocations{flex:1 0 auto;max-width:130px}
+ body.rm-field #mapa>.tab-title{height:78px;min-height:78px;padding-bottom:10px}
+ body.rm-field #mapa>.tab-title h2{font-size:27px}
+ body.rm-field #mapClientListDisclosure>summary{padding:11px;font-size:15px}
+ body.rm-field #mapClientListDisclosure>summary strong{font-size:15px}
+ body.rm-field #visitReportPanel,body.rm-field #fieldImportPanel,body.rm-field .appointment-panel{padding:12px}
+ body.rm-field #visitMetrics{gap:8px}
+ body.rm-field #visitMetrics .visit-metric-action{padding:12px;min-height:92px}
+ body.rm-field #visitMetrics span{font-size:13px}
+ body.rm-field .field-upload{min-height:145px}
+ body.rm-field #fieldImportPortfolio{padding:9px 10px}
+}
+@media(max-width:370px){
+ body.rm-field.traxio-ui-ready[data-screen]{--sidebar-w:64px}
+ body.rm-field.traxio-ui-ready>main{padding:8px}
+ body.rm-field.traxio-ui-ready .header-brand{min-width:75px}
+ body.rm-field.traxio-ui-ready>header{gap:2px;padding-inline:5px}
+ body.rm-field .theme-toggle,body.rm-field .appointment-bell,body.rm-field #accountToggle{width:40px;min-width:40px}
+ body.rm-field #painel .stat strong{font-size:27px}
+ body.rm-field #painel .stat .muted{font-size:11px}
+ body.rm-field .registry-filters{grid-template-columns:1fr 1fr}
+ body.rm-field .registry-title-actions button{font-size:13px;padding:8px}
+ body.rm-field #registryRows tr{padding:12px 8px;gap:6px;grid-template-columns:24px minmax(0,1fr)}
+ body.rm-field #registryRows .client-link{font-size:16px}
+ body.rm-field #registryRows .client-cnpj{font-size:12px}
+ body.rm-field #visitMetrics .visit-metric-action{padding:9px}
+}
+@media(max-height:500px) and (orientation:landscape){body.rm-field.traxio-ui-ready[data-screen] .tabs>button{min-height:56px;font-size:10px;gap:3px;padding:6px 1px}body.rm-field .field-page-hero{height:110px;min-height:110px}}
+/* Retain the iPhone standalone safe header boundary and native navigation overlay. */
+body.rm-field.iphone-pwa-standalone.traxio-ui-ready[data-screen]{--header-h:calc(62px + env(safe-area-inset-top,0px))}
+body.rm-field.iphone-pwa-standalone.traxio-ui-ready>header{padding-top:calc(7px + env(safe-area-inset-top,0px));height:var(--header-h)}
+body.rm-field.iphone-pwa-standalone.traxio-ui-ready>main{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+@media(prefers-reduced-motion:reduce){body.rm-field *{scroll-behavior:auto!important}}
+
+body.rm-field .field-client-select{display:grid;place-items:center;width:44px;min-height:48px;margin:0;cursor:pointer}
+@media(max-width:999px){body.rm-field #registryRows tr{grid-template-columns:44px minmax(0,1fr)}body.rm-field #registryRows td:first-child{align-items:flex-start;padding:0!important}body.rm-field #registryRows .field-client-select{transform:translateY(-9px)}}
+@media(max-width:370px){body.rm-field #registryRows tr{grid-template-columns:44px minmax(0,1fr)}}
+
+body.rm-field #fieldNewAppointment{width:100%;margin-top:9px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px}
+
+body.rm-field.traxio-ui-ready #registryFilters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+body.rm-field.traxio-ui-ready #registryFilters[hidden]{display:none!important}
+body.rm-field #registryFilters select{width:100%;font-size:14px;padding-inline:8px;min-height:44px}
+body.rm-field #fieldRegistryExtra{margin:4px 0;padding:0 10px;border:0;background:transparent}
+body.rm-field #fieldRegistryExtra>summary{font-size:13px;min-height:40px;padding:10px 0;color:#d9e8e7}
+body.rm-field #fieldRegistryExtra[open]{padding:10px;background:var(--glass);border:1px solid var(--surface-line)}
+body.rm-field #fieldRegistryExtra[open]>summary{color:var(--surface-ink)}
+body.rm-field #fieldRegistryExtra select{width:100%}
+body.rm-field .registry-location-tools>label{display:none}
+body.rm-field .registry-location-tools{margin-top:0}
+@media(max-width:370px){body.rm-field.traxio-ui-ready #registryFilters{grid-template-columns:1fr 1fr}body.rm-field #registryLocation{grid-column:1/-1}}
+/* Keep functional urgency and priority states stronger than generic button styles. */
+body.rm-field.traxio-ui-ready #priorityFilters button{background:var(--glass-soft);color:var(--surface-ink);border:1px solid var(--surface-line);transition:none}
+body.rm-field.traxio-ui-ready #priorityFilters button.selected{background:#00c2ad;color:#002b31;border-color:#00c2ad}
+body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=yellow]{background:#42370c;color:#ffe371}
+body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=orange]{background:#523018;color:#ffd2a8}
+body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=red]{background:#62232a;color:#ffd7d7}

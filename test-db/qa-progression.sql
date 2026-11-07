@@ -1,0 +1,34 @@
+-- Synthetic actors only. Everything rolls back. No billing provider is called.
+BEGIN;
+INSERT INTO rotamapa_private.qa_operators(user_id) VALUES('00000000-0000-4000-8000-000000000001');
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',true);
+SELECT set_config('request.jwt.claims','{"is_anonymous":false}',true);
+DO $t$ DECLARE invite jsonb; BEGIN
+ invite:=public.rotamapa_create_test_invite('tester@example.test','free');PERFORM set_config('test.invite',invite->>'token',true);
+ BEGIN PERFORM public.rotamapa_redeem_test_invite(invite->>'token');RAISE EXCEPTION 'OPERATOR_DOWNGRADED';EXCEPTION WHEN insufficient_privilege THEN NULL;END;
+END;$t$;
+SELECT test.ensure((public.traxelo_plan_access()->>'plan')='pro','operator Pro is unchanged');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000002',true);
+DO $t$ BEGIN PERFORM public.rotamapa_redeem_test_invite(current_setting('test.invite'));END;$t$;
+SELECT test.ensure((public.traxelo_plan_access()->>'plan')='free' AND (public.traxelo_plan_access()->>'qa')::boolean,'authorized email starts Free even during global beta');
+DO $t$ BEGIN BEGIN PERFORM public.rotamapa_create_test_invite('another@example.test','pro');RAISE EXCEPTION 'MEMBER_CREATED_INVITE';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END;$t$;
+INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000002','00000000-0000-4000-8000-000000000000','Teste inicial');
+DO $t$ BEGIN BEGIN INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000002','80000000-0000-4000-8000-000000000001','Acima da cota');RAISE EXCEPTION 'FREE_QUOTA_BYPASSED';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END;$t$;
+DO $t$ BEGIN BEGIN PERFORM public.rotamapa_simulate_upgrade('pro',false);RAISE EXCEPTION 'STAGE_SKIPPED';EXCEPTION WHEN others THEN IF sqlerrm='STAGE_SKIPPED' THEN RAISE;END IF;END;END;$t$;
+DO $t$ BEGIN PERFORM public.rotamapa_simulate_upgrade('plus',false);END;$t$;
+SELECT test.ensure((public.traxelo_plan_access()->>'plan')='plus' AND (public.traxelo_plan_access()->>'portfolioLimit')::int=3,'Plus unlocks actual server entitlement');
+INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000002','80000000-0000-4000-8000-000000000001','Segunda'),('00000000-0000-4000-8000-000000000002','80000000-0000-4000-8000-000000000002','Terceira');
+DO $t$ BEGIN BEGIN INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000002','80000000-0000-4000-8000-000000000003','Quarta');RAISE EXCEPTION 'PLUS_QUOTA_BYPASSED';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END;$t$;
+DO $t$ BEGIN PERFORM public.rotamapa_simulate_upgrade('pro',false);END;$t$;
+INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000002','80000000-0000-4000-8000-000000000003','Quarta');
+DO $t$ BEGIN PERFORM public.rotamapa_redeem_test_invite(current_setting('test.invite'));END;$t$;
+SELECT test.ensure((public.traxelo_plan_access()->>'plan')='pro','reopening old invite does not reset the stage');
+DO $t$ BEGIN PERFORM public.rotamapa_simulate_upgrade('free',true);END;$t$;
+SELECT test.ensure((public.traxelo_plan_access()->>'plan')='free' AND (public.traxelo_plan_access()->>'portfolioCount')::int=4,'reset preserves portfolios above the Free quota');
+INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000002','00000000-0000-4000-8000-000000000000','Teste inicial') ON CONFLICT DO NOTHING;
+DO $t$ BEGIN BEGIN PERFORM public.rotamapa_simulate_upgrade('pro',false);RAISE EXCEPTION 'UPGRADE_FORGED';EXCEPTION WHEN others THEN IF sqlerrm='UPGRADE_FORGED' THEN RAISE;END IF;END;END;$t$;
+RESET ROLE;
+SELECT test.ensure((SELECT count(*)=4 FROM rotamapa_private.qa_events WHERE user_id='00000000-0000-4000-8000-000000000002'),'invite, two upgrades and reset have an audit trail');
+SELECT test.ensure((SELECT beta_pro FROM public.traxelo_release_access WHERE singleton),'global beta unchanged');
+ROLLBACK;

@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.ranking.config.js';export default defineConfig({...base,testMatch:['links.spec.js'],outputDir:'test-results-links',reporter:'list',timeout:45000,workers:2});

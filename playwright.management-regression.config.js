@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.iphone.config.js';export default defineConfig({...base,testMatch:['routes.spec.js'],use:{...base.use,serviceWorkers:'block'},timeout:45000,outputDir:'test-results-management-regression',reporter:[['list'],['json',{outputFile:'test-results-management-regression/results.json'}]]});

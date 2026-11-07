@@ -1,0 +1,23 @@
+-- Synthetic identities only. The transaction rolls back every object and test policy.
+BEGIN;
+CREATE POLICY synthetic_broad_storage_access ON storage.objects FOR ALL TO anon,authenticated USING(true) WITH CHECK(true);
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000001","is_anonymous":false}',true);
+INSERT INTO storage.objects(bucket_id,name) VALUES('rotamapa-avatars','00000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000001.jpg');
+SELECT test.ensure((SELECT count(*)=1 FROM storage.objects WHERE bucket_id='rotamapa-avatars'),'owner reads own avatar');
+DO $t$ BEGIN BEGIN INSERT INTO storage.objects(bucket_id,name) VALUES('rotamapa-avatars','00000000-0000-4000-8000-000000000002/10000000-0000-4000-8000-000000000001.jpg'); RAISE EXCEPTION 'WRONG_OWNER_ALLOWED';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END;$t$;
+DO $t$ BEGIN BEGIN INSERT INTO storage.objects(bucket_id,name) VALUES('rotamapa-avatars','00000000-0000-4000-8000-000000000001/../10000000-0000-4000-8000-000000000001.jpg'); RAISE EXCEPTION 'TRAVERSAL_ALLOWED';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END;$t$;
+DO $t$ BEGIN BEGIN INSERT INTO storage.objects(bucket_id,name) VALUES('rotamapa-avatars','00000000-0000-4000-8000-000000000001/avatar.svg'); RAISE EXCEPTION 'SVG_ALLOWED';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END;$t$;
+SELECT set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000002","is_anonymous":false}',true);
+SELECT test.ensure((SELECT count(*)=0 FROM storage.objects WHERE bucket_id='rotamapa-avatars'),'other account sees no avatar');
+DELETE FROM storage.objects WHERE bucket_id='rotamapa-avatars';
+SELECT set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000001","is_anonymous":true}',true);
+SELECT test.ensure((SELECT count(*)=0 FROM storage.objects WHERE bucket_id='rotamapa-avatars'),'anonymous auth sessions see no avatar');
+RESET ROLE;SET LOCAL ROLE anon;
+SELECT test.ensure((SELECT count(*)=0 FROM storage.objects WHERE bucket_id='rotamapa-avatars'),'anon cannot read private avatars');
+RESET ROLE;SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000001","is_anonymous":false}',true);
+SELECT test.ensure((SELECT count(*)=1 FROM storage.objects WHERE bucket_id='rotamapa-avatars'),'another owner could not delete avatar');
+DELETE FROM storage.objects WHERE bucket_id='rotamapa-avatars';
+SELECT test.ensure((SELECT count(*)=0 FROM storage.objects WHERE bucket_id='rotamapa-avatars'),'owner can remove avatar');
+ROLLBACK;

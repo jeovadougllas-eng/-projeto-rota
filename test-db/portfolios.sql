@@ -1,0 +1,31 @@
+BEGIN;
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',true);
+SELECT test.ensure((select count(*)=1 from public.clients),'initial client missing');
+SELECT test.ensure((select data->>'lat'='-5.8' AND revision=1 from public.clients where local_id='old'),'migration changed pin/revision');
+INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES(auth.uid(),'90000000-0000-4000-8000-000000000001','Segunda carteira');
+SELECT public.traxelo_write_owned_item(auth.uid(),'80000000-0000-4000-8000-000000000001','settings','{"visitSettings":{"timeZone":"America/Fortaleza"}}',0);
+INSERT INTO public.rotamapa_commerce_items(user_id,id,kind,data) VALUES(auth.uid(),'10000000-0000-4000-8000-000000000001','product','{"id":"10000000-0000-4000-8000-000000000001","kind":"product","name":"Produto inicial","priceCents":2000}');
+SELECT set_config('request.headers','{"x-rotamapa-portfolio":"90000000-0000-4000-8000-000000000001"}',true);
+SELECT test.ensure((select count(*)=0 from public.clients),'cross-wallet client read');
+SELECT test.ensure((select count(*)=0 from public.traxelo_workspace_items),'cross-wallet settings read');
+SELECT test.ensure((select count(*)=0 from public.rotamapa_commerce_items),'cross-wallet catalog read');
+INSERT INTO public.clients(user_id,local_id,name,data,portfolio_id) VALUES(auth.uid(),'other','Outro endereço','{"name":"Outro endereço","lat":-5.9,"lon":-35.3}','90000000-0000-4000-8000-000000000001');
+SELECT public.traxelo_write_owned_item(auth.uid(),'80000000-0000-4000-8000-000000000002','settings','{"visitSettings":{"timeZone":"UTC"}}',0);
+DO $$BEGIN
+ BEGIN INSERT INTO public.clients(user_id,local_id,name,data) VALUES(auth.uid(),'wrong','Carteira errada','{}');RAISE EXCEPTION 'UNSCOPED WRITE';EXCEPTION WHEN insufficient_privilege THEN NULL;END;
+ BEGIN INSERT INTO public.rotamapa_commerce_items(user_id,portfolio_id,id,kind,data) VALUES(auth.uid(),'90000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000001','campaign','{"id":"20000000-0000-4000-8000-000000000001","kind":"campaign","name":"Wrong catalog","type":"dia_d","productId":"10000000-0000-4000-8000-000000000001","startDate":"2026-10-29","endDate":"2026-10-29","tiers":[{"label":"Faixa 1","minQty":6,"discountBps":500}]}');RAISE EXCEPTION 'CROSS WALLET CAMPAIGN';EXCEPTION WHEN raise_exception THEN IF SQLERRM='CROSS WALLET CAMPAIGN' THEN RAISE;END IF;END;
+ BEGIN PERFORM public.traxelo_write_owned_item(auth.uid(),'80000000-0000-4000-8000-000000000001','settings','{}',1);RAISE EXCEPTION 'CROSS WALLET RPC';EXCEPTION WHEN insufficient_privilege THEN NULL;END;
+END;$$;
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000002',true);
+SELECT test.ensure((select count(*)=0 from public.rotamapa_portfolios),'cross-account portfolio read');
+SELECT test.ensure((select count(*)=0 from public.clients),'cross-account client read');
+DO $$BEGIN
+ BEGIN INSERT INTO public.clients(user_id,local_id,name,data,portfolio_id) VALUES(auth.uid(),'not-owned','Intruso','{}','90000000-0000-4000-8000-000000000001');RAISE EXCEPTION 'CROSS ACCOUNT FK';EXCEPTION WHEN foreign_key_violation THEN NULL;END;
+END;$$;
+SELECT set_config('request.headers','{}',true);
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',true);
+SELECT test.ensure((select count(*)=1 from public.clients),'legacy app sees another wallet');
+SELECT test.ensure((select count(*)=1 from public.traxelo_workspace_items),'initial settings lost');
+SELECT test.ensure((select count(*)=1 from public.rotamapa_commerce_items),'initial catalog lost');
+ROLLBACK;

@@ -20,3 +20,8 @@ mobile/ios/**/.build/
 mobile/ios/**/xcuserdata/
 mobile/ios/**/DerivedData/
 mobile/evidence/
+
+test-results-visit-details/
+test-results-portfolios/
+
+test-results-scheduling/

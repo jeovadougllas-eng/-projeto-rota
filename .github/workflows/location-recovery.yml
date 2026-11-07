@@ -1,0 +1,36 @@
+name: Sequential pin review and resumable geolocation
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['assets/traxelo-geo-recovery.js','assets/traxelo-location-ui.js','assets/traxio-ui.js','index.html','api/geolocation-benchmark.js','lib/geolocation-benchmark.mjs','test-unit/geo-recovery.test.mjs','tests/location-recovery.spec.js','playwright.recovery.config.js','.github/workflows/location-recovery.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: location-recovery-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci && npm run check && npm run test:geolocation
+      - name: Use installed Chrome
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
+      - run: npx playwright test --config=playwright.recovery.config.js --project=desktop --project=tablet --project=phone
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pin-review-and-search-recovery-evidence
+          retention-days: 30
+          path: test-results-recovery/

@@ -1,0 +1,8 @@
+{
+  "migratedBetweenTestSignatures": true,
+  "uninstalledOnlyAfterVerifiedBackup": true,
+  "allCustomerFieldsPreserved": true,
+  "localHistoryPreserved": true,
+  "storageOrigin": "https://localhost",
+  "packageId": "app.traxio.mobile"
+}

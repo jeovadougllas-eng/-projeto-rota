@@ -1,0 +1,99 @@
+/* Approved membership identity, independent from entitlement enforcement. */
+body.rm-field #accountToggle{padding:3px 9px;min-width:88px;max-width:250px;min-height:54px;height:auto}
+body.rm-field #accountToggle .account-avatar-stack{display:flex!important;flex-direction:column;align-items:center;gap:3px;flex:none;min-width:75px}
+body.rm-field #accountToggle .account-avatar{width:30px;height:30px}
+.subscription-badge{display:inline-flex;align-items:center;justify-content:center;border-radius:20px;padding:3px 9px;font:700 10px/1.15 Arial,sans-serif;letter-spacing:.35px;white-space:nowrap;border:1px solid transparent}
+.subscription-badge.free{background:#e5eaf0;color:#354455;border-color:#a0afbc}
+.subscription-badge.plus{background:#d3f4f6;color:#005362;border-color:#54a9b4}
+.subscription-badge.pro{background:#f8e9be;color:#684508;border-color:#b89137}
+.subscription-badge.signature{background:linear-gradient(115deg,#f7e9c6,#e6ce94);color:#3b321e;border-color:#ebd9b2}
+.subscription-badge.pending{background:#e5eaf0;color:#354455}
+#accountMenu[data-membership=signature] [data-account=subscriptions]{background:#e6ce9429;border:1px solid #bd9d57}
+#accountMenu[data-membership=signature] [data-account=subscriptions]>svg{color:#9a721c}
+.account-founder-label{display:block;font-size:11px;margin-top:5px;color:var(--ink)}
+body.traxio-ui-ready #accountDialog[data-section=subscriptions]{padding:0;inset:var(--header-h) 0 0 var(--sidebar-w);background:#002832;z-index:80;align-items:flex-start;overflow:auto}
+body.traxio-ui-ready #accountDialog[data-section=subscriptions]>.account-dialog{width:min(1200px,100%);max-height:none;min-height:100%;margin:0 auto;padding:20px 26px;border:0;border-radius:0;background:transparent!important;overflow:visible}
+#accountDialog[data-section=subscriptions] .account-dialog-head{position:relative;top:0;color:#f4faf7;background:transparent;padding:0 0 14px}
+#accountDialog[data-section=subscriptions] .account-dialog-head h2{color:#fff!important;font-size:29px;letter-spacing:-.6px}
+#accountDialog[data-section=subscriptions] #accountClose{background:#0b4650!important;color:#fff!important;border-color:#60868b;flex:none}
+#subscriptionRoot{--s-ink:#133e45;--s-muted:#3e6369;--s-panel:#f5fbf8;--s-soft:#e5f2ed;--s-line:#8caaa9;color:var(--s-ink);background:var(--s-panel);border:1px solid var(--s-line);border-radius:17px;overflow:hidden}
+.traxio-dark #subscriptionRoot{--s-ink:#f2faf7;--s-muted:#c0d9d8;--s-panel:#062d37;--s-soft:#0d3c46;--s-line:#638d91}
+.subscription-hero{padding:20px 24px;background:#003844;color:#eef8f4}
+.subscription-hero small{font-size:10px;letter-spacing:1.5px;color:#c7f526;font-weight:700}
+.subscription-hero p{margin:6px 0 0;font-size:14px;line-height:1.5}
+.subscription-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;background:var(--s-soft);padding:10px;border-bottom:1px solid var(--s-line)}
+body.rm-field .account-dialog .subscription-tabs button{min-width:0;white-space:normal;padding:12px 6px;border:0!important;background:transparent!important;color:var(--s-ink)!important;border-radius:9px;font-size:14px;font-weight:600;line-height:1.3}
+body.rm-field .account-dialog .subscription-tabs button[aria-selected=true]{background:#007f83!important;color:#fff!important}
+#subscriptionPanel{padding:24px;outline-offset:-3px}
+#subscriptionPanel h3{color:inherit!important}
+.subscription-member{display:flex;gap:18px;border:1px solid var(--s-line);border-radius:14px;padding:25px;background:var(--s-soft);position:relative;overflow:hidden}
+.subscription-member>svg{width:45px;height:45px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6}
+.subscription-member h3{font-size:30px;line-height:1.2;margin:7px 0}
+.subscription-member small{font-size:10px;letter-spacing:1.5px}
+.subscription-member p{margin:8px 0;font-size:16px;line-height:1.5}
+.subscription-member-name{font-size:14px}
+.subscription-member.signature{background:linear-gradient(135deg,#003844,#002630);border:2px solid #d6bd80;color:#f3dfb6;box-shadow:inset 0 0 0 4px #e6ce9411}
+.subscription-member.signature:after{content:'';width:220px;height:100px;position:absolute;right:-50px;bottom:-70px;border:1px solid #e6ce9477;border-radius:50%;transform:rotate(-18deg);box-shadow:0 -5px 0 #e6ce9420,0 -10px 0 #e6ce9410;pointer-events:none}
+.subscription-member.signature h3{font-style:italic;color:#f3dfb6!important}
+.subscription-member.plus{background:linear-gradient(120deg,var(--s-soft),#007e911a)}
+.subscription-member.pro{border-color:#b89137}
+.subscription-status,.subscription-footnote{font-size:12px;line-height:1.65;color:var(--s-muted)}
+.subscription-vip{margin:18px 0;padding:17px;border:1px solid #c7aa69;border-radius:12px;background:#f9edcf;color:#443615;display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;text-align:center}
+.subscription-vip>svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.5}
+.subscription-vip>strong{font-size:18px}
+.subscription-vip>p{flex:1 0 100%;font-size:13px;line-height:1.6;margin:0}
+.subscription-vip.subscription-inactive{background:var(--s-soft);color:var(--s-ink);border-color:var(--s-line)}
+.subscription-usage{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+.subscription-meter{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--s-soft);border:1px solid var(--s-line);border-radius:12px;padding:18px}
+.subscription-meter svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.7}
+.subscription-meter span{font-size:13px}.subscription-meter strong{display:block;font-size:22px;line-height:1.3;margin-top:4px}
+.subscription-meter progress{width:100%;height:7px;accent-color:#007f83}
+.subscription-benefits h3{font-size:20px;margin:24px 0 10px}
+.subscription-benefits ul,.subscription-price-card ul{padding:0;margin:0;list-style:none}
+.subscription-benefits li,.subscription-price-card li{display:flex;align-items:flex-start;gap:9px;padding:11px 0;line-height:1.45;border-bottom:1px solid var(--s-line);font-size:14px}
+.subscription-benefits li svg,.subscription-price-card li svg{width:19px;height:19px;flex:none;stroke:#007f79;fill:none;stroke-width:2}
+.traxio-dark .subscription-benefits li svg,.traxio-dark .subscription-price-card li svg{stroke:#92dec5}
+.subscription-founder-note{background:#e6ce9430;border:1px solid #c7aa69;border-radius:10px;padding:14px;font-size:13px;font-style:italic;line-height:1.6}
+.subscription-billing{max-width:650px;margin:auto}.subscription-billing-heading{text-align:center;padding:25px 12px 18px}
+.subscription-billing-heading svg{width:40px;height:40px;stroke:#a67b21;fill:none;stroke-width:1.5}
+.subscription-billing-heading h3{font-size:30px;margin:8px 0}.subscription-billing-heading.signature h3{font-style:italic}
+.subscription-billing-heading span{display:inline-block;border-radius:18px;padding:6px 20px;background:#e6ce94;color:#443615;font-size:13px}
+.subscription-billing dl{margin:0}.subscription-billing dl>div{display:grid;grid-template-columns:1fr 1.5fr;gap:15px;padding:17px 10px;border-bottom:1px solid var(--s-line);font-size:14px;line-height:1.5}
+.subscription-billing dd{margin:0;font-weight:700}
+.subscription-intro{text-align:center}.subscription-intro h3{font-size:28px;line-height:1.2;margin:0 0 10px;letter-spacing:-.6px}
+.subscription-intro>p{font-size:14px;margin:8px 0 16px;line-height:1.6}
+.subscription-cycle{display:inline-flex;border:1px solid var(--s-line);border-radius:30px;background:var(--s-soft);padding:3px}
+body.rm-field .account-dialog .subscription-cycle button{border:0!important;border-radius:24px;min-width:105px;padding:10px 22px;background:transparent!important;color:var(--s-ink)!important}
+body.rm-field .account-dialog .subscription-cycle button[aria-pressed=true]{background:#007f83!important;color:white!important}
+.subscription-savings{font-size:12px!important;color:var(--s-muted)}
+.subscription-plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:24px 0}
+.subscription-price-card{display:flex;flex-direction:column;min-width:0;padding:20px 17px;border:1px solid var(--s-line);border-radius:14px;background:var(--s-soft);--plan-color:#64748b;--plan-button:#354455;--plan-text:#fff}
+.subscription-price-card.plus{--plan-color:#007e91;--plan-button:#007382;border-color:#399ba5;background:linear-gradient(130deg,#007e910d,var(--s-soft))}
+.subscription-price-card.pro{--plan-color:#a87818;--plan-button:#856017;border-color:#b89137;background:linear-gradient(130deg,#d1af5220,var(--s-soft))}
+.subscription-card-top{display:flex;align-items:center;gap:10px}.subscription-card-top svg{width:31px;height:31px;flex:none;stroke:var(--plan-color);fill:none;stroke-width:1.6}
+.subscription-card-top h3{font-size:21px;margin:0;line-height:1.2;letter-spacing:-.4px}
+.subscription-phrase{font-size:13px;min-height:58px;line-height:1.5;margin:14px 0}
+.subscription-card-tag{align-self:flex-start;border:1px solid var(--plan-color);border-radius:20px;padding:4px 7px;font-size:9px;letter-spacing:.5px;font-weight:700}
+.subscription-price{font-size:32px;letter-spacing:-1px;line-height:1.2;font-weight:700;margin:17px 0 5px;white-space:nowrap}
+.subscription-price small{font-size:13px;letter-spacing:0;font-weight:400}
+.subscription-price-note{font-size:12px;min-height:36px;margin:4px 0 13px;line-height:1.5}
+.subscription-price-card ul{margin-bottom:20px;flex:1}.subscription-price-card li{font-size:12px;gap:6px;padding:10px 0}.subscription-price-card li svg{width:15px;height:17px}
+body.rm-field .account-dialog .subscription-plan-action{width:100%;padding:13px 8px;border:1px solid var(--plan-color)!important;background:var(--plan-button)!important;color:var(--plan-text)!important;font-size:13px;line-height:1.4;font-weight:700;border-radius:9px}
+body.rm-field .account-dialog .subscription-plan-action:disabled{opacity:1;cursor:default;background:transparent!important;color:var(--s-ink)!important}
+.subscription-test-note{font-size:13px;line-height:1.6;border-left:3px solid #007f83;padding:10px 15px;background:var(--s-soft)}
+#accountDialog[data-section=subscriptions] #qaPlanSection{background:var(--glass);color:var(--surface-ink);padding:20px;margin-top:20px}
+#qaPlanSection button{margin:5px 5px 5px 0}#qaPlanSection input[readonly]{overflow-wrap:anywhere}
+@media(max-width:1050px){.subscription-plans{grid-template-columns:1fr}.subscription-phrase{min-height:0}.subscription-price-note{min-height:0}.subscription-price-card{padding:20px}.subscription-card-top h3{font-size:24px}.subscription-price-card li{font-size:14px}.subscription-price-card ul{display:grid;grid-template-columns:1fr 1fr;column-gap:20px}.subscription-price-card .subscription-plan-action{margin-top:auto}}
+@media(max-width:650px){body.rm-field #accountToggle{width:82px;min-width:82px;max-width:82px;height:52px;padding:0}body.rm-field #accountToggle .account-avatar-stack{min-width:75px}body.rm-field #accountToggle .account-avatar{width:29px;height:29px}.subscription-badge{font-size:8px;padding:3px 7px}body.traxio-ui-ready #accountDialog[data-section=subscriptions]>.account-dialog{padding:12px 10px 24px}#accountDialog[data-section=subscriptions] .account-dialog-head h2{font-size:22px}#accountDialog[data-section=subscriptions] .account-dialog-head{gap:5px}#accountDialog[data-section=subscriptions] #accountClose{min-width:36px;width:36px}.subscription-hero{padding:15px}.subscription-hero p{font-size:12px}.subscription-tabs{gap:2px;padding:7px}body.rm-field .account-dialog .subscription-tabs button{font-size:11px;padding:9px 3px;min-height:46px}#subscriptionPanel{padding:15px}.subscription-member{padding:20px 13px;gap:10px}.subscription-member h3{font-size:26px}.subscription-member>svg{width:28px;height:28px}.subscription-member p{font-size:13px}.subscription-usage{grid-template-columns:1fr;gap:10px}.subscription-meter{padding:14px}.subscription-meter strong{font-size:20px}.subscription-intro h3{font-size:23px}.subscription-intro>p{font-size:12px}.subscription-price-card ul{display:block}.subscription-price-card{padding:18px 13px}.subscription-card-top h3{font-size:22px}.subscription-price{font-size:31px}.subscription-price-card li{font-size:13px}.subscription-vip>strong{font-size:16px}.subscription-billing dl>div{grid-template-columns:1fr;gap:5px}.subscription-billing-heading h3{font-size:27px}body.rm-field .account-dialog .subscription-cycle button{min-width:80px;padding:10px 13px}}
+/* Override the account hub's legacy button and paragraph rules locally. */
+#accountDialog[data-section=subscriptions] .account-dialog-head{position:sticky;top:0;background:#002832;z-index:5;padding:10px 0 14px}
+#accountDialog #subscriptionRoot .subscription-tabs button{background:transparent!important;color:var(--s-ink)!important}
+#accountDialog #subscriptionRoot .subscription-tabs button[aria-selected=true]{background:#007f83!important;color:#fff!important}
+#accountDialog #subscriptionRoot .subscription-cycle button{background:transparent!important;color:var(--s-ink)!important}
+#accountDialog #subscriptionRoot .subscription-cycle button[aria-pressed=true]{background:#007f83!important;color:#fff!important}
+#accountDialog #subscriptionRoot .subscription-plan-action{background:var(--plan-button)!important;color:#fff!important}
+#accountDialog #subscriptionRoot .subscription-plan-action:disabled{background:transparent!important;color:var(--s-ink)!important}
+#accountDialog #subscriptionRoot .subscription-hero :is(p,small){color:#eff8f5!important}
+#accountDialog #subscriptionRoot .subscription-hero small{color:#c7f526!important}
+#accountDialog #subscriptionRoot .subscription-member.signature :is(h3,p,small,strong){color:#f3dfb6!important}
+.subscription-hero{background:linear-gradient(90deg,#003844f5,#003844a8),url('scenes/historico.webp') center 43%/cover}

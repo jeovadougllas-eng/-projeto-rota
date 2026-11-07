@@ -1,0 +1,44 @@
+name: Published map lookup and pin confirmation
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/location-public-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Use the runner browser without a slow package-index refresh
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome || true)
+          if [ -n "$browser_path" ]; then
+            echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$browser_path" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
+      - name: Published page on desktop, tablet, phone and WebKit with synthetic customers only
+        run: TRAXELO_LOCATIONS_BASE=https://traxio-preview.vercel.app npx playwright test --config=playwright.locations.config.js --project=desktop --project=tablet-portrait --project=phone
+      - name: Actual public server configuration, Android CORS and auth boundary
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const url='https://traxio-preview.vercel.app/api/geolocation-benchmark';
+          const r=await fetch(url);assert.equal(r.status,200);assert.deepEqual((await r.json()).configured,{geoapify:true,tomtom:true});
+          const cors=await fetch(url,{method:'OPTIONS',headers:{Origin:'https://localhost','Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'authorization,content-type'}});assert.equal(cors.status,204);assert.equal(cors.headers.get('Access-Control-Allow-Origin'),'https://localhost');
+          const unauthorized=await fetch(url,{method:'POST',headers:{Origin:'https://localhost','Content-Type':'application/json'},body:JSON.stringify({street:'Rua Teste',city:'Natal'})});assert.equal(unauthorized.status,401);assert.equal(unauthorized.headers.get('Access-Control-Allow-Origin'),'https://localhost');
+          console.log('Both provider flags present; native Android preflight accepted; real unauthenticated query rejected. No geocoding or real portfolio requests made.');
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-customer-location-evidence
+          retention-days: 30
+          path: test-results-locations/
