@@ -1,0 +1,21 @@
+{
+  "artifact": "mobile/android/app/build/outputs/apk/release/app-release-unsigned.apk",
+  "signed": false,
+  "published": false,
+  "sha256": "f22a5dea8d494e7dbebf653b5e8318ba7647a98111cddbd9fc651623222426c0",
+  "bytes": 27885021,
+  "verifiedCommonFiles": [
+    "assets/rotamapa-auth.js",
+    "assets/traxio-native.js",
+    "assets/traxelo-visits-model.js",
+    "assets/rotamapa-client-import.js",
+    "assets/rotamapa-portfolio-lifecycle.js",
+    "assets/rotamapa-documents.js",
+    "assets/rotamapa-commissions-model.js",
+    "assets/rotamapa-document-model.js",
+    "assets/vendor/ocr/manifest.json"
+  ],
+  "nativeId": "app.traxio.mobile",
+  "versionName": "1.7.0",
+  "warning": "Validation build only; no signing identity, upgrade or device test confirmed."
+}

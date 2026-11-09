@@ -131,3 +131,19 @@ Divergência explicada antes da implementação: a experimental reconhecia statu
 Testes: suite completa final com 171 testes unitários passou; verificações de fontes, arte aprovada e 10 artefatos OCR passaram. Dois testes de navegador passaram com OCR REAL sobre imagem sintética em português e CSV/cancelamento, com autenticação simulada e tráfego externo bloqueado. Não houve chamada a OCR externo nem consulta de contratos reais. Sete testes de comissões e quatro de interpretação integram a suite total.
 
 Pendências deliberadamente explícitas: o núcleo e o extrator estão carregados, mas NÃO há tela completa de importação/validação/persistência de regras/snapshots, Central de Promoções, visualizador de catálogo ou consulta de caixas nesta etapa. Os modelos não representam essas funcionalidades concluídas. Ainda faltam documentos de referência e integração segura de armazenamento/sincronização/limites do novo módulo, com testes. Nenhuma taxa EMS foi ativada.
+
+## Preparação de validação Android e documentação de acessos
+
+Checkpoint de fundações: 7d91a0d, enviado ao GitHub. Orientação de conexão OAuth solicitada pelo proprietário está em ROTAMAPA-ACESSOS.md. Nenhum app Supabase/Vercel foi conectado ou autorizado a escrever nesta sessão.
+
+Resumo de testes, comandos e limites registrados em ROTAMAPA-VALIDACAO.md. Não considerar a entrega integral concluída. As checagens de whitespace dos artefatos npm apontaram somente linhas em branco finais de arquivos de terceiros, preservadas junto com seus hashes/licenças; nenhuma verificação de integridade foi burlada.
+
+Preparados JDK com compilador e SDKs requeridos em /workspace/rotamapa-tools; checksum oficial do Gradle fixado no wrapper. Corrigidos pré-requisitos locais identificados por builds (javac ausente, build-tools 35 adicional exigida e CA do proxy para o JDK baixado). TLS, checksums e assinatura de pacotes continuam verificados. Bundle gerado e Capacitor sync concluídos. Sem chave de assinatura compatível confirmada; não substituir APK instalado nem promover artefatos.
+
+### Resultado da compilação Android de validação
+
+`assembleRelease` terminou com BUILD SUCCESSFUL em 2m48s, 324 tarefas (308 executadas, 16 reutilizadas), JDK/SDK/CA verificados. Gerado apenas app-release-unsigned.apk de 27.885.021 bytes; SHA-256 f22a5dea8d494e7dbebf653b5e8318ba7647a98111cddbd9fc651623222426c0. Nove arquivos compartilhados foram comparados byte a byte com as fontes no APK; metadata de PWA foi excluída do shell nativo como no build existente. Evidência em docs/rotamapa-local-android-proof.json.
+
+O arquivo NÃO está assinado, não foi instalado, publicado nem usado como atualização. O identificador app.traxio.mobile e versão técnica existente 1.7.0 foram preservados nesta validação. Não alegar entrega final ou compatibilidade de assinatura. O APK permanece no diretório de build ignorado; prova/comandos/fontes ficam no GitHub. A chave compatível ainda precisa ser identificada por fluxo seguro autorizado.
+
+Próximo trabalho funcional: concluir UI e persistência/sincronização de documentos/condições/snapshots, catálogo PDF e caixas; validar as amostras corretas; revisar rollout das migrações e executar regressões finais por plataforma. Orientação de acesso somente de leitura fornecida; aguardar a conexão real antes de afirmar leitura do Supabase/Vercel. E-mails Insider não recebidos, ninguém ativado. Produção sem comandos de escrita/deploy.
