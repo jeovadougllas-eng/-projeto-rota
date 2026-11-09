@@ -9,7 +9,12 @@ function cnpj(client){
 }
 function formatted(client){const number=cnpj(client);return number?number.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5'):'';}
 function matches(client,query,...extra){const q=normalize(query);if(!q)return true;const fields=Array.isArray(client?.importFields)?client.importFields:[];return normalize([client?.name,cnpj(client),client?.address,client?.street,client?.city,client?.neighborhood,...fields.map(f=>f?.value),...extra].filter(v=>v!=null).join(' ')).includes(q);}
-function append(container,client){const line=root.document.createElement('small');line.className='client-cnpj';line.textContent=formatted(client)||'CNPJ não informado';container.append(line);return line;}
+function fantasy(client){
+ const fields=[...(Array.isArray(client?.latestImportFields)?client.latestImportFields:[]),...(Array.isArray(client?.importFields)?client.importFields:[])];
+ const v=client?.fantasyName||client?.nome_fantasia||fields.find(f=>['nomefantasia','fantasia'].includes(normalize(f?.label)))?.value||(Array.isArray(client?.companyData?.fields)?client.companyData.fields.find(f=>Array.isArray(f)&&['nomefantasia','fantasia'].includes(normalize(f[0])))?.[1]:null);
+ return String(v||'').trim();
+}
+function append(container,client){const name=fantasy(client);if(name){const label=root.document.createElement('small');label.className='client-fantasy-name';label.textContent='Nome fantasia: '+name;container.append(label);}const line=root.document.createElement('small');line.className='client-cnpj';line.textContent=formatted(client)||'CNPJ não informado';container.append(line);return line;}
 function copy(client){const box=root.document.createElement('span');box.className='client-identity-copy';box.textContent=client?.name||'Cliente';append(box,client);return box;}
-root.RotaMapaClientIdentity={cnpj,formatted,matches,append,copy};
+root.RotaMapaClientIdentity={cnpj,formatted,matches,fantasy,append,copy};
 })(globalThis);

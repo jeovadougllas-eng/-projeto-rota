@@ -81,3 +81,13 @@ Arquivos: assets/traxelo-visits-model.js, traxelo-visits-ui.js, traxelo-visit-re
 Validação: 21 regressões unitárias de visitas/store/premium passaram, dois testes novos passaram e 14 cenários Chromium (desktop claro/celular escuro) passaram, incluindo offline/reload, quatro canais, mesmo cliente remoto/presencial, isolamento por conta, falha de armazenamento e exportação XLSX. A primeira execução identificou testes antigos tentando clicar Registrar visita dentro de um disclosure fechado da interface já existente; os testes agora abrem o disclosure pelo controle real. Não houve mudança de layout para contornar o teste.
 
 Limitação: clientes antigos ainda não conhecem a classificação remota e podem mostrar indicadores antigos; validar rollout coerente Web/PWA/Android antes de liberar a funcionalidade. Sincronização contra dados reais não foi executada. Exclusão de carteiras continua pendente: requer tombstones e proteção de clientes antigos; não será simulada só pela remoção visual.
+
+## Etapa 1D — Importação local com pré-visualização
+
+Commit anterior: 292eeab (Pedido remoto), enviado ao GitHub. Adicionados staging determinístico, pré-visualização, identificação de duplicados e conflitos, preparação em lotes com progresso/cancelamento e aplicação local única com restauração da memória se o armazenamento falhar. Repetir o mesmo lote na mesma carteira não cria novos IDs nem sobrescreve pins, dados revisados ou registros existentes. Carteiras diferentes continuam independentes. Colunas originais são preservadas; CNPJ mantém 14 dígitos/zeros formatados e não aceita CPF/notação científica nem inventa zeros já perdidos no arquivo.
+
+Nome fantasia agora aparece como texto secundário na identidade compartilhada dos clientes, sem mudar a fonte principal. A localização continua usando a fila existente em segundo plano somente para novos clientes. O modal bloqueante de enriquecimento foi removido da conclusão da importação: BrasilAPI continua acessível pelos controles existentes e seus limites/pausas não foram burlados. Explicado ao proprietário que parsing/importação local e chamadas externas são tempos distintos.
+
+Arquivos: index.html, assets/rotamapa-client-identity.js, novos rotamapa-client-import.js/rotamapa-client-import-ui.js, scripts/check.mjs e testes unitários/browser de importação.
+
+Testes: 7 testes de importação/identidade passaram; quatro cenários Chromium desktop claro/celular escuro passaram (cancelar prévia, preservar IDs/pins, importação repetida, falha de storage, lote sintético de 53 clientes e 19 colunas). `npm run check` passou. A planilha real UNIFARMA - DOUGLAS.xlsx continua ausente; a validação sintética não substitui o ensaio com o arquivo correto. Não foi medido tempo real de geocodificação/BrasilAPI.
