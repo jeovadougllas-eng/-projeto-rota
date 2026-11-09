@@ -156,3 +156,9 @@ O proprietário decidiu abandonar a alternância de contas para a evolução do 
 Checkpoint anterior à decisão: 5d4051ae5202ee16618dea3bb80d8d7a3e657216, confirmado na branch local e no GitHub. Checkout estava limpo. O commit desta decisão pode ser localizado pelo histórico dos quatro documentos. Verificações desta etapa: branch correta, correspondência local/remota antes da edição, revisão do diff e git diff --check. Não foram necessários testes da aplicação para alteração documental.
 
 Nenhum projeto, dado, credencial ou configuração foi migrado ou revogado. Supabase e Vercel continuam sendo os projetos originais. As ferramentas dos plugins ainda não foram expostas nesta sessão; isso permanece uma pendência de integração, independente da decisão sobre contas. A aplicação e a produção não foram alteradas nesta etapa.
+
+## Preparação de upload manual de Preview
+
+Após as capturas da Vercel, identificada ausência de repositório vinculado visível e ausência de campo de branch em Production. O domínio de produção e seu toggle foram preservados. Preparado script de upload allowlist e ZIP local de 23.353.103 bytes, sem documentos privados, segredos ou instaladores. Todos os hashes do manifesto e os assets locais referenciados no HTML foram conferidos. Foram alterados apenas script e documentação; código da aplicação não foi modificado. Procedimento e limitações em ROTAMAPA-PREVIA-MANUAL.md.
+
+Nenhum deploy foi executado: não existe URL nova confirmada. O pacote usa os endpoints existentes, portanto não fazer login/testes de escrita com dados reais; falta configuração de teste, revisão de OAuth/CORS e validação remota. CLI manual é alternativa ao vínculo Git, sempre target=preview. O menu Create New exibido era global, não um comando de criação de deployment. Produção intacta por esta etapa.
