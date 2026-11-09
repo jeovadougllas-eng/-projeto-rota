@@ -3,7 +3,7 @@
  'use strict';
  const plans={
   free:{name:'Essencial',phrase:'Seu próximo resultado começa aqui.',monthly:0,annual:0,icon:'pin',features:['1 carteira de clientes','Até 3 rotas salvas','Cadastro e localização de clientes','Planejamento e navegação','Visitas e vendas manuais','Catálogo e cálculo de descontos']},
-  plus:{name:'Executivo',phrase:'Sua operação comercial sob seu comando.',monthly:2990,annual:29900,icon:'case',features:['Tudo do Essencial','Até 3 carteiras e 20 rotas salvas','Pedidos por PDF e faturamento','Agendamentos e lembretes','Rankings de clientes e produtos','Relatórios em Excel']},
+  plus:{name:'Executivo',phrase:'Sua operação comercial sob seu comando.',monthly:2990,annual:29900,icon:'case',features:['Tudo do Essencial','Até 3 carteiras e 20 rotas salvas','Até 3 importações de PDF por mês, por carteira','Pedidos por PDF e faturamento','Agendamentos e lembretes','Rankings de clientes e produtos','Relatórios em Excel']},
   pro:{name:'Elite',phrase:'Visão estratégica para ir além em cada rota.',monthly:5990,annual:59900,icon:'crown',features:['Tudo do Executivo','Carteiras e rotas salvas sem limite*','Metas e análises avançadas','Rotas por potencial de compra','Planejamento por região','Experiência mais completa']}
  };
  const signature=a=>!!a&&a.signature===true&&a.plan==='pro'&&a.qa!==true;

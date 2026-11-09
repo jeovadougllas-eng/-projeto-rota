@@ -105,3 +105,13 @@ Testes: PostgreSQL local com cadeia existente e migração de faturamento manual
 Limitações: exclusão definitiva é código preparado para revisão; ativação em produção exige autorização. Confirmar cobertura de futuras tabelas/documentos antes de incluir novos módulos na entrega. Dispositivos antigos podem conservar cópias locais, mas o servidor preparado rejeita o reenvio; a operação não promete apagar remotamente armazenamento de outros aparelhos.
 
 Esclarecimento recebido: Executivo = 3 importações de PDF por mês por carteira. Implementação do contador mensal está pendente; documentos existentes não devem ser removidos. Permanecem pendentes Central de Promoções, extração/OCR, catálogo digital, caixas, comissões e validação/empacotamento final Web/PWA/APK.
+
+## Etapa 1F — Cota mensal de importações PDF (preparada)
+
+Commit anterior: 6de2239 (gestão de carteiras), enviado ao GitHub. Incorporado esclarecimento do proprietário: Executivo permite 3 importações de PDF por mês por carteira. A unidade implementada é uma operação concluída: o fluxo existente pode reunir um ou dois PDFs do mesmo pedido em uma venda; esse lote consome uma importação. Repetição do mesmo conjunto de hashes não consome novamente no mês.
+
+Migração 20261109000300_monthly_pdf_imports.sql cria ledger privado por usuário/carteira/mês e guarda de importação em transação, com lock, validação de plano no servidor e período America/Fortaleza. Não contabiliza retroativamente documentos existentes. Importação inválida reverte também a reserva; o cliente não pode apagar o contador. Elite/Signature/Insider seguem sem esse limite. A migração não foi aplicada à produção. Futuros importadores da Central devem chamar a mesma função privada no servidor; ainda não estão integrados.
+
+Testes: cadeia SQL completa local passou asserções de idempotência, bloqueio da quarta importação, negação ao cliente e integração com venda real sintética de dois PDFs, que consome uma operação; uma venda inválida não consome cota. Seis testes Chromium de importação de pedidos PDF passaram. Corrigidos nesses testes os caminhos para abrir os disclosures da interface existente, sem alterar a interface para fazer testes passarem.
+
+Arquivos: migração, test-db/pdf-import-quota.sql, scripts/monthly-pdf-db-fixture.mjs, runner SQL, modelos/textos de assinatura e importador PDF, tests/order-pdf.spec.js.
