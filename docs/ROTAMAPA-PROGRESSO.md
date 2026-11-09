@@ -17,6 +17,10 @@ Nenhum arquivo da aplicação, configuração Vercel, banco, autenticação, dad
 
 Commit desta etapa: localizar por `git log --oneline -- AGENTS.md docs/ROTAMAPA-ESCOPO.md docs/ROTAMAPA-PROGRESSO.md` (o hash do próprio commit não pode constar de seu conteúdo). Mensagem prevista: `docs: persist RotaMapa safety rules and received master scope`.
 
+## Persistência confirmada
+
+Commit documental `b94c3502cb991614b52886fbe0ecec76a11f6340` enviado ao GitHub em `dev/rotamapa-atualizacao-integral`, com upstream configurado. `git ls-remote` confirmou o mesmo SHA. Checkout ativo nesta branch; somente os três documentos diferem da base. Nenhum comando de deploy executado.
+
 ## Auditoria anterior preservada
 
 Main 84b23d4 é ancestral de aebf583, 421 commits atrás. A experimental acrescenta três commits a aebf583: núcleo de comissões e ajustes de identidade/mensagem PKCE. Não foi incorporada. A versão base contém PWA, Android, carteiras, visitas, agenda, vendas, faturamento, ranking e assinatura. Não usar instruções antigas de setup da main como descrição completa desta base.
@@ -37,7 +41,7 @@ Somente documentação: conferir branch/base, integridade da transcrição, diff
 ## Próximas etapas
 
 1. Receber e integrar a continuação do Prompt Mestre antes de implementar.
-2. Confirmar envio da branch e deste commit ao GitHub; se falhar, registrar o erro e não alegar continuidade remota.
+2. Envio inicial confirmado; manter futuras etapas documentadas e enviadas nesta mesma branch.
 3. Auditar scripts de testes e efeitos colaterais, dependências e toolchain Android; preparar testes isolados.
 4. Comparar autenticação, identidade, limites dos planos e modelos de dados com o escopo; explicar divergências antes de mudar comportamento.
 5. Implementar por etapas com testes e commits, atualizando este documento em cada etapa. Nenhum recurso dos capítulos 3–10 está declarado concluído por esta documentação.
