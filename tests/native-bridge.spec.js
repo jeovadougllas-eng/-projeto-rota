@@ -25,6 +25,7 @@ test('Google and Microsoft use PKCE native return links and open the system auth
  expect((await page.evaluate(()=>window.__nativeCalls)).filter(c=>c.plugin==='Browser')).toHaveLength(2);
  await page.evaluate(()=>window.__appListeners.appUrlOpen({url:'app.traxio.mobile://other/callback?code=reject'}));expect(await page.evaluate(()=>window.__exchangeCalls)).toHaveLength(0);
  await page.evaluate(()=>window.__appListeners.appUrlOpen({url:'app.traxio.mobile://auth/callback?code=native-pkce-test'}));await expect(page.locator('#authScreen')).toBeHidden();expect(await page.evaluate(()=>window.__exchangeCalls)).toEqual(['native-pkce-test']);
+ await page.evaluate(()=>window.__appListeners.appUrlOpen({url:'app.traxio.mobile://auth/callback?code=native-pkce-test'}));expect(await page.evaluate(()=>window.__exchangeCalls)).toEqual(['native-pkce-test']);
 });
 
 test('native GPS provides coordinates and cancels a watch even while its plugin ID is pending',async({page})=>{

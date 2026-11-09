@@ -1,5 +1,3 @@
-<!-- Transcrição integral do arquivo recebido. O original termina truncado na seção 12. Não inferir os critérios ausentes. Data de recebimento da sessão: 2026-11-09; versão declarada pelo autor: 11/11/2026. -->
-
 # PROMPT MESTRE OFICIAL — ROTAMAPA
 
 **Versão:** 11/11/2026  
@@ -848,10 +846,78 @@ A entrega somente será considerada concluída quando:
 - [ ] Nenhum dado existente for perdido.
 - [ ] As carteiras continuarem isoladas.
 - [ ] Signature e Insider estiverem implementados.
-- [ ] Os cinco Insiders não
+- [ ] Os cinco Insiders não forem ativados antes do envio dos e-mails.
+- [ ] Os planos respeitarem os limites aprovados.
+- [ ] Exclusão de carteiras possuir backup e confirmação.
+- [ ] Importação de clientes estiver otimizada.
+- [ ] Pins confirmados forem preservados.
+- [ ] Central de Promoções estiver funcional.
+- [ ] Campanhas respeitarem condições e vigências.
+- [ ] Catálogo digital estiver funcional.
+- [ ] Caixas padrão estiverem disponíveis.
+- [ ] Documentos de comissão forem interpretados automaticamente.
+- [ ] Produtos forem vinculados corretamente.
+- [ ] Exceções forem revisadas quando necessário.
+- [ ] Somente vendas faturadas entrarem na projeção.
+- [ ] Taxas históricas forem preservadas.
+- [ ] Pedido remoto estiver disponível.
+- [ ] WhatsApp for o canal padrão.
+- [ ] Pedido remoto não contar como visita presencial.
+- [ ] Pedido remoto não gerar comissão sem faturamento.
+- [ ] Web, PWA e APK estiverem integrados e testados.
+- [ ] A produção permanecer preservada até autorização.
 
 ---
 
-## Integridade do recebimento
+# 13. COMUNICAÇÃO E CONTINUIDADE
 
-O arquivo fornecido termina literalmente em “- [ ] Os cinco Insiders não”. A continuação não foi recebida. Esta transcrição preserva integralmente o conteúdo disponível; não representa confirmação de que o Prompt Mestre esteja completo. Solicitar a continuação antes de implementar. As tabelas EMS são referências privadas não validadas, não configurações para ativação.
+O proprietário utilizará duas contas Plus para trabalhar alternadamente no mesmo projeto.
+
+Por isso, documentar tudo no GitHub.
+
+Ao concluir cada etapa:
+
+1. Executar testes.
+2. Registrar commits.
+3. Atualizar `docs/ROTAMAPA-PROGRESSO.md`.
+4. Identificar pendências.
+5. Informar o próximo passo.
+6. Enviar alterações ao GitHub.
+
+Não deixar trabalho relevante exclusivamente em ambientes temporários.
+
+Não declarar implementação concluída sem testes.
+
+Não prometer execução em segundo plano se o ambiente não suportar.
+
+Evitar perguntas repetitivas sobre decisões já aprovadas.
+
+Solicitar intervenção apenas quando indispensável.
+
+---
+
+# 14. ORDEM FINAL
+
+Execute o desenvolvimento do RotaMapa com autonomia técnica e responsabilidade.
+
+Priorize:
+
+**1. Preservação absoluta dos dados.**
+
+**2. Fidelidade à aplicação existente.**
+
+**3. Implementação integral das funcionalidades aprovadas.**
+
+**4. Testes reais e verificáveis.**
+
+**5. Entrega Web, PWA e APK Android.**
+
+Não interrompa o trabalho por decisões técnicas triviais.
+
+Se encontrar riscos de perda de dados, incompatibilidade ou necessidade de alteração destrutiva, interrompa somente a operação afetada e solicite autorização.
+
+Mantenha a produção intacta até a aprovação final.
+
+**RESULTADO ESPERADO: ROTAMAPA COMPLETO, ATUALIZADO, TESTADO E PRONTO PARA ENTREGA NAS TRÊS PLATAFORMAS, SEM PERDA DE DADOS E SEM DESCARACTERIZAÇÃO DO APLICATIVO.**
+
+**FIM DO PROMPT MESTRE.**

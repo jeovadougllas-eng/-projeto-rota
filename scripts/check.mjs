@@ -40,3 +40,5 @@ new Script(await readFile(new URL('../assets/rotamapa-ranking-ui.js',import.meta
 if(!nativeHtml.includes('assets/rotamapa-ranking-ui.js')||!nativeHtml.includes('assets/rotamapa-ranking.css'))throw Error('Ranking must ship on web and Android');
 
 for(const file of ['rotamapa-subscription-model.js','rotamapa-subscription-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+new Script(await readFile(new URL('../assets/rotamapa-auth.js',import.meta.url),'utf8'),{filename:'rotamapa-auth.js'});

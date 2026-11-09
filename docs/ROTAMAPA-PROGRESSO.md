@@ -2,7 +2,7 @@
 
 ## Estado de continuidade
 
-- Etapa atual: fase 0, documentação permanente; implementação funcional não iniciada.
+- Etapa atual: escopo completo recebido; auditoria e implementação incremental iniciadas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
 - Produção informada pelo proprietário: deployment Vercel `dpl_374iR7zDa8QqEDkYehYFWA5yBPee`, READY, target production, branch `dev/traxelo-android-routes`.
@@ -27,7 +27,7 @@ Main 84b23d4 é ancestral de aebf583, 421 commits atrás. A experimental acresce
 
 ## Divergências e bloqueios
 
-1. O arquivo do Prompt Mestre termina em `- [ ] Os cinco Insiders não`, na seção 12. Falta a continuação dos critérios de aceitação e eventual conteúdo posterior. Não inferir o restante. Implementação pausada até recebimento da continuação.
+1. Resolvido: continuação das seções 12–14 recebida e integrada, com FIM DO PROMPT MESTRE.
 2. O módulo experimental de comissões não existe na base de produção; deve ser auditado e testado antes de eventual reaproveitamento, sem merge integral.
 3. Há identidade histórica Traxio no login legado. Investigar camadas de interface e fluxo PKCE antes de corrigir; não renomear chaves internas.
 4. A planilha correta UNIFARMA - DOUGLAS.xlsx (53 clientes, 19 colunas) não foi fornecida nesta sessão. Não usar a versão de 279 clientes.
@@ -40,8 +40,20 @@ Somente documentação: conferir branch/base, integridade da transcrição, diff
 
 ## Próximas etapas
 
-1. Receber e integrar a continuação do Prompt Mestre antes de implementar.
+1. Continuação integrada; seguir a implementação incremental.
 2. Envio inicial confirmado; manter futuras etapas documentadas e enviadas nesta mesma branch.
 3. Auditar scripts de testes e efeitos colaterais, dependências e toolchain Android; preparar testes isolados.
 4. Comparar autenticação, identidade, limites dos planos e modelos de dados com o escopo; explicar divergências antes de mudar comportamento.
 5. Implementar por etapas com testes e commits, atualizando este documento em cada etapa. Nenhum recurso dos capítulos 3–10 está declarado concluído por esta documentação.
+
+## Etapa 1A — Identidade textual e callbacks OAuth
+
+Escopo integral recebido e consolidado, incluindo seções 12–14. Dependências instaladas com `npm ci`, sem mudança de lockfile. Baseline: `npm run check` passou e 150 testes unitários existentes passaram.
+
+Divergência explicada antes da edição: o login legado ainda tinha nome Traxio; seus textos foram corrigidos para RotaMapa, sem redesenho, alterações de arte, chaves, provider ou redirect. Web e Android tinham chamadas separadas de exchange; agora `assets/rotamapa-auth.js` compartilha uma promessa por cliente/código para evitar a troca duplicada. Falhas PKCE exibem orientação de mesmo navegador/endereço, sem divulgar a mensagem bruta do provedor. Nenhuma sessão é apagada ou migrada.
+
+Arquivos: index.html, assets/traxio-native.js, novo assets/rotamapa-auth.js, scripts/check.mjs, tests/auth.spec.js, tests/native-bridge.spec.js e novo test-unit/auth-callback.test.mjs, além dos documentos.
+
+Validação: três novos testes unitários de callback passaram. A matriz focada de autenticação/bridge passou 20/20 em Chromium desktop claro e celular escuro, com SDK/GPS sintéticos e rede externa bloqueada. Uma primeira execução revelou que a fixture sem autenticação não persistia a sessão após exchange; o teste foi corrigido para reproduzir o mesmo callback, sem simular persistência inexistente. Login real Google/senha, callbacks administrativos e Android físico não foram testados.
+
+Auditoria de planos: limites de 3/1 e 20/3 já estão implementados no servidor; preservados. Insider, gestão de exclusão, promoções/importações e comissões continuam pendentes. Docker local e Java 21 disponíveis; SDK/assinatura Android ainda não verificados. Não executar workflows históricos de release, pois publicam artefatos na branch de produção.

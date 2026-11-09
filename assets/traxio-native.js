@@ -22,9 +22,9 @@ async function authReturn(url){
   const code=parsed.searchParams.get('code');if(!code)throw Error('O retorno do login não contém um código válido.');
   for(let tries=0;tries<40;tries++){try{if(authClient)break;}catch{}await new Promise(r=>setTimeout(r,250));}
   if(!authClient)throw Error('Serviço de autenticação indisponível.');
-  const {data,error:exchangeError}=await authClient.auth.exchangeCodeForSession(code);if(exchangeError)throw exchangeError;if(data.session?.user)authUnlock(data.session.user);
+  const {data,error:exchangeError}=await RotaMapaAuth.exchange(authClient,code);if(exchangeError)throw exchangeError;if(data.session?.user)authUnlock(data.session.user);
   await Browser.close().catch(()=>{});
- }catch(e){if(typeof authNotice==='function')authNotice('Não foi possível concluir o login: '+e.message,true);}
+ }catch(e){if(typeof authNotice==='function')authNotice(RotaMapaAuth.message(e),true);}
 }
 App.addListener('appUrlOpen',event=>authReturn(event.url));
 App.getLaunchUrl().then(result=>{if(result?.url)authReturn(result.url);}).catch(()=>{});

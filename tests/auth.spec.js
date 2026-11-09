@@ -20,3 +20,34 @@ test('register and recovery forms remain available',async({page})=>{
   await page.locator('#authBack').click();await expect(page.locator('#authForm')).toBeVisible();
   await page.locator('#authForgotToggle').click();await expect(page.locator('#authForgotForm')).toBeVisible();
 });
+
+test('repeated Web callbacks exchange the same PKCE code only once',async({page})=>{
+ await page.evaluate(async()=>{
+  history.replaceState(null,'','/?code=synthetic-callback');
+  await Promise.all([authInitialize(),authInitialize()]);
+  history.replaceState(null,'','/?code=synthetic-callback');
+  await authInitialize();
+ });
+ await expect(page.locator('#authScreen')).toBeHidden();
+ expect(await page.evaluate(()=>window.__exchangeCalls)).toEqual(['synthetic-callback']);
+ expect(new URL(page.url()).search).toBe('');
+});
+
+test('missing verifier leaves the account and its local data intact and explains the same-origin return',async({page})=>{
+ const before=await page.evaluate(()=>localStorage.getItem('projeto_rota_mapa_v1'));
+ await page.evaluate(async()=>{
+  authClient.auth.exchangeCodeForSession=async()=>({data:{session:null},error:{name:'AuthApiError',message:'both auth code and code verifier should be non-empty private-provider-detail'}});
+  history.replaceState(null,'','/?code=synthetic-invalid');await authInitialize();
+ });
+ await expect(page.locator('#authScreen')).toBeVisible();
+ await expect(page.locator('#authMessage')).toContainText('mesmo navegador');
+ await expect(page.locator('#authMessage')).not.toContainText('private-provider-detail');
+ expect(await page.evaluate(()=>localStorage.getItem('projeto_rota_mapa_v1'))).toBe(before);
+ expect(await page.evaluate(()=>window.__dataCalls)).toEqual([]);
+});
+
+test('fallback login and registration preserve RotaMapa textual identity',async({page})=>{
+ await expect(page.locator('.scene-brand')).toContainText('RotaMapa');
+ await page.locator('#authRegisterToggle').click();
+ await expect(page.locator('#authRegisterForm h2')).toHaveText('Criar conta RotaMapa');
+});
