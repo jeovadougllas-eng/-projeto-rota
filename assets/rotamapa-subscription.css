@@ -97,3 +97,10 @@ body.rm-field .account-dialog .subscription-plan-action:disabled{opacity:1;curso
 #accountDialog #subscriptionRoot .subscription-hero small{color:#c7f526!important}
 #accountDialog #subscriptionRoot .subscription-member.signature :is(h3,p,small,strong){color:#f3dfb6!important}
 .subscription-hero{background:linear-gradient(90deg,#003844f5,#003844a8),url('scenes/historico.webp') center 43%/cover}
+
+/* Insider is honorary server-confirmed access; preserve Signature's champagne palette. */
+.subscription-badge.insider{background:#082e3a;color:#55e0d1;border-color:#13b8a6}
+#accountMenu[data-membership=insider] [data-account=subscriptions]{background:#082e3a;color:#55e0d1;border:1px solid #13b8a6}
+#accountDialog #subscriptionRoot .subscription-member.insider{background:#082e3a;border:2px solid #13b8a6}
+#accountDialog #subscriptionRoot .subscription-member.insider :is(h3,p,small,strong){color:#55e0d1!important}
+.subscription-billing-heading.insider{background:#082e3a;color:#55e0d1}

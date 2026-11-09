@@ -2,3 +2,8 @@ import{test}from'node:test';import assert from'node:assert/strict';import{readFi
 const context=vm.createContext({Intl});vm.runInContext(readFileSync(new URL('../assets/rotamapa-subscription-model.js',import.meta.url),'utf8'),context);const M=context.RotaMapaSubscriptionModel;
 test('Signature requires an explicit server flag and full non-QA access',()=>{assert.equal(M.identity({plan:'pro',signature:true}).name,'Signature');for(const a of [{plan:'pro'},{plan:'free',signature:true},{plan:'plus',signature:true},{plan:'pro',signature:'true'},{plan:'pro',signature:true,qa:true}])assert.notEqual(M.identity(a).name,'Signature');assert.equal(M.identity(null).name,'Consultando');});
 test('public prices preserve the approved annual totals and test upgrades cannot skip a tier',()=>{assert.equal(M.plans.plus.monthly,2990);assert.equal(M.plans.plus.annual,29900);assert.equal(M.plans.pro.monthly,5990);assert.equal(M.plans.pro.annual,59900);assert.equal(Object.keys(M.plans).length,3);assert.equal(M.next({plan:'free',qa:true}),'plus');assert.equal(M.next({plan:'plus',qa:true}),'pro');assert.equal(M.next({plan:'free',qa:false}),null);assert.equal(M.next({plan:'pro',signature:true}),null);});
+test('Insider is server-confirmed permanent Elite identity, never a user metadata flag or QA tier',()=>{
+ assert.equal(M.identity({plan:'pro',insider:true}).key,'insider');
+ for(const a of [{plan:'free',insider:true},{plan:'plus',insider:true},{plan:'pro',insider:'true'},{plan:'pro',insider:true,qa:true},{plan:'pro',user_metadata:{insider:true}}])assert.equal(M.insider(a),false);
+ assert.equal(M.identity({plan:'pro',insider:true,signature:true}).key,'signature');assert.equal(M.next({plan:'pro',insider:true}),null);assert.equal(Object.keys(M.plans).length,3);
+});

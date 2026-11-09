@@ -57,3 +57,15 @@ Arquivos: index.html, assets/traxio-native.js, novo assets/rotamapa-auth.js, scr
 Validação: três novos testes unitários de callback passaram. A matriz focada de autenticação/bridge passou 20/20 em Chromium desktop claro e celular escuro, com SDK/GPS sintéticos e rede externa bloqueada. Uma primeira execução revelou que a fixture sem autenticação não persistia a sessão após exchange; o teste foi corrigido para reproduzir o mesmo callback, sem simular persistência inexistente. Login real Google/senha, callbacks administrativos e Android físico não foram testados.
 
 Auditoria de planos: limites de 3/1 e 20/3 já estão implementados no servidor; preservados. Insider, gestão de exclusão, promoções/importações e comissões continuam pendentes. Docker local e Java 21 disponíveis; SDK/assinatura Android ainda não verificados. Não executar workflows históricos de release, pois publicam artefatos na branch de produção.
+
+## Etapa 1B — Insider sem ativação
+
+Commit anterior: e7eddc7 (autenticação/identidade), enviado ao GitHub. Implementada a apresentação Insider na assinatura e no selo, com paleta e textos aprovados; os três planos públicos e Signature permanecem intactos. A identidade Insider exige flag de acesso do servidor com plano pro, sem QA, nunca metadados editáveis do usuário.
+
+Preparada migração aditiva `20261109000100_insider_membership.sql`, NÃO aplicada ao Supabase. Ela cria tabela privada com cinco slots exclusivos, RLS sem políticas para clientes e nenhuma pessoa cadastrada. A função de acesso preserva Signature e limites existentes; associação Insider permanente só poderá ser provisionada administrativamente depois dos e-mails e aprovação. A migração não ativa contas nem modifica grants existentes.
+
+Arquivos: modelos/UI/CSS de assinatura e conta, fixture/testes de assinatura, migração, test-db/insider-base.sql, test-db/insider.sql e scripts/test-insider-db.sh.
+
+Testes: 3 testes unitários de assinatura passaram; `npm run check` passou; 18 cenários de navegador desktop/Android-browser passaram (incluindo regressões Signature). PostgreSQL 16 em Docker local, sem rede/portas, passou asserções de zero ativações na migração, limite de cinco, duplicidade, preservação Signature, exclusão de QA, negação de leitura/escrita do cliente e metadados forjados. Runner encerra e remove apenas seu próprio container. Imagem fixada por digest. Nenhum teste foi dirigido à produção.
+
+Pendência: migração e provisionamento exigem revisão e autorização futuras; ainda faltam os cinco e-mails. A funcionalidade não está ativa em produção. Limite Executivo de PDFs e automação de promoções continuam sob auditoria; nenhum limite novo imposto.

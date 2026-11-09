@@ -7,8 +7,9 @@
   pro:{name:'Elite',phrase:'Visão estratégica para ir além em cada rota.',monthly:5990,annual:59900,icon:'crown',features:['Tudo do Executivo','Carteiras e rotas salvas sem limite*','Metas e análises avançadas','Rotas por potencial de compra','Planejamento por região','Experiência mais completa']}
  };
  const signature=a=>!!a&&a.signature===true&&a.plan==='pro'&&a.qa!==true;
- function identity(a){if(signature(a))return{key:'signature',name:'Signature',phrase:'Sua assinatura na história do RotaMapa.'};const key=Object.hasOwn(plans,a?.plan)?a.plan:null;return key?{key,name:plans[key].name,phrase:plans[key].phrase}:{key:'pending',name:'Consultando',phrase:'Aguarde a confirmação do seu acesso.'};}
+ const insider=a=>!!a&&a.insider===true&&a.plan==='pro'&&a.qa!==true&&!signature(a);
+ function identity(a){if(insider(a))return{key:'insider',name:'Insider',phrase:'Quem vive a experiência ajuda a construir o futuro do RotaMapa.'};if(signature(a))return{key:'signature',name:'Signature',phrase:'Sua assinatura na história do RotaMapa.'};const key=Object.hasOwn(plans,a?.plan)?a.plan:null;return key?{key,name:plans[key].name,phrase:plans[key].phrase}:{key:'pending',name:'Consultando',phrase:'Aguarde a confirmação do seu acesso.'};}
  const money=cents=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(cents/100);
- function next(a){return a?.qa&&!signature(a)?({free:'plus',plus:'pro'})[a.plan]||null:null;}
- root.RotaMapaSubscriptionModel={plans,signature,identity,money,next};
+ function next(a){return a?.qa&&!signature(a)&&!insider(a)?({free:'plus',plus:'pro'})[a.plan]||null:null;}
+ root.RotaMapaSubscriptionModel={plans,signature,insider,identity,money,next};
 })(globalThis);
