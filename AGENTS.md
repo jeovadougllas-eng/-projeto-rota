@@ -1,6 +1,12 @@
 # Instruções permanentes — RotaMapa
 
-Leia integralmente este arquivo, docs/ROTAMAPA-ESCOPO.md e docs/ROTAMAPA-PROGRESSO.md antes de trabalhar. O GitHub é a fonte de continuidade entre contas; não dependa de memória de conversas. Se o escopo estiver incompleto, registre a lacuna e peça a continuação sem inventar requisitos.
+Leia integralmente este arquivo, docs/ROTAMAPA-ESCOPO.md e docs/ROTAMAPA-PROGRESSO.md antes de trabalhar. O GitHub é a fonte de continuidade entre sessões e tarefas; não dependa de memória de conversas. Se o escopo estiver incompleto, registre a lacuna e peça a continuação sem inventar requisitos.
+
+## Conta de continuidade — decisão vigente
+
+O proprietário decidiu manter a evolução do RotaMapa exclusivamente na conta Codex desta conversa. Essa decisão substitui as orientações anteriores de alternância entre duas contas presentes no Prompt Mestre, sem alterar o escopo funcional aprovado. Não proponha alternância de contas ao atingir a cota; retome nesta mesma conta quando houver disponibilidade.
+
+Sessões e tarefas podem ser diferentes dentro desta conta: antes de retomar, consulte o GitHub e os documentos de progresso. Não presuma que memórias, ferramentas, processos ou credenciais sejam herdados. Esta decisão não migra nem recria GitHub, Supabase, Vercel ou o aplicativo. Consulte docs/ROTAMAPA-CONTINUIDADE.md.
 
 ## Branch e preservação
 

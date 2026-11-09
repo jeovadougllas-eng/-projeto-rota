@@ -2,7 +2,8 @@
 
 ## Estado de continuidade
 
-- Etapa atual: escopo completo recebido; auditoria e implementação incremental iniciadas.
+- Etapa atual: implementação incremental em andamento; próximos módulos e limitações registrados nas etapas abaixo.
+- Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
 - Produção informada pelo proprietário: deployment Vercel `dpl_374iR7zDa8QqEDkYehYFWA5yBPee`, READY, target production, branch `dev/traxelo-android-routes`.
@@ -147,3 +148,11 @@ Preparados JDK com compilador e SDKs requeridos em /workspace/rotamapa-tools; ch
 O arquivo NÃO está assinado, não foi instalado, publicado nem usado como atualização. O identificador app.traxio.mobile e versão técnica existente 1.7.0 foram preservados nesta validação. Não alegar entrega final ou compatibilidade de assinatura. O APK permanece no diretório de build ignorado; prova/comandos/fontes ficam no GitHub. A chave compatível ainda precisa ser identificada por fluxo seguro autorizado.
 
 Próximo trabalho funcional: concluir UI e persistência/sincronização de documentos/condições/snapshots, catálogo PDF e caixas; validar as amostras corretas; revisar rollout das migrações e executar regressões finais por plataforma. Orientação de acesso somente de leitura fornecida; aguardar a conexão real antes de afirmar leitura do Supabase/Vercel. E-mails Insider não recebidos, ninguém ativado. Produção sem comandos de escrita/deploy.
+
+## Decisão posterior — continuidade exclusiva nesta conta
+
+O proprietário decidiu abandonar a alternância de contas para a evolução do RotaMapa. Atualizados AGENTS.md e o aviso de precedência do escopo, preservando o texto histórico recebido. Criado ROTAMAPA-CONTINUIDADE.md com fluxo de trabalho, repositório/branch, pendências e limites de autorização. Esta etapa altera somente documentação.
+
+Checkpoint anterior à decisão: 5d4051ae5202ee16618dea3bb80d8d7a3e657216, confirmado na branch local e no GitHub. Checkout estava limpo. O commit desta decisão pode ser localizado pelo histórico dos quatro documentos. Verificações desta etapa: branch correta, correspondência local/remota antes da edição, revisão do diff e git diff --check. Não foram necessários testes da aplicação para alteração documental.
+
+Nenhum projeto, dado, credencial ou configuração foi migrado ou revogado. Supabase e Vercel continuam sendo os projetos originais. As ferramentas dos plugins ainda não foram expostas nesta sessão; isso permanece uma pendência de integração, independente da decisão sobre contas. A aplicação e a produção não foram alteradas nesta etapa.

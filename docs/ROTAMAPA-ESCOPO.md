@@ -1,3 +1,5 @@
+> **Decisão posterior vigente:** o proprietário determinou a continuidade exclusivamente na conta Codex desta conversa. As referências abaixo à alternância entre duas contas são mantidas como histórico do Prompt Mestre e foram substituídas por essa decisão. O restante do escopo aprovado permanece válido. Consulte `ROTAMAPA-CONTINUIDADE.md`.
+
 # PROMPT MESTRE OFICIAL — ROTAMAPA
 
 **Versão:** 11/11/2026  
