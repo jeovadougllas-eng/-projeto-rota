@@ -14,7 +14,9 @@
     "test:geolocation": "node --test test-unit/*.test.mjs"
   },
   "devDependencies": {
+    "@tesseract.js-data/por": "1.0.0",
     "pdfjs-dist": "4.10.38",
-    "playwright": "1.62.1"
+    "playwright": "1.62.1",
+    "tesseract.js": "7.0.0"
   }
 }

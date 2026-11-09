@@ -115,3 +115,19 @@ Migração 20261109000300_monthly_pdf_imports.sql cria ledger privado por usuár
 Testes: cadeia SQL completa local passou asserções de idempotência, bloqueio da quarta importação, negação ao cliente e integração com venda real sintética de dois PDFs, que consome uma operação; uma venda inválida não consome cota. Seis testes Chromium de importação de pedidos PDF passaram. Corrigidos nesses testes os caminhos para abrir os disclosures da interface existente, sem alterar a interface para fazer testes passarem.
 
 Arquivos: migração, test-db/pdf-import-quota.sql, scripts/monthly-pdf-db-fixture.mjs, runner SQL, modelos/textos de assinatura e importador PDF, tests/order-pdf.spec.js.
+
+## Consulta sobre acessos
+
+O proprietário perguntou como conectar Supabase e Vercel. Orientações registradas em docs/ROTAMAPA-ACESSOS.md: OAuth em servidores oficiais, Supabase restrito ao projeto com read_only=true, Vercel sem promessa de modo somente leitura técnico, nenhuma credencial em chat. Apps conectados no ChatGPT podem não chegar a esta sessão Codex; verificar ferramentas disponíveis. Nenhuma conexão foi confirmada e nenhuma permissão de escrita foi concedida nesta consulta.
+
+## Etapa 1G — Extração local e núcleo de projeção (ainda sem integração completa)
+
+Commit anterior: 35d35f7 (cota PDF), enviado ao GitHub. Preparados extrator local PDF/XLSX/CSV/imagens e OCR português com Tesseract.js 7.0.0 e dados por 1.0.0, versões fixas no lockfile. Engines local/SIMD/relaxed-SIMD, modelo e licenças são artefatos npm públicos, copiados por scripts/prepare-document-ocr.mjs e verificados por SHA-256 por scripts/check-document-assets.mjs. Nenhum contrato privado ou imagem de produto foi adicionado. A extração não envia documentos a serviços externos.
+
+O interpretador determinístico reconhece tabelas de comissões, campanhas e caixas e preserva linhas ambíguas para revisão. Não infere datas inválidas nem combina automaticamente preço de oferta com desconto. PDF com pouco texto usa OCR local; há limites de tamanho/páginas/pixels e cancelamento. A precisão com documentos reais ainda NÃO foi validada.
+
+Divergência explicada antes da implementação: a experimental reconhecia status FATURADO, que não corresponde ao schema de vendas confirmado/recibos do aplicativo. Não houve merge. O novo núcleo rotamapa-commissions-model.js adapta recibos efetivamente faturados e confirmações manuais existentes. Usa centavos/basis points, regras por conta/carteira/empresa, correspondência inequívoca, datas no fuso configurado, snapshots de taxas, devoluções/estornos conhecidos e revisão de ambiguidades/duplicidades. Não é controle de pagamento nem prova de comissão devida.
+
+Testes: suite completa final com 171 testes unitários passou; verificações de fontes, arte aprovada e 10 artefatos OCR passaram. Dois testes de navegador passaram com OCR REAL sobre imagem sintética em português e CSV/cancelamento, com autenticação simulada e tráfego externo bloqueado. Não houve chamada a OCR externo nem consulta de contratos reais. Sete testes de comissões e quatro de interpretação integram a suite total.
+
+Pendências deliberadamente explícitas: o núcleo e o extrator estão carregados, mas NÃO há tela completa de importação/validação/persistência de regras/snapshots, Central de Promoções, visualizador de catálogo ou consulta de caixas nesta etapa. Os modelos não representam essas funcionalidades concluídas. Ainda faltam documentos de referência e integração segura de armazenamento/sincronização/limites do novo módulo, com testes. Nenhuma taxa EMS foi ativada.
