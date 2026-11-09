@@ -25,3 +25,6 @@ test-results-visit-details/
 test-results-portfolios/
 
 test-results-scheduling/
+
+# Generated Playwright evidence from focused validation suites
+test-results-*/

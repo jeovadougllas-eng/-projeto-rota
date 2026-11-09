@@ -69,3 +69,15 @@ Arquivos: modelos/UI/CSS de assinatura e conta, fixture/testes de assinatura, mi
 Testes: 3 testes unitários de assinatura passaram; `npm run check` passou; 18 cenários de navegador desktop/Android-browser passaram (incluindo regressões Signature). PostgreSQL 16 em Docker local, sem rede/portas, passou asserções de zero ativações na migração, limite de cinco, duplicidade, preservação Signature, exclusão de QA, negação de leitura/escrita do cliente e metadados forjados. Runner encerra e remove apenas seu próprio container. Imagem fixada por digest. Nenhum teste foi dirigido à produção.
 
 Pendência: migração e provisionamento exigem revisão e autorização futuras; ainda faltam os cinco e-mails. A funcionalidade não está ativa em produção. Limite Executivo de PDFs e automação de promoções continuam sob auditoria; nenhum limite novo imposto.
+
+## Etapa 1C — Pedido remoto
+
+Commit anterior: d3741ce (Insider), enviado ao GitHub. Implementada de forma independente a opção adicional Pedido remoto no formulário existente, sem remover opções. Canal padrão WhatsApp, com Telefone/E-mail/Outro; confirmação contextual; observações opcionais; nenhum valor obrigatório. Usa o ledger e outbox existentes e mantém IDs/chaves. Não converte registros históricos nem dispara o diálogo automático de venda.
+
+Relatórios separam `remoteOrders`/histórico de visitas presenciais; cobertura, revisitas, projeções e sugestões de retorno excluem atendimento remoto. Histórico exibe canal; Excel acrescenta aba de pedidos remotos quando existem. Nenhuma rota ou quilometragem é criada. Venda e faturamento continuam operações explícitas separadas. A classificação adicional não exige migração no schema JSON atual.
+
+Arquivos: assets/traxelo-visits-model.js, traxelo-visits-ui.js, traxelo-visit-report.js, traxelo-premium-model.js, rotamapa-commerce-ui.js; testes de pedido remoto e visitas; .gitignore para saídas geradas.
+
+Validação: 21 regressões unitárias de visitas/store/premium passaram, dois testes novos passaram e 14 cenários Chromium (desktop claro/celular escuro) passaram, incluindo offline/reload, quatro canais, mesmo cliente remoto/presencial, isolamento por conta, falha de armazenamento e exportação XLSX. A primeira execução identificou testes antigos tentando clicar Registrar visita dentro de um disclosure fechado da interface já existente; os testes agora abrem o disclosure pelo controle real. Não houve mudança de layout para contornar o teste.
+
+Limitação: clientes antigos ainda não conhecem a classificação remota e podem mostrar indicadores antigos; validar rollout coerente Web/PWA/Android antes de liberar a funcionalidade. Sincronização contra dados reais não foi executada. Exclusão de carteiras continua pendente: requer tombstones e proteção de clientes antigos; não será simulada só pela remoção visual.

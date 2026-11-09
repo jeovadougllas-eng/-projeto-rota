@@ -1,6 +1,7 @@
 /* Pure visit analytics. Confirmed visits only; no sales inference or planned-route conversion. */
 (function(root){
 'use strict';
+const isRemote=e=>e?.attendanceType==='remote'||e?.source==='remote_order';
 const dayRE=/^\d{4}-\d{2}-\d{2}$/;
 function validDay(s){if(!dayRE.test(String(s)))return false;const d=new Date(s+'T12:00:00Z');return Number.isFinite(d.getTime())&&d.toISOString().slice(0,10)===s;}
 function day(date=new Date(),zone='America/Sao_Paulo'){const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(date)).map(x=>[x.type,x.value]));return `${p.year}-${p.month}-${p.day}`;}
@@ -16,7 +17,8 @@ function report(events,portfolio,{month=day().slice(0,7),asOf=new Date().toISOSt
  const holidaysSet=new Set(holidays.filter(validDay)),workingSet=new Set(workingDays.map(Number));
  const isWorking=d=>workingSet.has(weekday(d))&&!holidaysSet.has(d);
  const clients=new Map((portfolio||[]).filter(c=>c&&c.active!==false&&!c.deleted_at).map(c=>[key(c),c]));
- const confirmed=dedupe(events).filter(e=>e.status==='confirmed'&&e.visitDate.startsWith(month)&&e.visitDate<=today).sort((a,b)=>a.visitDate.localeCompare(b.visitDate)||String(a.occurredAt||a.recordedAt||'').localeCompare(String(b.occurredAt||b.recordedAt||''))||a.id.localeCompare(b.id));
+ const history=dedupe(events).filter(e=>e.status==='confirmed'&&e.visitDate.startsWith(month)&&e.visitDate<=today).sort((a,b)=>a.visitDate.localeCompare(b.visitDate)||String(a.occurredAt||a.recordedAt||'').localeCompare(String(b.occurredAt||b.recordedAt||''))||a.id.localeCompare(b.id));
+ const confirmed=history.filter(e=>!isRemote(e)),remoteOrders=history.filter(isRemote);
  const pending=dedupe(events).filter(e=>e.status==='pending'&&e.visitDate.startsWith(month)).length;
  const visited=new Set(),activeVisited=new Set(),daily=[],weeks=new Map();let cumulative=0,observedVisits=0;const forecastVisited=new Set(),observedActive=new Set();
  for(const d of calendar){
@@ -35,7 +37,7 @@ function report(events,portfolio,{month=day().slice(0,7),asOf=new Date().toISOSt
  const target=Number(monthlyTarget)>0?Number(monthlyTarget):null;
  const pdvs=[...clients].map(([id,c])=>{const visits=confirmed.filter(e=>String(e.clientId)===id);return {id,name:c.name||'',city:c.city||'',neighborhood:c.neighborhood||'',address:c.address||'',visits:visits.length,lastVisit:visits.at(-1)?.visitDate||'',visited:!!visits.length};});
  for(const id of [...uniqueAll].filter(id=>!clients.has(id))){const rows=confirmed.filter(e=>String(e.clientId)===id),c=rows.at(-1).client||{};pdvs.push({id,name:c.name||'',city:c.city||'',neighborhood:c.neighborhood||'',address:c.address||'',visits:rows.length,lastVisit:rows.at(-1).visitDate,visited:true,outsidePortfolio:true});}
- return {schema:1,month,asOf,timeZone,representative,cutoff,workingDays:[...workingSet],holidays:[...holidaysSet],monthlyTarget:target,portfolioReference:'Carteira ativa atual na data da emissão; não é uma reconstrução histórica da carteira.',summary:{visits:confirmed.length,uniquePdvs:uniqueAll.size,revisits:confirmed.length-uniqueAll.size,portfolioSize:clients.size,activePdvsVisited:activeAll.size,notVisited:clients.size-activeAll.size,coverage:clients.size?activeAll.size/clients.size:null,daysWithVisits:new Set(confirmed.map(e=>e.visitDate)).size,elapsedWorkingDays:elapsed,extraWorkingDays:extraDays,remainingWorkingDays:remaining,dailyAverage:rate,projectedVisits:rate===null?null:Math.max(confirmed.length,Math.round(observedVisits+rate*remaining)),projectedPdvs:pdvRate===null?null:Math.max(activeAll.size,Math.min(clients.size,Math.round(observedActive.size+pdvRate*remaining))),observedUntilYesterday:observedVisits,pendingVisits:pending,neededPerDay:target&&remaining?Math.max(0,(target-observedVisits)/remaining):null},visits:confirmed,daily,weekly:[...weeks.values()].map(w=>({start:w.start,end:w.end,visits:w.visits,uniquePdvs:w.ids.size,daysWithVisits:w.days.size})),pdvs};
+ return {schema:1,month,asOf,timeZone,representative,cutoff,workingDays:[...workingSet],holidays:[...holidaysSet],monthlyTarget:target,portfolioReference:'Carteira ativa atual na data da emissão; não é uma reconstrução histórica da carteira.',summary:{visits:confirmed.length,uniquePdvs:uniqueAll.size,revisits:confirmed.length-uniqueAll.size,portfolioSize:clients.size,activePdvsVisited:activeAll.size,notVisited:clients.size-activeAll.size,coverage:clients.size?activeAll.size/clients.size:null,daysWithVisits:new Set(confirmed.map(e=>e.visitDate)).size,elapsedWorkingDays:elapsed,extraWorkingDays:extraDays,remainingWorkingDays:remaining,dailyAverage:rate,projectedVisits:rate===null?null:Math.max(confirmed.length,Math.round(observedVisits+rate*remaining)),projectedPdvs:pdvRate===null?null:Math.max(activeAll.size,Math.min(clients.size,Math.round(observedActive.size+pdvRate*remaining))),observedUntilYesterday:observedVisits,pendingVisits:pending,neededPerDay:target&&remaining?Math.max(0,(target-observedVisits)/remaining):null},visits:confirmed,remoteOrders,history,daily,weekly:[...weeks.values()].map(w=>({start:w.start,end:w.end,visits:w.visits,uniquePdvs:w.ids.size,daysWithVisits:w.days.size})),pdvs};
 }
-root.TraxeloVisitsModel={day,add,validDay,dates,monday,dedupe,report};
+root.TraxeloVisitsModel={isRemote,day,add,validDay,dates,monday,dedupe,report};
 })(globalThis);
