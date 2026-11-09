@@ -921,3 +921,7 @@ Mantenha a produção intacta até a aprovação final.
 **RESULTADO ESPERADO: ROTAMAPA COMPLETO, ATUALIZADO, TESTADO E PRONTO PARA ENTREGA NAS TRÊS PLATAFORMAS, SEM PERDA DE DADOS E SEM DESCARACTERIZAÇÃO DO APLICATIVO.**
 
 **FIM DO PROMPT MESTRE.**
+
+## Esclarecimento posterior do proprietário — PDFs do Executivo
+
+O limite aprovado é de **3 importações de PDF por mês, por carteira**. Não é um limite de três catálogos armazenados. Preservar registros existentes; implementar validação de novas importações no servidor. Operações repetidas com o mesmo conteúdo devem ser idempotentes. Não inferir autorização para alterar produção.

@@ -91,3 +91,17 @@ Nome fantasia agora aparece como texto secundário na identidade compartilhada d
 Arquivos: index.html, assets/rotamapa-client-identity.js, novos rotamapa-client-import.js/rotamapa-client-import-ui.js, scripts/check.mjs e testes unitários/browser de importação.
 
 Testes: 7 testes de importação/identidade passaram; quatro cenários Chromium desktop claro/celular escuro passaram (cancelar prévia, preservar IDs/pins, importação repetida, falha de storage, lote sintético de 53 clientes e 19 colunas). `npm run check` passou. A planilha real UNIFARMA - DOUGLAS.xlsx continua ausente; a validação sintética não substitui o ensaio com o arquivo correto. Não foi medido tempo real de geocodificação/BrasilAPI.
+
+## Etapa 1E — Gestão segura de carteiras (migração não aplicada)
+
+Commit anterior: 899266b (importação), enviado ao GitHub. Preparadas operações transacionais de arquivar/restaurar/excluir com confirmação textual exata e revisão CAS. Arquivo morto recuperável preserva todos os registros no servidor; exclusão permanente remove apenas os filhos conhecidos da conta/carteira selecionada e mantém tombstone. Triggers compartilham lock da carteira com a operação e rejeitam reenvios de aparelhos antigos, inclusive da carteira inicial. Tombstones não consomem quotas; arquivos recuperáveis continuam ocupando os limites anteriores.
+
+A interface desabilita gestão quando o RPC não existe, exige conexão, bloqueia clientes locais ainda não sincronizados/outboxes pendentes e não agenda exclusão offline. Caches conhecidos da carteira só são removidos após confirmação de exclusão pelo servidor; arquivos de outras contas/carteiras permanecem intactos. Uma carteira ativa arquivada/excluída fica bloqueada até restauração/troca. Sem migração aplicada, os controles não realizam operações.
+
+Arquivos: assets/rotamapa-portfolios.js, novo rotamapa-portfolio-lifecycle.js, index.html, scripts/check.mjs, migração 20261109000200_portfolio_lifecycle.sql, runner/fixtures SQL e testes de carteiras. Corrigida espera de inicialização do Postgres nos runners para evitar conexão durante a troca do servidor temporário de init para o definitivo.
+
+Testes: PostgreSQL local com cadeia existente e migração de faturamento manual passou asserções de arquivo/restauração, pins intactos, confirmação forte, revisão desatualizada, isolamento entre usuários/carteiras, preservação das outras carteiras, bloqueio de ressurreição normal/inicial e contagem sem tombstones. 16 cenários de navegador de gestão/carteiras passaram; oito cenários finais focados passaram, incluindo exclusão confirmada, rejeição pelo servidor, offline e caches de outra conta preservados. Suite completa atual: 160 testes unitários passaram. Nenhuma migração foi aplicada ao Supabase real.
+
+Limitações: exclusão definitiva é código preparado para revisão; ativação em produção exige autorização. Confirmar cobertura de futuras tabelas/documentos antes de incluir novos módulos na entrega. Dispositivos antigos podem conservar cópias locais, mas o servidor preparado rejeita o reenvio; a operação não promete apagar remotamente armazenamento de outros aparelhos.
+
+Esclarecimento recebido: Executivo = 3 importações de PDF por mês por carteira. Implementação do contador mensal está pendente; documentos existentes não devem ser removidos. Permanecem pendentes Central de Promoções, extração/OCR, catálogo digital, caixas, comissões e validação/empacotamento final Web/PWA/APK.
