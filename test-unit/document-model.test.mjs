@@ -23,3 +23,6 @@ test('contract exceptions are retained for review and commercial hours are never
 test('review retains valid price, stock, time and restrictions when another campaign field is ambiguous',()=>{
  const r=M.rows([['Código','Produto','Início','Fim','Preço','Quantidade mínima','Estoque','Horário início','Horário fim','Restrições'],['001','Produto','31/02/2026','30/11/2026','15,00','6','8','09:00','10:00','Somente rede credenciada']],'campaigns');assert.equal(r.entries.length,0);assert.equal(r.review[0].priceText,'15,00');assert.equal(r.review[0].stock,'8');assert.equal(r.review[0].startTime,'09:00');assert.equal(r.review[0].endTime,'10:00');assert.equal(r.review[0].restrictions,'Somente rede credenciada');
 });
+test('ambiguous OCR lines retain global commercial restrictions for review',()=>{
+ const r=M.parseText('Vigência 31/02/2026 a 30/11/2026\n001 Produto 15% mínimo 6\nSomente rede credenciada','campaigns');assert.equal(r.entries.length,0);assert.ok(r.review.length);assert.match(r.review[0].restrictions,/Somente rede credenciada/);
+});

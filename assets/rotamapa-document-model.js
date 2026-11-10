@@ -31,15 +31,15 @@
     if(!m||dates.length!==2||[...text.matchAll(/\b\d{2}\/\d{2}\/\d{4}\b/g)].length!==2){review.push({reason:'Preço, quantidade, restrições ou vigência ambíguos. Confira o original.',raw:line});continue;}
     const result=rows([['Código','Produto','Início','Fim','Preço','Desconto','Quantidade mínima'],[m[1],m[2],dates[0],dates[1],m[3]||'',m[4]||'',m[5]]],'campaigns');entries.push(...result.entries.map(e=>({...e,raw:line})));review.push(...result.review.map(e=>({...e,raw:line})));
    }
-   const restrictions=lines.filter(l=>/restri[çc]|regi[aã]o|estoque|somente|exceto|hor[aá]rio|\d{1,2}:\d{2}/i.test(l));if(restrictions.length)for(const entry of entries)entry.restrictions=restrictions.join(' · ');
-   if(!entries.length&&!review.length)review.push({reason:'Nenhuma condição inequívoca foi encontrada. Confira o original.',raw:lines});return{entries,review,automatic:entries.length,total:entries.length+review.length};
+   const restrictions=lines.filter(l=>/restri[çc]|regi[aã]o|estoque|somente|exceto|hor[aá]rio|\d{1,2}:\d{2}/i.test(l));if(restrictions.length)for(const entry of [...entries,...review])entry.restrictions=restrictions.join(' · ');
+   if(!entries.length&&!review.length)review.push({reason:'Nenhuma condição inequívoca foi encontrada. Confira o original.',raw:lines,restrictions:restrictions.join(' · ')});return{entries,review,automatic:entries.length,total:entries.length+review.length};
   }
   for(const line of lines){if(!/%/.test(line))continue;const match=line.match(/^(\d{2,20})\s+(.+?)\s+(\d{1,3}(?:[.,]\d{1,2})?)\s*%\s*$/);
    if(!match||dates.length<1||dates.length>2||[...text.matchAll(/\b\d{2}\/\d{2}\/\d{4}\b/g)].length!==dates.length||dates[1]&&dates[1]<dates[0]){review.push({reason:'Código, percentual ou vigência ambíguos.',raw:line});continue;}
    try{root.RotaMapaCommissions.bps(match[3]);entries.push({code:match[1],name:match[2],rate:match[3],validFrom:dates[0],validTo:dates[1]||null,raw:line});}catch(e){review.push({reason:e.message,raw:line});}
   }
-  const exceptions=lines.filter(l=>/restri[çc]|regi[aã]o|somente|exceto|exce[çc][aã]o|condicionad/i.test(l));if(exceptions.length)for(const entry of entries)entry.restrictions=exceptions.join(' · ');
-  if(!entries.length&&!review.length)review.push({reason:'Nenhuma regra inequívoca encontrada. Confira o documento original.',raw:text});return{entries,review,automatic:entries.length,total:entries.length+review.length};
+  const exceptions=lines.filter(l=>/restri[çc]|regi[aã]o|somente|exceto|exce[çc][aã]o|condicionad/i.test(l));if(exceptions.length)for(const entry of [...entries,...review])entry.restrictions=exceptions.join(' · ');
+  if(!entries.length&&!review.length)review.push({reason:'Nenhuma regra inequívoca encontrada. Confira o documento original.',raw:text,restrictions:exceptions.join(' · ')});return{entries,review,automatic:entries.length,total:entries.length+review.length};
  }
  root.RotaMapaDocumentModel=Object.freeze({date,rows,parseText});
 })(globalThis);

@@ -231,3 +231,12 @@ Android: o workflow compila e procura exclusivamente uma assinatura compatível.
 Próximo checkpoint: resultados finais PWA/browser, CI Android, build público e Preview nova a partir do commit exato, com validação pública sem sessão real. Produção, banco e arquivos reais permanecem intactos.
 
 Checkpoint adicional: sete casos PWA passaram com um caso de recuperação de transporte omitido nessa rodada porque foi usado TRAXELO_PWA_BASE; não declarar a omissão como aprovação. A confirmação manual ficou visível imediatamente no histórico e passou em desktop/celular. Condições ambíguas de campanha preservam estoque/horário/restrições durante a revisão.
+
+
+### Fechamento do checkpoint 1.8.0
+
+Commit funcional 6d63422 enviado ao GitHub. A proteção final de condições globais de OCR foi ampliada também às linhas que exigem revisão; 184 testes unitários passaram. A recuperação real de transporte PWA foi executada separadamente sem TRAXELO_PWA_BASE e passou, completando os oito cenários observados. O build público local foi verificado por hashes e não contém docs, SQL, testes, contratos ou instaladores.
+
+Primeira Preview desta etapa: dpl_2acpiw4UPnkZ4wjPc5MqyAyhJvSX, fonte 6d63422, target null/Preview. A verificação pública e o build Android do CI são registrados separadamente; não confundir esse link com produção ou com ativação do schema. O workflow 42754441245 confirmou checks, testes unitários, build público e cadeia SQL local; browser/Android ainda estavam em execução na última consulta. Não declarar APK assinado antes de verificar android-proof.json.
+
+Pacote Android de conteúdo preparado privadamente em /workspace/artifacts/rotamapa-integral-1.8.0, runtime capacitor8-20261026 e mínimo nativo 2. Não houve troca do manifest OTA de produção. O pacote será refeito quando a fonte mudar; nenhum instalador ou pacote antigo deve ser rotulado como a fonte nova.
