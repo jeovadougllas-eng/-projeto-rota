@@ -189,7 +189,7 @@ async function runBatch(resume=false){
   if(epoch===accountEpoch){refreshSearch();renderMarkers();if(!lastRoute&&!routeBusy&&!adjustingPin)fitConfirmed();const left=checkpoint.remaining(clients).length,total=checkpoint.read().ids.length;el('clientLocationSearchProgress').textContent=(failure?'Busca pausada: '+failure.message:stopping?'Busca pausada pelo usuário.':'Busca terminada.')+' '+(total-left)+' de '+total+' concluídos; '+left+' pendentes. Os resultados salvos foram preservados.'+(failure?.requestId?' Código de atendimento: '+failure.requestId+'.':'')+(left?' Use Retomar busca para continuar.':' Revise as aproximações no mapa.');const changed=ids.map(id=>clients.find(c=>String(c.id)===String(id))).find(c=>c&&P.location(c).ready);if(changed)flushLocation(changed.id);await refreshResume();}
  }
 }
-window.TraxeloLocations={comparisonLookup,flushLocation,beginReview,refreshSearch,visibleClients,fitConfirmed,refreshResume};
+window.TraxeloLocations={startSearch:()=>runBatch(false),get searching(){return searching;},comparisonLookup,flushLocation,beginReview,refreshSearch,visibleClients,fitConfirmed,refreshResume};
 el('startClientLocationSearch').onclick=()=>runBatch(false);el('resumeClientLocationSearch').onclick=()=>runBatch(true);
 const priorUnlock=window.authUnlock;window.authUnlock=function(user){if(checkpointOwner&&user?.id!==checkpointOwner){accountEpoch++;stopping=true;batchController?.abort();checkpoint=null;checkpointOwner=null;}const value=priorUnlock?.apply(this,arguments);refreshResume();return value;};
 refreshResume();

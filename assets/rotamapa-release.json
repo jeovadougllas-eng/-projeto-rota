@@ -1,9 +1,11 @@
 {
-  "version": "1.10.1",
+  "version": "1.10.2",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Busca Google com aviso visível junto ao botão, progresso, erro e indicação quando não há clientes pendentes; botão ocupado até concluir.",
+    "Minha localização mostra um marcador azul no mapa; pontos dos clientes permanecem separados e preservados.",
     "Espaço corrigido entre o mapa e Planejar visitas, com as ações do mapa no fluxo normal da página.",
     "Mapa e Satélite em uma linha própria; busca Google, enquadramento e GPS organizados sem sobreposição no celular.",
     "Google Maps na Web/PWA: busca por nome fantasia e endereço, preservando os pins confirmados manualmente.",
