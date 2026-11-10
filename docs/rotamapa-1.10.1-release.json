@@ -1,0 +1,57 @@
+{
+  "version": "1.10.1",
+  "platforms": [
+    "web",
+    "pwa"
+  ],
+  "target": "production",
+  "status": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "deploymentId": "dpl_79xHPtbwPy4PswWeLxeQnb9wZATZ",
+  "sourceCommit": "da07360e5da3680e41b05af71d1ebdf3a104a229",
+  "publishedAt": "2026-11-10T22:55:59.383000+00:00",
+  "buildDurationMs": 30654,
+  "ci": {
+    "runId": 42918040792,
+    "conclusion": "success",
+    "unitTests": 222,
+    "browserTests": 148,
+    "pwaTests": 8,
+    "postgresRls": "passed (isolated)"
+  },
+  "focusedChecks": {
+    "googleBrowserTests": 18,
+    "layoutViewportThemeChecks": 8,
+    "widths": [
+      390,
+      768,
+      1024,
+      1440
+    ],
+    "plannerGapPx": 12,
+    "previousGapPx": 140,
+    "noOverlappingControls": true
+  },
+  "verification": {
+    "publicFilesSha256": 223,
+    "aliasAndSourceMatch": true,
+    "googleConfigured": true,
+    "unauthenticatedGoogleStatus": 401,
+    "unauthenticatedRankingStatus": 401,
+    "privateFilesAbsent": true,
+    "androidArtifactsAbsent": true,
+    "initialErrorFatalLogGroups": 0
+  },
+  "scope": "CSS map spacing and toolbar only; release metadata and regression check",
+  "databaseChanges": false,
+  "apiChanges": false,
+  "realAccountLoginTested": false,
+  "realPaidGoogleQueriesTested": false,
+  "physicalSafariTested": false,
+  "rollback": {
+    "version": "1.10.0",
+    "deploymentId": "dpl_HNqRKD3Tm95e8Q8i24v54qN5gJoX",
+    "databaseRollbackRequired": false
+  },
+  "androidAndOta": "suspended; untouched"
+}
