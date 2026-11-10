@@ -1,0 +1,49 @@
+/* Action surfaces only: never replace hero images or page backgrounds. */
+body.rm-field :is(button,a.button){min-height:40px;padding:8px 12px;border-radius:8px}
+body.rm-field .rm-compact-disclosure>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;font-size:16px;font-weight:700;min-height:44px;box-sizing:border-box}
+body.rm-field .rm-compact-disclosure>summary::-webkit-details-marker{display:none}
+body.rm-field .rm-compact-disclosure>summary:after{content:'›';font-size:23px;line-height:1}
+body.rm-field .rm-compact-disclosure[open]>summary:after{transform:rotate(90deg)}
+body.rm-field .rm-compact-disclosure[open]>*:not(summary){margin-left:14px;margin-right:14px}
+body.rm-field #promocoes>.card:has(>.rm-compact-disclosure){padding:0;margin-bottom:10px;overflow:hidden}
+body.rm-field #promocoes #commercialConsultationPanels>section{padding:0}
+body.rm-field #mapa .workspace{min-height:0;align-content:start;grid-auto-rows:min-content}
+body.rm-field #mapa .workspace-side{min-height:0;height:auto;position:static;grid-row:auto}
+body.rm-field #mapa #fieldMapOptions{margin-top:10px}
+body.rm-field #mapa .workspace-route:empty{display:none}
+body.rm-field #links .useful-grid{grid-template-columns:1fr;gap:8px}
+body.rm-field #links .useful-link-card{border-top-width:1px;border-radius:9px}
+body.rm-field #links a.useful-card-open{min-height:64px;padding:10px 79px 10px 12px;gap:10px;align-items:center}
+body.rm-field #links .useful-link-info strong{font-size:15px;line-height:1.25}
+body.rm-field #links .useful-link-info small{font-size:11px;margin:3px 0 0}
+body.rm-field #links .useful-tag{display:none}
+body.rm-field #links .useful-tile-icon{width:32px;height:32px;border-radius:7px}
+body.rm-field #links .useful-external{right:47px;top:23px}
+body.rm-field #links button.useful-edit{right:7px;top:15px;bottom:auto}
+body.rm-field #links .useful-welcome{padding:10px 12px;gap:10px}
+body.rm-field #links .useful-welcome h3{font-size:16px}
+body.rm-field #links .useful-welcome p{font-size:12px;margin:3px 0}
+body.rm-field #links .useful-company{padding:9px 12px;margin:8px 0 12px}
+body.rm-field :is(.field-quick-actions,.quick-actions) .rm-compact-actions{display:flex;flex-direction:column}
+body.rm-field .commission-chart{width:100%;height:180px;display:block;color:#008f83;background:var(--glass-soft);border-radius:8px}
+body.rm-field .commission-chart text{fill:var(--surface-ink);font:12px sans-serif}
+body.rm-field #centralCommissionTotal{font-size:19px;font-weight:700}
+@media(min-width:1000px){body.rm-field #links .useful-grid{grid-template-columns:1fr 1fr}}
+body.rm-field.traxio-ui-ready #painel .quick-actions{display:flex;flex-direction:column;gap:0;border:1px solid var(--surface-line);border-radius:9px;overflow:hidden;background:var(--glass)}
+body.rm-field.traxio-ui-ready #painel .quick-actions .glass-action{flex-direction:row;text-align:left;justify-content:flex-start;min-height:46px;gap:12px;padding:9px 13px;border:0;border-bottom:1px solid var(--surface-line);border-radius:0;box-shadow:none}
+body.rm-field #painel .quick-actions .quick-action-copy{flex:1;width:auto}
+body.rm-field #painel .quick-actions .glass-action:after{content:'›';margin-left:auto;font-size:22px}
+body.rm-field #painel #fieldNextStep{padding:12px 14px;min-height:0}
+body.rm-field #painel #fieldNextStep button{min-height:44px;padding:10px 12px}
+body.rm-field #painel .field-primary-action{min-height:44px}
+body.rm-field .field-disclosure{margin-bottom:9px}
+body.rm-field .field-disclosure>summary{padding:12px 14px;min-height:44px;font-size:16px}
+body.rm-field #links .useful-welcome:has(>.rm-compact-disclosure){display:block;padding:0}
+body.rm-field #links .useful-welcome>.rm-compact-disclosure>summary{font-size:12px;padding:7px 12px;min-height:32px}
+body.rm-field #links .useful-welcome .useful-tile-icon{display:none}
+body.rm-field #links a.useful-card-open{min-height:54px;padding-top:8px;padding-bottom:8px}
+body.rm-field #links .useful-external{top:18px}
+body.rm-field #links button.useful-edit{top:10px}
+body.rm-field #links .useful-company{padding:7px 12px}
+body.rm-field #links .useful-company small{font-size:10px}
+body.rm-field #links .useful-company strong{font-size:14px;margin-top:2px}

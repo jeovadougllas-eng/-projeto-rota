@@ -56,3 +56,5 @@ for(const file of ['rotamapa-library-store.js','rotamapa-promotion-model.js','ro
 new Script(await readFile(new URL('../assets/rotamapa-commercial-cards.js',import.meta.url),'utf8'),{filename:'rotamapa-commercial-cards.js'});
 
 for(const file of ['rotamapa-campaign-groups.js','rotamapa-campaign-browser.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+for(const file of ['rotamapa-compact-ui.js','rotamapa-showroom.js','rotamapa-fair-data.js','rotamapa-product-photos.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});

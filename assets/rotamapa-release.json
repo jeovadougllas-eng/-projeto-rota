@@ -1,9 +1,15 @@
 {
-  "version": "1.8.1",
+  "version": "1.9.0",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Vitrine Feira Unifarma — 12 e 13/11/2026, com preços finais com impostos, faixas, favoritos e apresentação ampliada.",
+    "Atalhos compactos na Central Comercial e nos Links úteis, preservando imagens e cores.",
+    "Material de Divulgação com cards guardados por conta e carteira neste aparelho, catálogo de preços e fotos por apresentação.",
+    "Comissões abrem no mês atual, com evolução diária e regras históricas; somente faturamento confirmado.",
+    "Exclusão permanente com aviso de confirmação e cancelamento, sem digitação.",
+    "Somente Web e PWA; Android e OTA permanecem suspensos.",
     "Central Comercial com Campanhas, Material de Divulgação, Projeção de Comissões e Consultas.",
     "Campanhas agrupadas em Acelera SellOut, Dia D e Arrastão Azul; produtos e condições aparecem após selecionar a campanha.",
     "Acelera SellOut válido pelo mês completo; Dia D diário; Arrastão Azul uma vez por mês, válido somente em um dia. Importação com conferência da modalidade e vigência.",

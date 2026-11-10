@@ -37,7 +37,7 @@ jobs:
       - name: Browser regressions with synthetic data only
         run: |
           browser_path=$(command -v google-chrome-stable || command -v google-chrome)
-          PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$browser_path" npx playwright test tests/commercial-hub.spec.js tests/document-library.spec.js tests/catalog-viewer.spec.js tests/auth.spec.js tests/client-import.spec.js tests/portfolio-lifecycle.spec.js tests/remote-orders.spec.js tests/subscriptions.spec.js --project=desktop-light --project=phone-dark --workers=2 --timeout=45000
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$browser_path" npx playwright test tests/showroom.spec.js tests/commercial-hub.spec.js tests/document-library.spec.js tests/catalog-viewer.spec.js tests/auth.spec.js tests/client-import.spec.js tests/portfolio-lifecycle.spec.js tests/remote-orders.spec.js tests/subscriptions.spec.js --project=desktop-light --project=phone-dark --workers=2 --timeout=45000
       - name: Real service-worker recovery with synthetic portfolio (Chromium, simulated iPhone UI)
         run: |
           browser_path=$(command -v google-chrome-stable || command -v google-chrome)
