@@ -47,3 +47,12 @@ body.rm-field #links button.useful-edit{top:10px}
 body.rm-field #links .useful-company{padding:7px 12px}
 body.rm-field #links .useful-company small{font-size:10px}
 body.rm-field #links .useful-company strong{font-size:14px;margin-top:2px}
+
+/* Map actions are in normal flow; do not reserve the former fixed dock's space. */
+body.rm-field:not(.pin-mode):not(.pin-review-active) #mapa .workspace{padding-bottom:0}
+body.rm-field #mapa #routePlannerPanel{margin-top:12px}
+body.rm-field #mapa .field-map-toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+body.rm-field #mapa .field-map-toolbar .map-layer-switch{position:static;inset:auto;display:flex;min-width:0;width:100%;padding:0;margin:0;gap:6px;box-sizing:border-box}
+body.rm-field #mapa .field-map-toolbar .map-layer-switch button{flex:1 1 0;min-width:0;white-space:normal}
+body.rm-field #mapa .field-map-toolbar>.row{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:stretch;gap:6px;width:100%;min-width:0;margin:0}
+body.rm-field #mapa #googleLocateClients{width:100%;min-width:0;white-space:normal;overflow-wrap:break-word;line-height:1.25;padding:8px;font-size:14px}

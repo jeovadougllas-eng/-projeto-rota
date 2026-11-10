@@ -1,9 +1,11 @@
 {
-  "version": "1.10.0",
+  "version": "1.10.1",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Espaço corrigido entre o mapa e Planejar visitas, com as ações do mapa no fluxo normal da página.",
+    "Mapa e Satélite em uma linha própria; busca Google, enquadramento e GPS organizados sem sobreposição no celular.",
     "Google Maps na Web/PWA: busca por nome fantasia e endereço, preservando os pins confirmados manualmente.",
     "Busca em lote com progresso, pausa e retomada; resultados ambíguos ficam disponíveis para revisão.",
     "Mapa Google com satélite, GPS e ajuste de pin; limites de consultas durante a validação Signature/Insider.",
