@@ -1,0 +1,54 @@
+{
+  "version": "1.10.2",
+  "platforms": [
+    "web",
+    "pwa"
+  ],
+  "target": "production",
+  "status": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "deploymentId": "dpl_6uE3cZ1UxKVLHKxDaip417EYMJBG",
+  "sourceCommit": "ca3b34d5e2da81c94c8e08ddf631ceb91c38aada",
+  "publishedAt": "2026-11-10T23:46:52.455000+00:00",
+  "buildDurationMs": 28866,
+  "ci": {
+    "runId": 42925165271,
+    "conclusion": "success",
+    "unitTests": 222,
+    "browserTests": 154,
+    "pwaTests": 8,
+    "postgresRls": "passed (isolated)"
+  },
+  "focusedChecks": {
+    "googleBrowserTests": 24,
+    "visibleNoPendingFeedback": true,
+    "visibleProgressAndErrors": true,
+    "buttonBusyUntilBatchEnds": true,
+    "gpsMarkerAppearsAndDoesNotDuplicate": true,
+    "confirmedClientPinsPreserved": true,
+    "existingRotaMapaCarVerified": true,
+    "existingAutomaticOsrmReroutingVerified": true
+  },
+  "verification": {
+    "publicFilesSha256": 223,
+    "aliasAndSourceMatch": true,
+    "googleConfigured": true,
+    "unauthenticatedGoogleStatus": 401,
+    "unauthenticatedRankingStatus": 401,
+    "privateFilesAbsent": true,
+    "androidArtifactsAbsent": true,
+    "initialErrorFatalLogGroups": 0
+  },
+  "databaseChanges": false,
+  "realAccountLoginTested": false,
+  "realPaidGoogleQueriesTested": false,
+  "physicalDrivingOrSafariTested": false,
+  "navigationProvider": "existing RM navigation and OSRM over Google map; not Google Navigation SDK",
+  "officialGoogleNavigation": "proposal only for Android+iOS; native work awaits explicit resumption decision",
+  "rollback": {
+    "version": "1.10.1",
+    "deploymentId": "dpl_79xHPtbwPy4PswWeLxeQnb9wZATZ",
+    "databaseRollbackRequired": false
+  },
+  "androidAndOta": "suspended; untouched"
+}
