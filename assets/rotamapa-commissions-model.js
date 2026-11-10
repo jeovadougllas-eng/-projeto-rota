@@ -21,7 +21,7 @@
    const rateBps=bps(entry.rate),validFrom=entry.validFrom,validTo=entry.validTo||null;
    if(!day(validFrom)||validTo!==null&&(!day(validTo)||validTo<validFrom))throw Error('Vigência inválida ou ausente.');
    const found=match(entry,products);if(!found.product)return{...entry,line:index+1,status:'review',reason:found.reason};
-   return{ownerId,portfolioId,companyId,sourceHash,productId:found.product.id,rateBps,validFrom,validTo,method:found.method,line:index+1,status:'matched'};
+   return{ownerId,portfolioId,companyId,sourceHash,productId:found.product.id,rateBps,validFrom,validTo,method:found.method,...(entry.restrictions?{restrictions:entry.restrictions}:{}),line:index+1,status:'matched'};
   }catch(error){return{...entry,line:index+1,status:'review',reason:error.message};}});
  }
  function ruleFor(rules,productId,date,companyId){
@@ -29,7 +29,7 @@
   if(!all.length)return{reason:'missing-rate'};
   const start=all.map(r=>r.validFrom).sort().at(-1),latest=all.filter(r=>r.validFrom===start);
   if(latest.length!==1)return{reason:'ambiguous-rate'};
-  const rule=latest[0];try{integer(rule.rateBps,'Percentual',10000);}catch{return{reason:'invalid-rate'};}return{rule};
+  const rule=latest[0];if(rule.restrictions)return{reason:'conditional-rate-requires-review'};try{integer(rule.rateBps,'Percentual',10000);}catch{return{reason:'invalid-rate'};}return{rule};
  }
  function invoiced(sales,ownerId,timeZone='America/Fortaleza'){
   const out=[];for(const sale of sales){if(sale.kind!=='sale'||sale.status!=='confirmed')continue;
@@ -56,6 +56,7 @@
     const previous=snapshots.filter(s=>s.ownerId===ownerId&&s.portfolioId===portfolioId&&s.companyId===companyId&&s.saleId===item.saleId&&s.lineId===item.lineId&&s.productId===item.productId&&s.date===item.date);
     if(previous.length>1)throw Error('Snapshots históricos conflitantes.');
     let rule;if(previous.length){rule=previous[0].rule;integer(rule.rateBps,'Taxa histórica',10000);}else{const selected=ruleFor(scopedRules,item.productId,item.date,companyId);if(!selected.rule)throw Error(selected.reason);rule=selected.rule;}
+    if(rule.restrictions)throw Error('conditional-rate-requires-review');
     const net=item.amountCents-item.returnedCents-item.adjustmentCents,commission=(BigInt(net)*BigInt(rule.rateBps)+5000n)/10000n;
     if(total+commission>9000000000000n||base+BigInt(net)>9000000000000n)throw Error('Total acima do limite técnico.');total+=commission;base+=BigInt(net);
     const snapshot={ownerId,portfolioId,companyId,saleId:item.saleId,lineId:item.lineId,productId:item.productId,date:item.date,rule:JSON.parse(JSON.stringify(rule))};

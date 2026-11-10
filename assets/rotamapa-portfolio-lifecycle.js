@@ -19,11 +19,13 @@ for(const base of ['traxelo.visits.v1:','rotamapa.commerce.v1:','traxelo.workspa
    if(document.body.classList.contains('auth-locked'))throw Error('Entre novamente na sua conta.');
    if($('portfolioLifecycleConfirmation').value!==$('portfolioLifecycleExpected').textContent)throw Error('Digite a confirmação exatamente como exibida.');
    const auth=await authClient.auth.getUser();if(auth.error||auth.data?.user?.id!==own.owner)throw Error('A conta mudou. Abra novamente esta opção.');pending(own.owner,own.item.id);
+   const library=window.RotaMapaLibraryStore?.create(own.owner,own.item.id);if(library&&await library.hasPending())throw Error('Há documentos locais pendentes. Sincronize ou exporte o backup antes de gerenciar a carteira.');
+   const checked=await authClient.auth.getUser();if(checked.error||checked.data?.user?.id!==own.owner)throw Error('A conta mudou. Reabra esta opção.');
    if(own.item.id===RotaMapaPortfolioScope.loadedId&&clients.length&&localStorage.getItem('traxio_sync_owner_v29')!==own.owner)throw Error('A propriedade dos clientes locais ainda não foi confirmada. Sincronize antes de continuar.');
    const r=await authClient.rpc('rotamapa_manage_portfolio',{p_portfolio:own.item.id,p_revision:own.item.revision,p_action:action,p_confirmation:$('portfolioLifecycleConfirmation').value});
    if(r.error)throw r.error;if(r.data?.id!==own.item.id||r.data?.state!==({archive:'archived',restore:'active',delete:'deleted'})[action])throw Error('O servidor não confirmou o resultado. Sincronize a lista antes de tentar novamente.');
    if(action==='delete'){
-    const current=await authClient.auth.getUser();if(current.data?.user?.id===own.owner){const id=own.item.id,suffix=id===RotaMapaPortfolioScope.DEFAULT?'':':portfolio:'+id;
+    const current=await authClient.auth.getUser();if(current.data?.user?.id===own.owner){if(library)await library.purgeSynced();const id=own.item.id,suffix=id===RotaMapaPortfolioScope.DEFAULT?'':':portfolio:'+id;
      const keys=['traxelo.visits.v1:','rotamapa.commerce.v1:','traxelo.workspace.v1:','traxelo.visits.settings.v1:'].map(k=>k+own.owner+suffix);keys.push('traxio_sync_baseline_v29_'+own.owner+suffix,'rotamapa.portfolio.last-version.v1:'+own.owner+':'+id);
      if(id!==RotaMapaPortfolioScope.DEFAULT)keys.push('rotamapa.clients.v1:'+own.owner+':'+id);else if(localStorage.getItem('traxio_sync_owner_v29')===own.owner)keys.push('projeto_rota_mapa_v1');
      for(const key of keys)localStorage.removeItem(key);

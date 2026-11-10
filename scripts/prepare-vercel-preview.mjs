@@ -3,6 +3,7 @@ import{mkdtemp,cp,readFile,writeFile,readdir,lstat}from'node:fs/promises';
 import{resolve,join}from'node:path';import{fileURLToPath}from'node:url';import{execFileSync}from'node:child_process';import{createHash}from'node:crypto';
 const root=fileURLToPath(new URL('../',import.meta.url));
 if(execFileSync('git',['branch','--show-current'],{cwd:root,encoding:'utf8'}).trim()!=='dev/rotamapa-atualizacao-integral')throw Error('Use the authorized development branch.');
+if(execFileSync('git',['status','--porcelain','--untracked-files=normal'],{cwd:root,encoding:'utf8'}).trim())throw Error('Commit and validate the changes before attributing a Preview to HEAD.');
 const out=await mkdtemp('/workspace/rotamapa-preview-'),commit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 const entries=['index.html','privacidade.html','termos.html','iphone.webmanifest','iphone-sw.js','iphone-offline.html','assets','api','lib'];
 // Refuse symlinks to prevent credentials/private paths escaping the allowlist.

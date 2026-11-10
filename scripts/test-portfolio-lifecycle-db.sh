@@ -18,3 +18,6 @@ for file in test-db/portfolios-base.sql docs/sql/enable-visit-history.sql docs/s
 done
 
 node scripts/monthly-pdf-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1
+for file in test-db/library-storage-shape.sql supabase/migrations/20261110000100_document_library.sql test-db/document-library.sql test-db/library-commissions.sql; do
+ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
+done

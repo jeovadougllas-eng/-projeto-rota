@@ -50,3 +50,7 @@ new Script(await readFile(new URL('../assets/rotamapa-portfolio-lifecycle.js',im
 for(const file of ['rotamapa-documents.js','rotamapa-document-model.js','rotamapa-commissions-model.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
 for(const file of ['rotamapa-catalog-viewer.js','rotamapa-promotions-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+for(const file of ['rotamapa-library-store.js','rotamapa-promotion-model.js','rotamapa-library-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+new Script(await readFile(new URL('../assets/rotamapa-commercial-cards.js',import.meta.url),'utf8'),{filename:'rotamapa-commercial-cards.js'});

@@ -1,0 +1,63 @@
+name: RotaMapa development validation (no production)
+on:
+  push:
+    branches: [dev/rotamapa-atualizacao-integral]
+    paths: ['assets/**', 'index.html', 'mobile/**', 'scripts/**', 'tests/**', 'test-unit/**', 'package*.json', '.github/workflows/rotamapa-development.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: rotamapa-development-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  validate-and-build:
+    if: github.ref == 'refs/heads/dev/rotamapa-atualizacao-integral'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run check && node scripts/check-rotamapa-art.mjs && node scripts/check-document-assets.mjs
+      - run: node --test test-unit/*.test.mjs
+      - name: Browser regressions with synthetic data only
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome)
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$browser_path" npx playwright test tests/document-library.spec.js tests/catalog-viewer.spec.js tests/auth.spec.js tests/client-import.spec.js --project=desktop-light --project=phone-dark --workers=2
+      - name: Restore existing test signing identity if this branch can access it
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ~/.android/debug.keystore
+          key: traxelo-test-debug-signing-v1
+      - run: npm ci --prefix mobile --ignore-scripts --no-audit --no-fund
+      - run: node scripts/build-mobile.mjs
+      - run: ./node_modules/.bin/cap sync android
+        working-directory: mobile
+      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'build-tools;35.0.0'
+      - run: bash gradlew assembleRelease --no-daemon --max-workers=2
+        working-directory: mobile/android
+      - name: Preserve signed artifact only if it matches the production APK certificate
+        run: python3 scripts/prepare-development-apk.py
+        env:
+          ROTAMAPA_ANDROID_OUTPUT: ${{ runner.temp }}/rotamapa-android
+          ROTAMAPA_ANDROID_KEYSTORE_BASE64: ${{ secrets.ROTAMAPA_ANDROID_KEYSTORE_BASE64 }}
+          ROTAMAPA_ANDROID_KEY_ALIAS: ${{ secrets.ROTAMAPA_ANDROID_KEY_ALIAS }}
+          ROTAMAPA_ANDROID_STORE_PASSWORD: ${{ secrets.ROTAMAPA_ANDROID_STORE_PASSWORD }}
+          ROTAMAPA_ANDROID_KEY_PASSWORD: ${{ secrets.ROTAMAPA_ANDROID_KEY_PASSWORD }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rotamapa-development-${{ github.sha }}
+          retention-days: 30
+          path: ${{ runner.temp }}/rotamapa-android/
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: rotamapa-development-test-results-${{ github.sha }}
+          retention-days: 7
+          path: test-results/
