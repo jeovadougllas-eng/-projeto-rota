@@ -4,7 +4,7 @@
  const families=Object.freeze([
   {id:'acelera',name:'Acelera SellOut',period:'Campanha mensal'},
   {id:'dia_d',name:'Dia D',period:'Ofertas do dia'},
-  {id:'arrastao_azul',name:'Arrastão Azul',period:'Campanha mensal'}
+  {id:'arrastao_azul',name:'Arrastão Azul',period:'Um dia por mês'}
  ]);
  const norm=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  function detect(value){const s=norm(value);if(/arrast[aã]o\s*azul/.test(s))return'arrastao_azul';if(/acelera|sell\s*out/.test(s))return'acelera';if(/\bdia[\s_-]*d\b/.test(s))return'dia_d';return'other';}
@@ -20,9 +20,9 @@
  function visible(condition,{date,all=false}={}){const b=bounds(condition);return all||!!date&&b.start<=date&&date<=b.end;}
  function validatePeriod(id,entries){
   for(const entry of entries){const b=bounds(entry);if(!root.RotaMapaCommerceModel.day(b.start)||!root.RotaMapaCommerceModel.day(b.end)||b.end<b.start)throw Error('Confira a vigência das condições.');
-   if(id==='dia_d'&&b.start!==b.end)throw Error('Dia D deve ter início e fim no mesmo dia. Confira as datas da lâmina.');
-   if(id==='acelera'||id==='arrastao_azul'){const [y,m]=b.start.slice(0,7).split('-').map(Number),end=new Date(Date.UTC(y,m,0,12)).toISOString().slice(0,10);if(!b.start.endsWith('-01')||b.end!==end)throw Error((id==='acelera'?'Acelera SellOut':'Arrastão Azul')+' deve cobrir o mês completo. Confira o mês e as datas da lâmina.');}
-  }return entries;
+   if(['dia_d','arrastao_azul'].includes(id)&&b.start!==b.end)throw Error((id==='dia_d'?'Dia D':'Arrastão Azul')+' deve ter início e fim no mesmo dia. Confira a data da lâmina.');
+   if(id==='acelera'){const [y,m]=b.start.slice(0,7).split('-').map(Number),end=new Date(Date.UTC(y,m,0,12)).toISOString().slice(0,10);if(!b.start.endsWith('-01')||b.end!==end)throw Error('Acelera SellOut deve cobrir o mês completo. Confira o mês e as datas da lâmina.');}
+  }if(id==='arrastao_azul'&&new Set(entries.map(e=>bounds(e).start)).size>1)throw Error('Arrastão Azul deve reunir as condições de uma única data no mês.');return entries;
  }
  function conditions(campaigns,documents,products,options){
   const docs=documents.map(r=>r.value||r).filter(r=>r.kind==='campaigns'),known=new Set(docs.map(r=>r.id)),rows=[];

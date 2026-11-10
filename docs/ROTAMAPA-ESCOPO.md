@@ -881,3 +881,8 @@ A lista inicial de campanhas EMS mostra Acelera SellOut, Dia D e Arrastão Azul,
 Ajustar somente o contraste do texto auxiliar do filtro de regiões no modo claro. Usar fundos diferentes por página, no mesmo estilo/paleta: diferenciar Agendamentos/Histórico e Ranking/Links úteis e adicionar fundo à Central Comercial. Manter os demais fundos originais e cores de texto.
 
 O proprietário suspendeu todo desenvolvimento, geração, assinatura, teste em emulador e distribuição APK/OTA. Atualizar somente Web/PWA até novo pedido explícito. Não construir Android nem regenerar seus manifestos para acompanhar as versões Web. A distribuição Android não integra o build público dessa etapa.
+
+
+### Correção posterior do titular — duração do Arrastão Azul
+
+Arrastão Azul ocorre uma vez por mês, mas é válido SOMENTE em uma data, com início e fim no mesmo dia. Acelera SellOut continua pelo mês completo. Dia D continua diário. Essa correção substitui a interpretação anterior que tratava a vigência do Arrastão como mês inteiro. Validar uma única data por lâmina de Arrastão sem inventar um limite de importações nem reescrever campanhas históricas.

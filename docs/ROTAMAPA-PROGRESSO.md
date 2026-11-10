@@ -300,3 +300,8 @@ Importador mantém PDF/imagem/OCR local e tabelas existentes. Seletor de modalid
 Novos fundos por página: agendamentos.webp, ranking.webp, links.webp, comercial.webp, gerados no padrão visual original e otimizados WebP; hashes em docs/commercial-scenes.json. Arquivos dos cinco fundos originais preservados. Hero e cenário da página apontam à mesma arte correspondente. Contraste corrigido apenas em #regionFilterSummary no modo claro.
 
 Validação até este checkpoint: 188 unitários passaram, checks de fontes/arte/OCR passaram, 36 casos focados de navegador aprovaram visual, campanhas, biblioteca, catálogo, preço importado, cards, comissões, isolamento e faturamento sem PDF. Após a confirmação do Arrastão mensal, repetição focada cobre a nova vigência e regressões de preços/faixas. Uma suite comercial antiga clicava em controles recolhidos desde o layout anterior; seus helpers foram atualizados para abrir os disclosures reais, sem mudar as asserções de valores. Resultado final, CI e publicação serão registrados ao concluir.
+
+
+### Correção posterior do titular — duração do Arrastão Azul
+
+Arrastão Azul ocorre uma vez por mês, mas é válido SOMENTE em uma data, com início e fim no mesmo dia. Acelera SellOut continua pelo mês completo. Dia D continua diário. Essa correção substitui a interpretação anterior que tratava a vigência do Arrastão como mês inteiro. Validar uma única data por lâmina de Arrastão sem inventar um limite de importações nem reescrever campanhas históricas.
