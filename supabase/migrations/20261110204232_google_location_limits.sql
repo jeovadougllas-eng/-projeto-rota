@@ -35,7 +35,7 @@ BEGIN
  IF jsonb_typeof(value)='array' THEN SELECT coalesce(jsonb_agg(rotamapa_private.google_clean(v,cutoff) ORDER BY n),'[]'::jsonb) INTO result FROM jsonb_array_elements(value) WITH ORDINALITY x(v,n);RETURN result;
  ELSIF jsonb_typeof(value)<>'object' THEN RETURN value;END IF;
  result:='{}';FOR entry IN SELECT key,v FROM jsonb_each(value) x(key,v) LOOP result:=result||jsonb_build_object(entry.key,rotamapa_private.google_clean(entry.v,cutoff));END LOOP;
- IF coalesce(value->>'locationVerification','')<>'manual_reviewed' AND coalesce(value->>'locationSource','')<>'manual_confirmation' AND (coalesce(value->>'locationSource',value->>'provider','') LIKE 'google%' OR value ? 'googleExpiresAt') THEN
+ IF value->>'googleDerived'='true' OR coalesce(value->>'locationVerification','')<>'manual_reviewed' AND coalesce(value->>'locationSource','')<>'manual_confirmation' AND (coalesce(value->>'locationSource',value->>'provider','') LIKE 'google%' OR value ? 'googleExpiresAt') THEN
   BEGIN expiry:=(value->>'googleExpiresAt')::timestamptz;EXCEPTION WHEN others THEN expiry:=NULL;END;
   expired:=expiry IS NULL OR expiry<=cutoff;
   IF expired THEN
@@ -62,8 +62,8 @@ BEGIN
  -- Admin/cron only. No network, customer deletion, financial updates or auth changes.
  PERFORM set_config('rotamapa.google_cleanup','on',true);
  UPDATE public.clients SET data=rotamapa_private.google_clean(data),
- latitude=CASE WHEN data->>'locationSource' LIKE 'google%' AND data->>'locationVerification'<>'manual_reviewed' AND (rotamapa_private.google_clean(data)->'lat')='null'::jsonb THEN NULL ELSE latitude END,
- longitude=CASE WHEN data->>'locationSource' LIKE 'google%' AND data->>'locationVerification'<>'manual_reviewed' AND (rotamapa_private.google_clean(data)->'lon')='null'::jsonb THEN NULL ELSE longitude END
+ latitude=CASE WHEN (data->>'googleDerived'='true' OR data->>'locationSource' LIKE 'google%' AND data->>'locationVerification'<>'manual_reviewed') AND (rotamapa_private.google_clean(data)->'lat')='null'::jsonb THEN NULL ELSE latitude END,
+ longitude=CASE WHEN (data->>'googleDerived'='true' OR data->>'locationSource' LIKE 'google%' AND data->>'locationVerification'<>'manual_reviewed') AND (rotamapa_private.google_clean(data)->'lon')='null'::jsonb THEN NULL ELSE longitude END
  WHERE data::text LIKE '%googleExpiresAt%' AND data IS DISTINCT FROM rotamapa_private.google_clean(data);
  GET DIAGNOSTICS n=ROW_COUNT;changed:=changed+n;
  UPDATE public.traxelo_workspace_items SET data=rotamapa_private.google_clean(data),revision=revision+1,updated_at=now() WHERE data::text LIKE '%googleExpiresAt%' AND data IS DISTINCT FROM rotamapa_private.google_clean(data);GET DIAGNOSTICS n=ROW_COUNT;changed:=changed+n;

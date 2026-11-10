@@ -32,5 +32,6 @@ SELECT set_config('request.jwt.claim.sub','',false);
 SELECT rotamapa_private.google_cache_cleanup();
 SELECT test.ensure((SELECT latitude IS NULL AND data->'lat'='null'::jsonb AND name='Google synthetic' FROM public.clients WHERE local_id='google-expired'),'cron clears expired cache in archived portfolio and retains client');
 SELECT test.ensure(rotamapa_private.google_cache_cleanup()=0,'cleanup is idempotent');
+SELECT test.ensure(rotamapa_private.google_clean('{"lat":-5.8,"lon":-35.2,"locationSource":"google_confirmed","locationVerification":"manual_reviewed","googleDerived":true,"googleExpiresAt":"2020-01-01T00:00:00Z"}')->'lat'='null'::jsonb,'confirmation alone does not make Google cache permanent');
 ROLLBACK;
 SELECT 'Google quota and expiry assertions passed' AS result;

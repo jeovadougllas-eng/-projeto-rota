@@ -144,7 +144,7 @@ async function geocodeOneSelected(c,{force=false,lookup=null}={}){
   let record=null,candidate=null;
   if(result.status==='matched'){
    const point=result.best;if(!valid(point?.lat,point?.lon))throw Error('O serviço não retornou uma posição válida.');
-   record={...current,lat:point.lat,lon:point.lon,locationVerification:'automatic_housenumber',locationSource:point.provider,...RotaMapaGoogleModel.metadata(point),locationMatchedAt:new Date().toISOString(),locationEvidence:{...point,query:result.query}};delete record.locationCandidate;
+   record={...current,lat:point.lat,lon:point.lon,locationVerification:'automatic_housenumber',locationSource:point.provider,...RotaMapaGoogleModel.metadata(point),locationMatchedAt:new Date().toISOString(),locationEvidence:{...point,query:result.query}};delete record.locationCandidate;if(!RotaMapaGoogleModel.automatic(point)){delete record.googleExpiresAt;delete record.googlePlaceId;delete record.googleDerived;}
   }else if(result.best){candidate={...result.best,error:result.reason,query:result.query,fingerprint};record={...current,locationCandidate:candidate};}
   if(record){
    const next=clients.map(x=>String(x.id)===String(c.id)?record:x);
@@ -290,7 +290,7 @@ function saveClientRecord({keepForm=false}={}){
  }
  const original=editingClientId!==null?clients.find(c=>String(c.id)===String(editingClientId)):null;
  const address=[$('address').value.trim(),$('houseNumber').value.trim()?'nº '+$('houseNumber').value.trim():'',$('complement').value.trim()].filter(Boolean).join(' · ');
- const record={...(original||{}),id:original?.id??uid(),name,address,street:$('address').value.trim(),complement:$('complement').value.trim(),pharmacyNetwork:$('pharmacyNetwork').value,salesRegion:$('salesRegion').value.trim(),addressFieldsVersion:1,addressManuallyEdited:true,cep:$('cep').value.trim(),lat,lon,locationVerification:lat!==null?'manual_reviewed':'pending',priority:Number($('priority').value)};
+ let record={...(original||{}),id:original?.id??uid(),name,address,street:$('address').value.trim(),complement:$('complement').value.trim(),pharmacyNetwork:$('pharmacyNetwork').value,salesRegion:$('salesRegion').value.trim(),addressFieldsVersion:1,addressManuallyEdited:true,cep:$('cep').value.trim(),lat,lon,locationVerification:lat!==null?'manual_reviewed':'pending',priority:Number($('priority').value)};
  if(original&&original.address!==record.address){
   if(!record.originalAddress)record.originalAddress=original.address;
   record.geocodingAddressOverride=record.address;
@@ -308,7 +308,7 @@ function saveClientRecord({keepForm=false}={}){
   if(!record.locationConfirmedAt||original?.lat!==lat||original?.lon!==lon||original?.address!==address||original?.locationVerification!=='manual_reviewed')record.locationConfirmedAt=new Date().toISOString();
   record.locationSource='manual_confirmation';
  }else{delete record.locationConfirmedAt;delete record.locationSource;}
- delete record.locationCandidate;
+ record=RotaMapaGoogleModel.manual(record,[original,original?.locationCandidate,geoCandidates.get(original?.id)]);delete record.locationCandidate;
  if(original&&!samePoint&&(original.lat!==lat||original.lon!==lon||original.address!==address))delete record.locationEvidence;
  const next=clients.map(c=>String(c.id)===String(record.id)?record:c);
  if(!original)next.push(record);

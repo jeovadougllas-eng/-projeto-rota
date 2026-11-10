@@ -70,7 +70,7 @@ confirm.onclick=()=>{
  const original=editingClientId!==null?clients.find(c=>String(c.id)===String(editingClientId)):null;
  if(pinStart&&!original){pinHelp.textContent='Este cliente não está mais na carteira. Cancele o ajuste e atualize a lista.';return;}
  if(original){
-  record={...original,lat,lon,locationVerification:'manual_reviewed',locationSource:'manual_confirmation',locationConfirmedAt:new Date().toISOString()};delete record.locationCandidate;delete record.locationEvidence;
+  record={...original,lat,lon,locationVerification:'manual_reviewed',locationSource:'manual_confirmation',locationConfirmedAt:new Date().toISOString()};if(window.RotaMapaGoogleModel)record=RotaMapaGoogleModel.manual(record,[original,original.locationCandidate,geoCandidates.get(original.id)]);delete record.locationCandidate;delete record.locationEvidence;
   const next=clients.map(c=>String(c.id)===String(record.id)?record:c);
   try{localStorage.setItem(KEY,JSON.stringify(next));}catch{const message='Não foi possível salvar a posição neste aparelho. Libere espaço e tente novamente.';pinHelp.textContent=message;el('mapStatus').textContent=message;return;}
   clients=next;geoCandidates.delete(record.id);searchSequence++;searchController?.abort();clearTimeout(searchTimer);traxioScheduleSync(200);
