@@ -152,13 +152,13 @@ document.addEventListener('DOMContentLoaded',()=>{
    const p=result.best;
    if(!p){el('routeOriginStatus').textContent=result.reason||'Origem não encontrada. Confira os dados ou marque o ponto no mapa.';return;}
    manualDraft={lat:p.lat,lon:p.lon,name:q};el('routeOriginStatus').textContent=result.status==='matched'?'Número encontrado. Confirme esta origem.':'Sugestão aproximada. Confira o marcador no mapa antes de confirmar a origem.';
-   initMap();if(map&&window.maplibregl){originMarker?.remove();originMarker=new maplibregl.Marker({color:'#f97316',draggable:true}).setLngLat([p.lon,p.lat]).addTo(map);originMarker.on('dragend',()=>{const p=originMarker.getLngLat();manualDraft={lat:p.lat,lon:p.lng,name:q};});map.flyTo({center:[p.lon,p.lat],zoom:17});}
+   await initMap();if(map&&window.maplibregl){originMarker?.remove();originMarker=new maplibregl.Marker({color:'#f97316',draggable:true}).setLngLat([p.lon,p.lat]).addTo(map);originMarker.on('dragend',()=>{const p=originMarker.getLngLat();manualDraft={lat:p.lat,lon:p.lng,name:q};});map.flyTo({center:[p.lon,p.lat],zoom:17});}
    el('confirmRouteOrigin').hidden=false;el('routeOriginAddress').blur();
   }catch(e){if(run===generation)el('routeOriginStatus').textContent='Falha ao buscar origem: '+e.message;}
  };
  let originMarker=null;
- el('pickRouteOrigin').onclick=()=>{
-  initMap();if(!map){el('routeOriginStatus').textContent='Mapa indisponível. Confira a conexão.';return;}
+ el('pickRouteOrigin').onclick=async()=>{
+  await initMap();if(!map){el('routeOriginStatus').textContent='Mapa indisponível. Confira a conexão.';return;}
   manualChanged();window.traxioPickingOrigin=true;el('routeOriginStatus').textContent='Toque na entrada do local no mapa e confirme a origem.';mapPanel.scrollIntoView({block:'nearest'});
  };
  const originMapInit=initMap;
@@ -166,12 +166,12 @@ document.addEventListener('DOMContentLoaded',()=>{
  el('confirmRouteOrigin').onclick=()=>{if(!manualDraft)return;manualOrigin={...manualDraft};window.traxioPickingOrigin=false;cancel('Origem confirmada. Organize as visitas.');lastSignature=signature();el('routeOriginStatus').textContent='Origem confirmada: '+manualOrigin.lat.toFixed(6)+', '+manualOrigin.lon.toFixed(6);el('confirmRouteOrigin').hidden=true;};
  el('myLocation').onclick=async()=>{
   phase('awaiting-origin','Obtendo sua localização…');const run=generation;
-  try{const point=await requestGPS();if(run!==generation)return;gpsOrigin={...point};el('origin').value='gps';showGpsOrigin();originForm.hidden=true;cancel('Origem por GPS definida. Organize as visitas.');lastSignature=signature();initMap();map?.flyTo({center:[point.lon,point.lat],zoom:15});}
+  try{const point=await requestGPS();if(run!==generation)return;gpsOrigin={...point};el('origin').value='gps';showGpsOrigin();originForm.hidden=true;cancel('Origem por GPS definida. Organize as visitas.');lastSignature=signature();await initMap();map?.flyTo({center:[point.lon,point.lat],zoom:15});}
   catch(e){phase('awaiting-origin','GPS indisponível: '+e.message+'. Autorize a localização ou escolha uma origem manual.');}
  };
  gpsRefresh.onclick=()=>el('myLocation').click();showGpsOrigin();
  async function waitForGeometry(geometry,signal){
-  initMap();if(!map||!window.maplibregl)throw Error('Mapa indisponível. Confira a conexão e tente novamente.');
+  await (window.RotaMapaGoogle?.ensureMap()||initMap());if(!map||!window.maplibregl)throw Error('Mapa indisponível. Confira a conexão e tente novamente.');
   if(!map.isStyleLoaded()&&!map.getStyle()?.layers?.length)await new Promise((resolve,reject)=>{
    const timeout=setTimeout(()=>finish(Error('O mapa não terminou de carregar.')),20000);
    function ready(){finish();}function aborted(){finish(new DOMException('Cancelado','AbortError'));}

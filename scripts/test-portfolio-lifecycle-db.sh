@@ -31,3 +31,6 @@ done
 for file in supabase/migrations/20261110034338_manual_invoice_date.sql test-db/manual-invoice-date.sql; do
  docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
 done
+for file in supabase/migrations/20261110204232_google_location_limits.sql test-db/google-location.sql; do
+ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
+done

@@ -9,6 +9,7 @@ class IdSet extends Set {
 }
 function coordinate(value){if(value===null||value===undefined||String(value).trim()==='')return null;const n=Number(value);return Number.isFinite(n)?n:null;}
 function location(c){
+ if(root.RotaMapaGoogleModel?.automatic(c)&&(root.RotaMapaGoogleModel.clean(c).lat===null||root.RotaMapaGoogle&&!root.RotaMapaGoogle.active))return {kind:'unavailable',ready:false};
  const lat=coordinate(c.lat),lon=coordinate(c.lon);
  if(lat===null||lon===null||Math.abs(lat)>90||Math.abs(lon)>180||(lat===0&&lon===0))return {kind:c.locationCandidate?'approximate':'unavailable',ready:false};
  const verification=c.locationVerification||'unverified';

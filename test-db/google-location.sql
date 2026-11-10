@@ -1,0 +1,36 @@
+-- Synthetic accounts only. Roll back quota fixtures; preserve existing suite state.
+BEGIN;
+INSERT INTO rotamapa_private.qa_operators(user_id) VALUES('00000000-0000-4000-8000-000000000001') ON CONFLICT DO NOTHING;
+INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000199','Google synthetic');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',false);
+SELECT set_config('request.headers','{"x-rotamapa-portfolio":"00000000-0000-4000-8000-000000000199"}',false);
+SET ROLE authenticated;
+SELECT test.ensure(public.rotamapa_google_reserve(),'authorized validation account reserves a request');
+DO $$BEGIN BEGIN DELETE FROM rotamapa_private.google_usage;RAISE EXCEPTION 'client cleared quota';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END$$;
+RESET ROLE;
+UPDATE rotamapa_private.google_usage SET used=400 WHERE bucket='user:00000000-0000-4000-8000-000000000001';
+SET ROLE authenticated;
+SELECT test.ensure(NOT public.rotamapa_google_reserve(),'user daily quota enforced');
+RESET ROLE;
+UPDATE rotamapa_private.google_usage SET used=0;
+UPDATE rotamapa_private.google_usage SET used=3000 WHERE bucket='project-month';
+SET ROLE authenticated;
+SELECT test.ensure(NOT public.rotamapa_google_reserve(),'project monthly quota enforced');
+RESET ROLE;
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000002',false);
+SELECT set_config('request.headers','{"x-rotamapa-portfolio":"00000000-0000-4000-8000-000000000102"}',false);
+SET ROLE authenticated;
+DO $$BEGIN BEGIN PERFORM public.rotamapa_google_reserve();RAISE EXCEPTION 'non-member used Google';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END$$;
+RESET ROLE;
+SELECT test.ensure(rotamapa_private.google_clean('{"lat":-5.8,"lon":-35.2,"locationSource":"google_places","locationVerification":"automatic_housenumber","googleExpiresAt":"2020-01-01T00:00:00Z","name":"Preservado"}')->'lat'='null'::jsonb,'expired Google cache cleared');
+SELECT test.ensure(rotamapa_private.google_clean('{"lat":-5.8,"lon":-35.2,"locationSource":"google_places","locationVerification":"manual_reviewed","googleExpiresAt":"2020-01-01T00:00:00Z"}')->>'lat'='-5.8','manual confirmation preserved');
+SELECT test.ensure(rotamapa_private.google_clean('{"lat":-5.8,"lon":-35.2,"locationSource":"photon","locationVerification":"automatic_housenumber"}')->>'lat'='-5.8','legacy provider preserved');
+-- A cron run has no end-user JWT. Archived portfolios must still shed only their Google cache.
+INSERT INTO public.clients(user_id,portfolio_id,local_id,name,data,latitude,longitude) VALUES('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000199','google-expired','Google synthetic','{"name":"Google synthetic","lat":-5.8,"lon":-35.2,"locationVerification":"automatic_housenumber","locationSource":"google_places","googleExpiresAt":"2020-01-01T00:00:00Z"}',-5.8,-35.2);
+INSERT INTO rotamapa_private.portfolio_lifecycle(user_id,portfolio_id,state) VALUES('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000199','archived');
+SELECT set_config('request.jwt.claim.sub','',false);
+SELECT rotamapa_private.google_cache_cleanup();
+SELECT test.ensure((SELECT latitude IS NULL AND data->'lat'='null'::jsonb AND name='Google synthetic' FROM public.clients WHERE local_id='google-expired'),'cron clears expired cache in archived portfolio and retains client');
+SELECT test.ensure(rotamapa_private.google_cache_cleanup()=0,'cleanup is idempotent');
+ROLLBACK;
+SELECT 'Google quota and expiry assertions passed' AS result;

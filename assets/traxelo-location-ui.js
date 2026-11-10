@@ -114,7 +114,7 @@ function refreshSearch(){
 const originalMarkers=renderMarkers;
 renderMarkers=function(){
  originalMarkers();if(!map)return;
- for(const c of visibleClients().filter(c=>P.location(c).ready&&!selectedIds.has(c.id))){
+ for(const c of visibleClients().filter(c=>P.location(c).ready&&(!window.RotaMapaGoogleModel?.automatic(c)||map.__google)&&!selectedIds.has(c.id))){
   const b=node('button','●','traxelo-saved-pin');b.type='button';b.title='Cliente confirmado: '+c.name;b.setAttribute('aria-label',b.title);b.onclick=()=>window.TraxeloMapActions?.showClient(c.id,{fly:false});
   markers.push(new maplibregl.Marker({element:b}).setLngLat([Number(c.lon),Number(c.lat)]).addTo(map));
  }
@@ -129,7 +129,7 @@ renderWorkspace=function(){
   }
  }
 };
-function fitConfirmed(){initMap();const ready=visibleClients().filter(c=>P.location(c).ready);if(!map||!ready.length)return;renderMarkers();const bounds=new maplibregl.LngLatBounds();ready.forEach(c=>bounds.extend([Number(c.lon),Number(c.lat)]));map.fitBounds(bounds,{padding:55,maxZoom:16});}
+async function fitConfirmed(){await initMap();const ready=visibleClients().filter(c=>P.location(c).ready);if(!map||!ready.length)return;renderMarkers();const bounds=new maplibregl.LngLatBounds();ready.forEach(c=>bounds.extend([Number(c.lon),Number(c.lat)]));map.fitBounds(bounds,{padding:55,maxZoom:16});}
 el('showLocatedClients').onclick=fitConfirmed;
 el('showLocationReviews').onclick=()=>{el('locationSearchReviewList').hidden=false;el('locationSearchReviewList').scrollIntoView({block:'nearest'});};
 const R=TraxeloGeoRecovery,{SearchFailure}=R;
@@ -176,7 +176,7 @@ async function runBatch(resume=false){
    const name=c.name;el('clientLocationSearchProgress').textContent='Buscando '+(processed+1)+' de '+ids.length+': '+name;
    const existing=geoJobs.get(String(id));if(existing){geocodeControllers.get(String(id))?.abort();await existing.promise;}
    if(stopping||epoch!==accountEpoch)break;c=clients.find(c=>String(c.id)===String(id));if(!c||P.location(c).ready)continue;
-   const print=R.fingerprint(c),lookup=(row,options)=>{const signal=AbortSignal.any([options.signal,batchController.signal]);return R.retry(()=>provider==='comparison'?comparisonLookup(row,{...options,signal}):TraxioGeo.locate(row,{...options,signal}),{signal,onRetry:(n,e)=>{el('clientLocationSearchProgress').textContent=e.message+' Tentativa adicional '+n+' de 2 para '+name+'.';}});};
+   const print=R.fingerprint(c),lookup=(row,options)=>{const signal=AbortSignal.any([options.signal,batchController.signal]);return R.retry(()=>provider==='comparison'?comparisonLookup(row,{...options,signal}):provider==='google'?RotaMapaGoogle.locateGoogle(row,{...options,signal}):(window.RotaMapaGoogle?.locateFree||TraxioGeo.locate)(row,{...options,signal}),{signal,onRetry:(n,e)=>{el('clientLocationSearchProgress').textContent=e.message+' Tentativa adicional '+n+' de 2 para '+name+'.';}});};
    const [outcome]=await queueClientGeocode([id],{force:true,lookup});if(stopping||epoch!==accountEpoch)break;
    if(outcome?.status==='error'&&outcome.error?.code!=='invalid_query')throw outcome.error;
    if(['stale','cancelled'].includes(outcome?.status))throw new SearchFailure('O cadastro mudou durante a consulta. Retome a busca para usar o endereço atualizado.',{code:'stale'});

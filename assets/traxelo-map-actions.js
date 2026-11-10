@@ -7,9 +7,9 @@ panel.innerHTML='<strong id="focusedClientName"></strong><small id="focusedClien
 el('map').after(panel);
 const client=()=>clients.find(c=>String(c.id)===focusId);
 function refresh(){if(routeBusy)feedback='';const c=client();panel.hidden=!c;if(!c)return;el('focusedClientName').textContent=c.name;el('focusedClientCnpj').textContent=RotaMapaClientIdentity.formatted(c)||'CNPJ não informado';el('focusedClientStatus').textContent=feedback||(P.location(c).ready?'Destino individual · localização confirmada.':'Confira e confirme a localização antes de iniciar a navegação.');el('focusedClientNavigate').textContent=P.location(c).ready?'Iniciar navegação':'Confirmar ponto para navegar';el('focusedClientNavigate').disabled=routeBusy;}
-function showClient(id,{fly=true}={}){
+async function showClient(id,{fly=true}={}){
  const c=clients.find(c=>String(c.id)===String(id));if(!c)return;
- focusId=String(c.id);feedback='';refresh();switchTab('mapa');initMap();renderMarkers();
+ focusId=String(c.id);feedback='';refresh();switchTab('mapa');await initMap();renderMarkers();
  if(!valid(c.lat,c.lon)){window.traxeloReviewClient?.(c.id);return;}
  if(window.TraxeloNavigation?.state().expanded||el('traxioNavOverlay').classList.contains('traxio-mini'))window.TraxeloNavigation.close();
  if(fly)map?.flyTo({center:[Number(c.lon),Number(c.lat)],zoom:16});

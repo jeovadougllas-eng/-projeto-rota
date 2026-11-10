@@ -134,5 +134,5 @@ async function locate(client,{signal,token,refresh=false}={}){
  result=rank(all,q);if(q.postalIssue)result.reason=q.postalIssue;if(result.status==='not_found'&&lastError)throw lastError;
  cache.set(key,{at:Date.now(),result});return result;
 }
-root.TraxioGeo={parse,addressParts,structured,rank,assess,photon,geoapify,locate,meters,stateCode,ensureAttribution};
+root.TraxioGeo={streetKey,parse,addressParts,structured,rank,assess,photon,geoapify,locate,meters,stateCode,ensureAttribution};
 })(globalThis);

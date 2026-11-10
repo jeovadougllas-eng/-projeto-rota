@@ -1,9 +1,13 @@
 {
-  "version": "1.9.2",
+  "version": "1.10.0",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Google Maps na Web/PWA: busca por nome fantasia e endereço, preservando os pins confirmados manualmente.",
+    "Busca em lote com progresso, pausa e retomada; resultados ambíguos ficam disponíveis para revisão.",
+    "Mapa Google com satélite, GPS e ajuste de pin; limites de consultas durante a validação Signature/Insider.",
+    "Coordenadas automáticas temporárias, com expiração e exclusão dos backups exportados.",
     "Busca de participantes com resultados visíveis enquanto digita e montagem visual do pedido pela vitrine de produtos e condições.",
     "Modo Simulação da Feira exclusivo do responsável pelos testes, sem registros financeiros; limpeza dos testes às 00h01 de 12/11/2026 ou na próxima abertura do aparelho.",
     "Carrinho soma quantidades da mesma apresentação e recalcula faixas com impostos; pedidos reais passam pela conferência existente antes de salvar.",
