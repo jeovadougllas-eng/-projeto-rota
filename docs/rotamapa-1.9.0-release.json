@@ -1,0 +1,66 @@
+{
+  "base": "https://traxio-preview.vercel.app",
+  "source": "d21ba36d73339723ee6e1978e357838c1c2f8e7b",
+  "version": "1.9.0",
+  "deploymentId": "dpl_2TVBpaFDJdSvcVSLb4SxEGKDp3bh",
+  "target": "production",
+  "status": "READY",
+  "previewDeploymentId": "dpl_2bDyPtSaJ9EqYEWN42TPr7mzovDm",
+  "ciRun": 42831521991,
+  "ciConclusion": "success",
+  "unitTests": 196,
+  "browserCases": 110,
+  "pwaCases": 8,
+  "publicFilesVerified": 216,
+  "publicFileVerification": "SHA-256 of every allowlisted file fetched via production HTTPS",
+  "privateFilesBlocked": true,
+  "unauthenticatedRankingDenied": true,
+  "platforms": [
+    "Web",
+    "PWA"
+  ],
+  "responsiveViewports": [
+    "phone",
+    "tablet-portrait",
+    "tablet-landscape",
+    "desktop"
+  ],
+  "syntheticBrowserVerification": true,
+  "realAccountLoginUsed": false,
+  "liveBrowserWritesBlocked": true,
+  "productPhotos": 44,
+  "originalUserPhotos": 10,
+  "officialLogos": [
+    "EMS",
+    "Convenção Unifarma 2026"
+  ],
+  "fair": {
+    "edition": 2026,
+    "start": "2026-11-12",
+    "end": "2026-11-13",
+    "region": "RN",
+    "products": 29,
+    "tiers": 54,
+    "pricesIncludeTax": true,
+    "rankingBasis": "confirmed invoicing only",
+    "participantsExplicitlySelected": true,
+    "sharedSaleReferences": true,
+    "historicalSalesDuplicated": false
+  },
+  "commissionRules": {
+    "reviewedPrivateDocuments": 2,
+    "rules": 86,
+    "sourceDocumentsPublic": false
+  },
+  "localMaterialsSyncedBetweenDevices": false,
+  "coldStartRequiresNetwork": true,
+  "databaseMigrationsApplied": false,
+  "historicalCommerceRewritten": false,
+  "androidDistributionSuspended": true,
+  "androidCompiled": false,
+  "androidManifestsRegenerated": false,
+  "runtimeErrorsFound": 0,
+  "runtimeErrorWindow": "15m",
+  "rollbackDeploymentId": "dpl_FSdm4V93oDKeRQz2VGyGEpsixGV3",
+  "rollbackPreservesAndroidSuspension": true
+}

@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: Central Comercial Web/PWA 1.8.1 publicada e validada; todo trabalho e distribuição APK/OTA suspensos até novo pedido explícito.
+- Etapa atual: Web/PWA 1.9.0 publicada e validada, com Feira Unifarma anual, fotos reais, interface compacta e comissões mensais; todo trabalho e distribuição APK/OTA suspensos até novo pedido explícito.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção atual: `dpl_FSdm4V93oDKeRQz2VGyGEpsixGV3`, READY/production, fonte `fba62a0ac5eae6ead09f192488f4c8c8706a12d1`, https://traxio-preview.vercel.app/. Rollback deve manter o build Web/PWA-only e não reativar OTA.
+- Produção atual: `dpl_2TVBpaFDJdSvcVSLb4SxEGKDp3bh`, READY/production, fonte `d21ba36d73339723ee6e1978e357838c1c2f8e7b`, https://traxio-preview.vercel.app/. Rollback seguro: versão Web/PWA 1.8.1 `dpl_FSdm4V93oDKeRQz2VGyGEpsixGV3`; não reativar OTA.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas: sessão informa 2026-11-09; Prompt Mestre declara versão 11/11/2026. Preservada a versão do autor, sem inferir mudança do relógio.
 
@@ -365,3 +365,20 @@ Validações locais desta ampliação: 196 testes unitários aprovados, incluind
 CI anterior 42823409337 da fonte b363e80 concluiu SUCCESS (Web/PWA sem Android), antes da ampliação anual. Não atribuir esse resultado à fonte nova. Rollback de UI deve usar a entrega Web/PWA 1.8.1, que já exclui Android/OTA; manter os documentos privados aditivos e os dados reais, sem exclusões ou reversões destrutivas.
 
 Checkpoint anual: CI 42829944228 da fonte 0f20ae5 concluiu SUCCESS. Runtime público de 216 arquivos conferido por hash, privados/Android ausentes e ranking sem autenticação rejeitado. Ajuste posterior permite lançar manualmente pedidos depois do fim da feira usando a data real dentro da edição; antes do início continua bloqueado. A captura do formulário impede salvar como pedido da feira uma data fora do período. Dois testes desktop/celular passaram: data inicial 13/11 ao consultar em 14/11, tentativa em 14/11 rejeitada sem gravar e confirmação em 13/11 vinculada uma única vez. Esse ajuste será incluído na fonte final e no novo CI.
+
+
+## Entrega concluída — Web/PWA 1.9.0 — 10/11/2026
+
+Autorização expressa do titular para concluir todas as alterações e publicar Web/PWA, ampliada pelo pedido do ambiente anual Feira Unifarma e pelo envio das logos e fotos originais. Publicada a fonte funcional d21ba36d73339723ee6e1978e357838c1c2f8e7b no deployment dpl_2TVBpaFDJdSvcVSLb4SxEGKDp3bh, READY/production. Alias habitual https://traxio-preview.vercel.app/ confirmado nesse deployment. Build de produção próprio com variáveis do ambiente de produção; Preview não foi promovida como substituta. Nenhuma configuração OAuth, segredo ou política RLS alterada.
+
+CI final 42831521991 SUCCESS na fonte exata: 196 unitários, 110 cenários de navegador, oito testes PWA com service worker real, checks de fontes/arte/OCR e cadeia SQL/RLS local. Rodadas adicionais locais aprovaram tablets, retomada offline do vínculo da feira, troca de conta, seleção da condição importada, lançamento posterior com data real dentro da edição e duas regressões completas de planejamento de rota desktop/celular.
+
+Verificação HTTPS em produção: 216 arquivos públicos idênticos por SHA-256 à fonte, versão 1.9.0, documentos privados/SQL/Android ausentes (404), API de ranking sem sessão rejeitada (401). Navegador com dados sintéticos e escritas reais bloqueadas confirmou os assets servidos em celular, tablet vertical, tablet horizontal e desktop: 29 ofertas, ambas as logos originais carregadas, nenhum erro JavaScript nem overflow na apresentação verificada. Apevitin 140 unidades: total R$ 1.008,00, com imposto. Vercel não registrou erros de runtime na janela consultada de 15 minutos; essa consulta não garante ausência de erros futuros. Evidências locais em /workspace/artifacts/rotamapa-showroom-1.9.0 e recibo público de engenharia em docs/rotamapa-1.9.0-release.json.
+
+Entregues os atalhos compactos preservando fundos/paleta, links úteis mais finos, remoção do vão do planejador, exclusão com confirmar/cancelar sem digitação, projeção mensal automática com evolução e consulta histórica, galeria de materiais, fotos reais nas 44 apresentações e ambiente Feira Unifarma anual. Feira 2026: 12–13/11, 29 produtos e 54 faixas com impostos, fotos e marcas oficiais. Prêmio somente por faturamento confirmado; referências aos mesmos registros de venda, sem duplicar receita/comissão. Participantes e pedidos reais não foram admitidos/vinculados automaticamente; o titular os seleciona no ambiente.
+
+Documentos de regras de comissão conferidos com o contrato/aditivo e documento de campanha revisada foram adicionados somente à carteira EMS do titular, conforme autorização, preservando vendas existentes. Não foram publicados contratos, dados bancários nem percentuais individuais no runtime. Não houve migração de schema ou mudança de RLS. Assinaturas Signature preservadas; nenhuma vaga Insider ativada sem e-mail. A integração automática Mercado Farma permanece descartada.
+
+Limitações de uso: cards, fotos personalizadas e seus binários são guardados por conta/carteira neste aparelho e não sincronizam entre aparelhos. Configuração da feira e referências confirmadas usam a sincronização existente; o vínculo pendente após venda offline tem retomada sem duplicação. A PWA mantém o worker network-only existente: abrir com internet; não prometer cold start totalmente offline. Novas lâminas anuais exigem importação e revisão, sem reutilizar preços ou marca 2026 automaticamente. Taxas ausentes e projeções parciais continuam indicadas; comissão estimada não é comprovante de pagamento.
+
+Atualização instalada: fechar completamente e reabrir a PWA com internet, mantendo mesmo origin, manifesto, IDs e armazenamento; não desinstalar nem apagar dados. APK/OTA continuam suspensos: nenhum build, assinatura, emulador, distribuição ou alteração em mobile/ e updates/android/ nesta entrega (comparação com fonte publicada 1.8.1). Rollback usa dpl_FSdm4V93oDKeRQz2VGyGEpsixGV3, que já exclui Android/OTA. Manter os documentos privados aditivos, os dados e os vínculos; não executar reversão destrutiva do banco. Este recibo final altera documentação apenas e não muda a fonte funcional publicada d21ba36.
