@@ -1,0 +1,81 @@
+{
+  "version": "1.10.0",
+  "platforms": [
+    "web",
+    "pwa"
+  ],
+  "status": "READY",
+  "target": "production",
+  "url": "https://traxio-preview.vercel.app/",
+  "deploymentId": "dpl_HNqRKD3Tm95e8Q8i24v54qN5gJoX",
+  "sourceCommit": "afe8961dc2408af4a5c104054ba384f52138cd20",
+  "publishedAt": "2026-11-10T21:32:36.367Z",
+  "buildDurationMs": 33968,
+  "projectId": "prj_Bes4oJLB9Nsv4tosvzI29F5sfytu",
+  "teamId": "team_nkA7YdysnXiPjmhoqbOoTBzc",
+  "ci": {
+    "runId": 42904574179,
+    "url": "https://github.com/jeovadougllas-eng/-projeto-rota/actions/runs/42904574179",
+    "conclusion": "success",
+    "unitTests": 222,
+    "browserTests": 146,
+    "pwaTests": 8,
+    "isolatedPostgresAndRls": "passed"
+  },
+  "verification": {
+    "publicFilesSha256": 223,
+    "sourceManifestMatches": true,
+    "googleConfigured": true,
+    "unauthenticatedGoogleStatus": 401,
+    "untrustedOriginStatus": 403,
+    "unauthenticatedBuyerInsightsStatus": 401,
+    "privateFilesAbsent": true,
+    "androidArtifactsAbsent": true,
+    "runtimeErrorFatalGroupsFirstFiveMinutes": 0,
+    "paidGoogleQueriesWithRealClientsTested": false,
+    "realAccountLoginTested": false,
+    "physicalSafariTested": false
+  },
+  "database": {
+    "projectId": "ggsptbcgpdakxsdjrldd",
+    "migrationName": "google_location_limits",
+    "appliedVersion": "20261110213140",
+    "sourceFile": "supabase/migrations/20261110204232_google_location_limits.sql",
+    "cronFile": "docs/sql/enable-google-cache-cron.sql",
+    "job": "rotamapa-google-cache-expiry",
+    "scheduleUtc": "17 4 * * *",
+    "active": true,
+    "quotaRls": true,
+    "anonymousRpcExecute": false,
+    "clientCounterRead": false,
+    "clientCleanupExecute": false,
+    "newAuthMemberships": 0
+  },
+  "quotas": {
+    "userDaily": 400,
+    "projectDaily": 2000,
+    "projectMonthly": 3000,
+    "timeZone": "America/Fortaleza",
+    "monetaryCap": false
+  },
+  "cache": {
+    "days": 27,
+    "manualIndependentPinsPreserved": true,
+    "confirmationAloneDoesNotMakeGoogleDataPermanent": true,
+    "googleCoordinatesExcludedFromPermanentExports": true
+  },
+  "advisors": {
+    "newWarnings": 0,
+    "newInfo": "RLS without policy on private google_usage is intentional; no direct client access",
+    "existingWarnings": {
+      "authenticated_security_definer_function_executable": 10,
+      "auth_leaked_password_protection": 1
+    }
+  },
+  "rollback": {
+    "previousDeployment": "dpl_DtGGg8HSGZntQ795k4YRhFJ4raiU",
+    "previousVersion": "1.9.2",
+    "afterGoogleUse": "Prefer Google-disabled 1.10.0 retaining local expiry handling and the daily cleanup job."
+  },
+  "androidAndOta": "suspended; not built, tested or published"
+}

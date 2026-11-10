@@ -31,6 +31,6 @@ Somente coordenadas, identificador do lugar e metadados de qualidade são retorn
 4. Verificar `/api/google-location` (GET informa apenas configuração; POST sem sessão deve dar401), recursos públicos e PWA. Não efetuar login real como teste automatizado.
 5. Titular valida uma busca real pelo próprio navegador, verificando pins e consumo no Google Cloud. Não declarar precisão para os157 clientes antes dessa validação.
 
-Rollback de aplicativo: deployment Web/PWA1.9.2 `dpl_DtGGg8HSGZntQ795k4YRhFJ4raiU`. Não remover o job de expiração enquanto existir cache Google; a migração é aditiva e não altera memberships. Android e OTA permanecem suspensos.
+Rollback imediato antes de consultas Google: deployment Web/PWA1.9.2 `dpl_DtGGg8HSGZntQ795k4YRhFJ4raiU`. Depois de existir cache Google nos aparelhos, preferir uma publicação1.10.0 com a integração desativada, preservando o tratamento de expiração local; a1.9.2 não conhece esses metadados. Não remover o job de expiração enquanto existir cache Google; a migração é aditiva e não altera memberships. Android e OTA permanecem suspensos.
 
 Referências: [políticas Places](https://developers.google.com/maps/documentation/places/web-service/policies), [termos específicos](https://cloud.google.com/maps-platform/terms/maps-service-terms), [restrições de chaves](https://developers.google.com/maps/api-security-best-practices), [Supabase Cron](https://supabase.com/docs/guides/cron).
