@@ -1,0 +1,63 @@
+{
+  "base": "https://traxio-preview.vercel.app",
+  "version": "1.9.1",
+  "source": "c6bb4b74d5245ae0f7dfce5505068b6b42909913",
+  "target": "production",
+  "status": "READY",
+  "previewDeploymentId": "dpl_HYAjcAVSniK5byxLjVB6diwRKrQi",
+  "ciRun": 42844919000,
+  "unitTests": 205,
+  "focusedBrowserCases": 24,
+  "publicFilesVerified": 218,
+  "responsiveViewports": [
+    "phone",
+    "tablet-portrait",
+    "tablet-landscape",
+    "desktop"
+  ],
+  "features": [
+    "fair-only PDF/Excel/CSV participant roster",
+    "preview and explicit confirmation",
+    "CNPJ checksum and deduplication",
+    "CNPJ/legal/trade-name search in Participants and Sales",
+    "dynamic link to existing EMS clients without global client writes",
+    "readable offer tiers with preserved backgrounds"
+  ],
+  "formatsVerifiedWithRealReaders": [
+    "CSV",
+    "PDF",
+    "XLSX",
+    "XLS"
+  ],
+  "globalClientRecordsModified": false,
+  "existingSalesRewritten": false,
+  "existingParticipantReferencesPreserved": true,
+  "rawRosterFilesUploaded": false,
+  "storedRosterFields": [
+    "cnpj",
+    "legalName",
+    "tradeName",
+    "category"
+  ],
+  "schemaMigrationsApplied": false,
+  "authOrRlsModified": false,
+  "realAccountLoginUsed": false,
+  "syntheticBrowserVerification": true,
+  "liveBrowserWritesBlocked": true,
+  "lightTierContrastRatio": 10.126814871501868,
+  "darkTierContrastRatio": 11.173531639448326,
+  "androidDistributionSuspended": true,
+  "androidCompiled": false,
+  "androidManifestsRegenerated": false,
+  "privateFilesBlocked": true,
+  "unauthenticatedRankingDenied": true,
+  "rollbackDeploymentId": "dpl_2TVBpaFDJdSvcVSLb4SxEGKDp3bh",
+  "rollbackCaveat": "1.9.0 does not render CNPJ-only roster entries; preserve settings and prefer a forward compatibility fix.",
+  "deploymentId": "dpl_HZxTmowhrsy4kPMqoSsFLodR7GRd",
+  "ciConclusion": "success",
+  "browserCases": 120,
+  "pwaCases": 8,
+  "runtimeErrorsFound": 0,
+  "runtimeErrorWindow": "15m",
+  "publicFilesVerification": "SHA-256 of every allowlisted file served via production HTTPS"
+}

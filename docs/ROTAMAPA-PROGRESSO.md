@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: Web/PWA 1.9.0 publicada e validada, com Feira Unifarma anual, fotos reais, interface compacta e comissões mensais; todo trabalho e distribuição APK/OTA suspensos até novo pedido explícito.
+- Etapa atual: Web/PWA 1.9.1 publicada e validada, com importação de participantes exclusivos da Feira Unifarma e contraste corrigido; todo trabalho e distribuição APK/OTA suspensos até novo pedido explícito.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção atual: `dpl_2TVBpaFDJdSvcVSLb4SxEGKDp3bh`, READY/production, fonte `d21ba36d73339723ee6e1978e357838c1c2f8e7b`, https://traxio-preview.vercel.app/. Rollback seguro: versão Web/PWA 1.8.1 `dpl_FSdm4V93oDKeRQz2VGyGEpsixGV3`; não reativar OTA.
+- Produção atual: `dpl_HZxTmowhrsy4kPMqoSsFLodR7GRd`, READY/production, fonte `c6bb4b74d5245ae0f7dfce5505068b6b42909913`, https://traxio-preview.vercel.app/. APK/OTA suspensos. Rollback anterior 1.9.0: `dpl_2TVBpaFDJdSvcVSLb4SxEGKDp3bh`, com ressalva de compatibilidade da lista por CNPJ descrita ao final; preferir correção progressiva sem reverter dados.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas: sessão informa 2026-11-09; Prompt Mestre declara versão 11/11/2026. Preservada a versão do autor, sem inferir mudança do relógio.
 
@@ -393,3 +393,18 @@ Implementação: participantes podem ser referências antigas de cliente ou regi
 PDFs usam extração local com posições de colunas e OCR existente quando necessário; CNPJ e nomes são conferidos na prévia. Arquivos de até 20 MB/30 páginas e listas até 5.000 participantes, respeitando o tamanho disponível do settings; planilhas têm cabeçalho CNPJ e Razão social ou Nome fantasia. Sem promessa de reconhecimento perfeito de qualquer diagramação; documento ambíguo exige correção na prévia ou Excel/CSV. O PDF específico do titular ainda não foi recebido para aferir sua diagramação.
 
 Adicionados nove casos unitários de importação/vínculo/isolamento e cenários de navegador para CSV, PDF real, repetição, nomes com acentos, pesquisa parcial de CNPJ, pedido único no histórico, faturamento, recarga, erro de sincronização e troca de conta. Excel XLSX e XLS foram lidos com a biblioteca SheetJS 0.20.3 original em navegador isolado e dados sintéticos, sem alterar os 157 clientes do teste. Contraste das etiquetas validado nos dois modos por razão WCAG >=4,5. Rodada inicial revelou que a mensagem de falha de salvamento era apagada pela atualização da prévia; corrigida para preservar o erro e permitir nova tentativa. Testes antigos foram ajustados para abrir o disclosure de inclusão individual, mantendo as asserções financeiras. Rodadas concorrentes causaram timeouts de execução e foram substituídas por uma única suite; não contar execuções interrompidas como sucesso. Fonte final, CI e publicação serão registrados após conclusão.
+
+
+### Entrega concluída — participantes da feira e contraste — 1.9.1
+
+Produção READY confirmada: dpl_HZxTmowhrsy4kPMqoSsFLodR7GRd, fonte c6bb4b74d5245ae0f7dfce5505068b6b42909913, domínio habitual https://traxio-preview.vercel.app/. Preview validada dpl_HYAjcAVSniK5byxLjVB6diwRKrQi. Publicação por build próprio de produção com o escopo correto de ambiente; nenhuma variável, redirect OAuth ou segredo alterado.
+
+CI 42844919000 SUCCESS na fonte exata: 205 unitários, 120 cenários de navegador, oito testes PWA e cadeia SQL/RLS isolada. Suite local final única: 24 cenários focados desktop/celular aprovados, incluindo falha de salvamento e nova tentativa, retomada offline, associação de venda sem duplicação e confirmação tardia. XLSX e XLS reais lidos com SheetJS 0.20.3; PDF real com PDF.js; CSV com leitor existente. A diagramação do PDF específico do titular ainda depende do arquivo, não enviado nesta etapa; prévia e edição permitem conferir a leitura antes de salvar.
+
+218 arquivos públicos conferidos em produção por SHA-256; escopo, SQL, arquivos privados e Android ausentes (404), API de ranking sem autenticação recusada (401). Navegador nos quatro tamanhos de tela confirmou a versão realmente servida: importação sintética de dois CNPJs, filtro por fantasia, resolução ao ID original do cliente, lista geral e vendas intactas, nenhum erro JavaScript. Escritas reais bloqueadas e nenhum login de cliente real utilizado. Contraste medido nas etiquetas: 10,13:1 no modo claro e 11,17:1 no escuro, com os fundos preservados. Zero erros de runtime na janela consultada de 15 minutos; não equivale a garantia futura. Evidências locais em /workspace/artifacts/rotamapa-fair-1.9.1 e recibo docs/rotamapa-1.9.1-release.json.
+
+Não houve escrita administrativa em dados reais, migração de schema, alteração de RLS, concessão de acessos ou mudança de contratos/taxas nesta etapa. Os próprios usuários importam a lista nas suas edições, via settings já protegido por conta e carteira. Não foram criados participantes reais automaticamente. Somente CNPJ/razão social/fantasia e categoria são guardados para novos participantes; as referências antigas ao ID do cliente são preservadas quando já existiam. Endereços, coordenadas e outras colunas do arquivo não são persistidos na lista.
+
+PWA: fechar completamente e reabrir com internet, no mesmo origin/armazenamento; não desinstalar nem apagar dados. Sem alterações em mobile/ ou updates/android/ em comparação à produção 1.9.0, sem build/emulador/assinatura/OTA Android.
+
+Rollback: manter todo o settings e todos os registros financeiros. O deployment anterior Web/PWA 1.9.0 dpl_2TVBpaFDJdSvcVSLb4SxEGKDp3bh preserva a suspensão Android, porém seu leitor antigo exige clientId para todo participante e não renderiza listas novas somente por CNPJ. Assim, preferir correção progressiva que preserve a compatibilidade; se necessário restaurar a UI anterior temporariamente, manter os dados e informar indisponibilidade do ambiente da feira até restaurar o leitor novo. Não apagar participantes para acomodar uma versão antiga. A fonte funcional publicada permanece c6bb4b7; este recibo final é documental.
