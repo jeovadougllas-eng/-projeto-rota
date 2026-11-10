@@ -19,3 +19,4 @@ body.rm-field.traxio-ui-ready #showroomPresentation #presentationBody .presentat
 body.rm-field.traxio-ui-ready #showroomPresentation #presentationTotal{color:var(--surface-ink);background:var(--glass-soft);border-left:4px solid #008f83;border-radius:6px;padding:12px}
 body.rm-field.traxio-ui-ready #showroomDialog .showroom-hero :is(h2,p){color:#fff}
 body.rm-field.traxio-ui-ready #savedMaterialViewer>header{color:#fff}
+.material-viewer header{flex-wrap:wrap}.material-viewer header strong{flex:1 1 150px;overflow-wrap:anywhere}
