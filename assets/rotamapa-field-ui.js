@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  'use strict';
  const $=id=>document.getElementById(id),make=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n;};
  const paths={
+  case:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12a23 23 0 0 0 18 0M10 12v3h4v-3"/>',
   link:'<path d="m9 15 6-6m-8 7-1 1a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0m2 12a4 4 0 0 0 6 0l5-5a4 4 0 0 0-6-6l-1 1"/>',
   trophy:'<path d="M8 3h8v5a4 4 0 0 1-8 0V3ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 12v6m-5 3h10m-8 0v-3h6v3"/>',
   home:'<path d="m3 10 9-7 9 7v11h-6v-7H9v7H3Z"/>',
@@ -31,9 +32,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  function sceneTitle(page,scene){const title=page.querySelector(':scope>.tab-title');if(!title)return;title.classList.add('field-page-hero');const image=make('img','field-hero-image');image.src='assets/scenes/'+scene+'.webp';image.alt='';image.width=1024;image.height=1536;image.decoding='async';title.prepend(image);}
 
  document.body.classList.add('rm-field');
- const navNames={painel:'home',clientes:'people',mapa:'pin',agendamentos:'calendar',historico:'history',ranking:'trophy',links:'link',dados:'cloud'};
+ const navNames={painel:'home',clientes:'people',mapa:'pin',agendamentos:'calendar',historico:'history',ranking:'trophy',links:'link',promocoes:'case',dados:'cloud'};
  document.querySelectorAll('.tabs>button>svg').forEach(svg=>{svg.innerHTML=paths[navNames[svg.parentElement.dataset.tab]]||paths.pin;});
- for(const [tab,scene]of Object.entries({clientes:'clientes',mapa:'mapa',agendamentos:'historico',historico:'historico',ranking:'historico',links:'historico',dados:'dados'}))sceneTitle($(tab),scene);
+ for(const [tab,scene]of Object.entries({clientes:'clientes',mapa:'mapa',agendamentos:'agendamentos',historico:'historico',ranking:'ranking',links:'links',promocoes:'comercial',dados:'dados'}))sceneTitle($(tab),scene);
 
  // Dashboard: illustration, compact account-scoped portfolio, next action, then the metrics.
  const home=$('painel'),hero=home.querySelector('.traxio-hero'),overview=home.querySelector('.dashboard-overview'),quick=home.querySelector('.quick-actions');

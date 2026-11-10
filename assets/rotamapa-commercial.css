@@ -1,0 +1,19 @@
+/* Approved Commercial hub. All surfaces retain the existing field palette and typography. */
+body.rm-field #promocoes>.field-page-hero{height:170px;min-height:170px;padding:24px;margin-bottom:20px;border:1px solid #456c70;border-radius:14px}
+body.rm-field #promocoes>.field-page-hero>h2{font-size:32px;line-height:1.15;color:#fff}
+body.rm-field #promocoes>.field-page-hero>p{display:block;max-width:540px;color:#d9ece9;font-size:15px;line-height:1.5}
+body.rm-field #promocoes>.card{margin-bottom:18px}
+body.rm-field #promocoes #commercialConsultationPanels>section{padding:18px 0;border-top:1px solid var(--surface-line)}
+body.rm-field #promocoes #commercialConsultationPanels>section:first-child{border-top:0;padding-top:0}
+body.rm-field #promocoes .commercial-consultation :is(h3,h4),body.rm-field #commercialCatalog h4{font-size:20px;line-height:1.25;margin:12px 0}
+.campaign-browser-filters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.campaign-browser-filters :is(input,select){width:100%;min-width:0;box-sizing:border-box}
+#commerceCampaignRows{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+#commerceCampaignRows[hidden],#campaignBrowserDetail[hidden]{display:none!important}
+body.rm-field #commerceCampaignList .campaign-family-card{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:8px;min-height:150px;padding:20px;white-space:normal}
+.campaign-family-card strong{font-size:22px}.campaign-family-card small,.campaign-family-count{font-size:13px;line-height:1.5;font-weight:400}
+.campaign-family-action{font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:3px;margin-top:8px}
+#campaignBrowserProducts .commerce-item{overflow-wrap:anywhere}
+#campaignBrowserProducts small{display:block;margin:8px 0}
+#campaignBrowserStatus{font-size:14px;line-height:1.5}
+@media(max-width:600px){body.rm-field #promocoes>.field-page-hero{height:150px;min-height:150px;padding:18px}body.rm-field #promocoes>.field-page-hero>h2{font-size:27px}body.rm-field #promocoes>.field-page-hero>p{font-size:13px}.campaign-browser-filters{grid-template-columns:1fr}#commerceCampaignRows{grid-template-columns:1fr}}

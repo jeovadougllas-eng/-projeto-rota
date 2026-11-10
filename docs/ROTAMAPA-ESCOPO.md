@@ -870,3 +870,14 @@ Mantenha a produção intacta até a aprovação final.
 ## Esclarecimento anterior preservado — PDFs do Executivo
 
 O limite aprovado é de **3 importações de PDF por mês, por carteira**. Não é um limite de três catálogos armazenados. Uma operação pode conter os dois PDFs do mesmo pedido. Repetir o mesmo conteúdo na mesma carteira é idempotente. Preservar os documentos existentes; a regra limita novas importações no servidor.
+
+
+## Decisão posterior aprovada — Central Comercial e somente Web/PWA
+
+Esta seção substitui os nomes e a organização anteriores da Central de Promoções. Menu: Comercial; título: Central Comercial; ícone de maleta. Ordem da página: Campanhas, Material de Divulgação, Projeção de Comissões, Consultas. Consultas reúne Catálogo digital, Caixas padrão e Biblioteca da carteira.
+
+A lista inicial de campanhas EMS mostra Acelera SellOut, Dia D e Arrastão Azul, sem listar apresentações. Selecionar uma campanha revela seus produtos e condições, com consulta por data e opção de outras vigências. O titular confirmou expressamente: Acelera e Arrastão Azul são mensais; Dia D é diário. Cada usuário importa PDF/imagem de suas lâminas; informações ambíguas continuam exigindo conferência. Preservar documentos, valores, duplicidades históricas, limites e isolamento por usuário/carteira. Nunca reagrupar reescrevendo vendas antigas.
+
+Ajustar somente o contraste do texto auxiliar do filtro de regiões no modo claro. Usar fundos diferentes por página, no mesmo estilo/paleta: diferenciar Agendamentos/Histórico e Ranking/Links úteis e adicionar fundo à Central Comercial. Manter os demais fundos originais e cores de texto.
+
+O proprietário suspendeu todo desenvolvimento, geração, assinatura, teste em emulador e distribuição APK/OTA. Atualizar somente Web/PWA até novo pedido explícito. Não construir Android nem regenerar seus manifestos para acompanhar as versões Web. A distribuição Android não integra o build público dessa etapa.

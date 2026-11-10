@@ -11,18 +11,7 @@ if(process.env.VERCEL_ENV==='production'&&!release)throw Error('Use the explicit
 const commit=process.env.VERCEL_GIT_COMMIT_SHA||execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 if(!/^[a-f0-9]{40}$/.test(commit))throw Error('A verified source commit is required.');
 const allowed=['index.html','privacidade.html','termos.html','iphone.webmanifest','iphone-sw.js','iphone-offline.html','assets'];
-if(release){
- const manifest=JSON.parse(await readFile(join(root,'updates/android/manifest.json'),'utf8'));
- if(manifest.runtime!=='capacitor8-20261026'||manifest.nativeVersion!==2||!/^\/updates\/android\/bundles\/[a-f0-9]{64}\.zip$/.test(manifest.bundle))throw Error('Invalid Android release manifest.');
- const archive=await readFile(join(root,manifest.bundle.slice(1)));
- if(archive.length!==manifest.bytes||createHash('sha256').update(archive).digest('hex')!==manifest.sha256)throw Error('Android update integrity mismatch.');
- for(const [name,digest] of Object.entries(manifest.files)){
-  if(name.startsWith('assets/')&&name!=='assets/capacitor-runtime.js'){
-   if(name.includes('..')||createHash('sha256').update(await readFile(join(root,name))).digest('hex')!==digest)throw Error('Android and web sources differ: '+name);
-  }
- }
- allowed.push('updates/android/manifest.json','updates/android/candidate.json',manifest.bundle.slice(1),'docs/android-install.html','downloads/rotamapa-android-testes.apk','downloads/rotamapa-android-1.7.0-testes.apk','downloads/traxio-android-testes.apk');
-}
+// Android distribution is suspended by the owner. This output contains Web/PWA only.
 if(!process.env.VERCEL){
  const branch=process.env.GITHUB_REF_NAME||execFileSync('git',['branch','--show-current'],{cwd:root,encoding:'utf8'}).trim();
  if(branch!=='dev/rotamapa-atualizacao-integral')throw Error('Use the authorized development branch.');

@@ -1,9 +1,15 @@
 {
-  "version": "1.8.0",
+  "version": "1.8.1",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Central Comercial com Campanhas, Material de Divulgação, Projeção de Comissões e Consultas.",
+    "Campanhas agrupadas em Acelera SellOut, Dia D e Arrastão Azul; produtos e condições aparecem após selecionar a campanha.",
+    "Acelera SellOut e Arrastão Azul mensais; Dia D diário. Importação de lâminas com conferência da modalidade e vigência.",
+    "Fundos exclusivos para Agendamentos, Ranking, Links úteis e Central Comercial.",
+    "Contraste do resumo do filtro de região corrigido no modo claro.",
+    "Atualização somente Web e PWA; trabalho e distribuição Android suspensos até nova autorização.",
     "Perfil RM Insider — Edição Pioneiros com visual exclusivo aprovado. As cinco vagas aguardam os e-mails dos convidados.",
     "Central de Promoções com importação e revisão de campanhas, catálogo digital e consulta de caixas.",
     "Condições importadas na calculadora com origem, vigência, faixas e restrições preservadas.",

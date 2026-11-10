@@ -1,0 +1,9 @@
+{
+  "purpose": "User-approved distinct page backgrounds in the existing scenic palette",
+  "files": {
+    "assets/scenes/agendamentos.webp": "3cb400c0eacca1748aee53e13f0a06a43f60e7aa7cfcbae8b0b18ea8530e05bc",
+    "assets/scenes/ranking.webp": "aa66856c1e486e8199adb352549f2963f3125da08f6e81c9d06155070fc822bb",
+    "assets/scenes/links.webp": "38a348345a790b96c5262e63faf209755dec5ed0d7ac2ebad3f43a500b5c2cde",
+    "assets/scenes/comercial.webp": "6eb685232ffe9afe7f50479f37823514db2d36ef1b10f8f3f93b5f0234878c3b"
+  }
+}

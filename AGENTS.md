@@ -1,5 +1,9 @@
 # Instruções permanentes — RotaMapa
 
+## Decisão vigente — somente Web e PWA
+
+O proprietário suspendeu expressamente todo trabalho no APK. Não compilar, gerar, assinar, testar em emulador, distribuir ou publicar atualizações Android/OTA até novo pedido explícito. Desenvolver, testar e publicar somente Web/PWA. Essa decisão prevalece sobre as referências históricas de entrega nas três plataformas. Não alterar arquivos de mobile/ ou updates/android/ para acompanhar releases Web.
+
 Leia integralmente este arquivo, docs/ROTAMAPA-ESCOPO.md e docs/ROTAMAPA-PROGRESSO.md antes de trabalhar. O GitHub é a fonte de continuidade entre sessões e tarefas; não dependa de memória de conversas. Se o escopo estiver incompleto, registre a lacuna e peça a continuação sem inventar requisitos.
 
 ## Conta de continuidade — decisão vigente

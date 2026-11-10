@@ -402,3 +402,6 @@ body.rm-field.traxio-ui-ready #priorityFilters button.selected{background:#00c2a
 body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=yellow]{background:#42370c;color:#ffe371}
 body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=orange]{background:#523018;color:#ffd2a8}
 body.rm-field.traxio-ui-ready #appointmentBell[data-urgency=red]{background:#62232a;color:#ffd7d7}
+
+/* Only this light-theme helper needed additional contrast. */
+body.rm-field:not(.traxio-dark) #regionPicker #regionFilterSummary{color:#3e6369}
