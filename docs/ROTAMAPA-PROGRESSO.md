@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: implementação incremental em andamento; próximos módulos e limitações registrados nas etapas abaixo.
+- Etapa atual: Web/PWA 1.8.0 publicadas por autorização explícita; atualização interna Android publicada e em validação no emulador. Ver fechamento mais recente.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção informada pelo proprietário: deployment Vercel `dpl_374iR7zDa8QqEDkYehYFWA5yBPee`, READY, target production, branch `dev/traxelo-android-routes`.
+- Produção atual: deployment Vercel `dpl_ErNsdvVns1mpoBj9CLA535J4ZFvD`, READY, target production, fonte `103a984c20be1ac03c0424694815b1d2d1a7a034`. Produção anterior preservada para rollback: `dpl_374iR7zDa8QqEDkYehYFWA5yBPee`.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas: sessão informa 2026-11-09; Prompt Mestre declara versão 11/11/2026. Preservada a versão do autor, sem inferir mudança do relógio.
 
@@ -266,3 +266,22 @@ Aplicadas em sequência as sete migrações já testadas em PostgreSQL isolado: 
 Insider refinado conforme mockup: selo turquesa, cartão Pioneiros, benefício Elite, acesso gratuito permanente, agradecimento, ausência de cobrança; nenhuma mudança na apresentação Signature ou nos planos comerciais. 184 testes unitários, verificações de sintaxe/arte/OCR e cadeia SQL local passaram. Primeira rodada de 22 casos confirmou remotos/Signature/planos; identificou classe Insider ausente na aba Minha assinatura; corrigida e os dois casos Insider passaram em celular e desktop, claro/escuro. CI final e publicação ficam registrados adiante.
 
 Preparado build público com allowlist explícita e validação dos hashes Web/Android. O novo entrypoint de produção não expõe escopo, contratos, testes ou SQL; inclui somente o manifesto, ZIP Android atual, página de instalação e instaladores previamente assinados identificados. O novo APK 1.8 ainda depende da chave original compatível; nenhuma chave substituta foi gerada. A entrega do app instalado usa o mecanismo OTA existente, sem desinstalação e sem reiniciar navegação em andamento. Não confundir atualização funcional com substituição do binário assinado.
+
+
+### Web/PWA e pacote Android 1.8.0 publicados
+
+Fonte funcional: 103a984c20be1ac03c0424694815b1d2d1a7a034. CI 42759046937 SUCCESS: 184 unitários, 78 casos de navegador, oito de PWA e cadeia SQL/RLS local aprovados; Android compilado com todos os assets compartilhados conferidos. O artefato é unsigned, 27.916.595 bytes, SHA-256 d1fd3edf82f906c1eb00b226b882da3ccf72a59e6645dd6146b0cbd7dd4c7603. Não foi distribuído como instalador.
+
+Prévia validada: dpl_3zcMQ4NKXr8Diz74G2DB9ngzooyW. Produção REAL: dpl_ErNsdvVns1mpoBj9CLA535J4ZFvD, READY/production, https://traxio-preview.vercel.app/, mesma fonte exata. Foi feito build de produção próprio para preservar o escopo das variáveis de ambiente, sem promover Preview com ausência de chaves de produção. Nenhum segredo ou configuração OAuth foi alterado.
+
+Conferidos via HTTPS os 160 arquivos públicos, manifesto Android/candidate idênticos, ZIP de 23.358.353 bytes e os 149 hashes internos. Release Android cd241481f71e628c65a3eb6c6cd7bed1d1f7feb405426f6c090e0c5a197382b3, runtime capacitor8-20261026/mínimo nativo 2. Índice Android é deliberadamente diferente do índice Web: inclui bridge e release metadata, sem controles PWA. Assets compartilhados são idênticos. HTML da prévia recebe toolbar da Vercel; a verificação retira exclusivamente esse script reconhecido na Preview, não altera a aplicação. Não há normalização de fontes JS, CSS, APKs ou ZIPs.
+
+Verificação do endereço de produção passou: marca PWA RotaMapa, arquivos privados do escopo/SQL retornam 404, API de ranking rejeita POST sem autenticação com 401. Navegador renderizou os assets realmente servidos, o cartão Insider e a Central de Promoções; autenticação sintética e escritas reais bloqueadas, sem login de clientes reais. O catálogo EMS original de 40 páginas foi aberto em conta sintética local, primeira/última páginas renderizadas e download idêntico por SHA-256; clientes e produtos não foram modificados.
+
+PWA: mesmo origin/manifest/IDs/armazenamento e worker network-only preservados. Fechar e reabrir com internet carrega o site novo, sem forçar reload de uma rota ativa. Android: manter instalação atual, abrir com internet e aguardar download; fechar completamente e reabrir para aplicar o pacote. Nova instalação usa o APK assinado 1.7.0 explicitamente identificado na página /docs/android-install.html e recebe depois os recursos 1.8.0 por OTA. Não rotular esse arquivo como APK 1.8.0 nem orientar desinstalação.
+
+Validação do app Android instalado disparada no workflow 42759880864, fonte 103a984. Usa APK já assinado, emulador isolado, download HTTPS real da versão publicada e dados sintéticos; verifica cold start, preservação de dados, ACK e rejeição de pacote corrompido. Resultado final será adicionado após conclusão.
+
+Rollback: manter o schema aditivo e os dados; não executar migrações reversas destrutivas. Em falha grave, reatribuir a produção ao deployment anterior dpl_374iR7zDa8QqEDkYehYFWA5yBPee. Esse deployment preserva o manifesto Android anterior f6dfbc71ce564b73d91fc9a5671f514774654461de5670a4c3e5d6768e3e476a. Não apagar os pacotes anteriores nem os dados do aparelho; o loader nativo mantém fallback validado. Restauração de UI/manifest não exige restauração de clientes/vendas, que não foram reescritos.
+
+Pendências de dados a fornecer pelo titular: cinco e-mails Insider, planilha original 53/19 e contratos/aditivos/caixas para validação desses exemplos reais. Essas ausências não bloqueiam os importadores disponíveis para os usuários, nem autorizam inventar taxas ou convidados. Pagamentos reais e Google billing/geolocalização continuam fora deste rollout. Um novo APK nativo assinado 1.8.0 continua dependendo da chave compatível; atualização interna funcional foi publicada e não troca assinatura.
