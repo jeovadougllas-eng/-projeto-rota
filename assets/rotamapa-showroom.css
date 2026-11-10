@@ -29,3 +29,5 @@ body.rm-field .showroom-fair-brands img:first-child{width:45px}
 body.rm-field .showroom-fair-brands img:nth-child(2){width:145px}
 /* Tier labels sit on a light/dark surface, even inside the product action button. */
 body.rm-field.traxio-ui-ready #showroomDialog .showroom-product .showroom-tiers>span{color:var(--surface-ink);background:var(--glass-soft)}
+#showroomOrderBar[hidden]{display:none!important}.showroom-order-bar{position:sticky;top:0;z-index:3;background:var(--glass);color:var(--surface-ink);border:1px solid var(--surface-line);padding:9px;display:flex;justify-content:space-between;gap:8px;align-items:center}.showroom-order-bar strong{font-size:13px;overflow-wrap:anywhere}.showroom-order-bar button{flex:none;font-size:13px}
+#presentationAddToOrder,#presentationReviewOrder{margin:5px 8px 5px 0}#presentationOrderError{font-size:14px}

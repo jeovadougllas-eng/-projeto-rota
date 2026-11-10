@@ -24,3 +24,8 @@ body.rm-field dialog.fair-import-dialog{width:min(800px,calc(100vw - 24px));max-
 .fair-import-dialog [hidden]{display:none!important}.fair-import-dialog>p{font-size:13px;line-height:1.45}.fair-import-dialog input,.fair-import-dialog select{width:100%;box-sizing:border-box;min-width:0}.fair-import-dialog>.row{flex-wrap:wrap;gap:8px}
 .fair-import-row{border-bottom:1px solid var(--surface-line);padding:13px 0}.fair-import-row>strong{font-size:14px}.fair-import-row label{display:block;margin-top:8px}.fair-import-row input{display:block}.fair-import-row .fair-import-issue{color:var(--surface-ink);font-size:13px;font-weight:600}
 #fairImportReview>.row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:12px 0}
+#fairSaleResults{display:grid;gap:6px;margin:8px 0}.fair-search-result{text-align:left;white-space:normal}.fair-search-result strong,.fair-search-result small{display:block}.fair-search-result small{font-size:12px;margin-top:4px}
+body.rm-field #fairSimulateOrder,.fair-simulation-badge{background:#fff1c9;color:#573e09;border:1px solid #c6a338;border-radius:7px;padding:10px}
+body.rm-field.traxio-ui-ready dialog .fair-simulation-badge{color:#573e09;background:#fff1c9}
+#fairSimulationPanel{margin-top:20px;border-top:1px solid var(--surface-line);padding-top:15px}#fairSimulationPanel>p{font-size:12px}
+body.rm-field dialog.fair-order-dialog{width:min(800px,calc(100vw - 24px));max-width:800px;box-sizing:border-box}.fair-order-dialog input{width:100%;max-width:180px;box-sizing:border-box}.fair-order-dialog .row{flex-wrap:wrap;gap:8px}#fairOrderTotal{display:block;font-size:22px;margin:15px 0}

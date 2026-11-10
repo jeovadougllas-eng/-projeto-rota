@@ -43,7 +43,7 @@ for(const base of ['traxelo.visits.v1:','rotamapa.commerce.v1:','traxelo.workspa
    if(r.error)throw r.error;if(r.data?.id!==own.item.id||r.data?.state!==({archive:'archived',restore:'active',delete:'deleted'})[action])throw Error('O servidor não confirmou o resultado. Sincronize a lista antes de tentar novamente.');
    if(action==='delete'){
     const current=await authClient.auth.getUser();if(current.data?.user?.id===own.owner){if(library)await library.purgeSynced();await window.RotaMapaShowroom?.purge(own.owner,own.item.id);const id=own.item.id,suffix=id===RotaMapaPortfolioScope.DEFAULT?'':':portfolio:'+id;
-     const keys=['traxelo.visits.v1:','rotamapa.commerce.v1:','traxelo.workspace.v1:','traxelo.visits.settings.v1:'].map(k=>k+own.owner+suffix);keys.push('rotamapa.fair-links.v1:'+own.owner+':'+id);keys.push('traxio_sync_baseline_v29_'+own.owner+suffix,'rotamapa.portfolio.last-version.v1:'+own.owner+':'+id);
+     const keys=['traxelo.visits.v1:','rotamapa.commerce.v1:','traxelo.workspace.v1:','traxelo.visits.settings.v1:'].map(k=>k+own.owner+suffix);keys.push('rotamapa.fair-links.v1:'+own.owner+':'+id);if(window.RotaMapaFairOrdersModel)keys.push(RotaMapaFairOrdersModel.key(own.owner,id));keys.push('traxio_sync_baseline_v29_'+own.owner+suffix,'rotamapa.portfolio.last-version.v1:'+own.owner+':'+id);
      if(id!==RotaMapaPortfolioScope.DEFAULT)keys.push('rotamapa.clients.v1:'+own.owner+':'+id);else if(localStorage.getItem('traxio_sync_owner_v29')===own.owner)keys.push('projeto_rota_mapa_v1');
      for(const key of keys)localStorage.removeItem(key);
      if(id===RotaMapaPortfolioScope.loadedId){traxioSyncSuspended=true;clients=[];render();}
