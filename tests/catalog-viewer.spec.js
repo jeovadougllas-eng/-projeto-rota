@@ -1,0 +1,31 @@
+import{test,expect}from'playwright/test';import{prepare,ready}from'./fixtures/browser.js';import{accountFixture}from'./fixtures/account.js';import{pdfBuffer}from'./fixtures/order-pdf.js';
+async function setup(page){await prepare(page,{lockAuthFixture:true});await accountFixture(page);await ready(page);await page.locator('[data-tab=promocoes]').click();}
+const file={name:'catalogo-sintetico.pdf',mimeType:'application/pdf',buffer:pdfBuffer('CATALOGO SINTETICO\nPRODUTO EXEMPLO 20 MG\nSEM DADOS REAIS')};
+test('catalog renders, searches, zooms and downloads the original without creating products or writing data',async({page})=>{
+ await setup(page);const before=await page.evaluate(()=>({clients:JSON.stringify(clients),products:JSON.stringify(RotaMapaSales.getStore()?.events()||[])}));
+ await page.locator('#centralCatalogFile').setInputFiles(file);await expect(page.locator('#rmCatalogViewer')).toBeVisible();await expect(page.locator('#rmCatalogStatus')).toHaveText('Página 1 de 1');
+ expect(await page.locator('#rmCatalogCanvas').evaluate(c=>c.width)).toBeGreaterThan(0);await expect(page.locator('#rmCatalogPrevious')).toBeDisabled();await expect(page.locator('#rmCatalogNext')).toBeDisabled();
+ const initial=await page.locator('#rmCatalogCanvas').evaluate(c=>c.width);await page.locator('#rmCatalogZoom').selectOption('2');await expect.poll(()=>page.locator('#rmCatalogCanvas').evaluate(c=>c.width)).toBeGreaterThan(initial);
+ await page.locator('#rmCatalogSearch').fill('produto');await page.locator('#rmCatalogSearchForm button').click();await expect(page.locator('#rmCatalogSearchResults button')).toHaveText('Página 1');
+ const waiting=page.waitForEvent('download');await page.locator('#rmCatalogDownload').click();const download=await waiting;expect(download.suggestedFilename()).toBe(file.name);
+ const {readFile}=await import('node:fs/promises');expect(await readFile(await download.path())).toEqual(file.buffer);
+ await page.locator('#rmCatalogClose').click();await expect(page.locator('#rmCatalogViewer')).toBeHidden();expect(await page.evaluate(()=>({clients:JSON.stringify(clients),products:JSON.stringify(RotaMapaSales.getStore()?.events()||[])}))).toEqual(before);
+});
+test('changing account closes the private document and invalid files leave the viewer closed',async({page})=>{
+ await setup(page);await page.locator('#centralCatalogFile').setInputFiles(file);await expect(page.locator('#rmCatalogStatus')).toHaveText('Página 1 de 1');
+ await page.evaluate(()=>window.__accountSwitch({id:'00000000-0000-4000-8000-000000000002',email:'synthetic@example.test',user_metadata:{}}));await expect(page.locator('#rmCatalogViewer')).toBeHidden();await expect(page.locator('#rmCatalogCanvas')).toHaveJSProperty('width',0);
+ await page.locator('#centralCatalogFile').setInputFiles({name:'invalid.pdf',mimeType:'application/pdf',buffer:Buffer.from('not a PDF')});await expect(page.locator('#centralCatalogStatus')).toContainText('PDF inválido');await expect(page.locator('#rmCatalogViewer')).toBeHidden();
+});
+test('central entry retains the existing campaign dialog and stays within the mobile viewport',async({page})=>{
+ await setup(page);await page.locator('#centralCampaigns').click();await expect(page.locator('#commerceCampaignList')).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+function multiPagePdf(texts){const objects=['<< /Type /Catalog /Pages 2 0 R >>','','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'],pages=[];for(const text of texts){const id=objects.length+1,stream='BT /F1 18 Tf 20 700 Td ('+text+') Tj ET';pages.push(id);objects.push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents '+(id+1)+' 0 R >>','<< /Length '+Buffer.byteLength(stream)+' >>\nstream\n'+stream+'\nendstream');}objects[1]='<< /Type /Pages /Kids ['+pages.map(n=>n+' 0 R').join(' ')+'] /Count '+pages.length+' >>';let out='%PDF-1.4\n';const offsets=[0];for(const [i,obj]of objects.entries()){offsets.push(Buffer.byteLength(out));out+=(i+1)+' 0 obj\n'+obj+'\nendobj\n';}const xref=Buffer.byteLength(out);out+='xref\n0 '+(objects.length+1)+'\n0000000000 65535 f \n'+offsets.slice(1).map(n=>String(n).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+(objects.length+1)+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF';return Buffer.from(out);}
+test('page navigation, thumbnails and search reach the correct page in a multi-page catalog',async({page})=>{
+ await setup(page);await page.locator('#centralCatalogFile').setInputFiles({name:'duas-paginas.pdf',mimeType:'application/pdf',buffer:multiPagePdf(['PRIMEIRA PAGINA','PRODUTO SEGUNDA PAGINA'])});await expect(page.locator('#rmCatalogStatus')).toHaveText('Página 1 de 2');await page.locator('#rmCatalogNext').click();await expect(page.locator('#rmCatalogStatus')).toHaveText('Página 2 de 2');await expect(page.locator('#rmCatalogNext')).toBeDisabled();await page.locator('#rmCatalogPrevious').click();await expect(page.locator('#rmCatalogStatus')).toHaveText('Página 1 de 2');
+ await page.locator('#rmCatalogThumbnails summary').click();await expect(page.locator('#rmCatalogThumbnailList button')).toHaveCount(2);await page.locator('#rmCatalogThumbnailList button').nth(1).click();await expect(page.locator('#rmCatalogStatus')).toHaveText('Página 2 de 2');await page.locator('#rmCatalogSearch').fill('produto');await page.locator('#rmCatalogSearchForm button').click();await expect(page.locator('#rmCatalogSearchResults button')).toHaveText('Página 2');
+});
+test('native original-file sharing uses only the local file and no upload API',async({page})=>{
+ await setup(page);await page.locator('#centralCatalogFile').setInputFiles(file);await expect(page.locator('#rmCatalogStatus')).toHaveText('Página 1 de 1');
+ await page.evaluate(()=>{window.Capacitor={isNativePlatform:()=>true};navigator.canShare=()=>true;navigator.share=async data=>{window.__sharedPdf={name:data.files[0].name,bytes:await data.files[0].text()};};});await page.locator('#rmCatalogDownload').click();await expect.poll(()=>page.evaluate(()=>window.__sharedPdf?.name)).toBe(file.name);expect(await page.evaluate(()=>window.__sharedPdf.bytes)).toBe(file.buffer.toString());
+});

@@ -45,3 +45,7 @@ O bundle comum foi preparado por `node scripts/build-mobile.mjs` e sincronizado 
 ## Limites e próximos passos
 
 A entrega integral NÃO está concluída. Faltam integração de UI/persistência dos documentos e snapshots, Central de Promoções, catálogo digital/caixas, amostras contratuais/campanhas para validar extração, ensaio com a planilha correta, configuração real de OAuth, revisão/aplicação autorizada das migrações, assinatura Android compatível e validação final Web/PWA/APK. Consulte ROTAMAPA-PROGRESSO.md para o checkpoint mais recente.
+
+## Complemento — catálogo local salvo para retomada
+
+Validação final do checkpoint de catálogo: 171 testes unitários passaram; 28 cenários Chromium desktop claro/celular escuro passaram com `tests/catalog-viewer.spec.js tests/auth.spec.js tests/client-import.spec.js`. Verificações de fontes, arte e OCR passaram. O catálogo possui cinco cenários por projeto (10 casos), incluindo navegação/miniaturas de PDF real sintético, busca, zoom, download original byte a byte, fechamento na troca de conta, rejeição de arquivo inválido, preservação do diálogo comercial e compartilhamento local nativo simulado. Nenhum acesso de escrita real. Instrução imediata de publicação exclusivamente Preview: ROTAMAPA-RETOMADA-PREVIA.md. A prova APK anterior não abrange o catálogo adicionado posteriormente.
