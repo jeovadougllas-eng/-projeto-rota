@@ -4,6 +4,11 @@ on:
     branches: [dev/rotamapa-atualizacao-integral]
     paths: ['assets/**', 'index.html', 'mobile/**', 'scripts/**', 'tests/**', 'test-unit/**', 'test-db/**', 'supabase/migrations/**', 'playwright*.js', 'package*.json', '.github/workflows/rotamapa-development.yml']
   workflow_dispatch:
+    inputs:
+      verify_installed_update:
+        description: Verify the published update inside the existing signed Android app
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -11,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   validate-and-build:
-    if: github.ref == 'refs/heads/dev/rotamapa-atualizacao-integral'
+    if: github.ref == 'refs/heads/dev/rotamapa-atualizacao-integral' && !inputs.verify_installed_update
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -34,6 +39,8 @@ jobs:
         run: node scripts/build-preview-runtime.mjs
         env:
           GITHUB_REF_NAME: dev/rotamapa-atualizacao-integral
+      - name: Verify the authorized public release and compatible Android update
+        run: node scripts/build-public-runtime.mjs
       - name: Isolated PostgreSQL schema and RLS assertions
         run: bash scripts/test-portfolio-lifecycle-db.sh
       - name: Browser regressions with synthetic data only
@@ -78,3 +85,42 @@ jobs:
           name: rotamapa-development-test-results-${{ github.sha }}
           retention-days: 7
           path: test-results/
+  installed-update:
+    if: github.ref == 'refs/heads/dev/rotamapa-atualizacao-integral' && github.event_name == 'workflow_dispatch' && inputs.verify_installed_update
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      DISPLAY: ':99'
+      LIBGL_ALWAYS_SOFTWARE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Require exact published candidate before touching the synthetic emulator
+        run: |
+          mkdir -p candidate
+          cp updates/android/manifest.json candidate/update-manifest.json
+          curl --fail --silent --show-error https://traxio-preview.vercel.app/updates/android/candidate.json -o candidate/published.json
+          cmp candidate/update-manifest.json candidate/published.json
+          sudo chmod a+rw /dev/kvm
+          Xvfb :99 -screen 0 1920x1200x24 -ac > /tmp/rotamapa-xvfb.log 2>&1 &
+      - name: Install the existing signed APK and verify real OTA preservation
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none -memory 2048 -cores 2 -feature -Vulkan
+          script: |
+            adb install downloads/rotamapa-android-1.7.0-testes.apk
+            adb shell am start -n app.traxio.mobile/.MainActivity
+            adb shell run-as app.traxio.mobile mkdir -p shared_prefs
+            node scripts/android-updates.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: rotamapa-installed-update-${{ github.sha }}
+          path: mobile/evidence/
