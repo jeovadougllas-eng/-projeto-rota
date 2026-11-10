@@ -2,7 +2,7 @@ name: RotaMapa development validation (no production)
 on:
   push:
     branches: [dev/rotamapa-atualizacao-integral]
-    paths: ['assets/**', 'index.html', 'mobile/**', 'scripts/**', 'tests/**', 'test-unit/**', 'package*.json', '.github/workflows/rotamapa-development.yml']
+    paths: ['assets/**', 'index.html', 'mobile/**', 'scripts/**', 'tests/**', 'test-unit/**', 'test-db/**', 'supabase/migrations/**', 'playwright*.js', 'package*.json', '.github/workflows/rotamapa-development.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,10 +26,16 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run check && node scripts/check-rotamapa-art.mjs && node scripts/check-document-assets.mjs
       - run: node --test test-unit/*.test.mjs
+      - name: Isolated PostgreSQL schema and RLS assertions
+        run: bash scripts/test-portfolio-lifecycle-db.sh
       - name: Browser regressions with synthetic data only
         run: |
           browser_path=$(command -v google-chrome-stable || command -v google-chrome)
           PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$browser_path" npx playwright test tests/document-library.spec.js tests/catalog-viewer.spec.js tests/auth.spec.js tests/client-import.spec.js --project=desktop-light --project=phone-dark --workers=2
+      - name: Real service-worker recovery with synthetic portfolio (Chromium, simulated iPhone UI)
+        run: |
+          browser_path=$(command -v google-chrome-stable || command -v google-chrome)
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$browser_path" npx playwright test --config=playwright.development-pwa.config.js
       - name: Restore existing test signing identity if this branch can access it
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
@@ -39,7 +45,10 @@ jobs:
       - run: node scripts/build-mobile.mjs
       - run: ./node_modules/.bin/cap sync android
         working-directory: mobile
-      - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'build-tools;35.0.0'
+      - name: Install required Android SDK packages
+        run: |
+          android_sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          "$android_sdk/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0' 'build-tools;35.0.0'
       - run: bash gradlew assembleRelease --no-daemon --max-workers=2
         working-directory: mobile/android
       - name: Preserve signed artifact only if it matches the production APK certificate

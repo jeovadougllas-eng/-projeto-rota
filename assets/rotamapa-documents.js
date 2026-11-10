@@ -5,7 +5,8 @@
  function aborted(signal){if(signal?.aborted)throw Error('Leitura cancelada. Nenhum dado foi salvo.');}
  async function ocr(canvas,{signal,onProgress}){
   aborted(signal);if(!ocrLibrary)ocrLibrary=new Promise((resolve,reject)=>{const tag=document.createElement('script');tag.src=local('assets/vendor/ocr/tesseract.min.js');tag.onload=resolve;tag.onerror=()=>{ocrLibrary=null;reject(Error('Não foi possível carregar o OCR local.'));};document.head.append(tag);});await ocrLibrary;
-  let worker;const options={workerPath:local('assets/vendor/ocr/worker.min.js'),corePath:local('assets/vendor/ocr/'),langPath:local('assets/vendor/ocr/'),gzip:true,cacheMethod:'none',workerBlobURL:false,logger:m=>onProgress?.(m.status,Math.round((m.progress||0)*100))};
+  // Language bytes retain their upstream gzip checksum. The suffix avoids Android AAPT renaming; the worker detects gzip magic.
+  let worker;const options={workerPath:local('assets/vendor/ocr/worker.min.js'),corePath:local('assets/vendor/ocr/'),langPath:local('assets/vendor/ocr/'),gzip:false,cacheMethod:'none',workerBlobURL:false,logger:m=>onProgress?.(m.status,Math.round((m.progress||0)*100))};
   let cancel;const cancelled=new Promise((_,reject)=>{cancel=()=>{worker?.terminate();reject(Error('Leitura cancelada. Nenhum dado foi salvo.'));};signal?.addEventListener('abort',cancel,{once:true});});
   try{const init=root.Tesseract.createWorker('por',1,options).then(w=>{worker=w;if(signal?.aborted){w.terminate();throw Error('Leitura cancelada. Nenhum dado foi salvo.');}return w;});await Promise.race([init,cancelled]);aborted(signal);const result=await Promise.race([worker.recognize(canvas),cancelled]);return{text:result.data.text,confidence:result.data.confidence};}finally{signal?.removeEventListener('abort',cancel);await worker?.terminate();}
  }

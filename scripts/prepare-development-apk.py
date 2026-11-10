@@ -37,6 +37,8 @@ def main():
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     if subprocess.check_output(['git', 'branch', '--show-current'], cwd=ROOT, text=True).strip() != 'dev/rotamapa-atualizacao-integral':
         raise RuntimeError('Unauthorized source branch')
+    if subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'], cwd=ROOT, text=True).strip():
+        raise RuntimeError('Commit the validated sources before attributing an Android artifact to HEAD')
     output = Path(os.environ.get('ROTAMAPA_ANDROID_OUTPUT', '/workspace/rotamapa-android-artifacts'))
     output.mkdir(parents=True, exist_ok=True)
     verified = []

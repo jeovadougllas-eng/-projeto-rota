@@ -5,7 +5,7 @@ const files={
  'tesseract.min.js':'tesseract.js/dist/tesseract.min.js','worker.min.js':'tesseract.js/dist/worker.min.js',
  'tesseract.LICENSE':'tesseract.js/LICENSE.md','core.LICENSE':'tesseract.js-core/LICENSE',
  'por.PACKAGE.json':'@tesseract.js-data/por/package.json','por.README.md':'@tesseract.js-data/por/README.md',
- 'por.traineddata.gz':'@tesseract.js-data/por/4.0.0/por.traineddata.gz'
+ 'por.traineddata':'@tesseract.js-data/por/4.0.0/por.traineddata.gz'
 };
 for(const name of ['tesseract-core-lstm.wasm.js','tesseract-core-simd-lstm.wasm.js','tesseract-core-relaxedsimd-lstm.wasm.js'])files[name]='tesseract.js-core/'+name;
 const hashes={};for(const[name,source]of Object.entries(files)){const src=new URL('../node_modules/'+source,import.meta.url);await copyFile(src,new URL(name,target));hashes[name]=createHash('sha256').update(await readFile(src)).digest('hex');}
