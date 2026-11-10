@@ -27,3 +27,5 @@ body.rm-field .showroom-fair-brands{margin-bottom:10px;padding:5px 9px}
 body.rm-field .showroom-fair-brands img{height:30px}
 body.rm-field .showroom-fair-brands img:first-child{width:45px}
 body.rm-field .showroom-fair-brands img:nth-child(2){width:145px}
+/* Tier labels sit on a light/dark surface, even inside the product action button. */
+body.rm-field.traxio-ui-ready #showroomDialog .showroom-product .showroom-tiers>span{color:var(--surface-ink);background:var(--glass-soft)}

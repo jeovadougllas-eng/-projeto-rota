@@ -1,9 +1,12 @@
 {
-  "version": "1.9.0",
+  "version": "1.9.1",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Participantes da Feira Unifarma por PDF, Excel e CSV, com prévia, correção e deduplicação por CNPJ; lista exclusiva da edição, sem criar clientes ou rotas.",
+    "Busca por CNPJ, razão social e nome fantasia em Participantes e Vendas; pedidos associados ao cliente existente na carteira EMS.",
+    "Contraste corrigido nas etiquetas de quantidade e preço das ofertas, preservando fundos e cores do ambiente.",
     "Feira Unifarma com menu exclusivo EMS, identidade oficial da convenção 2026, edições anuais, participantes da rede e convidados.",
     "Ranking da feira somente por faturamento confirmado, com referências aos mesmos pedidos do histórico geral e seleção por pedido do registro.",
     "44 apresentações com fotos reais, incluindo os dez originais enviados; marcas oficiais EMS e Convenção Unifarma 2026 preservadas.",
