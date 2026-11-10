@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: Web/PWA 1.9.1 publicada e validada, com importação de participantes exclusivos da Feira Unifarma e contraste corrigido; todo trabalho e distribuição APK/OTA suspensos até novo pedido explícito.
+- Etapa atual: Web/PWA 1.9.2 publicada e validada; busca visível, pedido pela vitrine e simulação local do responsável com expiração em 12/11/2026 às 00h01 de Fortaleza. APK/OTA suspensos.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção atual: `dpl_HZxTmowhrsy4kPMqoSsFLodR7GRd`, READY/production, fonte `c6bb4b74d5245ae0f7dfce5505068b6b42909913`, https://traxio-preview.vercel.app/. APK/OTA suspensos. Rollback anterior 1.9.0: `dpl_2TVBpaFDJdSvcVSLb4SxEGKDp3bh`, com ressalva de compatibilidade da lista por CNPJ descrita ao final; preferir correção progressiva sem reverter dados.
+- Produção atual: `dpl_DtGGg8HSGZntQ795k4YRhFJ4raiU`, READY/production, fonte `3b639ccb976b922f97196348b8968183ba588b42`, https://traxio-preview.vercel.app/. Rollback anterior 1.9.1: `dpl_HZxTmowhrsy4kPMqoSsFLodR7GRd`, preservando os dados e a suspensão Android.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas: sessão informa 2026-11-09; Prompt Mestre declara versão 11/11/2026. Preservada a versão do autor, sem inferir mudança do relógio.
 
@@ -419,3 +419,24 @@ Implementação separa rigorosamente os caminhos. Simulações usam tipo fair-si
 Vitrine recebe modo pedido opcional, preservando consulta normal. Adicionar produto agrega a quantidade por apresentação e recalcula a faixa atingida. Resumo permite editar quantidade, remover e continuar escolhendo produtos. Testes são rotulados SIMULAÇÃO na lista, apresentação e resumo, sem botão para convertê-los em venda. Pedido real usa produto identificado no catálogo e campanha importada/revisada da carteira, com origem e restrições existentes. openPreparedSale somente preenche a conferência existente; salvar continua exigindo validações e confirmação. O mesmo ID é vinculado à feira, com faturamento pendente até confirmação real. Calculadora tradicional e importação PDF preservadas.
 
 Resultados iniciais: 211 unitários passaram (seis novos); oito dos dez cenários novos passaram na primeira rodada, incluindo isolamento, autorização e expiração. A revisão do pedido real detectou divergência na ordem das propriedades do snapshot; corrigido usando a campanha persistida como fonte e comparação canônica sem alterar asserções de preço ou origem. Dois casos reais desktop/celular repetidos passaram, com total R$579,60, um único registro e ranking zerado até faturamento. CI, prévia e publicação final serão registrados após conclusão. APK/OTA permanecem suspensos.
+
+
+### Entrega concluída — carrinho visual e simulações — Web/PWA 1.9.2
+
+Publicação expressamente autorizada pelo titular. Produção dpl_DtGGg8HSGZntQ795k4YRhFJ4raiU READY/production, fonte funcional 3b639ccb976b922f97196348b8968183ba588b42, domínio habitual https://traxio-preview.vercel.app/. Prévia final dpl_EpCY411r2YPZUYKzwdXnFUVys2K7 validada na mesma fonte. Build próprio de produção; configuração de OAuth, variáveis, credenciais e políticas preservadas.
+
+CI final 42854928194 SUCCESS: 211 unitários, 130 cenários de navegador, oito testes PWA e cadeia SQL/RLS local. Workflow da fonte intermediária 7af2ea0 cancelado após a revisão adicional de quantidade, não tratado como aprovação final. Guarda adicional impede continuar se uma quantidade visível estiver vazia, zero, fracionária, acima do limite ou divergente do carrinho; simular/registrar não reutiliza silenciosamente quantidade anterior diante de erro. Testes desktop/celular do pedido real repetidos na fonte final passaram, inclusive tentativa inválida, correção, fonte importada e faturamento posterior.
+
+Rodada local conjunta passou 18/20 cenários; dois excederam o tempo no celular durante recarga/expiração e foram repetidos com um único worker: passaram em 13,7 e 10,8 segundos, mantendo as asserções. CI final aprovou todos os 130 casos numa única execução. Suite nova confirmou resultados visíveis, teste exclusivo do operador, metadados de perfil incapazes de liberar acesso, soma de quantidades/faixas, simulação sem alterações em eventos/settings/clientes, persistência local/recarga, limpeza, expiração exata, troca de conta e pedido real único pendente até faturar.
+
+220 arquivos públicos conferidos por SHA-256 em produção. Arquivos privados e endpoint Android ausentes (404); ranking sem sessão recusado (401). Navegador usando os assets realmente servidos nos quatro tamanhos (celular, tablet vertical/horizontal e desktop) confirmou a busca, a seleção, a montagem, o resumo de R$579,60, o salvamento separado e a limpeza no limite, sem alterar os dados sintéticos do histórico. Zero erros JavaScript; sem login de conta real e com escritas reais bloqueadas. Vercel sem erros de runtime na janela consultada de 15 minutos. Evidência local em /workspace/artifacts/rotamapa-fair-1.9.2 e recibo docs/rotamapa-1.9.2-release.json.
+
+Verificação somente leitura em produção confirmou um único operador e o titular já nessa função. A função pública traxelo_plan_access delega a traxelo_private.portfolio_plan_access, cujo retorno inclui qaOperator e serverNow. Nenhuma nova concessão de acesso, alteração de Signature, escrita administrativa, migração ou mudança de RLS. A simulação exige permissão atual do RPC ao abrir e salvar; não usa user_metadata como autorização.
+
+Uso: Feira Unifarma → Vendas → buscar participante → tocar num resultado → Simular pedido. Selecionar produto e quantidade, Adicionar ao pedido, Ver pedido e Salvar simulação. Quantidades iguais se somam por apresentação e recalculam a faixa com impostos. Testes ficam somente neste aparelho e nesta conta/carteira; nunca entram no histórico real, no faturamento, no ranking ou na comissão. Não há conversão automática em venda.
+
+Expiração fixa: 12/11/2026 às 00h01 America/Fortaleza (-03:00), equivalente a 03h01 UTC. Com app ativo, o timer encerra o teste e limpa somente o namespace de simulações; retorno à aba/pageshow e leitura inicial aplicam a limpeza quando o aparelho estava fechado ou suspenso. Não prometer execução física em navegador fechado nem agendar exclusão de vendas. A biblioteca, materiais, clientes, vendas, vínculos e configurações reais são preservados. Nenhum cron ou job destrutivo criado.
+
+Pedido real continua respeitando vigência e usa a campanha revisada da carteira; abre a conferência existente antes de salvar. Campos reais de faturamento não são marcados por montar ou salvar pedido. Calculadora tradicional e PDF mantidos. Fundos, fotos originais, logos e paleta preservados. Mesmas chaves de sessão, clientes e carteiras; somente nova chave local exclusiva dos testes. PWA atualiza ao fechar completamente e reabrir com internet, sem desinstalar nem apagar dados. Android/OTA continuam suspensos: sem mudanças em mobile/ e updates/android/ nesta etapa, sem build, assinatura, emulador ou distribuição.
+
+Rollback: dpl_HZxTmowhrsy4kPMqoSsFLodR7GRd (1.9.1, Web/PWA-only). Não reverter banco ou documentos. A versão anterior não mostra as simulações; preservar seus dados locais e, se necessário, limpar somente rotamapa.fair-simulations.v1, sem tocar nos namespaces financeiros. Preferir correção progressiva para manter a expiração automática. Este recibo é documental; fonte funcional publicada permanece 3b639cc.
