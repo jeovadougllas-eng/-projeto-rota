@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: Web/PWA 1.8.0 publicadas por autorização explícita; atualização interna Android publicada e em validação no emulador. Ver fechamento mais recente.
+- Etapa atual: Central Comercial Web/PWA 1.8.1 publicada e validada; todo trabalho e distribuição APK/OTA suspensos até novo pedido explícito.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção atual: deployment Vercel `dpl_ErNsdvVns1mpoBj9CLA535J4ZFvD`, READY, target production, fonte `103a984c20be1ac03c0424694815b1d2d1a7a034`. Produção anterior preservada para rollback: `dpl_374iR7zDa8QqEDkYehYFWA5yBPee`.
+- Produção atual: `dpl_FSdm4V93oDKeRQz2VGyGEpsixGV3`, READY/production, fonte `fba62a0ac5eae6ead09f192488f4c8c8706a12d1`, https://traxio-preview.vercel.app/. Rollback deve manter o build Web/PWA-only e não reativar OTA.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas: sessão informa 2026-11-09; Prompt Mestre declara versão 11/11/2026. Preservada a versão do autor, sem inferir mudança do relógio.
 
@@ -305,3 +305,25 @@ Validação até este checkpoint: 188 unitários passaram, checks de fontes/arte
 ### Correção posterior do titular — duração do Arrastão Azul
 
 Arrastão Azul ocorre uma vez por mês, mas é válido SOMENTE em uma data, com início e fim no mesmo dia. Acelera SellOut continua pelo mês completo. Dia D continua diário. Essa correção substitui a interpretação anterior que tratava a vigência do Arrastão como mês inteiro. Validar uma única data por lâmina de Arrastão sem inventar um limite de importações nem reescrever campanhas históricas.
+
+
+### Validações da Central Comercial e correção da vigência
+
+Fonte inicial 8f8906a: CI 42789514242 SUCCESS, incluindo verificações, 188 unitários, RLS local, 86 casos de navegador e oito de PWA; não houve build/assinatura/emulador/distribuição Android. Prévia dpl_BVKAswrBKBwfh7YspECTgLCRcTdZ verificada por hash dos 160 arquivos Web/PWA; arquivos privados e endpoint de atualização Android ausentes (404). Navegador verificou a página e campanhas a partir dos arquivos realmente servidos em quatro viewports: celular, tablet vertical/horizontal e desktop, com autenticação sintética e escritas reais bloqueadas.
+
+Regressões locais adicionais passaram 14 casos de cálculo e faixas: preço de tabela após item com desconto, 17/18 unidades, preço unitário exato, faixas opcionais e edição após reabrir o app. Os helpers antigos precisavam abrir o disclosure que já recolhia os controles no layout anterior, inclusive após reload; foram ajustados para os controles reais sem alterar os valores esperados.
+
+Correção do titular chegou antes da publicação de produção: Arrastão é um único dia no mês, não o mês inteiro. Fonte corrigida fba62a0: 188 unitários repetidos e os dois casos Arrastão em celular/desktop passaram; valida início=fim e uma única data por lâmina, sem aplicar limite novo de importações. A prévia antiga não foi promovida. A publicação definitiva usa apenas a fonte corrigida.
+
+Rollback desta etapa deve preservar a suspensão Android: restaurar somente fontes Web anteriores mantendo o build Web/PWA-only. Não reatribuir automaticamente um deployment antigo que volte a distribuir OTA/instaladores. Nunca reverter dados reais ou apagar regras/documentos/vendas para desfazer uma mudança de interface.
+
+
+### Entrega concluída — Central Comercial Web/PWA 1.8.1
+
+Produção confirmada READY: dpl_FSdm4V93oDKeRQz2VGyGEpsixGV3, fonte fba62a0ac5eae6ead09f192488f4c8c8706a12d1, domínio habitual https://traxio-preview.vercel.app/. CI 42790502785 SUCCESS na fonte corrigida: 188 unitários, 86 casos Chromium desktop/celular, oito cenários PWA com service worker real e cadeia SQL/RLS local. Zero compilação, assinatura, emulador ou distribuição Android. Arquivos mobile/ e updates/android/ sem alterações nesta etapa.
+
+Verificação de produção: 160 arquivos públicos conferidos por SHA-256, versão 1.8.1 e nome PWA RotaMapa; escopo/SQL privados e endpoint OTA retornam 404, POST de ranking sem autenticação retorna 401. Navegador renderizou os assets realmente publicados nos quatro tamanhos de tela, confirmou a ordem dos quatro blocos, três famílias iniciais e produtos ocultos antes de selecionar campanha. Autenticação sintética e escritas reais bloqueadas; nenhum login de usuário real nem migração administrativa de dados. Checagem Vercel de erros de execução nos últimos 15 minutos: nenhum erro encontrado. Recibo em docs/rotamapa-1.8.1-commercial-release.json.
+
+Vigência final correta: Acelera SellOut mês inteiro; Dia D somente um dia; Arrastão Azul acontece uma vez por mês e é válido somente no dia escolhido. Importador confere início=fim e uma única data por lâmina do Arrastão, sem inventar quota mensal de campanhas. Arquivos e condições antigos preservados, incluindo duplicidades históricas; reimportação equivalente preserva o original.
+
+PWA existente recebe a atualização ao fechar e reabrir com internet. Mesmo endereço, manifest, IDs, chaves, sessão e armazenamento; nenhuma reinstalação e nenhum reload forçado durante rota ativa. APK permanece suspenso, com endpoints de distribuição excluídos do build Web/PWA. Próximos ajustes continuam somente Web/PWA, conforme ordem do titular.

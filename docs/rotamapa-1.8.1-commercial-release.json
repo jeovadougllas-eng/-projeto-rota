@@ -1,0 +1,43 @@
+{
+  "base": "https://traxio-preview.vercel.app",
+  "source": "fba62a0ac5eae6ead09f192488f4c8c8706a12d1",
+  "version": "1.8.1",
+  "publicFilesVerified": 160,
+  "platforms": [
+    "Web",
+    "PWA"
+  ],
+  "privateFilesBlocked": true,
+  "androidDistributionSuspended": true,
+  "unauthenticatedRankingDenied": true,
+  "target": "production",
+  "status": "READY",
+  "deploymentId": "dpl_FSdm4V93oDKeRQz2VGyGEpsixGV3",
+  "ciRun": 42790502785,
+  "unitTests": 188,
+  "browserCases": 86,
+  "pwaCases": 8,
+  "responsiveViewports": [
+    "phone",
+    "tablet-portrait",
+    "tablet-landscape",
+    "desktop"
+  ],
+  "arrastao": {
+    "frequency": "monthly",
+    "validity": "one chosen day",
+    "sameStartAndEnd": true
+  },
+  "acelera": {
+    "validity": "whole month"
+  },
+  "diaD": {
+    "validity": "one day"
+  },
+  "databaseMigrationsApplied": false,
+  "historicalCommerceRewritten": false,
+  "androidCompiled": false,
+  "androidManifestsRegenerated": false,
+  "runtimeErrorsFound": 0,
+  "runtimeErrorWindow": "15m"
+}
