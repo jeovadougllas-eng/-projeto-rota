@@ -20,3 +20,10 @@ body.rm-field.traxio-ui-ready #showroomPresentation #presentationTotal{color:var
 body.rm-field.traxio-ui-ready #showroomDialog .showroom-hero :is(h2,p){color:#fff}
 body.rm-field.traxio-ui-ready #savedMaterialViewer>header{color:#fff}
 .material-viewer header{flex-wrap:wrap}.material-viewer header strong{flex:1 1 150px;overflow-wrap:anywhere}
+body.rm-field #showroomDialog[data-fair=true] .showroom-hero{background-image:linear-gradient(90deg,#082e50e8,#00384380),url('scenes/feira.webp');background-position:center 22%}
+body.rm-field dialog#showroomPresentation[data-fair=true]{background-image:linear-gradient(#082e50d9,#003843e8),url('scenes/feira.webp');background-position:center 20%}
+body.rm-field .showroom-fair-brands[hidden]{display:none!important}
+body.rm-field .showroom-fair-brands{margin-bottom:10px;padding:5px 9px}
+body.rm-field .showroom-fair-brands img{height:30px}
+body.rm-field .showroom-fair-brands img:first-child{width:45px}
+body.rm-field .showroom-fair-brands img:nth-child(2){width:145px}

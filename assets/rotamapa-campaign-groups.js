@@ -7,10 +7,10 @@
   {id:'arrastao_azul',name:'Arrastão Azul',period:'Um dia por mês'}
  ]);
  const norm=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
- function detect(value){const s=norm(value);if(/arrast[aã]o\s*azul/.test(s))return'arrastao_azul';if(/acelera|sell\s*out/.test(s))return'acelera';if(/\bdia[\s_-]*d\b/.test(s))return'dia_d';return'other';}
+ function detect(value){const s=norm(value);if(/feira.*unifarma|unifarma.*feira|conven[cç][aã]o.*unifarma/.test(s))return'feira_unifarma';if(/arrast[aã]o\s*azul/.test(s))return'arrastao_azul';if(/acelera|sell\s*out/.test(s))return'acelera';if(/\bdia[\s_-]*d\b/.test(s))return'dia_d';return'other';}
  function family(value,documents=[]){
   const data=value?.data||value||{};
-  if([...families.map(x=>x.id),'other'].includes(data.campaignFamily))return data.campaignFamily;
+  if([...families.map(x=>x.id),'other','feira_unifarma'].includes(data.campaignFamily))return data.campaignFamily;
   if(['acelera','dia_d'].includes(data.type))return data.type;
   const original=documents.find(r=>(r.value||r).id===data.imported?.documentId);
   if(original)return family((original.value||original).data);
