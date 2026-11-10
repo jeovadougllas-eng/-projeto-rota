@@ -8,7 +8,7 @@ trap 'docker_local rm -fv "$container" >/dev/null 2>&1 || true' EXIT
 image=postgres:16@sha256:f9a7b9ebf6f56201f949db745e47bc423c0f0f8294bafe991cc10bf74b029657
 docker_local run -d --name "$container" --network none -e POSTGRES_HOST_AUTH_METHOD=trust "$image" >/dev/null
 for attempt in {1..30}; do
- if docker_local logs "$container" 2>&1 | rg -q "init process complete" && docker_local exec "$container" pg_isready -U postgres >/dev/null 2>&1; then break; fi
+ if docker_local logs "$container" 2>&1 | grep -q "init process complete" && docker_local exec "$container" pg_isready -U postgres >/dev/null 2>&1; then break; fi
  if [ "$attempt" = 30 ]; then echo 'Local Postgres did not become ready' >&2; exit 1; fi
  sleep 1
 done
@@ -19,5 +19,15 @@ done
 
 node scripts/monthly-pdf-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1
 for file in test-db/library-storage-shape.sql supabase/migrations/20261110000100_document_library.sql test-db/document-library.sql test-db/library-commissions.sql; do
+ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
+done
+
+for file in supabase/migrations/20261110030933_imported_promotion_pricing.sql test-db/imported-promotions.sql; do
+ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
+done
+for file in supabase/migrations/20261110033302_catalog_deletion_workflow.sql test-db/catalog-deletion.sql; do
+ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
+done
+for file in supabase/migrations/20261110034338_manual_invoice_date.sql test-db/manual-invoice-date.sql; do
  docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
 done

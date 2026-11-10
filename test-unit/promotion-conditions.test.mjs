@@ -16,3 +16,17 @@ test('compatible imports reuse existing calculator semantics and retain immutabl
  for(const e of [{...entry,validFrom:'2026-11-02'},{...entry,region:'RN'},{...entry,restrictions:'Revisar'}])assert.throws(()=>M.legacyCampaign([e],p,{id:'c',name:'Teste'}));
  const r=M.quote(p,6,[entry],context);r.snapshot.priceCents=1;assert.equal(entry.priceCents,1500);
 });
+test('imported regional and dated conditions round-trip through a saved sale with an immutable source snapshot',()=>{
+ const record={id:'a'.repeat(64),sourceHash:'b'.repeat(64),data:{entries:[{...entry,productId:p.id,validFrom:'2026-11-05',validTo:'2026-12-05',region:'São Gonçalo',startTime:'09:00',endTime:'10:00',stock:'30'}]}};
+ const c=M.importedCampaign(record,p,{id:'campaign',name:'Oferta regional'}),l=RotaMapaCommerceModel.line(p,6,c,'2026-11-10',{region:'sao goncalo',time:'09:30'}),sale={id:'sale',clientId:'client',date:'2026-11-10',status:'confirmed',lines:[l],totalCents:9000};
+ assert.equal(l.unitCents,1500);assert.equal(l.minQty,6);assert.equal(l.campaign.imported.documentId,record.id);assert.deepEqual(RotaMapaCommerceModel.sale(sale),sale);
+ const tampered=structuredClone(sale);tampered.lines[0].promotionContext.region='Outra região';assert.throws(()=>RotaMapaCommerceModel.sale(tampered),/cálculo/);
+ const inactive=RotaMapaCommerceModel.line(p,6,c,'2026-12-10',{region:'sao goncalo',time:'09:30'});assert.equal(inactive.unitCents,2000);assert.equal(inactive.minQty,0);assert.equal(M.quote(p,6,c.imported.entries,{date:'2026-12-10'}).notice,M.fallback);
+ l.campaign.imported.entries[0].priceCents=1;assert.equal(record.data.entries[0].priceCents,1500);
+});
+test('imported campaigns refuse ambiguous catalog matches and keep quantity, stock and time restrictions at calculation',()=>{
+ assert.throws(()=>M.importedCampaign({id:'a'.repeat(64),sourceHash:'b'.repeat(64),data:{entries:[entry]}},p,{id:'c',name:'Teste',products:[p,{...p,id:'other'}]}));
+ const c=M.importedCampaign({id:'a'.repeat(64),sourceHash:'b'.repeat(64),data:{entries:[{...entry,productId:p.id,startTime:'09:00',endTime:'10:00',stock:'8'}]}},p,{id:'c',name:'Teste'});
+ for(const [quantity,clock]of [[5,'09:30'],[9,'09:30'],[6,'08:00']])assert.equal(RotaMapaCommerceModel.line(p,quantity,c,'2026-11-10',{time:clock}).unitCents,2000);
+ assert.equal(RotaMapaCommerceModel.line(p,6,c,'2026-11-10',{time:'09:30'}).unitCents,1500);
+});

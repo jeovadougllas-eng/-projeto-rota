@@ -54,7 +54,7 @@ def main():
             raise RuntimeError('Native HTML differs from the shared build or includes web-only PWA controls')
     unsigned = output / ('rotamapa-' + commit[:7] + '-unsigned.apk')
     shutil.copyfile(source, unsigned)
-    proof = {'sourceCommit': commit, 'nativeId': 'app.traxio.mobile', 'versionName': '1.7.0',
+    proof = {'sourceCommit': commit, 'nativeId': 'app.traxio.mobile', 'versionName': json.loads((ROOT / 'assets/rotamapa-release.json').read_text())['version'],
              'baselineCertificateSha256': expected, 'unsignedSha256': hashlib.sha256(unsigned.read_bytes()).hexdigest(),
              'unsignedBytes': unsigned.stat().st_size, 'signed': False, 'published': False,
              'deviceTested': False, 'verifiedCommonFiles': verified,

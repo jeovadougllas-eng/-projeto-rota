@@ -16,6 +16,10 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - run: git switch --no-track -c dev/rotamapa-atualizacao-integral
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
@@ -26,12 +30,16 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run check && node scripts/check-rotamapa-art.mjs && node scripts/check-document-assets.mjs
       - run: node --test test-unit/*.test.mjs
+      - name: Build the allowlisted public Preview runtime
+        run: node scripts/build-preview-runtime.mjs
+        env:
+          GITHUB_REF_NAME: dev/rotamapa-atualizacao-integral
       - name: Isolated PostgreSQL schema and RLS assertions
         run: bash scripts/test-portfolio-lifecycle-db.sh
       - name: Browser regressions with synthetic data only
         run: |
           browser_path=$(command -v google-chrome-stable || command -v google-chrome)
-          PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$browser_path" npx playwright test tests/document-library.spec.js tests/catalog-viewer.spec.js tests/auth.spec.js tests/client-import.spec.js --project=desktop-light --project=phone-dark --workers=2
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$browser_path" npx playwright test tests/document-library.spec.js tests/catalog-viewer.spec.js tests/auth.spec.js tests/client-import.spec.js tests/portfolio-lifecycle.spec.js tests/remote-orders.spec.js tests/subscriptions.spec.js --project=desktop-light --project=phone-dark --workers=2 --timeout=45000
       - name: Real service-worker recovery with synthetic portfolio (Chromium, simulated iPhone UI)
         run: |
           browser_path=$(command -v google-chrome-stable || command -v google-chrome)

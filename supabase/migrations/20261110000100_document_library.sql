@@ -50,7 +50,7 @@ BEGIN
   IF line IS NULL OR line->>'productId' IS DISTINCT FROM p_data->>'productId' THEN RAISE EXCEPTION 'Produto faturado divergente.';END IF;
   IF NOT(sale ? 'source') THEN
    IF sale#>>'{manualBilling,state}' IS DISTINCT FROM 'invoiced' OR sale#>>'{manualBilling,method}' IS DISTINCT FROM 'owner_confirmation' OR sale#>>'{manualBilling,confirmedBy}' IS DISTINCT FROM who::text THEN RAISE EXCEPTION 'Somente vendas faturadas entram na projeção.';END IF;
-   billing_date:=timezone('America/Fortaleza',(sale#>>'{manualBilling,confirmedAt}')::timestamptz)::date;
+   billing_date:=coalesce(sale#>>'{manualBilling,invoiceDate}',sale->>'date')::date;
   ELSE
    receipt:=sale#>ARRAY['source','receipts',line->>'sourceReceipt'];
    SELECT value INTO settlement FROM jsonb_array_elements(coalesce(sale->'settlements','[]')) WHERE value->>'receipt'=line->>'sourceReceipt';
@@ -104,7 +104,7 @@ CREATE POLICY catalog_read ON storage.objects FOR SELECT TO authenticated USING(
 CREATE FUNCTION rotamapa_private.library_lifecycle() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
 BEGIN
  IF new.state='deleted' THEN
-  IF EXISTS(SELECT 1 FROM public.rotamapa_library_items WHERE user_id=new.user_id AND portfolio_id=new.portfolio_id AND kind='catalog') THEN RAISE EXCEPTION 'Esta carteira contém catálogos originais. Arquive para preservar o backup; a exclusão definitiva requer a limpeza autorizada dos originais no Storage.';END IF;
+  IF EXISTS(SELECT 1 FROM public.rotamapa_library_items WHERE user_id=new.user_id AND portfolio_id=new.portfolio_id AND kind='catalog') OR EXISTS(SELECT 1 FROM storage.objects WHERE bucket_id='rotamapa-catalogs' AND left(name,length(new.user_id::text||'/'||new.portfolio_id::text||'/'))=new.user_id::text||'/'||new.portfolio_id::text||'/') THEN RAISE EXCEPTION 'Esta carteira contém catálogos originais. Arquive para preservar o backup; a exclusão definitiva requer a limpeza autorizada dos originais no Storage.';END IF;
   DELETE FROM public.rotamapa_library_items WHERE user_id=new.user_id AND portfolio_id=new.portfolio_id;
  END IF;RETURN new;
 END;$$;

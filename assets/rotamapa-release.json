@@ -1,9 +1,16 @@
 {
-  "version": "1.7.0",
-  "channel": "Testes",
+  "version": "1.8.0",
+  "channel": "Prévia de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Central de Promoções com importação e revisão de campanhas, catálogo digital e consulta de caixas.",
+    "Condições importadas na calculadora com origem, vigência, faixas e restrições preservadas.",
+    "Projeção de comissões sobre faturamento confirmado, com histórico das regras.",
+    "Pedido remoto com canal e confirmação próprios, separado das visitas presenciais.",
+    "Importação de clientes com prévia, deduplicação e preservação dos pins confirmados.",
+    "RM Insider preparado para cinco convidados; ativação depende dos e-mails autorizados.",
+    "Recursos de nuvem desta prévia dependem do rollout aprovado do banco.",
     "Novos planos Essencial, Executivo e Elite: identificação abaixo da foto do perfil.",
     "Gerenciar assinatura reúne Meu plano, Minha assinatura e Conhecer planos.",
     "Comparação mensal e anual com os preços aprovados; pagamentos ainda desativados.",

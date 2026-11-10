@@ -37,7 +37,7 @@ function analyze(clients,sales,month,options={}){const dates=months(month),byId=
 // Unverified manual declarations never become invoiced merely by saving a sale.
 function confirmedManual(s,owner){
  const b=s.manualBilling;
- if(!owner||s.source||b?.version!==1||b.state!=='invoiced'||b.method!=='owner_confirmation'||b.confirmedBy!==owner||!Number.isFinite(Date.parse(b.confirmedAt))||!Number.isSafeInteger(b.totalCents)||b.totalCents<1||b.totalCents!==s.totalCents)return false;
+ if(!owner||s.source||b?.version!==1||b.state!=='invoiced'||b.method!=='owner_confirmation'||b.confirmedBy!==owner||!Number.isFinite(Date.parse(b.confirmedAt))||!Number.isSafeInteger(b.totalCents)||b.totalCents<1||b.totalCents!==s.totalCents||b.invoiceDate!==undefined&&!root.RotaMapaCommerceModel.day(b.invoiceDate))return false;
  return Array.isArray(s.lines)&&s.lines.length>0&&s.lines.every(l=>Number.isSafeInteger(l.quantity)&&l.quantity>0&&Number.isSafeInteger(l.unitCents)&&l.unitCents>=0)&&s.lines.reduce((n,l)=>n+l.quantity*l.unitCents,0)===b.totalCents;
 }
 function rankings(clients,sales,catalog,month,options={}){

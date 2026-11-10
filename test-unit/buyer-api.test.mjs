@@ -7,3 +7,8 @@ test('authorized ranking is wallet and owner scoped, read-only and private',asyn
 test('invalid ranking cities are rejected before any data query',async()=>{
  for(const city of [{eq:'Natal'},['Natal'],'x'.repeat(86)]){const {res,calls}=await invoke({tier:'plus',mode:'ranking',body:{mode:'ranking',month,city}});assert.equal(res.code,400);assert.equal(calls.length,0);}
 });
+test('Preview accepts only its server-configured deployment hostname without trusting arbitrary Vercel origins',async()=>{
+ const previous={env:process.env.VERCEL_ENV,url:process.env.VERCEL_URL};
+ try{process.env.VERCEL_ENV='preview';process.env.VERCEL_URL='rotamapa-synthetic-preview.vercel.app';assert.equal((await invoke({tier:'pro',origin:'https://rotamapa-synthetic-preview.vercel.app'})).res.code,200);assert.equal((await invoke({tier:'pro',origin:'https://other-project.vercel.app'})).res.code,403);process.env.VERCEL_ENV='production';assert.equal((await invoke({tier:'pro',origin:'https://rotamapa-synthetic-preview.vercel.app'})).res.code,403);}
+ finally{for(const [key,value]of Object.entries({VERCEL_ENV:previous.env,VERCEL_URL:previous.url})){if(value===undefined)delete process.env[key];else process.env[key]=value;}}
+});

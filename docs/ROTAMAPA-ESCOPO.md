@@ -1,4 +1,4 @@
-> **Decisão posterior vigente:** o proprietário determinou a continuidade exclusivamente na conta Codex desta conversa. As referências abaixo à alternância entre duas contas são mantidas como histórico do Prompt Mestre e foram substituídas por essa decisão. O restante do escopo aprovado permanece válido. Consulte `ROTAMAPA-CONTINUIDADE.md`.
+> **Continuidade vigente:** o proprietário confirmou a retomada nesta conversa e pediu desconsiderar as instruções de transferência entre contas. As referências históricas abaixo não autorizam recriar o projeto, migrar serviços ou publicar produção. Referências comerciais privadas foram omitidas desta cópia pública; o original completo está no anexo privado.
 
 # PROMPT MESTRE OFICIAL — ROTAMAPA
 
@@ -579,68 +579,11 @@ Campanhas especiais de comissão não são descontos comerciais.
 
 ---
 
-# 8.1. MODELO EMS — TABELA DE REFERÊNCIA
+# 8.1. MODELO EMS — REFERÊNCIA PRIVADA
 
-Aditivo com vigência informada desde 01/10/2026.
+A referência comercial fornecida pelo proprietário será conferida com o contrato e o aditivo originais antes de configurar taxas definitivas. O arquivo original permanece no anexo privado da conversa. Códigos, percentuais e alterações contratuais específicos não são transcritos neste repositório público nem nos pacotes Web/PWA/APK.
 
-Os dados abaixo são privados e precisam ser conferidos com o documento original antes de serem utilizados como configuração definitiva.
-
-## Comissão 9%
-
-- Allexofedrin: 2255, 2256, 2133, 2346, 2347.
-- Apevitin BC: 1001.
-- Cystex: 2011, EMS093 — verificar código.
-- Gerovital: 2062, 2318.
-- Infralax: 1175, 1821, 2138.
-- Lactanon: 32615, 32616, 32617.
-- Naridrin: 6006, 2604, 2605, 1079, 1433.
-- Secrelise: 2459.
-
-## Comissão 6%
-
-- Complexo B: 2382, 2383, 2384.
-- Naridrin 12h: 6005, 6011.
-- Sominex: 2398, 2769.
-
-## Comissão 4%
-
-- A Saúde da Mulher: 60000.
-- Benziflex: 1574, 2292.
-- Bisuran: 1072, 1318.
-- Celergin: 1066, 2141.
-- Clope: 2322.
-- Diovases: 1837, 1838.
-- Emsexpector: 1190.
-- Endcoff: 2092, 2111.
-- Expectuss: 1015, 1016.
-- Folifolin: 1168, 2768.
-- Ibuliv: 1471.
-- Suplevit: 1818, 1819.
-- Vitafer: 2036.
-
-## Alterações identificadas
-
-Complexo B:
-
-- 2382: 9% → 6%.
-- 2383: 9% → 6%.
-- 2384: 9% → 6%.
-
-Sominex:
-
-- 2398: 4% → 6%.
-- 2769: 6%.
-
-Novas inclusões:
-
-- Lactanon 32615, 32616, 32617: 9%.
-- Folifolin 2768: 4%.
-
-Verificar apresentações no aditivo.
-
-Não publicar documentos contratuais individuais.
-
-O modelo EMS poderá ser disponibilizado a outros representantes somente quando validado e autorizado.
+Não publicar contratos individuais. Não disponibilizar o modelo EMS a terceiros sem validação e autorização. Nenhuma taxa é presumida pela implementação.
 
 ---
 
@@ -924,6 +867,6 @@ Mantenha a produção intacta até a aprovação final.
 
 **FIM DO PROMPT MESTRE.**
 
-## Esclarecimento posterior do proprietário — PDFs do Executivo
+## Esclarecimento anterior preservado — PDFs do Executivo
 
-O limite aprovado é de **3 importações de PDF por mês, por carteira**. Não é um limite de três catálogos armazenados. Preservar registros existentes; implementar validação de novas importações no servidor. Operações repetidas com o mesmo conteúdo devem ser idempotentes. Não inferir autorização para alterar produção.
+O limite aprovado é de **3 importações de PDF por mês, por carteira**. Não é um limite de três catálogos armazenados. Uma operação pode conter os dois PDFs do mesmo pedido. Repetir o mesmo conteúdo na mesma carteira é idempotente. Preservar os documentos existentes; a regra limita novas importações no servidor.

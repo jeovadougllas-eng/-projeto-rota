@@ -6,12 +6,19 @@
  const day=s=>root.RotaMapaCommerceModel.day(s);
  function integer(v,label,max=9000000000000){if(!Number.isSafeInteger(v)||v<0||v>max)throw Error(label+' inválido.');return v;}
  function bps(value){const s=String(value??'').trim().replace(/%$/,'').trim().replace(',','.');if(!/^\d{1,3}(?:\.\d{1,2})?$/.test(s))throw Error('Percentual inválido.');const [a,b='']=s.split('.');return integer(Number(a)*100+Number(b.padEnd(2,'0')),'Percentual',10000);}
+ function description(value){return norm(String(value??'').replace(/(\d)([a-zA-Z])/g,'$1 $2')).replace(/\bPEDIATRIC[OA]\b/g,'PED').replace(/\bXAROPE\b/g,'XPE').replace(/\b(?:COMPRIMIDOS?|COMP|CP)\b/g,'CP').replace(/\b(?:CAPSULAS?|CAPS?)\b/g,'CAPS').replace(/\b(?:DRAGEAS?|DGR|DRG)\b/g,'DRG').replace(/\bSUSPENSAO\b/g,'SUSP').replace(/\bSOLUCAO\b/g,'SOL');}
+ function presentationFits(entry,product){if(!entry.presentation)return true;const expected=description(entry.presentation);return product.presentation?description(product.presentation)===expected:(' '+description(product.name)).endsWith(' '+expected);}
  function match(entry,products){
   const exact=entry.code?products.filter(p=>code(p.code)===code(entry.code)):[];
-  if(exact.length===1){if(entry.presentation&&norm(entry.presentation)!==norm(exact[0].presentation))return{reason:'presentation-conflict'};return{product:exact[0],method:'code'};}if(exact.length>1)return{reason:'duplicate-code'};
+  if(exact.length===1){if(!presentationFits(entry,exact[0]))return{reason:'presentation-conflict'};return{product:exact[0],method:'code'};}if(exact.length>1)return{reason:'duplicate-code'};
   const name=norm(entry.name||entry.description),presentation=norm(entry.presentation);
   const candidates=products.filter(p=>name&&norm(p.name)===name&&(!presentation||norm(p.presentation)===presentation));
-  if(candidates.length!==1)return{reason:candidates.length?'ambiguous':'not-found'};
+  if(candidates.length!==1){
+   if(candidates.length)return{reason:'ambiguous'};
+   const full=description([entry.name||entry.description,entry.presentation].filter(Boolean).join(' ')),canonical=products.filter(p=>full&&description([p.name,p.presentation].filter(Boolean).join(' '))===full);
+   if(canonical.length!==1)return{reason:canonical.length?'ambiguous':'not-found'};
+   return{product:canonical[0],method:'canonical-description'};
+  }
   // Exact full descriptions only; never fuzzy-match different doses or pack sizes.
   return{product:candidates[0],method:'full-description'};
  }
@@ -33,7 +40,7 @@
  }
  function invoiced(sales,ownerId,timeZone='America/Fortaleza'){
   const out=[];for(const sale of sales){if(sale.kind!=='sale'||sale.status!=='confirmed')continue;
-   if(!sale.source){if(!root.RotaMapaBuyerModel.confirmedManual(sale,ownerId))continue;const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(sale.manualBilling.confirmedAt)).map(p=>[p.type,p.value]));const date=p.year+'-'+p.month+'-'+p.day;if(!day(date))continue;
+   if(!sale.source){if(!root.RotaMapaBuyerModel.confirmedManual(sale,ownerId))continue;const date=sale.manualBilling.invoiceDate||sale.date;if(!day(date))continue;
     for(const [i,line]of sale.lines.entries())out.push({saleId:sale.id,lineId:String(i),date,productId:line.productId,amountCents:line.quantity*line.unitCents,returnedCents:line.returnedCents??0,adjustmentCents:line.reversalCents??0});
    }else{
     for(const receipt of root.RotaMapaBillingModel.receipts(sale).filter(r=>r.state==='invoiced')){

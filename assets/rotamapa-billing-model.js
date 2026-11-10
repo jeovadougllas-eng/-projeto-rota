@@ -29,5 +29,11 @@ function hasOrderInMonth(s,month){if(s.status!=='confirmed'||s.date?.slice(0,7)!
 function exportSales(sales,now=Date.now()){
  return sales.map(s=>{const a=amounts(s,now);if(!s.source||s.source.version!==2)return {...clone(s),...a};const rows=receipts(s,now);const lines=s.lines.map(l=>{const row=rows[l.sourceReceipt],v=row?.settlement?.items[l.sourceItem],counted=['invoiced','declared'].includes(row?.state),quantity=v?.quantity??l.quantity,unitCents=v?.unitCents??l.unitCents;return {...l,quantity,unitCents,totalCents:quantity*unitCents,billingState:row?.state,originalQuantity:l.quantity,originalUnitCents:l.unitCents,label:row?.settlement?'Faturamento conferido':l.label,discountBps:row?.settlement?Math.max(0,Math.round((l.tableUnitCents-unitCents)*10000/l.tableUnitCents)):l.discountBps,countedInBilled:counted};});return {...clone(s),...a,originalTotalCents:s.totalCents,totalCents:a.confirmedCents,lines,billingRows:rows.map(r=>({order:r.receipt?.orderNumber,state:r.state,amountCents:r.amountCents,deadline:new Date(r.deadline).toISOString()}))};});
 }
-root.RotaMapaBillingModel={DAY,registration,settlement,validate,receipts,amounts,hasOrderInMonth,exportSales};
+function manualConfirmation(s,{owner,date,invoiceNumber='',note='',now=Date.now()}={}){
+ const M=root.RotaMapaCommerceModel;if(!owner||s?.source||s?.status!=='confirmed'||s.manualBilling)throw Error('Escolha uma venda manual ainda não faturada.');
+ const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Fortaleza'}).format(new Date(now));if(!M.day(date)||date>today||!/^\d{0,30}$/.test(invoiceNumber)||typeof note!=='string'||note.length>1000)throw Error('Confira a data do faturamento, a nota e as observações.');
+ M.sale(s);M.integer(s.totalCents,1,9000000000000,'Total faturado');
+ return {version:1,state:'invoiced',method:'owner_confirmation',confirmedBy:owner,confirmedAt:new Date(now).toISOString(),totalCents:s.totalCents,invoiceDate:date,invoiceNumber,note:note.trim()||'Faturamento conferido e confirmado pelo titular.'};
+}
+root.RotaMapaBillingModel={manualConfirmation,DAY,registration,settlement,validate,receipts,amounts,hasOrderInMonth,exportSales};
 })(globalThis);

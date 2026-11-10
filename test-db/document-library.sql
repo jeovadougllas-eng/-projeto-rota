@@ -43,3 +43,13 @@ SELECT test.ensure((SELECT count(*)=0 FROM public.rotamapa_library_items),'text-
 DO $$BEGIN BEGIN PERFORM public.rotamapa_library_put(repeat('a',64),'boxes',repeat('1',64),'{"format":"csv","entries":[{"code":"001","units":6}]}');RAISE EXCEPTION 'STALE_DEVICE_RESURRECTED';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END$$;
 RESET ROLE;
 SELECT 'Document library RLS, Storage, idempotence, lifecycle and quota assertions passed' AS result;
+
+-- An original uploaded before a lost/failed finalization must not be orphaned by portfolio deletion.
+INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000003','00000000-0000-4000-8000-000000000033','Envio pendente');
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000003',false);
+SELECT set_config('request.headers','{"x-rotamapa-portfolio":"00000000-0000-4000-8000-000000000033"}',false);
+INSERT INTO storage.objects(bucket_id,name) VALUES('rotamapa-catalogs','00000000-0000-4000-8000-000000000003/00000000-0000-4000-8000-000000000033/'||repeat('f',64)||'.pdf');
+DO $$BEGIN BEGIN PERFORM public.rotamapa_manage_portfolio('00000000-0000-4000-8000-000000000033',1,'delete','EXCLUIR Envio pendente');RAISE EXCEPTION 'STAGED_ORIGINAL_ORPHANED';EXCEPTION WHEN OTHERS THEN IF sqlerrm='STAGED_ORIGINAL_ORPHANED' THEN RAISE;END IF;END;END$$;
+SELECT test.ensure((SELECT count(*)=1 FROM storage.objects),'staged original preserved after rejected deletion');
+RESET ROLE;

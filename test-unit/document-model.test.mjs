@@ -20,3 +20,6 @@ test('contract exceptions are retained for review and commercial hours are never
  const contract=M.rows([['Código','Produto','Comissão','Início','Exceções'],['001','Produto','9%','01/11/2026','Somente rede credenciada']],'commissions');assert.equal(contract.entries.length,0);assert.match(contract.review[0].restrictions,/credenciada/);
  const campaign=M.rows([['Código','Início','Fim','Preço','Horário início','Horário fim','Canal'],['001','01/11/2026','30/11/2026','10,00','09:00','10:00','Somente distribuidor A']],'campaigns');assert.equal(campaign.entries[0].startTime,'09:00');assert.match(campaign.entries[0].restrictions,/distribuidor/);
 });
+test('review retains valid price, stock, time and restrictions when another campaign field is ambiguous',()=>{
+ const r=M.rows([['Código','Produto','Início','Fim','Preço','Quantidade mínima','Estoque','Horário início','Horário fim','Restrições'],['001','Produto','31/02/2026','30/11/2026','15,00','6','8','09:00','10:00','Somente rede credenciada']],'campaigns');assert.equal(r.entries.length,0);assert.equal(r.review[0].priceText,'15,00');assert.equal(r.review[0].stock,'8');assert.equal(r.review[0].startTime,'09:00');assert.equal(r.review[0].endTime,'10:00');assert.equal(r.review[0].restrictions,'Somente rede credenciada');
+});

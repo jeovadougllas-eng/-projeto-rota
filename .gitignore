@@ -28,3 +28,6 @@ test-results-scheduling/
 
 # Generated Playwright evidence from focused validation suites
 test-results-*/
+
+# Prepared public Preview output, never a source or a production deployment
+preview-runtime/

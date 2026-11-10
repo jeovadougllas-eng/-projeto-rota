@@ -29,9 +29,16 @@ test('duplicate sales never double count and conflicting versions require review
  assert.equal(M.project([sale,sale],[rule],options).totalCents,900);const r=M.project([sale,{...sale,totalCents:2}],[rule],options);assert.equal(r.rows.length,0);assert.equal(r.unmatched[0].reason,'duplicate-sale-conflict');
 });
 
-test('manual invoice confirmation dates use the configured business timezone',()=>{
+test('manual invoices preserve the invoice or recorded sale date instead of the later confirmation click',()=>{
  const nearMidnight={...sale,manualBilling:{...sale.manualBilling,confirmedAt:'2026-11-02T01:00:00Z'}};
  assert.equal(M.project([nearMidnight],[rule],options).rows[0].date,'2026-11-01');
- assert.equal(M.project([nearMidnight],[rule],{...options,timeZone:'UTC'}).rows[0].date,'2026-11-02');
+ assert.equal(M.project([nearMidnight],[rule],{...options,timeZone:'UTC'}).rows[0].date,'2026-11-01');
+ const october={...nearMidnight,date:'2026-10-31'};assert.equal(M.project([october],[rule],{...options,start:'2026-10-01',end:'2026-10-31'}).rows[0].date,'2026-10-31');assert.equal(M.project([{...october,manualBilling:{...october.manualBilling,invoiceDate:'2026-11-01'}}],[rule],options).rows[0].date,'2026-11-01');
  assert.equal(M.match({code:'001',presentation:'40 mg'},[{id:'a',code:'001',name:'Produto',presentation:'20 mg'}]).reason,'presentation-conflict');
+});
+test('functional names and presentation columns match safe abbreviations without merging doses or pack sizes',()=>{
+ const products=[{id:'ped60',code:'A',name:'Allexofedrin Ped. Susp. Oral - 60ml'},{id:'ped150',code:'B',name:'Allexofedrin Ped. Susp. Oral - 150ml'},{id:'cystex',code:'C',name:'Cystex - 24 drágeas'},{id:'dose',code:'D',name:'Produto 20mg - 30 comprimidos'}];
+ assert.equal(M.match({name:'Allexofedrin Pediátrico',presentation:'Suspensão Oral 60 ml'},products).product.id,'ped60');assert.equal(M.match({name:'Cystex',presentation:'24 DGR'},products).product.id,'cystex');assert.equal(M.match({name:'Produto 20 mg',presentation:'30 cp'},products).product.id,'dose');
+ assert.equal(M.match({code:'A',presentation:'Suspensão Oral 60 ml'},products).product.id,'ped60');assert.equal(M.match({code:'A',presentation:'Suspensão Oral 150 ml'},products).reason,'presentation-conflict');
+ for(const entry of [{name:'Allexofedrin Pediátrico'},{name:'Cystex',presentation:'60 drágeas'},{name:'Produto 40mg',presentation:'30cp'}])assert.equal(M.match(entry,products).reason,'not-found');
 });
