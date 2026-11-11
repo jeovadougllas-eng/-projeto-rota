@@ -4,6 +4,7 @@
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Produtos em ordem alfabética no catálogo, vitrines, seletores de materiais e linhas dos PDFs, sem alterar preços, faixas ou registros.",
     "PDF de simulações/pré-pedidos da Feira Unifarma após salvar e na lista local, com identificação de não enviado e sem validade comercial.",
     "Simulações/pré-pedidos já salvos não são mais apagados automaticamente às 00h01; continuam disponíveis para consulta e download neste aparelho. Criação mantém os limites de data e acesso existentes.",
     "Nome fantasia da carteira reconhecido em formatos adicionais e pesquisável, preservando razão social, CNPJ e os registros originais.",

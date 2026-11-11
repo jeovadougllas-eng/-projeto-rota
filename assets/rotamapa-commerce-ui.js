@@ -9,7 +9,7 @@ const dialog=(id,title,html)=>{const d=el('dialog',null,'detail-dialog commerce-
 let waitingForVisits=false,historyBuyer=null;
 let owner=null,store=null,generation=0,timer=null,editingProduct=null,editingCampaign=null,context=null,draft=[],applied=null;
 const events=kind=>store?store.events().filter(x=>x.kind===kind):[];
-const products=()=>events('product').filter(x=>!x.disabled).sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{numeric:true}));
+const products=()=>events('product').filter(x=>!x.disabled).sort(M.productOrder);
 const find=id=>store?.events().find(x=>x.id===id);
 function account(){if(!owner||!store||document.body.classList.contains('auth-locked'))throw Error('Entre na sua conta para acessar as vendas.');const clientOwner=localStorage.getItem('traxio_sync_owner_v29');if(clientOwner&&clientOwner!==owner)throw Error('A carteira deste navegador pertence a outra conta.');}
 const panel=el('section',null,'card commerce-panel');panel.id='commercePanel';panel.innerHTML='<h2>Vendas e campanhas</h2><p>Registre pedidos, consulte os preços de tabela e acompanhe as compras dos clientes.</p><div class="row"><button id="openCommerceCatalog" type="button">Meu catálogo</button><button id="openCommerceCampaigns" type="button" class="secondary">Campanhas e calculadora</button><button id="openCommerceHistory" type="button" class="secondary">Histórico de vendas</button></div><p id="commerceSyncStatus" role="status" aria-live="polite">Entre na sua conta para acessar o catálogo.</p><button id="syncCommerce" type="button" class="secondary">Sincronizar catálogo e vendas</button>';
