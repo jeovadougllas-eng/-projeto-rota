@@ -1,6 +1,8 @@
 # Pontos guardados — PDF de pedidos e chamadas promocionais por IA
 
-Registro: 11/11/2026. **Decisão mais recente do titular: guardar os pontos e aguardar a retomada. Não alterar o aplicativo, não integrar serviços, não ativar cobrança e não publicar atualização por causa deste planejamento.** Esta instrução prevalece sobre autorizações anteriores de execução para estes itens. Somente documentação nesta etapa.
+Registro: 11/11/2026. **Atualização posterior: titular autorizou implementar os PDFs e a exibição do nome fantasia na carteira EMS. A IA continua adiada. O restante abaixo preserva o planejamento anterior.**
+
+Decisão anterior do titular: guardar os pontos e aguardar a retomada. Não alterar o aplicativo, não integrar serviços, não ativar cobrança e não publicar atualização por causa deste planejamento.** Esta instrução prevalece sobre autorizações anteriores de execução para estes itens. Somente documentação nesta etapa.
 
 ## 1. PDF individual de cada pedido
 

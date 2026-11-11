@@ -4,6 +4,7 @@
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Nome fantasia da carteira reconhecido em formatos adicionais e pesquisável, preservando razão social, CNPJ e os registros originais.",
     "Baixar PDF individual após confirmar pedido e no histórico geral ou nas vendas da Feira Unifarma, com nome do cliente no arquivo.",
     "PDF local com identificação do cliente, itens, quantidades, valores finais, total, condições e observações para lançamento posterior no Mercado Farma; não é nota fiscal nem comprovação de envio.",
     "Busca em lote continua após falha individual de consulta ou endereço não encontrado; pendências e motivos ficam salvos por cliente para revisão posterior.",
