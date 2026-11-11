@@ -1,0 +1,54 @@
+{
+  "version": "1.11.1",
+  "platforms": [
+    "web",
+    "pwa"
+  ],
+  "target": "production",
+  "status": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "deploymentId": "dpl_CZkb38ZWuUPd5nBGqrpqWpZMVfmA",
+  "sourceCommit": "7d8e33baf3869881bdbc1b13377022758f7d7484",
+  "publishedAt": "2026-11-11T12:37:59.164000+00:00",
+  "buildDurationMs": 27926,
+  "ci": {
+    "runId": 43020919032,
+    "conclusion": "success",
+    "unitTests": 229,
+    "browserTests": 192,
+    "pwaTests": 8,
+    "postgresRls": "passed (isolated)"
+  },
+  "focusedChecks": {
+    "failedClientThenNotFoundThenMatched": "passed, including issues after reload",
+    "manualPins": "preserved",
+    "complementaryGeocodingFailureOrQuota": "Places suggestion preserved; otherwise per-client failure",
+    "globalApplicationQuota": "upstream blocked and checkpoint preserved",
+    "legacyLocationRecoveryBrowserTests": 24
+  },
+  "publicChecks": {
+    "sha256FilesVerified": 225,
+    "sourceManifestMatches": true,
+    "googleConfigured": true,
+    "unauthenticatedGoogleStatus": 401,
+    "unauthenticatedRankingStatus": 401,
+    "privateFilesAbsent": true,
+    "androidAbsent": true
+  },
+  "dataChanges": "Additive locationSearchIssue inside existing scoped client JSON; no schema/storage key/identity migration or production test writes",
+  "limitations": [
+    "Physical Safari/iPhone/Android and live authenticated Google lookup not tested",
+    "Failed provider lookup is saved as an error rather than claiming the establishment does not exist",
+    "Account/session, primary API configuration, global application quota and storage failures may still pause with checkpoint; individual Geocoding failure or quota does not abort other clients"
+  ],
+  "observability": {
+    "initialErrorFatalGroups": 0,
+    "window": "initial post-deploy 10-minute query; not a guarantee of absence of future errors"
+  },
+  "rollback": {
+    "version": "1.11.0",
+    "deploymentId": "dpl_Fdq31rCh4MZSYfZ9pWkp57FBzcbE",
+    "sourceCommit": "dcf024c0f63e4059292f52590751f05f227e6dfd",
+    "dataRestoreRequired": false
+  }
+}
