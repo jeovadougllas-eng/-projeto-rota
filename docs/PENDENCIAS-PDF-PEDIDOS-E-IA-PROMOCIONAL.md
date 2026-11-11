@@ -62,9 +62,13 @@ Briefing proposto (exemplo de teste, **não é campanha vigente nem instrução 
 
 Proporção desejada: 9:16. A data do briefing é apenas o exemplo discutido; ao retomar, atualizar conforme a campanha real escolhida. Logo oficial só deve ser enviada/aplicada quando o teste suportar imagem de referência/composição; não pedir ao modelo para inventá-la.
 
-## Estado de entrega
+## Estado quando este planejamento foi guardado
 
 - Pontos registrados para continuidade; implementação de PDF e integração IA não iniciadas.
 - Nenhuma geração de imagem, conta Cloudflare/Stability, contratação, chave, cobrança, configuração de API ou teste externo executado nesta etapa.
 - Aplicativo permanece na versão publicada 1.11.1. Nenhuma alteração de código, dados, configurações, banco, Web/PWA ou plataforma nativa para estes novos pontos.
 - Próximo passo: aguardar o titular voltar e indicar a retomada. Não tratar este documento como autorização para iniciar trabalho no aplicativo.
+
+## Retomada e entrega dos PDFs
+
+Titular autorizou implementação dos PDFs e pediu nome fantasia na carteira EMS. Entregue Web/PWA 1.12.0 em 11/11/2026; recibo em `rotamapa-1.12.0-release.json`. IA, serviços pagos e teste Cloudflare continuam adiados. Os itens acima descrevem a conversa original; a instrução de aguardar não bloqueia os PDFs expressamente autorizados depois.

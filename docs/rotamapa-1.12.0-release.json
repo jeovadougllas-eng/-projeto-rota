@@ -1,0 +1,56 @@
+{
+  "version": "1.12.0",
+  "platforms": [
+    "web",
+    "pwa"
+  ],
+  "target": "production",
+  "status": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "deploymentId": "dpl_GGMBY9vf8HLgFvY8spxTKuBwHQ1H",
+  "sourceCommit": "6fe2a82501a752c375f697a1606f52da34e1dd9a",
+  "publishedAt": "2026-11-11T19:30:46.420000+00:00",
+  "buildDurationMs": 28466,
+  "ci": {
+    "runId": 43086627621,
+    "conclusion": "success",
+    "unitTests": 232,
+    "browserTests": 198,
+    "pwaTests": 8,
+    "postgresRls": "passed (isolated)"
+  },
+  "focusedTests": {
+    "pdfAndTradeNameBrowserTests": 6,
+    "commerceRegressionCases": 34,
+    "pdfTextExtraction": "pdftotext local with synthetic data",
+    "invalidFixture": "replaced with real parser/combine/line synthetic reports"
+  },
+  "publicVerification": {
+    "sha256FilesVerified": 226,
+    "sourceManifestMatches": true,
+    "privateFilesAbsent": true,
+    "androidAbsent": true,
+    "unauthenticatedRankingStatus": 401,
+    "initialErrorFatalGroups": 0
+  },
+  "behavior": [
+    "Real local selectable-text PDF after saving and from general or fair sale history",
+    "Client/date/order filename; identity, source, lines, quantity, exact saved prices/totals, available terms and notes",
+    "Fair partial receipt exports filter lines; general history exports full order without mutation",
+    "Additional stored trade-name aliases recognized and searched; no roster transfer or invented names"
+  ],
+  "limitations": [
+    "No live authenticated production orders tested; no physical Safari/iPhone/Android validation",
+    "Missing client or distributor fields are not invented",
+    "PDF records original order values and is not an invoice, a billing confirmation or evidence of submission to Mercado Farma",
+    "Trade names require available data on the client; source clarification question still pending",
+    "AI generation integration remains deferred"
+  ],
+  "dataChanges": "No database migration, new storage key or production test writes; no native changes",
+  "rollback": {
+    "version": "1.11.1",
+    "deploymentId": "dpl_CZkb38ZWuUPd5nBGqrpqWpZMVfmA",
+    "sourceCommit": "7d8e33baf3869881bdbc1b13377022758f7d7484",
+    "dataRestoreRequired": false
+  }
+}
