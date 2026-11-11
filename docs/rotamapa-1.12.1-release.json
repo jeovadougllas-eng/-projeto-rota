@@ -1,0 +1,15 @@
+{
+  "version": "1.12.1",
+  "source": "3d462bddea29a7b75b427a523a9430c4c25ca8bc",
+  "deployment": "dpl_ExTPaN1fzsfHRf9sffmtXW69PPzU",
+  "url": "https://traxio-preview.vercel.app/",
+  "state": "READY",
+  "ci": 43092279502,
+  "checks": {
+    "unit": 234,
+    "browser": 200,
+    "pwa": 8,
+    "publicHashes": 226
+  },
+  "rollback": "Não restaurar 1.12.0 sem preservar retenção das simulações."
+}

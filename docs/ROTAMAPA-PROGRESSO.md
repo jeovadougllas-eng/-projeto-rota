@@ -590,3 +590,14 @@ Validação em andamento: 233 unitários passaram; navegador inclui download dep
 ### Escopo adicional solicitado — produtos sempre em ordem alfabética
 
 Titular pediu ordem alfabética no catálogo de preços e em toda exposição de produtos, para busca por rolagem. Comparador compartilhado pt-BR, sensível a números de apresentação e sem distinguir caixa/acentos primários. Aplicado às vitrines (feira, catálogo e campanhas), seletores de materiais/importação e catálogo/calculadora; navegação anterior/próximo, card completo e lista exportada herdam essa ordem. Linhas dos PDFs são ordenadas apenas na cópia de apresentação. Valores, faixas e registros originais não são reordenados/mutados; ranking mantém sua classificação por desempenho e documentos/imagens originais importados permanecem intactos. Campanhas e seletor de importação de PDF já tinham ordem alfabética. Unitários 234 passaram; novo teste de vitrine/catálogo verifica ordem e snapshots de preços preservados. CI anterior substituída para incluir este pedido, sem alterar o objetivo dos PDFs de pré-pedidos. IA/integracão Mercado Farma não iniciadas.
+
+
+## 11/11/2026 — Web/PWA 1.12.1 publicada
+
+Produção READY no domínio canônico https://traxio-preview.vercel.app/, deployment dpl_ExTPaN1fzsfHRf9sffmtXW69PPzU, fonte 3d462bddea29a7b75b427a523a9430c4c25ca8bc. CI 43092279502 SUCCESS: 234 unitários, 200 navegador, 8 PWA e PostgreSQL/RLS isolado. Verificados 226 arquivos públicos por SHA256, manifesto/fonte, alias e versão. Documentos privados/SQL/Android 404 e ranking sem sessão 401. Consulta agregada inicial sem grupos error/fatal. Sem login real ou escrita de teste em produção.
+
+PDF das simulações disponível ao salvar e depois na lista; registros preservados após o corte de criação. Produtos em ordem alfabética nas vitrines, seletores e cópia de apresentação do PDF. Reabrir a PWA antes da meia-noite: versões antigas ainda podem apagar simulações. Rollback para 1.12.0 sem preservar o patch de retenção é inseguro; corrigir adiante ou manter o modelo de retenção.
+
+### Novo escopo autorizado
+
+Titular exige simulações em todos os aparelhos da mesma conta/carteira. Também autorizou planilha editável dos 44 produtos, importação Word e fotos manuscritas, com revisão das ambiguidades antes de salvar. Implementação iniciada; não declarada publicada. Nenhuma integração de geração de imagens ou Mercado Farma autorizada nesta etapa.
