@@ -1,9 +1,13 @@
 {
-  "version": "1.10.2",
+  "version": "1.11.0",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Clientes com cobertura mensal, meta de 80% e filtro de quem falta visitar; visitas presenciais confirmadas contam mesmo sem venda.",
+    "Ficha do cliente mostra o status mensal; período compartilhado com o Histórico e carteira ativa preservada.",
+    "Busca Google continua após cadastros incompletos e separa localizados, sugestões e não encontrados, com avisos de configuração quando o Google recusa a consulta.",
+    "Mapa diferencia o total pronto da carteira dos clientes selecionados para rota.",
     "Busca Google com aviso visível junto ao botão, progresso, erro e indicação quando não há clientes pendentes; botão ocupado até concluir.",
     "Minha localização mostra um marcador azul no mapa; pontos dos clientes permanecem separados e preservados.",
     "Espaço corrigido entre o mapa e Planejar visitas, com as ações do mapa no fluxo normal da página.",

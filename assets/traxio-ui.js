@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const q = norm(el('registrySearch').value), city = el('registryCity').value, district = el('registryNeighborhood').value, cat = el('registryCategory').value;
     return clients.filter(c => {
       const r = regionParts(c), location = el('registryLocation').value, ready = TraxioPlanner.location(c).ready;
-      return (!location || (location === 'confirmed' ? ready : location === 'saved' ? !ready && TraxioPlanner.hasSavedPoint(c) : location === 'missing' ? !TraxioPlanner.hasSavedPoint(c) : !ready)) && RotaMapaClientIdentity.matches(c,q,r.city,r.district,category(c)) && (!city || norm(r.city) === norm(city)) && (!district || norm(r.district) === norm(district)) && (!cat || commercialPriority(c) === cat);
+      return (window.RotaMapaCoverage?.accept(c)??true) && (!location || (location === 'confirmed' ? ready : location === 'saved' ? !ready && TraxioPlanner.hasSavedPoint(c) : location === 'missing' ? !TraxioPlanner.hasSavedPoint(c) : !ready)) && RotaMapaClientIdentity.matches(c,q,r.city,r.district,category(c)) && (!city || norm(r.city) === norm(city)) && (!district || norm(r.district) === norm(district)) && (!cat || commercialPriority(c) === cat);
     });
   };
   function updateOptions(id, values, initial) {
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for(const c of filtered) {
       const row = node('tr'), checkCell = node('td'), check = node('input'); check.type='checkbox'; check.checked=selectedIds.has(c.id); check.setAttribute('aria-label','Selecionar '+c.name);
       check.addEventListener('change',()=>{ if(check.checked) selectedIds.add(c.id); else selectedIds.delete(c.id); updateSelectedCount(); renderWorkspace(); registrySelection(); }); checkCell.append(check); row.append(checkCell);
-      const nameCell = node('td'); nameCell.append(button(c.name,()=>viewClient(c.id),'client-link')); RotaMapaClientIdentity.append(nameCell,c); const point=TraxioPlanner.location(c); nameCell.append(node('small','registry-location-status',point.ready?'Localização confirmada':point.kind==='unavailable'?'Sem localização':point.kind==='approximate'?'Localização aproximada · confirmar':'Coordenadas não verificadas')); row.append(nameCell);
+      const nameCell = node('td'); nameCell.append(button(c.name,()=>viewClient(c.id),'client-link')); RotaMapaClientIdentity.append(nameCell,c); const point=TraxioPlanner.location(c); nameCell.append(node('small','registry-location-status',point.ready?'Localização confirmada':point.kind==='unavailable'?'Sem localização':point.kind==='approximate'?'Localização aproximada · confirmar':'Coordenadas não verificadas')); window.RotaMapaCoverage?.decorate(nameCell,c); row.append(nameCell);
       const r = regionParts(c); [r.city || '—',r.district || '—',category(c)].forEach(v=>row.append(node('td','',v)));
       const p = node('td'); p.append(makePriority(c.priority)); row.append(p); root.append(row);
     }
@@ -258,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const originalRender = render;
   render = () => { originalRender(); renderRegistry(true); };
   renderRegistry(true);
+  window.RotaMapaRegistry={refresh:()=>renderRegistry()};
 
   // Route modes expose useful planning controls without replacing the route engine.
   el('mapa').prepend(title('Mapa e Rotas','Planeje suas rotas, visualize no mapa e otimize seus trajetos.'));

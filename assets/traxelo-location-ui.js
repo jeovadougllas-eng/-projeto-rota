@@ -168,7 +168,7 @@ async function runBatch(resume=false){
   if(!ids.length){el('clientLocationSearchProgress').textContent='Nenhum cliente pendente neste grupo. Os pontos já salvos foram preservados.';await refreshResume();return;}
  }catch(e){el('clientLocationSearchProgress').textContent=e.message;return;}
  searching=true;stopping=false;batchController=new AbortController();el('startClientLocationSearch').disabled=true;el('resumeClientLocationSearch').hidden=true;el('stopClientLocationSearch').hidden=false;el('locationSearchScope').disabled=true;el('locationSearchProvider').disabled=true;
- let processed=0,failure=null;const epoch=accountEpoch;
+ let processed=0,failure=null;const results={matched:0,review:0,not_found:0,invalid_query:0};const epoch=accountEpoch;
  try{
   for(const id of ids){
    if(stopping||epoch!==accountEpoch)break;if(await account()!==owner)throw new SearchFailure('A conta mudou. Retome a busca ao entrar na conta original.',{code:'account'});
@@ -180,13 +180,13 @@ async function runBatch(resume=false){
    const [outcome]=await queueClientGeocode([id],{force:true,lookup});if(stopping||epoch!==accountEpoch)break;
    if(outcome?.status==='error'&&outcome.error?.code!=='invalid_query')throw outcome.error;
    if(['stale','cancelled'].includes(outcome?.status))throw new SearchFailure('O cadastro mudou durante a consulta. Retome a busca para usar o endereço atualizado.',{code:'stale'});
-   checkpoint.complete(id,print,outcome?.error?.code==='invalid_query'?'invalid_query':outcome?.status||'skipped');processed++;refreshSearch();renderMarkers();
+   checkpoint.complete(id,print,outcome?.error?.code==='invalid_query'?'invalid_query':outcome?.status||'skipped');processed++;const resultKind=outcome?.error?.code==='invalid_query'?'invalid_query':outcome?.status;if(resultKind in results)results[resultKind]++;refreshSearch();renderMarkers();
    if(provider==='comparison'&&processed<ids.length)await R.wait(3500,batchController.signal);
   }
  }catch(e){if(!stopping&&epoch===accountEpoch)failure=e;}
  finally{
   searching=false;batchController=null;el('startClientLocationSearch').disabled=false;el('stopClientLocationSearch').hidden=true;el('locationSearchScope').disabled=false;el('locationSearchProvider').disabled=false;
-  if(epoch===accountEpoch){refreshSearch();renderMarkers();if(!lastRoute&&!routeBusy&&!adjustingPin)fitConfirmed();const left=checkpoint.remaining(clients).length,total=checkpoint.read().ids.length;el('clientLocationSearchProgress').textContent=(failure?'Busca pausada: '+failure.message:stopping?'Busca pausada pelo usuário.':'Busca terminada.')+' '+(total-left)+' de '+total+' concluídos; '+left+' pendentes. Os resultados salvos foram preservados.'+(failure?.requestId?' Código de atendimento: '+failure.requestId+'.':'')+(left?' Use Retomar busca para continuar.':' Revise as aproximações no mapa.');const changed=ids.map(id=>clients.find(c=>String(c.id)===String(id))).find(c=>c&&P.location(c).ready);if(changed)flushLocation(changed.id);await refreshResume();}
+  if(epoch===accountEpoch){refreshSearch();renderMarkers();if(!lastRoute&&!routeBusy&&!adjustingPin)fitConfirmed();const left=checkpoint.remaining(clients).length,total=checkpoint.read().ids.length;el('clientLocationSearchProgress').textContent=(failure?'Busca pausada: '+failure.message:stopping?'Busca pausada pelo usuário.':'Busca terminada.')+' '+(total-left)+' de '+total+' concluídos; '+left+' pendentes. Nesta execução: '+results.matched+' localizados; '+results.review+' sugestões para revisar; '+results.not_found+' não encontrados; '+results.invalid_query+' cadastros incompletos. Os resultados salvos foram preservados.'+(failure?.requestId?' Código de atendimento: '+failure.requestId+'.':'')+(left?' Use Retomar busca para continuar.':' Revise as aproximações no mapa.');const changed=ids.map(id=>clients.find(c=>String(c.id)===String(id))).find(c=>c&&P.location(c).ready);if(changed)flushLocation(changed.id);await refreshResume();}
  }
 }
 window.TraxeloLocations={startSearch:()=>runBatch(false),get searching(){return searching;},comparisonLookup,flushLocation,beginReview,refreshSearch,visibleClients,fitConfirmed,refreshResume};

@@ -62,3 +62,5 @@ for(const file of ['rotamapa-compact-ui.js','rotamapa-showroom.js','rotamapa-fai
 for(const file of ['rotamapa-fair-model.js','rotamapa-fair-import.js','rotamapa-fair-import-ui.js','rotamapa-fair-ui.js','rotamapa-fair-orders-model.js','rotamapa-fair-orders-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
 for(const file of ['rotamapa-google-model.js','rotamapa-google-map.js','rotamapa-google-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+new Script(await readFile(new URL('../assets/rotamapa-coverage.js',import.meta.url),'utf8'),{filename:'rotamapa-coverage.js'});
