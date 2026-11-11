@@ -1,0 +1,53 @@
+{
+  "version": "1.13.0",
+  "url": "https://traxio-preview.vercel.app/",
+  "target": "production",
+  "state": "READY",
+  "deployment": "dpl_GyVczSoHoGcnVFueMHQ9DKQSpbqH",
+  "sourceCommit": "468a2054c15dece99c4c82bcad13759f3371a951",
+  "buildDurationMs": 26243,
+  "validation": {
+    "unitPassed": 246,
+    "browserCasesVerified": 212,
+    "browserFirstFullRun": {
+      "passed": 211,
+      "failed": 1,
+      "reason": "Mock de localização interceptava consulta de plano como escrita de cliente."
+    },
+    "locationFileRerunPassed": 14,
+    "pwaPassed": 8,
+    "isolatedPostgresRLS": "passed",
+    "publicFilesSHA256": 232,
+    "privateFilesAbsent": true,
+    "androidAbsent": true,
+    "unauthenticatedRankingDenied": true,
+    "productionUserLogin": false,
+    "productionDataTestWrites": false,
+    "paidGoogleTestQueries": false
+  },
+  "githubCI": {
+    "run": 43098306461,
+    "status": "queued",
+    "conclusion": null,
+    "note": "Sem jobs atribuídos na última consulta. Resultados acima são locais; não afirmar CI aprovada."
+  },
+  "observability": {
+    "initialWindow": "10m",
+    "errorFatalGroups": 0,
+    "note": "Janela inicial; não comprova ausência futura de erros."
+  },
+  "limitations": [
+    "Somente Web/PWA; APK/OTA suspensos.",
+    "OCR local de manuscritos requer revisão e não foi validado com caligrafia real do titular.",
+    "Word antigo .doc precisa ser convertido para .docx.",
+    "Modelo XLSX sem fotos embutidas ou proteção de células.",
+    "Sincronização depende de abrir o aparelho de origem conectado; pendência offline permanece indicada.",
+    "Máximo existente de 100 pré-pedidos, 100 linhas por pedido; limite técnico mantém cópia local e mostra pendência.",
+    "Sem integração de envio Mercado Farma ou API paga de IA."
+  ],
+  "rollback": {
+    "deployment": "dpl_ExTPaN1fzsfHRf9sffmtXW69PPzU",
+    "version": "1.12.1",
+    "note": "Corrigir adiante de preferência. 1.12.1 preserva registros locais e ignora campo de sincronização; não restaurar banco. Não voltar a 1.12.0 sem retenção."
+  }
+}
