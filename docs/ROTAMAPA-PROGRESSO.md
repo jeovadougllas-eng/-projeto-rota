@@ -616,3 +616,6 @@ Revalidação final local: 10/10 casos novos passaram novamente; mais quatro cas
 
 
 Revisão visual em celular: diálogo sem overflow horizontal e sem erros JavaScript. Removida referência técnica desnecessária a API na interface. Correspondência do modelo também aproveita mapeamento verificado EAN → código EMS do próprio catálogo, quando o cadastro guarda o código interno; sem inferir SKU Mercado Farma. CI inicial substituída ainda na fila para incluir essa revisão.
+
+
+Revisão adicional: identificação de CNPJ no texto de Word separada do parser de linhas, para que uma tabela válida de 44 produtos com três células por produto não exceda artificialmente o limite de 100 apresentações. Teste Word ampliado a 44 linhas reais com CNPJ fora da tabela. Run local ampliado anterior interrompido intencionalmente ao detectar este caso; não declarado aprovado. Banco PostgreSQL/RLS isolado completo passou localmente, incluindo quotas Google. Nenhum teste conectado ao banco real. CI ainda na fila do GitHub.

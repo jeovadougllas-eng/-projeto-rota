@@ -8,3 +8,5 @@ test('mixed clients and fractional/negative quantities are refused',()=>{assert.
 test('Word table rows with missing quantities are retained for correction instead of silently skipped',()=>{const out=M.table([['Produto','Quantidade'],['Drug 5mg - 30 comprimidos','']],{keepUnknown:true});assert.equal(out.items.length,1);assert.equal(out.items[0].quantity,null);assert.equal(out.items[0].uncertain,true);});
 
 test('verified EMS code maps the template EAN even when the account catalog stores the internal code',()=>{const [p]=M.catalog();const products=[{id:'account-product',code:p.code,name:'Catalog name preserved'}];assert.equal(M.suggest({ean:p.ean},products),'account-product');});
+
+test('client identification in a long Word table does not parse each cell as an extra order line',()=>{const value='CNPJ 11.222.333/0001-81\n'+Array(150).fill('Table cell').join('\n');assert.equal(M.cnpjFromText(value),'11222333000181');assert.throws(()=>M.cnpjFromText(value+'\n12345678000195'),/vários/);});
