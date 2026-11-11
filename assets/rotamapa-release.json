@@ -1,9 +1,11 @@
 {
-  "version": "1.12.0",
+  "version": "1.12.1",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "PDF de simulações/pré-pedidos da Feira Unifarma após salvar e na lista local, com identificação de não enviado e sem validade comercial.",
+    "Simulações/pré-pedidos já salvos não são mais apagados automaticamente às 00h01; continuam disponíveis para consulta e download neste aparelho. Criação mantém os limites de data e acesso existentes.",
     "Nome fantasia da carteira reconhecido em formatos adicionais e pesquisável, preservando razão social, CNPJ e os registros originais.",
     "Baixar PDF individual após confirmar pedido e no histórico geral ou nas vendas da Feira Unifarma, com nome do cliente no arquivo.",
     "PDF local com identificação do cliente, itens, quantidades, valores finais, total, condições e observações para lançamento posterior no Mercado Farma; não é nota fiscal nem comprovação de envio.",
