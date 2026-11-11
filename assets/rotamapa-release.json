@@ -1,9 +1,11 @@
 {
-  "version": "1.11.0",
+  "version": "1.11.1",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Busca em lote continua após falha individual de consulta ou endereço não encontrado; pendências e motivos ficam salvos por cliente para revisão posterior.",
+    "Sugestões encontradas pelo nome são preservadas quando a consulta complementar do endereço falha; pins confirmados permanecem protegidos.",
     "Clientes com cobertura mensal, meta de 80% e filtro de quem falta visitar; visitas presenciais confirmadas contam mesmo sem venda.",
     "Ficha do cliente mostra o status mensal; período compartilhado com o Histórico e carteira ativa preservada.",
     "Busca Google continua após cadastros incompletos e separa localizados, sugestões e não encontrados, com avisos de configuração quando o Google recusa a consulta.",

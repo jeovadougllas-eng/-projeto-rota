@@ -125,7 +125,7 @@ const geoCandidates=new Map(),geoInFlight=new TraxioPlanner.IdSet(),geoScheduled
 let geoQueue=Promise.resolve();
 for(const c of clients)if(c.locationCandidate&&c.locationCandidate.fingerprint===JSON.stringify(TraxioGeo.parse(c)))geoCandidates.set(c.id,c.locationCandidate);
 function clientGeoQuery(c){return TraxioGeo.parse(c)}
-function restoreGeoCandidates(){for(const c of clients){const fingerprint=JSON.stringify(TraxioGeo.parse(c)),cached=geoCandidates.get(c.id);if(cached?.fingerprint&&cached.fingerprint!==fingerprint)geoCandidates.delete(c.id);if(!geoCandidates.has(c.id)&&c.locationCandidate?.fingerprint===fingerprint)geoCandidates.set(c.id,c.locationCandidate)}}
+function restoreGeoCandidates(){for(const c of clients){const fingerprint=JSON.stringify(TraxioGeo.parse(c)),cached=geoCandidates.get(c.id);if(cached?.fingerprint&&cached.fingerprint!==fingerprint)geoCandidates.delete(c.id);if(!geoCandidates.has(c.id)&&c.locationCandidate?.fingerprint===fingerprint)geoCandidates.set(c.id,c.locationCandidate);if(!geoCandidates.has(c.id)&&c.locationSearchIssue?.fingerprint===fingerprint)geoCandidates.set(c.id,c.locationSearchIssue)}}
 async function geoToken(){try{return (await authClient?.auth.getSession())?.data?.session?.access_token}catch{return null}}
 async function geocodeOneSelected(c,{force=false,lookup=null}={}){
  if((valid(c.lat,c.lon)&&(TraxioPlanner.location(c).kind==='confirmed'||(!force&&TraxioPlanner.location(c).ready)))||(!force&&geoCandidates.has(c.id))||geoInFlight.has(c.id))return {status:'skipped'};
@@ -146,6 +146,8 @@ async function geocodeOneSelected(c,{force=false,lookup=null}={}){
    const point=result.best;if(!valid(point?.lat,point?.lon))throw Error('O serviço não retornou uma posição válida.');
    record={...current,lat:point.lat,lon:point.lon,locationVerification:'automatic_housenumber',locationSource:point.provider,...RotaMapaGoogleModel.metadata(point),locationMatchedAt:new Date().toISOString(),locationEvidence:{...point,query:result.query}};delete record.locationCandidate;if(!RotaMapaGoogleModel.automatic(point)){delete record.googleExpiresAt;delete record.googlePlaceId;delete record.googleDerived;}
   }else if(result.best){candidate={...result.best,error:result.reason,query:result.query,fingerprint};record={...current,locationCandidate:candidate};}
+  if(record)delete record.locationSearchIssue;
+  if(!record&&result.status==='not_found'){const issue={error:result.reason||'Endereço não encontrado. Confira CEP, rua e número.',fingerprint,status:'not_found',attemptedAt:new Date().toISOString()};candidate=current.locationCandidate?.fingerprint===fingerprint?current.locationCandidate:issue;record={...current,locationSearchIssue:issue};}
   if(record){
    const next=clients.map(x=>String(x.id)===String(c.id)?record:x);
    try{localStorage.setItem(KEY,JSON.stringify(next));}catch{throw new TraxeloGeoRecovery.SearchFailure('A posição recebida não pôde ser salva neste aparelho. Libere espaço e retome a busca.',{code:'local_storage'});}
