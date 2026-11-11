@@ -613,3 +613,6 @@ SheetJS 0.20.3 já usado pelo projeto foi incluído localmente, mesma versão, l
 
 
 Revalidação final local: 10/10 casos novos passaram novamente; mais quatro casos focados passaram com XLSX real preenchido (70 unidades, faixa correta) e OCR real local de imagem impressa sintética, em computador/celular. Não usar esse resultado como validação de caligrafia humana. Consulta somente de metadados do Supabase confirmou RLS, política de carteira e limite de settings ativos; nenhuma linha comercial ou segredo foi lido. Sem mudança de schema. A planilha é disponibilizada dentro de Importar planilha, Word ou foto, tanto na calculadora/histórico quanto em Feira > Vendas. Para levar registros antigos ao outro aparelho, abrir o aparelho de origem conectado e aguardar Sincronizado com a conta; depois abrir a mesma conta/carteira no destino.
+
+
+Revisão visual em celular: diálogo sem overflow horizontal e sem erros JavaScript. Removida referência técnica desnecessária a API na interface. Correspondência do modelo também aproveita mapeamento verificado EAN → código EMS do próprio catálogo, quando o cadastro guarda o código interno; sem inferir SKU Mercado Farma. CI inicial substituída ainda na fila para incluir essa revisão.
