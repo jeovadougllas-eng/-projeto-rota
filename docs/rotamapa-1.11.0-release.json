@@ -1,0 +1,50 @@
+{
+  "version": "1.11.0",
+  "platforms": [
+    "web",
+    "pwa"
+  ],
+  "target": "production",
+  "status": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "deploymentId": "dpl_Fdq31rCh4MZSYfZ9pWkp57FBzcbE",
+  "sourceCommit": "dcf024c0f63e4059292f52590751f05f227e6dfd",
+  "publishedAt": "2026-11-11T11:39:37.323000+00:00",
+  "buildDurationMs": 28471,
+  "ci": {
+    "runId": 43012609518,
+    "conclusion": "success",
+    "unitTests": 224,
+    "browserTests": 166,
+    "pwaTests": 8,
+    "postgresRls": "passed (isolated)"
+  },
+  "publicChecks": {
+    "sha256FilesVerified": 225,
+    "sourceManifestMatches": true,
+    "googleConfigured": true,
+    "unauthenticatedGoogleStatus": 401,
+    "unauthenticatedRankingStatus": 401,
+    "privateFilesAbsent": true,
+    "androidAbsent": true
+  },
+  "changes": [
+    "Monthly physical visit coverage in Clientes using the existing ledger and History month/timezone",
+    "80% target rounded up for current active portfolio; unvisited/visited filters and client detail/list badge",
+    "Incomplete Google queries skipped without stopping subsequent clients",
+    "Lookup outcomes show matched/review/not_found/incomplete counts; safe provider-denial reasons",
+    "Map summary distinguishes portfolio-ready total from selected route clients"
+  ],
+  "dataChanges": "No schema, production record, identity, storage key, manual pin, financial or native changes",
+  "limitations": [
+    "Specific cause of the user real Google lookup still awaits the visible message; no live authenticated Google query was performed",
+    "API key presence is not proof of key validity or billing availability",
+    "Tests use synthetic data and a simulated SDK; physical Android/iOS/Safari and driving not tested"
+  ],
+  "rollback": {
+    "version": "1.10.2",
+    "deploymentId": "dpl_6uE3cZ1UxKVLHKxDaip417EYMJBG",
+    "sourceCommit": "ca3b34d5e2da81c94c8e08ddf631ceb91c38aada",
+    "dataRestoreRequired": false
+  }
+}
