@@ -1,9 +1,11 @@
 {
-  "version": "1.11.1",
+  "version": "1.12.0",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Baixar PDF individual após confirmar pedido e no histórico geral ou nas vendas da Feira Unifarma, com nome do cliente no arquivo.",
+    "PDF local com identificação do cliente, itens, quantidades, valores finais, total, condições e observações para lançamento posterior no Mercado Farma; não é nota fiscal nem comprovação de envio.",
     "Busca em lote continua após falha individual de consulta ou endereço não encontrado; pendências e motivos ficam salvos por cliente para revisão posterior.",
     "Sugestões encontradas pelo nome são preservadas quando a consulta complementar do endereço falha; pins confirmados permanecem protegidos.",
     "Clientes com cobertura mensal, meta de 80% e filtro de quem falta visitar; visitas presenciais confirmadas contam mesmo sem venda.",

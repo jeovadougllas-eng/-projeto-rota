@@ -64,3 +64,5 @@ for(const file of ['rotamapa-fair-model.js','rotamapa-fair-import.js','rotamapa-
 for(const file of ['rotamapa-google-model.js','rotamapa-google-map.js','rotamapa-google-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
 new Script(await readFile(new URL('../assets/rotamapa-coverage.js',import.meta.url),'utf8'),{filename:'rotamapa-coverage.js'});
+
+new Script(await readFile(new URL('../assets/rotamapa-sale-export.js',import.meta.url),'utf8'),{filename:'rotamapa-sale-export.js'});
