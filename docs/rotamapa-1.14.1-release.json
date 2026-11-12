@@ -1,0 +1,47 @@
+{
+  "version": "1.14.1",
+  "dateFortaleza": "2026-11-11",
+  "slogan": "RotaMapa — gestão comercial em campo",
+  "url": "https://traxio-preview.vercel.app/",
+  "target": "production",
+  "state": "READY",
+  "deployment": "dpl_5jSgQ8zt4ubvkUz28E8ufky1sArs",
+  "sourceCommit": "9f23692032d005e0f61a56d3baceb5efe3150bb6",
+  "buildDurationMs": 26606,
+  "localValidation": {
+    "unitPassed": 252,
+    "brandingBrowserPassed": 4,
+    "realMapCasesSkippedByExistingProjectFilter": 2,
+    "pwaPassed": 8,
+    "artworkHashesUnchanged": true,
+    "publicFilesSHA256": 232,
+    "publicTitleAndManifestVerified": true
+  },
+  "githubCI": {
+    "run": 43129929522,
+    "status": "in_progress",
+    "conclusion": null,
+    "note": "Verificação geral ainda em execução na última consulta; publicação baseada nos checks locais pertinentes ao slogan."
+  },
+  "changes": [
+    "Cabeçalho/login com slogan HTML e recorte CSS da faixa antiga; raster e símbolo/wordmark preservados.",
+    "Título/descrição web, Sobre, guia de instalação, manifesto PWA e aviso offline.",
+    "Cache offline v3, sem skipWaiting/reload forçado e sem limpar dados dos clientes."
+  ],
+  "identityPreserved": [
+    "PWA id /",
+    "name/short_name RotaMapa",
+    "ícones originais",
+    "IDs e chaves de armazenamento"
+  ],
+  "initialErrorFatalGroups": 0,
+  "observabilityNote": "Janela inicial, sem garantia futura.",
+  "productionDataWrites": false,
+  "schemaChanges": false,
+  "nativeBuilds": false,
+  "rollback": {
+    "version": "1.14.0",
+    "deployment": "dpl_4d5ntCjPGwqEm2kyBLtZja5oAKyK",
+    "note": "Somente código; não restaurar banco/armazenamento. Cache offline segue a atualização natural do service worker."
+  }
+}

@@ -684,3 +684,14 @@ Validação local: 252 unitários passaram; sintaxe/kit/arte aprovados; quatro c
 
 
 Primeira validação PWA: sete casos aprovados e um falhou somente porque a expectativa ainda exigia cache offline v2, enquanto a atualização intencional passou a v3. Teste atualizado para exigir v3 com somente a URL offline, mantendo a verificação de armazenamento de clientes intacto. Recorte ajustado para preservar integralmente os pixels inferiores do wordmark antes da faixa antiga do slogan; raster segue imutável. CI anterior será substituída.
+
+
+## 11/11/2026 (Fortaleza) — Web/PWA 1.14.1 publicada: slogan aprovado
+
+Produção READY, domínio https://traxio-preview.vercel.app/, deployment dpl_5jSgQ8zt4ubvkUz28E8ufky1sArs, fonte 9f23692032d005e0f61a56d3baceb5efe3150bb6, build 26,606 s. Alias/target/fonte, título público, descrição do manifesto, identidade PWA e versão 1.14.1 confirmados. 232 arquivos por SHA256 correspondem ao manifesto. Privados/SQL/Android 404, ranking sem sessão 401; consulta error/fatal inicial sem grupos, sem garantia futura. Nenhuma escrita de dados, login real ou mudança de banco.
+
+Slogan **RotaMapa — gestão comercial em campo** aplicado no cabeçalho, acesso, Sobre, guia de instalação, título/descrição Web/PWA e aviso offline. Arte original imutável; faixa antiga ocultada por CSS e novo texto na mesma região. Ícones, id/short_name/scope e instalação preservados. PWA mantém rede para aplicação/dados e cache somente do aviso offline; v3 aguarda atualização natural, sem forçar recarga durante visita/pedido. Para visualizar, fechar e reabrir a Web/PWA. Não limpar dados, reinstalar ou gerar novo APK.
+
+Validação local pertinente à alteração: 252 unitários, quatro cenários de marca/login e oito PWA aprovados, mais sintaxe/kit/arte/build. Dois cenários reais de mapa ignorados pelos filtros preexistentes desses projetos, sem declarar cobertura neles. Imagens revisadas no celular/login desktop. Primeira rodada PWA 7/8 (expectativa antiga v2), corrigida para v3 e rodada final 8/8. CI 43129810575 cancelada/substituída; CI final **43129929522 ainda in_progress** na consulta de publicação — não declarar aprovação geral antes de finalizar. Publicação feita com verificações locais pertinentes concluídas, sem esperar a bateria geral automática. Próximo acompanhamento: resultado desse run.
+
+Recibo docs/rotamapa-1.14.1-release.json. Rollback compatível 1.14.0 dpl_4d5ntCjPGwqEm2kyBLtZja5oAKyK, somente código; sem restaurar dados. Nenhuma mudança APK/OTA/iOS nativo, nenhuma regeneração do piloto de vídeo nesta etapa.
