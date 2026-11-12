@@ -16,7 +16,7 @@
   const plan=RotaMapaClientImportModel.stage(rows,[],fileName),summary=document.getElementById('clientImportPreviewSummary');
   summary.textContent=plan.added.length+' clientes únicos · '+plan.duplicates.length+' duplicados idênticos ignorados · '+plan.errors.length+' erros.';
   const issues=document.getElementById('clientImportPreviewIssues');issues.replaceChildren();for(const v of [...plan.errors,...plan.warnings].slice(0,50)){const li=document.createElement('li');li.textContent='Linha '+v.line+': '+v.message;issues.append(li);}
-  const body=document.getElementById('clientImportPreviewRows');body.replaceChildren();for(const row of plan.added.slice(0,100)){const tr=document.createElement('tr');for(const value of [row.name,row.cnpj||'Não informado',row.address]){const td=document.createElement('td');td.textContent=value;tr.append(td);}body.append(tr);}
+  const body=document.getElementById('clientImportPreviewRows');body.replaceChildren();for(const row of plan.added.slice(0,100)){const tr=document.createElement('tr');for(const value of [row.name,row.cnpj||'Não informado',row.address]){const td=document.createElement('td');td.textContent=value;if(tr.children.length===1){const copy=RotaMapaClientIdentity.copyButton(value);if(copy)td.append(copy);}tr.append(td);}body.append(tr);}
   document.getElementById('clientImportContinue').disabled=!plan.canApply;dialog.showModal();return new Promise(r=>resolve=r);
  }};
 })();

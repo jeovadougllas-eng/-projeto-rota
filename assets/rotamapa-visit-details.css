@@ -5,7 +5,7 @@ body.traxio-ui-ready:not(.traxio-dark) #painel #locationRecoveryText{color:#f1fa
 #visitMetrics button.visit-metric-action::after{content:'›';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:25px;color:var(--surface-ink)}
 #visitMetrics button.visit-metric-action:hover{background:var(--surface-hover)}
 #visitMetrics button.visit-metric-action:focus-visible{outline:3px solid var(--surface-focus);outline-offset:3px}
-#visitDetailsRows button.visit-details-row{display:block;width:100%;min-height:64px;text-align:left;padding:14px;white-space:normal;overflow-wrap:anywhere}
+#visitDetailsRows .visit-details-row{display:block;width:100%;min-height:64px;text-align:left;padding:14px;box-sizing:border-box;border:1px solid var(--surface-line);border-radius:10px;background:var(--glass-soft);color:var(--surface-ink);font:inherit;cursor:pointer;white-space:normal;overflow-wrap:anywhere}
 #visitDetailsRows .visit-details-row strong,#visitDetailsRows .visit-details-row span{display:block}
 #visitDetailsRows .visit-details-row span{font-size:14px;margin-top:5px}
 #visitDetailsRows .visit-details-row[aria-pressed=true]{outline:2px solid var(--surface-selected);outline-offset:1px}

@@ -51,9 +51,9 @@ body.rm-field #ranking .ranking-table-heading{background:var(--glass-soft);paddi
 body.rm-field #ranking .ranking-table-heading>span:nth-child(n+3){text-align:right}
 body.rm-field #ranking .ranking-list{list-style:none;margin:0;padding:0;max-height:none;overflow:visible}
 body.rm-field #ranking .ranking-list li{margin:0;padding:0;list-style:none}
-body.rm-field.traxio-ui-ready #ranking button.ranking-row{background:var(--glass);border:0;border-bottom:1px solid var(--surface-line);border-radius:0;width:100%;min-height:86px;padding:13px 16px;text-align:left;color:var(--surface-ink);box-shadow:none;transition:none;font-size:14px}
+body.rm-field.traxio-ui-ready #ranking .ranking-row{background:var(--glass);border:0;border-bottom:1px solid var(--surface-line);border-radius:0;width:100%;box-sizing:border-box;cursor:pointer;font-family:inherit;min-height:86px;padding:13px 16px;text-align:left;color:var(--surface-ink);box-shadow:none;transition:none;font-size:14px}
 body.rm-field #ranking .ranking-list li:last-child .ranking-row{border-bottom:0}
-body.rm-field.traxio-ui-ready #ranking button.ranking-row:hover{background:var(--surface-hover)}
+body.rm-field.traxio-ui-ready #ranking .ranking-row:hover{background:var(--surface-hover)}
 body.rm-field #ranking .ranking-row:focus-visible{outline:3px solid var(--surface-focus);outline-offset:-4px}
 body.rm-field #ranking .ranking-rank{width:35px;height:35px;display:grid;place-items:center;border-radius:50%;font-size:16px;font-weight:700;color:var(--surface-muted);background:var(--glass-soft);border:1px solid transparent;flex:none}
 body.rm-field #ranking .ranking-list li:nth-child(1) .ranking-rank{background:var(--ranking-gold-bg);color:var(--ranking-gold);border-color:#d9b867}
@@ -119,7 +119,7 @@ body.rm-field #rankingBuyerDetailNote{font-size:12px;color:var(--surface-muted);
  body.rm-field #ranking .tab-title{height:134px;min-height:134px;padding:22px}body.rm-field #ranking .tab-title h2{font-size:29px}
  body.rm-field #ranking .ranking-layout{grid-template-columns:minmax(0,1fr) 240px;gap:14px}
  body.rm-field #ranking .ranking-panel-heading{padding:18px 16px 15px}body.rm-field #ranking .ranking-panel-heading h3{font-size:19px}
- body.rm-field #ranking .ranking-table-heading,body.rm-field #ranking button.ranking-row{grid-template-columns:39px minmax(0,1fr) 101px 43px 14px;gap:7px;padding-inline:12px}
+ body.rm-field #ranking .ranking-table-heading,body.rm-field #ranking .ranking-row{grid-template-columns:39px minmax(0,1fr) 101px 43px 14px;gap:7px;padding-inline:12px}
  body.rm-field #ranking .ranking-row-ticket,body.rm-field #ranking .ranking-table-heading>span:nth-child(5){display:none}body.rm-field #ranking .ranking-row-arrow{grid-column:5}
  body.rm-field #ranking .ranking-rank{width:31px;height:31px;font-size:15px}body.rm-field #ranking .ranking-client-name{font-size:12px}body.rm-field #ranking .client-cnpj{font-size:10px}
  body.rm-field #ranking .ranking-row-total{font-size:13px}body.rm-field #ranking .ranking-share-card,body.rm-field #ranking .ranking-leader-card{padding:16px}
@@ -134,7 +134,7 @@ body.rm-field #rankingBuyerDetailNote{font-size:12px;color:var(--surface-muted);
  body.rm-field #ranking .ranking-legend{font-size:10px;gap:10px}body.rm-field #ranking .ranking-legend b{font-size:10px}
  body.rm-field #ranking .ranking-insight-note{margin:0;padding-top:8px;font-size:10px}body.rm-field #ranking .ranking-leader-card>p{margin-bottom:12px}
  body.rm-field #ranking .ranking-leader-icon{float:right;margin:0 0 6px 10px}body.rm-field #ranking .ranking-leader-card h3{font-size:15px;max-width:250px}
- body.rm-field #ranking .ranking-leader-card>strong{font-size:23px}body.rm-field #ranking .ranking-table-heading,body.rm-field #ranking button.ranking-row{grid-template-columns:43px minmax(0,1fr) 106px 48px 80px 14px}
+ body.rm-field #ranking .ranking-leader-card>strong{font-size:23px}body.rm-field #ranking .ranking-table-heading,body.rm-field #ranking .ranking-row{grid-template-columns:43px minmax(0,1fr) 106px 48px 80px 14px}
  body.rm-field #ranking .ranking-row-ticket,body.rm-field #ranking .ranking-table-heading>span:nth-child(5){display:block}body.rm-field #ranking .ranking-row-arrow{grid-column:auto}
  body.rm-field #ranking .ranking-client-name{font-size:13px}body.rm-field #ranking .ranking-row-total{font-size:14px}body.rm-field #ranking .ranking-metric{padding:15px}
  body.rm-field #ranking .ranking-metric>strong{font-size:25px}body.rm-field #ranking .ranking-metric>div{font-size:12px}body.rm-field #ranking .ranking-filters label{flex:1}
@@ -158,7 +158,7 @@ body.rm-field #rankingBuyerDetailNote{font-size:12px;color:var(--surface-muted);
  body.rm-field #ranking .ranking-panel-heading{padding:14px 12px 12px;gap:6px}body.rm-field #ranking .ranking-kicker{font-size:8px;letter-spacing:1.1px}
  body.rm-field #ranking .ranking-panel-heading h3{font-size:18px;margin:4px 0 6px}body.rm-field #ranking .ranking-panel-heading p{font-size:10px;line-height:1.4;max-width:230px}
  body.rm-field #ranking .ranking-top-badge{height:39px;width:39px;border-radius:9px;font-size:8px}body.rm-field #ranking .ranking-top-badge b{font-size:17px}
- body.rm-field #ranking .ranking-table-heading{display:none}body.rm-field.traxio-ui-ready #ranking button.ranking-row{grid-template-columns:27px minmax(0,1fr) 84px;gap:7px;padding:11px 10px;min-height:94px;align-items:center}
+ body.rm-field #ranking .ranking-table-heading{display:none}body.rm-field.traxio-ui-ready #ranking .ranking-row{grid-template-columns:27px minmax(0,1fr) 84px;gap:7px;padding:11px 10px;min-height:94px;align-items:center}
  body.rm-field #ranking .ranking-rank{width:27px;height:27px;font-size:13px}body.rm-field #ranking .ranking-client-name{font-size:12px;line-height:1.35}
  body.rm-field #ranking .client-cnpj{font-size:9px;margin-top:4px}body.rm-field #ranking .ranking-client-meta{font-size:9px;margin-top:6px;line-height:1.4}
  body.rm-field #ranking .ranking-mobile-orders{display:inline}body.rm-field #ranking .ranking-row-total{font-size:11px}
@@ -189,10 +189,10 @@ body.rm-field #rankingBuyerDetailNote{font-size:12px;color:var(--surface-muted);
  body.rm-field #ranking .ranking-panel-heading .ranking-kicker,body.rm-field #ranking .ranking-panel-heading p{display:none}
  body.rm-field #ranking .ranking-panel-heading h3{font-size:18px;margin:0}
  body.rm-field #ranking .ranking-top-badge{height:32px;width:32px;font-size:7px;border-radius:8px}body.rm-field #ranking .ranking-top-badge b{font-size:14px}
- body.rm-field #ranking .ranking-table-heading,body.rm-field.traxio-ui-ready #ranking button.ranking-row{grid-template-columns:34px minmax(0,1fr) 91px 32px 12px;gap:6px;padding-inline:10px}
+ body.rm-field #ranking .ranking-table-heading,body.rm-field.traxio-ui-ready #ranking .ranking-row{grid-template-columns:34px minmax(0,1fr) 91px 32px 12px;gap:6px;padding-inline:10px}
  body.rm-field #ranking .ranking-table-heading{font-size:9px;padding-block:8px}
  body.rm-field #ranking :is(.ranking-row-ticket,.ranking-client-meta),body.rm-field #ranking .ranking-table-heading>span:nth-child(5){display:none}
- body.rm-field #ranking .ranking-row-arrow{grid-column:5}body.rm-field.traxio-ui-ready #ranking button.ranking-row{min-height:63px;padding-block:9px}
+ body.rm-field #ranking .ranking-row-arrow{grid-column:5}body.rm-field.traxio-ui-ready #ranking .ranking-row{min-height:63px;padding-block:9px}
  body.rm-field #ranking .ranking-client-name{font-size:11px}body.rm-field #ranking .client-cnpj{font-size:9px;margin-top:3px}
  body.rm-field #ranking .ranking-row-total{font-size:11px}body.rm-field #ranking .ranking-row-orders{font-size:11px}
  body.rm-field #ranking .ranking-rank{height:27px;width:27px;font-size:13px}
@@ -221,7 +221,7 @@ body.rm-field .ranking-complete-dialog label{font-size:12px;margin:0}
 body.rm-field .ranking-complete-dialog input{width:100%;margin-top:5px;min-height:42px}
 body.rm-field .ranking-complete-scroll{overflow-y:auto;overscroll-behavior:contain;min-height:80px;flex:1;border:1px solid var(--surface-line);border-radius:10px;scrollbar-gutter:stable}
 body.rm-field #rankingFullRows{list-style:none;padding:0;margin:0}
-body.rm-field.traxio-ui-ready .ranking-complete-dialog button.ranking-row{display:grid;grid-template-columns:42px minmax(0,1fr) 135px;gap:12px;align-items:center;width:100%;border:0;border-bottom:1px solid var(--surface-line);border-radius:0;background:transparent;color:var(--surface-ink);text-align:left;padding:16px 14px;margin:0;box-shadow:none;font-size:13px;min-height:88px}
+body.rm-field.traxio-ui-ready .ranking-complete-dialog .ranking-row{display:grid;grid-template-columns:42px minmax(0,1fr) 135px;gap:12px;align-items:center;width:100%;border:0;border-bottom:1px solid var(--surface-line);border-radius:0;background:transparent;color:var(--surface-ink);text-align:left;padding:16px 14px;margin:0;box-shadow:none;font-size:13px;min-height:88px}
 body.rm-field .ranking-complete-dialog .ranking-rank{width:33px;height:33px;border-radius:50%;background:var(--glass-soft);display:grid;place-items:center;font-weight:700;font-size:15px}
 body.rm-field .ranking-complete-dialog [data-position='1']:not(.ranking-zero) .ranking-rank{color:#936108;background:#fff2cb;border:1px solid #d4ae57}
 body.rm-field .ranking-complete-dialog [data-position='2']:not(.ranking-zero) .ranking-rank{color:#5e6b77;background:#e8eef2;border:1px solid #acb9c5}
@@ -252,7 +252,7 @@ body.rm-field .ranking-product-details p{font-size:12px;color:var(--surface-mute
  body.rm-field #ranking .ranking-billing-rule small{font-size:8px}
  body.rm-field .ranking-complete-dialog{padding:16px;gap:8px}
  body.rm-field .ranking-complete-header h2{font-size:19px}
- body.rm-field.traxio-ui-ready .ranking-complete-dialog button.ranking-row{grid-template-columns:28px minmax(0,1fr) 90px;padding:12px 9px;gap:7px;min-height:100px}
+ body.rm-field.traxio-ui-ready .ranking-complete-dialog .ranking-row{grid-template-columns:28px minmax(0,1fr) 90px;padding:12px 9px;gap:7px;min-height:100px}
  body.rm-field .ranking-complete-dialog .ranking-client-name{font-size:12px}
  body.rm-field .ranking-complete-dialog .ranking-rank{width:26px;height:26px;font-size:12px}
  body.rm-field .ranking-complete-dialog .client-cnpj,body.rm-field .ranking-complete-dialog .ranking-client-meta{font-size:10px}
@@ -261,6 +261,6 @@ body.rm-field .ranking-product-details p{font-size:12px;color:var(--surface-mute
 }
 @media(max-height:520px) and (orientation:landscape) and (min-width:651px){body.rm-field #ranking .ranking-mode-navigation{grid-column:1/-1;position:static;margin:0}body.rm-field #ranking .ranking-overview-tools,body.rm-field #ranking .ranking-layout{grid-row:2}}
 
-body.rm-field.traxio-ui-ready dialog.ranking-complete-dialog button.ranking-row{background:var(--glass)!important;color:var(--surface-ink)!important}
-body.rm-field.traxio-ui-ready dialog.ranking-complete-dialog button.ranking-row :is(.ranking-row-total,.ranking-client-name){color:var(--surface-ink)!important}
-body.rm-field.traxio-ui-ready dialog.ranking-complete-dialog button.ranking-row:hover{background:var(--glass-soft)!important}
+body.rm-field.traxio-ui-ready dialog.ranking-complete-dialog .ranking-row{background:var(--glass)!important;color:var(--surface-ink)!important}
+body.rm-field.traxio-ui-ready dialog.ranking-complete-dialog .ranking-row :is(.ranking-row-total,.ranking-client-name){color:var(--surface-ink)!important}
+body.rm-field.traxio-ui-ready dialog.ranking-complete-dialog .ranking-row:hover{background:var(--glass-soft)!important}

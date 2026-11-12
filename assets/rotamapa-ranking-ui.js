@@ -39,7 +39,7 @@ function reset(message='Selecione o mês e consulte esta carteira.'){
 function setAccess(){const allowed=access(),changed=allowed!==lastAccess;lastAccess=allowed;$('rankingAccess').hidden=allowed;$('rankingContent').hidden=!allowed;if(!allowed&&data)reset();return changed&&allowed;}
 const isProduct=()=>mode==='produtos',topRows=()=>isProduct()?data.productRanking:data.ranking,allRows=()=>isProduct()?data.allProducts:data.allClients;
 function row(entry,index,complete=false){
- const li=make('li'),b=make('button','ranking-row');b.type='button';b.dataset[isProduct()?'product':'buyer']=entry.key;b.dataset.position=String(index+1);if(complete)b.classList.add('ranking-complete-row');
+ const li=make('li'),b=make('div','ranking-row');b.tabIndex=0;b.setAttribute('role','button');b.onkeydown=e=>{if(e.target===b&&(e.key==='Enter'||e.key===' ')){e.preventDefault();b.click();}};b.dataset[isProduct()?'product':'buyer']=entry.key;b.dataset.position=String(index+1);if(complete)b.classList.add('ranking-complete-row');
  const name=make('span','ranking-client');name.append(make('strong','ranking-client-name',entry.name));
  if(!isProduct())RotaMapaClientIdentity.append(name,{cnpj:entry.cnpj});
  const sold=isProduct()?entry.units>0:entry.totalCents>0;
