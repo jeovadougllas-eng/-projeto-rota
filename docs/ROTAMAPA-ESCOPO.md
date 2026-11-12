@@ -891,3 +891,9 @@ Arrastão Azul ocorre uma vez por mês, mas é válido SOMENTE em uma data, com 
 ### Slogan aprovado — 11/11/2026 (Fortaleza)
 
 O titular aprovou **RotaMapa — gestão comercial em campo** e autorizou aplicar no site e na PWA. Substitui o slogan anterior Sua rota com inteligência na apresentação atual. Preservar nome RotaMapa, símbolo/wordmark/ícones, paleta, layout e identificadores técnicos. Não alterar APK/OTA suspensos nem arquivos históricos originais. Posicionamento amplia a comunicação para rotina comercial em campo.
+
+### Alteração aprovada para implementação futura — editar pedidos salvos (12/11/2026)
+
+O titular aprovou registrar a opção **Editar pedido** para pedidos ainda não faturados, tanto nas vendas gerais quanto na Feira Unifarma. Deve permitir adicionar e excluir itens e alterar quantidades após salvar, mantendo o mesmo ID de pedido e o vínculo existente com a feira, sem duplicar a venda. Recalcular valores e condições comerciais aplicáveis com conferência antes de confirmar e permitir baixar o PDF atualizado. Preservar isolamento por conta/carteira, sincronização, histórico e integridade financeira; pedidos já faturados ficam fora deste escopo de edição. Não alterar faturamento ou inferir lançamento no Mercado Farma ao editar.
+
+Estado: **aprovado e registrado, ainda não implementado**. A instrução atual é somente anotar; não iniciar código ou publicação nesta etapa. Tratamento de simulações/pré-pedidos não foi definido nesta aprovação e não deve ser presumido.
