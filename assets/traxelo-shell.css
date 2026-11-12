@@ -39,5 +39,5 @@ body .rotamapa-approved-brand img.rotamapa-brand-image{position:absolute;display
 
 /* Approved 11/11/2026: preserve the RM symbol/wordmark and replace the baked-in slogan in the live shell. */
 body .brand-crop.rotamapa-approved-brand{container-type:inline-size}
-body .rotamapa-approved-brand img.rotamapa-brand-image{clip-path:polygon(0 0,100% 0,100% 78%,32% 78%,32% 100%,0 100%)}
+body .rotamapa-approved-brand img.rotamapa-brand-image{clip-path:polygon(0 0,100% 0,100% 79%,32% 79%,32% 100%,0 100%)}
 .rotamapa-approved-brand .rotamapa-brand-tagline{position:absolute;left:33.8%;right:0;top:75.5%;font:700 3.5cqw/1.05 Arial,sans-serif;letter-spacing:.075em;color:#fff;white-space:nowrap;text-align:left;pointer-events:none}
