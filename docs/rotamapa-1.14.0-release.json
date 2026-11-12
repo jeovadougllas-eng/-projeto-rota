@@ -1,0 +1,41 @@
+{
+  "version": "1.14.0",
+  "dateFortaleza": "2026-11-11",
+  "url": "https://traxio-preview.vercel.app/",
+  "target": "production",
+  "state": "READY",
+  "deployment": "dpl_4d5ntCjPGwqEm2kyBLtZja5oAKyK",
+  "sourceCommit": "b8c6814762ce393c5214ee99d0a4b3b1d3972bbc",
+  "buildDurationMs": 26537,
+  "ci": {
+    "run": 43127693946,
+    "status": "completed",
+    "conclusion": "success",
+    "unit": 252,
+    "browser": 226,
+    "pwa": 8,
+    "isolatedPostgresRLS": "passed"
+  },
+  "publicFilesSHA256": 232,
+  "privateSQLAbsent": true,
+  "unauthenticatedRankingDenied": true,
+  "productionDataTestWrites": false,
+  "productionLogin": false,
+  "schemaChanges": false,
+  "externalCNPJQueries": false,
+  "initialErrorFatalGroups": 0,
+  "observabilityNote": "Janela inicial de 10 minutos; não garante ausência futura de erros.",
+  "update": "Reabrir Web/PWA. Clientes > Excluir clientes por arquivo.",
+  "limits": [
+    "PDF com texto selecionável e um CNPJ por linha; Excel XLSX/XLS ou CSV.",
+    "Até 10 MB e 10.000 linhas; CNPJ numérico validado.",
+    "Inativação somente dos CNPJs listados e encontrados, após prévia, checkbox e confirmação.",
+    "Históricos e dados dos demais clientes preservados.",
+    "Sem APK/OTA ou mudança de marca."
+  ],
+  "rollback": {
+    "version": "1.13.0",
+    "deployment": "dpl_GyVczSoHoGcnVFueMHQ9DKQSpbqH",
+    "note": "Reverter código não reativa clientes. Para rever participação, usar Versões anteriores com prévia. Não restaurar banco."
+  }
+}
