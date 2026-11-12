@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.pin}</svg>`;
   };
-  const brand = className => `<span class="brand-crop traxelo-approved-brand rotamapa-approved-brand ${className || ''}" role="img" aria-label="RotaMapa — Sua rota com inteligência."><img class="rotamapa-brand-image" src="assets/rotamapa/logo.webp?v=1.3.1" alt="" width="1540" height="306"></span>`;
+  const brand = className => `<span class="brand-crop traxelo-approved-brand rotamapa-approved-brand ${className || ''}" role="img" aria-label="RotaMapa — Gestão comercial em campo"><img class="rotamapa-brand-image" src="assets/rotamapa/logo.webp?v=1.3.1" alt="" width="1540" height="306"><span class="rotamapa-brand-tagline" aria-hidden="true">GESTÃO COMERCIAL EM CAMPO</span></span>`;
   // Display unmodified original pixels from the supplied reference crops.
   const glyph=(source,sourceWidth,sourceHeight,x,y,w,h,className='')=>`<span class="kit-glyph ${className}" aria-hidden="true" style="aspect-ratio:${w}/${h}"><img src="assets/visual-kit/assets/${source}" alt="" width="${sourceWidth}" height="${sourceHeight}" style="width:${100*sourceWidth/w}%;height:${100*sourceHeight/h}%;left:${-100*x/w}%;top:${-100*y/h}%"></span>`;
   // Key only the crop background, then intersect with source alpha. The final
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fixed shell, account menu and shared persisted theme preference.
   const header = document.querySelector('body>header');
   const headerBrand = node('a','header-brand'); headerBrand.href = '#painel';
-  headerBrand.innerHTML = brand()+'<span class="header-motto">SUA ROTA<br>COM INTELIGÊNCIA.</span>';
+  headerBrand.innerHTML = brand()+'<span class="header-motto">GESTÃO COMERCIAL<br>EM CAMPO</span>';
   headerBrand.addEventListener('click', e => { e.preventDefault(); switchTab('painel'); }); header.prepend(headerBrand);
   const theme = button('', () => {
     const dark = !document.body.classList.contains('traxio-dark');

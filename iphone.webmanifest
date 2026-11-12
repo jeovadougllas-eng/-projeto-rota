@@ -2,7 +2,7 @@
   "id": "/",
   "name": "RotaMapa",
   "short_name": "RotaMapa",
-  "description": "Planeje suas visitas, organize clientes e acompanhe suas rotas comerciais.",
+  "description": "RotaMapa — gestão comercial em campo. Organize clientes, visitas, pedidos e acompanhamento comercial.",
   "lang": "pt-BR",
   "start_url": "/?source=iphone-pwa",
   "scope": "/",

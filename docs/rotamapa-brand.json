@@ -1,6 +1,6 @@
 {
   "name": "RotaMapa",
-  "slogan": "Sua rota com inteligência.",
+  "slogan": "Gestão comercial em campo",
   "sourceLogoSha256": "37fbe3bd31a32eea6e024f1a748dc8f4b5d0bcce9aaf0b24b9d9b2a28b5e99a5",
   "sourceIconSha256": "a1daba9573cee11e7aec4ad964a04148da24ba5eeaccbb967e1123efa75c4423",
   "files": {
@@ -11,5 +11,5 @@
     "assets/rotamapa/icon-512.png": "b4f80d48a98fa832d81f453e3661e411245ad4b316f5ab9bac1fbc8352198c66"
   },
   "symbol": "RM: pin no R; três marcações de estrada na haste direita do M.",
-  "sourceNote": "Ícone exportado a partir da imagem preparada com base na referência enviada; tipografia e slogan anteriores preservados."
+  "sourceNote": "Símbolo, wordmark e ícones originais preservados. Slogan aprovado em 11/11/2026 renderizado como texto; a faixa antiga é ocultada por recorte CSS na interface Web/PWA."
 }

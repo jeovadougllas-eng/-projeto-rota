@@ -886,3 +886,8 @@ O proprietário suspendeu todo desenvolvimento, geração, assinatura, teste em 
 ### Correção posterior do titular — duração do Arrastão Azul
 
 Arrastão Azul ocorre uma vez por mês, mas é válido SOMENTE em uma data, com início e fim no mesmo dia. Acelera SellOut continua pelo mês completo. Dia D continua diário. Essa correção substitui a interpretação anterior que tratava a vigência do Arrastão como mês inteiro. Validar uma única data por lâmina de Arrastão sem inventar um limite de importações nem reescrever campanhas históricas.
+
+
+### Slogan aprovado — 11/11/2026 (Fortaleza)
+
+O titular aprovou **RotaMapa — gestão comercial em campo** e autorizou aplicar no site e na PWA. Substitui o slogan anterior Sua rota com inteligência na apresentação atual. Preservar nome RotaMapa, símbolo/wordmark/ícones, paleta, layout e identificadores técnicos. Não alterar APK/OTA suspensos nem arquivos históricos originais. Posicionamento amplia a comunicação para rotina comercial em campo.

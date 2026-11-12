@@ -6,9 +6,9 @@ const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const ui = readFileSync(new URL('../assets/traxio-ui.js', import.meta.url), 'utf8');
 
 test('RotaMapa title and slogan are present in the visible shell', () => {
-  assert.match(html, /<title>RotaMapa \| Sua rota com inteligência\.<\/title>/);
+  assert.match(html, /<title>RotaMapa \| Gestão comercial em campo<\/title>/);
   assert.match(ui, /Entrar no RotaMapa/);
-  assert.match(ui, /SUA ROTA<br>COM INTELIGÊNCIA\./);
+  assert.match(ui, /GESTÃO COMERCIAL<br>EM CAMPO/);
 });
 
 test('approved raster lettering replaces the legacy logo without generic font reconstruction', () => {

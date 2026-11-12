@@ -1,6 +1,6 @@
 /* iPhone web installation only. App, auth, API and customer data are always network-only. */
 'use strict';
-const SHELL='traxelo-iphone-offline-v2',OFFLINE='/iphone-offline.html';
+const SHELL='traxelo-iphone-offline-v3',OFFLINE='/iphone-offline.html';
 self.addEventListener('install',event=>{event.waitUntil(caches.open(SHELL).then(cache=>cache.add(new Request(OFFLINE,{cache:'reload'}))));});
 // Do not skipWaiting or reload running tabs: a route/visit may be in progress.
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('traxelo-iphone-offline-')&&key!==SHELL).map(key=>caches.delete(key)))));});
