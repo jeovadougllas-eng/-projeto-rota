@@ -1,0 +1,30 @@
+{
+  "version": "1.14.2",
+  "date": "2026-11-12",
+  "timezone": "America/Fortaleza",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "deploymentId": "dpl_GyULjfTmLDjfirzSuf5nkWyYmBgv",
+  "sourceCommit": "bc26e0cf380e3faba944c01234139e27eaa0a66e",
+  "buildDurationMs": 29450,
+  "verifiedPublicFiles": 232,
+  "checks": {
+    "publicHashes": "passed",
+    "privateDocsAndSql": "404",
+    "androidDistribution": "404",
+    "rankingUnauthenticated": "401",
+    "runtimeErrorsInitialWindow": "no error/fatal groups; initial five-minute lookback only"
+  },
+  "validation": {
+    "unitPassed": 252,
+    "browserDistinctPassedAcrossRuns": 82,
+    "singleFullRunClaimed": false,
+    "remoteCiLastObserved": "43228712443 pending; not certified",
+    "realLoginUsed": false,
+    "realCustomerWritesForTests": false,
+    "nativeWork": false
+  },
+  "rollbackDeploymentId": "dpl_5jSgQ8zt4ubvkUz28E8ufky1sArs",
+  "update": "Reopen Web/PWA with internet; do not clear data or reinstall."
+}
