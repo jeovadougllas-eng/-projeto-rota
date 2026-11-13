@@ -3,11 +3,11 @@
 const SHELL='rotamapa-app-shell-v1',OFFLINE='/iphone-offline.html';
 self.addEventListener('install',event=>event.waitUntil((async()=>{
  const response=await fetch('/assets/rotamapa-offline-files.json',{cache:'reload'});if(!response.ok)throw Error('Offline manifest unavailable');
- const paths=await response.json();if(!Array.isArray(paths)||!paths.includes('/'))throw Error('Invalid offline manifest');
+ const manifest=await response.json(),paths=manifest.files;if(manifest.version!==SHELL.slice('rotamapa-app-shell-'.length)||!Array.isArray(paths)||!paths.some(f=>f.path==='/'))throw Error('Invalid offline manifest');
  const cache=await caches.open(SHELL);
- try{for(let i=0;i<paths.length;i+=8)await Promise.all(paths.slice(i,i+8).map(async path=>{
+ try{for(let i=0;i<paths.length;i+=4)await Promise.all(paths.slice(i,i+4).map(async ({path,sha256})=>{
   if(!(path==='/'||path===OFFLINE||path==='/iphone.webmanifest'||path.startsWith('/assets/'))||path.includes('..')||path.includes('?'))throw Error('Invalid offline asset');
-  const r=await fetch(path,{cache:'reload',credentials:'omit'});if(!r.ok)throw Error('Offline asset unavailable');await cache.put(path,r);
+  const r=await fetch(path,{cache:'reload',credentials:'omit'});if(!r.ok)throw Error('Offline asset unavailable');const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await r.clone().arrayBuffer())),v=>v.toString(16).padStart(2,'0')).join('');if(digest!==sha256)throw Error('Offline version mismatch');await cache.put(path,r);
  }));const tabs=await self.clients.matchAll({includeUncontrolled:true});for(const tab of tabs)tab.postMessage({type:'rotamapa:offline-ready'});}catch(e){await caches.delete(SHELL);throw e;}
 })()));
 // New shell waits for all old tabs to close. Never reload an active order or route.

@@ -4,6 +4,7 @@ import { resolve, extname, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
+await (await import('./prepare-offline-files.mjs')).prepareOfflineFiles(root);
 const types = { '.json':'application/json; charset=utf-8', '.webmanifest':'application/manifest+json; charset=utf-8', '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.woff2':'font/woff2', '.ttf':'font/ttf' };
 const server = createServer(async (request, response) => {
   try {

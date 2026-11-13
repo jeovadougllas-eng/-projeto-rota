@@ -25,9 +25,7 @@ for(const name of allowed){await mkdir(join(output,name,'..'),{recursive:true});
 const files={};
 async function hashDirectory(path,prefix=''){for(const e of await readdir(path,{withFileTypes:true})){const name=prefix+e.name;if(e.isDirectory())await hashDirectory(join(path,e.name),name+'/');else files[name]=createHash('sha256').update(await readFile(join(path,e.name))).digest('hex');}}
 const shellPath=join(output,'iphone-sw.js');await writeFile(shellPath,(await readFile(shellPath,'utf8')).replace("rotamapa-app-shell-v1","rotamapa-app-shell-"+commit));
-const shellFiles=['/','/iphone.webmanifest','/iphone-offline.html'];
-async function offlineFiles(path,prefix){for(const entry of await readdir(path,{withFileTypes:true})){if(entry.isDirectory())await offlineFiles(join(path,entry.name),prefix+entry.name+'/');else shellFiles.push(prefix+entry.name);}}
-await offlineFiles(join(output,'assets'),'/assets/');await writeFile(join(output,'assets/rotamapa-offline-files.json'),JSON.stringify(shellFiles)+'\n');
+await (await import('./prepare-offline-files.mjs')).prepareOfflineFiles(output,commit);
 await hashDirectory(output);
 await writeFile(join(output,'rotamapa-preview-build.json'),JSON.stringify({sourceCommit:commit,target:release?'production':'preview',files},null,2)+'\n');
 console.log(JSON.stringify({sourceCommit:commit,output:'preview-runtime',publicFiles:Object.keys(files).length,deployed:false}));
