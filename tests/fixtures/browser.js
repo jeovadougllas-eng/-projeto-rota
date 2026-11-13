@@ -1,7 +1,7 @@
 import { clients } from './clients.js';
 
 // Only Playwright injects these doubles. Production HTML has no test switch or auth bypass.
-export async function prepare(page, {authenticated=true, theme='light', records=clients, liveMaps=false, lockAuthFixture=false}={}) {
+export async function prepare(page, {authenticated=true, theme='light', records=clients, liveMaps=false, lockAuthFixture=true}={}) {
   await page.addInitScript(({authenticated,theme,records,lockAuthFixture})=>{
     if(!localStorage.getItem('projeto_rota_mapa_v1')) localStorage.setItem('projeto_rota_mapa_v1',JSON.stringify(records));
     if(!localStorage.getItem('traxio.account.preferences.v1')) localStorage.setItem('traxio.account.preferences.v1',JSON.stringify({theme,font:100}));

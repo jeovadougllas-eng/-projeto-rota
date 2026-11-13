@@ -36,3 +36,6 @@ for file in supabase/migrations/20261110204232_google_location_limits.sql test-d
 done
 
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/portfolio-exclusion.sql
+for file in supabase/migrations/20261112235921_editable_unbilled_orders.sql test-db/editable-orders.sql; do
+ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
+done

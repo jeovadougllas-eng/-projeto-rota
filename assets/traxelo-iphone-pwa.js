@@ -1,6 +1,10 @@
 /* iPhone install guidance: iOS requires the user's browser Share menu to add a web app. */
 (function(){
 'use strict';
+if('serviceWorker' in navigator&&window.isSecureContext){
+ const register=async()=>{try{const registration=await navigator.serviceWorker.register('/iphone-sw.js',{scope:'/',updateViaCache:'none'});if(!await caches.match('/'))window.dispatchEvent(new Event('rotamapa:offline-shell-preparing'));const installing=registration.installing;if(installing)installing.addEventListener('statechange',()=>{if(installing.state==='redundant')window.dispatchEvent(new Event('rotamapa:offline-shell-error'));});}catch{window.dispatchEvent(new Event('rotamapa:offline-shell-error'));}};
+ if(document.readyState==='complete')register();else window.addEventListener('load',register,{once:true});
+}
 function initialize(){
 if(window.TraxioNative||window.Capacitor?.isNativePlatform?.()||!/iPhone|iPod/i.test(navigator.userAgent))return;
 const standalone=matchMedia('(display-mode: standalone)'),isInstalled=()=>standalone.matches||navigator.standalone===true;
@@ -36,10 +40,15 @@ function positionTools(){
 document.getElementById('accountToggle')?.setAttribute('aria-label','Abrir menu da conta');
 positionTools();standalone.addEventListener('change',positionTools);window.addEventListener('appinstalled',positionTools);
 new MutationObserver(positionTools).observe(document.body,{attributes:true,attributeFilter:['class']});
-if('serviceWorker' in navigator&&window.isSecureContext){
- const register=()=>navigator.serviceWorker.register('/iphone-sw.js',{scope:'/',updateViaCache:'none'}).catch(()=>{});
- if(document.readyState==='complete')register();else window.addEventListener('load',register,{once:true});
-}
+
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize,{once:true});else initialize();
+})();
+
+// Public shell readiness is independent of the iPhone installation instructions.
+(function(){
+ const status=document.createElement('p');status.id='offlineConnectionStatus';status.setAttribute('role','status');status.style.cssText='position:fixed;bottom:8px;left:12px;right:12px;z-index:9999;padding:8px 12px;background:#082e3a;color:#fff;border:1px solid #13b8a6;border-radius:8px;font:14px/1.4 sans-serif;pointer-events:none';
+ function update(){status.hidden=navigator.onLine;status.textContent='Sem internet. Pedidos e alterações salvos ficam neste aparelho até a reconexão. Mapas e consultas online indisponíveis.';}
+ function init(){document.body.append(status);update();window.addEventListener('online',update);window.addEventListener('offline',update);window.addEventListener('rotamapa:offline-shell-preparing',()=>{if(navigator.onLine){status.hidden=false;status.textContent='Preparando o uso offline. Mantenha o aplicativo aberto e conectado até concluir.';}});window.addEventListener('rotamapa:offline-shell-error',()=>{status.hidden=false;status.textContent='Não foi possível preparar o uso offline. Mantenha a internet e confira o espaço livre do navegador.';});navigator.serviceWorker?.addEventListener('message',event=>{if(event.data?.type==='rotamapa:offline-ready'&&navigator.onLine){status.hidden=false;status.textContent='Arquivos offline prontos. Ative na próxima abertura, após concluir o pedido ou a rota.';setTimeout(update,12000);}});document.addEventListener('pointerdown',()=>navigator.storage?.persist?.().catch(()=>{}),{once:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

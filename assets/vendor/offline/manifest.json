@@ -1,0 +1,29 @@
+{
+  "upstream": {
+    "supabase-2.57.0.js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js",
+    "maplibre-5.6.0.js": "https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js",
+    "maplibre-5.6.0.css": "https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"
+  },
+  "files": [
+    {
+      "file": "LICENSE-maplibre",
+      "sha256": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2"
+    },
+    {
+      "file": "LICENSE-supabase",
+      "sha256": "334dd6820e2eaeab2064e7c59001b810566728a28a41a7c1dbf69bbee17d0936"
+    },
+    {
+      "file": "maplibre-5.6.0.css",
+      "sha256": "792ac997dcf6ae6f643eb4e2dee4630c85e7056526bd8fb85ffe83c67d6c41b4"
+    },
+    {
+      "file": "maplibre-5.6.0.js",
+      "sha256": "07e6ca71a5b6d835a7c3803fb484f0a6e5f0dcbfa131407666edb9e9316564f9"
+    },
+    {
+      "file": "supabase-2.57.0.js",
+      "sha256": "14998cfa794c1fab3f8b3c45cbaa60ca3721af53b8acabfa27658f453e52b267"
+    }
+  ]
+}

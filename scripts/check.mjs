@@ -8,7 +8,7 @@ new Script(await readFile(new URL('../assets/traxio-geolocation.js', import.meta
 new Script(await readFile(new URL('../assets/traxio-native.js', import.meta.url),'utf8'),{filename:'traxio-native.js'});
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
 if(new Set(ids).size !== ids.length) throw Error('Duplicate IDs in HTML');
-for(const source of ['https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js','assets/vendor/sheetjs/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js']) if(!html.includes(source)) throw Error('Missing existing dependency: '+source);
+for(const source of ['assets/vendor/offline/maplibre-5.6.0.js','assets/vendor/sheetjs/xlsx.full.min.js','assets/vendor/offline/supabase-2.57.0.js']) if(!html.includes(source)) throw Error('Missing existing dependency: '+source);
 for(const provider of ["data-provider=\"google\"", "data-provider=\"azure\"", "flowType:'pkce'", "storageKey:'traxio-auth-v3'"]) if(!html.includes(provider)) throw Error('Existing integration changed: '+provider);
 console.log(`Validated ${scripts.length} inline scripts, the presentation adapter, unique HTML IDs and existing integration identifiers.`);
 
@@ -70,3 +70,5 @@ new Script(await readFile(new URL('../assets/rotamapa-sale-export.js',import.met
 new Script(await readFile(new URL('../assets/rotamapa-fair-sync.js',import.meta.url),'utf8'),{filename:'rotamapa-fair-sync.js'});
 
 for(const file of ['rotamapa-order-import-model.js','rotamapa-order-import-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+await import('./check-offline-assets.mjs');

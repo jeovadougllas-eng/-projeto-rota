@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <!-- iphone-pwa:end -->
-<link href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css" rel="stylesheet">
+<link href="assets/vendor/offline/maplibre-5.6.0.css" rel="stylesheet">
 
 <script>
 if(new URLSearchParams(location.search).has('code'))document.documentElement.classList.add('traxio-oauth-pending');
@@ -63,16 +63,16 @@ if(new URLSearchParams(location.search).has('code'))document.documentElement.cla
 </main><div id="traxioNavOverlay" class="traxio-nav-overlay" hidden><div class="traxio-nav-top"><strong>RotaMapa · Navegação</strong><div class="traxio-nav-actions"><button id="traxioNavMinimize" type="button" aria-label="Minimizar mapa">▣ Minimizar</button><button id="traxioNavClose" type="button" aria-label="Fechar mapa ampliado">✕</button></div></div><div id="traxioNavMapHost" class="traxio-nav-map-host"></div><div id="traxioNavControls" class="traxio-nav-controls"></div></div><button id="traxioNavExpand" class="traxio-nav-expand" type="button" hidden>↗ Ampliar navegação</button><dialog id="clientDialog" class="detail-dialog"><div class="detail-inner"><div id="clientDetail"></div><div class="detail-actions"><button id="detailMap">Ver no mapa</button><button class="secondary" id="detailEdit">Editar cadastro</button><button class="secondary" id="detailClose">Fechar</button></div></div></dialog><footer>Projeto Rota · Protótipo de validação, não APK e não navegador automotivo</footer>
 <script src="assets/rotamapa-portfolio-scope.js"></script><script src="assets/traxelo-navigation-model.js"></script><script src="assets/traxio-geolocation.js"></script><script src="assets/rotamapa-google-model.js"></script><script src="assets/rotamapa-client-identity.js"></script><script src="assets/rotamapa-client-import.js"></script><link rel="stylesheet" href="assets/rotamapa-client-identity.css"><script src="assets/traxio-planner.js"></script>
 <script src="assets/rotamapa-auth.js"></script><script src="assets/traxio-native.js"></script>
-<script src="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"></script>
+<script src="assets/vendor/offline/maplibre-5.6.0.js"></script>
 <script src="assets/vendor/sheetjs/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js"></script>
+<script src="assets/vendor/offline/supabase-2.57.0.js"></script>
 
 <script>
 'use strict';
 const $=id=>document.getElementById(id), KEY=RotaMapaPortfolioScope.clientsKey();
 let selectedIds=new TraxioPlanner.IdSet(),selectionInitialized=false,routeBusy=false;let editingClientId=null;let clients=[],map=null,markers=[],draftMarker=null,routeGeo=null,gps=null,lastRoute=null,adjustingPin=false;
 try{const raw=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(raw))clients=raw}catch{}
-const save=()=>{localStorage.setItem(KEY,JSON.stringify(clients));render();if(typeof traxioScheduleSync==='function')traxioScheduleSync()};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(clients));}catch(error){try{clients=JSON.parse(localStorage.getItem(KEY)||'[]');}catch{}for(const id of ['saveStatus','mapStatus']){const target=document.getElementById(id);if(target)target.textContent='Não foi possível salvar neste aparelho. Confira o espaço livre antes de continuar.';}throw error;}render();if(typeof traxioScheduleSync==='function')traxioScheduleSync()};
 const valid=(a,b)=>TraxioPlanner.coordinate(a)!==null&&TraxioPlanner.coordinate(b)!==null&&Math.abs(Number(a))<=90&&Math.abs(Number(b))<=180&&!(Number(a)===0&&Number(b)===0);
 const num=v=>{if(v==null||String(v).trim()==='')return null;const n=Number(String(v).replace(',','.'));return Number.isFinite(n)?n:null};
 const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -611,6 +611,13 @@ async function authInitialize(){
    global:{headers:RotaMapaPortfolioScope.headers()},
    auth:{storageKey:'traxio-auth-v3',persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'pkce'}
   });
+  // Offline unlock reads only the existing session on the same device and owner.
+  // It does not validate tokens or grant access to server operations.
+  if(!authClient.__offlineSessionAdapter){
+   const session=authClient.auth.getSession.bind(authClient.auth);
+   authClient.auth.getSession=async()=>{if(!navigator.onLine){try{const cached=JSON.parse(localStorage.getItem('traxio-auth-v3')||'null');if(cached?.user?.id&&cached.user.id===localStorage.getItem('traxio_sync_owner_v29'))return{data:{session:cached},error:null};}catch{}}return session();};
+   authClient.__offlineSessionAdapter=true;
+  }
   const params=new URLSearchParams(location.search);
   const oauthError=params.get('error_description')||params.get('error');
   if(oauthError){authNotice('Google: '+oauthError,true);return}

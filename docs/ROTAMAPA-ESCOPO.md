@@ -911,3 +911,7 @@ Na sequência da anotação da edição de pedidos, o titular solicitou capacida
 - Pedidos gerados no RM não significam faturamento confirmado nem lançamento no Mercado Farma. Integração com o ambiente da feira, quando utilizada, deve preservar o vínculo ao mesmo registro geral, sem duplicação financeira. O fluxo específico para simulações/pré-pedidos ainda não foi definido.
 
 Exemplo analisado localmente, somente para entender a estrutura: uma aba, colunas CNPJ, LOJA, COD_PRODUTO, EAN, DESCRIÇÃO PRODUTO, QUANTIDADE; 21 linhas de itens, 5 CNPJs distintos, 15 EANs distintos e 68 unidades. LOJA é informação auxiliar e não substitui o CNPJ. Arquivo e valores identificadores/comerciais privados não devem ser copiados para repositório público ou fixtures; testes futuros usarão dados sintéticos equivalentes. O importador atual rejeita múltiplos CNPJs: esta capacidade ainda precisa ser implementada.
+
+### Implementação autorizada — offline e pedidos (12/11/2026 Fortaleza)
+
+Titular autorizou implementar edição de pedidos e importação por vários CNPJs, além de corrigir a abertura offline também no computador. Esta decisão substitui a estratégia anterior de guardar somente o aviso offline. Preservar IDs, armazenamento, autenticação/RLS e pins; não cachear APIs ou mapas de terceiros. Primeiro preparo e operações remotas continuam exigindo conexão. Detalhes, limitações e validação em ROTAMAPA-OFFLINE-E-PEDIDOS.md. Publicação e ativação da validação do banco aguardam confirmação específica.

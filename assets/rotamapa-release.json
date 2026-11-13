@@ -1,9 +1,12 @@
 {
-  "version": "1.14.2",
+  "version": "1.15.0",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "PWA com arquivos do aplicativo disponíveis offline também no computador; pedidos e dados locais preservados até reconectar.",
+    "Editar pedidos RM ainda não faturados preservando o mesmo registro, vínculo e revisões anteriores.",
+    "Planilhas com vários CNPJs, agrupamento por cliente, revisão retomável e ajuste manual das colunas.",
     "Ícone Copiar CNPJ nas identificações de clientes e feira: copia somente os 14 dígitos, preserva zeros à esquerda e informa sucesso ou falha.",
     "Novo slogan aprovado: RotaMapa — gestão comercial em campo, no cabeçalho, acesso, Sobre, instalação e metadados Web/PWA. Símbolo, nome e ícones preservados.",
     "Excluir clientes por PDF, Excel ou CSV contendo CNPJ e razão social: somente os CNPJs listados e encontrados saem da carteira ativa, após prévia e confirmação.",
