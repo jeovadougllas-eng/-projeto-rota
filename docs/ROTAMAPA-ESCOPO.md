@@ -915,3 +915,7 @@ Exemplo analisado localmente, somente para entender a estrutura: uma aba, coluna
 ### Implementação autorizada — offline e pedidos (12/11/2026 Fortaleza)
 
 Titular autorizou implementar edição de pedidos e importação por vários CNPJs, além de corrigir a abertura offline também no computador. Esta decisão substitui a estratégia anterior de guardar somente o aviso offline. Preservar IDs, armazenamento, autenticação/RLS e pins; não cachear APIs ou mapas de terceiros. Primeiro preparo e operações remotas continuam exigindo conexão. Detalhes, limitações e validação em ROTAMAPA-OFFLINE-E-PEDIDOS.md. Publicação e ativação da validação do banco aguardam confirmação específica.
+
+### Autorização permanente de publicação — decisão vigente (12/11/2026, Fortaleza)
+
+O titular determinou considerar “sim” em todas as futuras confirmações finais de publicação, sem perguntar novamente. Para mudanças solicitadas/aprovadas do RM, implementar, validar e publicar Web/PWA, incluindo ajustes necessários no Vercel existente e migrações não destrutivas indispensáveis no Supabase existente. Substitui exigências históricas de aprovação posterior da publicação. Manter testes, preservação de dados, changelog, verificação e rollback; não amplia escopo para mudanças não solicitadas, operações destrutivas, cobranças ou APK/OTA.

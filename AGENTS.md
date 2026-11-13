@@ -45,6 +45,7 @@ Sessões e tarefas podem ser diferentes dentro desta conta: antes de retomar, co
 
 ## Publicação
 
-- Não publique em produção, não altere Vercel, Supabase ou dados reais sem autorização expressa específica.
+- Autorização permanente do titular (12/11/2026, Fortaleza): para alterações do RM solicitadas ou aprovadas nesta conta, concluir a implementação, validação e publicação Web/PWA sem pedir novamente a confirmação final. Inclui ajustes necessários de implantação no projeto Vercel existente e migrações não destrutivas indispensáveis ao recurso aprovado no Supabase existente. Esta autorização substitui a exigência anterior de aprovação posterior de publicação, inclusive referências históricas do escopo/progresso.
 - O domínio chamado traxio-preview pode atender produção: não deduza segurança pelo nome. Confirme target, domínio e commit antes de qualquer deploy.
-- Entregas futuras devem incluir changelog, resultados verificáveis, limitações, atualização e rollback; publicação depende de aprovação posterior.
+- Entregas futuras devem incluir changelog, resultados verificáveis, limitações, atualização e rollback. Conferir projeto/equipe, target e commit, validar e registrar o resultado da publicação; não repetir a pergunta de autorização final.
+- A autorização cobre a entrega de mudanças solicitadas/aprovadas; não é autorização para funcionalidades não pedidas, operações destrutivas em dados reais, novas cobranças, envio de mensagens a terceiros ou retomada de APK/OTA suspensos. Preservar as demais proteções deste arquivo.
