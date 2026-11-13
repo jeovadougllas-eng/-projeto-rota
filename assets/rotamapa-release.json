@@ -1,9 +1,11 @@
 {
-  "version": "1.15.0",
+  "version": "1.15.1",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Confirmar faturamento diretamente nos pedidos da feira; pedidos RM também aparecem nas notificações de pendência.",
+    "Editar pedidos importados de um único PDF ainda não faturado, preservando o original, os preços e o vínculo com a feira. Ajustes feitos no RM não são enviados ao Mercado Farma.",
     "PWA com arquivos do aplicativo disponíveis offline também no computador; pedidos e dados locais preservados até reconectar.",
     "Editar pedidos RM ainda não faturados preservando o mesmo registro, vínculo e revisões anteriores.",
     "Planilhas com vários CNPJs, agrupamento por cliente, revisão retomável e ajuste manual das colunas.",

@@ -761,3 +761,11 @@ Ativos: edição de pedidos RM não faturados mantendo ID/vínculos e histórico
 Titular citou a regra de AGENTS.md de aprovação posterior e instruiu considerar sim em todas as vezes, sem nova pergunta. Atualizada a seção Publicação de AGENTS.md e registrada precedência no escopo: entregar mudanças solicitadas/aprovadas, validar e publicar Web/PWA autonomamente, incluindo implantação e migração não destrutiva necessária ao recurso. Não solicitar novamente a autorização final padrão. Demais limites de dados reais, operações destrutivas, cobranças e suspensão de APK/OTA preservados.
 
 Somente documentação. Nenhum código, dado, configuração ou deployment alterado. Verificação: diff documental e git diff --check. Produção continua 1.15.0.
+
+## 13/11/2026 — Web/PWA 1.15.1: ações de pedidos pendentes
+
+Solicitação aprovada: confirmar faturamento de pedido RM vinculado à feira e editar pedido importado pendente. Corrigida a lista/sino para incluir pedidos RM e incluída ação de confirmar diretamente na feira. Edição de PDF único provisório mantém preço original por padrão, ID, vínculo e original completo, com revisões append-only. PDF atualizado explicita ajuste no RM sem envio ao Mercado Farma. Pedidos já faturados e múltiplos PDFs preservam proteção.
+
+Validações: 259 testes unitários aprovados; check de fontes, arte e SDK offline aprovado. Banco Postgres16 local com cadeia completa de migrações/RLS aprovado, incluindo ajuste válido, preservação do original e bloqueio após faturamento. Testes de navegador dos dois novos caminhos passaram em desktop e telefone; regressão ampliada em execução. Nenhum dado comercial real foi consultado/modificado para testes.
+
+Migração pending_pdf_order_adjustments aplicada com sucesso no Supabase existente sob autorização permanente, após validação local e conferência de metadados da função anterior. SECURITY INVOKER preservado. Publicação Web/PWA pendente apenas da conclusão das verificações; sem nova pergunta de autorização. Detalhes e limites em docs/pending-order-actions.md.

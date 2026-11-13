@@ -39,3 +39,5 @@ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/
 for file in supabase/migrations/20261112235921_editable_unbilled_orders.sql test-db/editable-orders.sql; do
  docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < "$file"
 done
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261113010134_pending_pdf_order_adjustments.sql
+node scripts/pdf-amendment-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1
