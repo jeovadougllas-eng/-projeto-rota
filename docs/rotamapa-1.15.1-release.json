@@ -1,0 +1,14 @@
+{
+  "version": "1.15.1",
+  "sourceCommit": "ab75448d7ae578a9765a75f084f8a643b28144b7",
+  "deploymentId": "dpl_9vjf6W8YgMePMXEbjXuxdf4WY8FN",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "verifiedPublicFiles": 239,
+  "migration": "pending_pdf_order_adjustments",
+  "checks": {"unitTests": 259, "fairPdfOfflineBrowserTests": 32, "pendingActionsBrowserTests": 6, "billingBrowserTests": 6, "localSqlChain": "passed", "sourceAndArt": "passed"},
+  "limitations": ["Editing imported orders requires one pending PDF with no settlements", "Changes in RM do not update Mercado Farma", "No physical Safari or remote CI certification"],
+  "rollbackDeploymentId": "dpl_5e8ybu3dbgrvkbi8EK98qbKm6MwJ",
+  "androidChanged": false
+}
