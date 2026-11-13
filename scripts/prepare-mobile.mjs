@@ -16,11 +16,11 @@ if(!xml.includes('app.traxio.mobile'))xml=xml.replace('</activity>',`<intent-fil
 </intent-filter></activity>`);
 for(const permission of ['ACCESS_FINE_LOCATION','ACCESS_COARSE_LOCATION'])if(!xml.includes(permission))xml=xml.replace('</manifest>',`<uses-permission android:name="android.permission.${permission}"/></manifest>`);
 xml=xml.replace(/android:icon="[^"]+"/, 'android:icon="@drawable/traxio_icon"').replace(/android:roundIcon="[^"]+"/, 'android:roundIcon="@drawable/traxio_icon"');
-await mkdir(new URL('android/app/src/main/res/drawable/',mobile),{recursive:true});await copyFile(new URL('../assets/visual-kit/assets/app_icon_dark.png',import.meta.url),new URL('android/app/src/main/res/drawable/traxio_icon.png',mobile));
+await mkdir(new URL('android/app/src/main/res/drawable/',mobile),{recursive:true});await copyFile(new URL('../assets/rotamapa/icon-512.png',import.meta.url),new URL('android/app/src/main/res/drawable/traxio_icon.png',mobile));
 await writeFile(manifest,xml);
 if(platforms.includes('ios')){
 const plist=new URL('ios/App/App/Info.plist',mobile);let info=await readFile(plist,'utf8');
-const additions={NSLocationWhenInUseUsageDescription:'A Traxio usa sua localização durante a navegação para planejar rotas, recalcular desvios e registrar a chegada aos clientes.'};
+const additions={NSLocationWhenInUseUsageDescription:'O RotaMapa usa sua localização durante a navegação para planejar rotas, recalcular desvios e registrar a chegada aos clientes.'};
 for(const [key,value] of Object.entries(additions))if(!info.includes('<key>'+key+'</key>'))info=info.replace('</dict>','<key>'+key+'</key><string>'+value+'</string>\n</dict>');
 if(!info.includes('CFBundleURLTypes'))info=info.replace('</dict>',`<key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>Traxio authentication</string><key>CFBundleURLSchemes</key><array><string>app.traxio.mobile</string></array></dict></array></dict>`);
 await writeFile(plist,info);

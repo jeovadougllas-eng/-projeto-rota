@@ -1,0 +1,20 @@
+{
+  "version": "1.4.0",
+  "source": "705ac4ce49e1c2c27e57c141e591ca28a04b69a4",
+  "run": "42277014062",
+  "packageId": "app.traxio.mobile",
+  "nativeVersion": 4,
+  "apkSha256": "aa21d5e437cc364123a408d2038ca2756a62f4044fd4cec7a502bcaeb3521c65",
+  "apkBytes": 17908256,
+  "signerSha256": "60ab60c21dbdf4aa42890b17694a8c1269b59b6e89fafaae7ae432725c67a701",
+  "previous131SignerSha256": "ea92eebce5c418aec81b80181f392af7d9214a0c425aae2fd59b0b84231f70ee",
+  "inPlaceUpgradeFrom131": false,
+  "inPlaceUpgradeFromStable": false,
+  "otaVersion": "cbf58f1a7efc6467e900c880a35b0509297094742486086cb4702181053d0a6e",
+  "otaSha256": "2396fb65c796fe3abc0ca92b85affa35874c2dc89c49be9c48df46d4cddbba21",
+  "otaBytes": 12108399,
+  "bundledFiles": 118,
+  "minimumOtaNativeVersion": 2,
+  "launcherResource": "res/drawable/traxio_icon.png",
+  "originalInstallerPreserved": true
+}

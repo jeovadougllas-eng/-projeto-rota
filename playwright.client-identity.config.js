@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.iphone.config.js';export default defineConfig({...base,testMatch:['client-identity.spec.js'],timeout:45000,outputDir:'test-results-client-identity',reporter:[['list'],['json',{outputFile:'test-results-client-identity/results.json'}]]});

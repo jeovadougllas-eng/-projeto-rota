@@ -1,30 +1,15 @@
 # Transição de marca — Traxelo.IA
 
-Branch isolada: `dev/traxelo-ia-brand-transition`. Base: `dev/traxio-mockup-fidelity`.
+## Estado atual em 23/10/2026
 
-## Decisão de marca
-Nome de exibição: **Traxelo.IA**.
-Slogan: **SUA ROTA COM INTELIGÊNCIA.**
+Os dois kits aprovados foram recebidos e seus READMEs/manifests foram lidos. O cabeçalho e o login agora usam o lettering rasterizado aprovado, com o símbolo completo recortado da composição horizontal escura. O slogan oficial **SUA ROTA COM INTELIGÊNCIA.** é texto separado; o slogan antigo da prancha não é exibido. O favicon também usa o recorte aprovado.
 
-## Alterações efetivamente realizadas
-- Título HTML atualizado.
-- Texto do botão de login e lema do cabeçalho atualizados.
-- Teste unitário de regressão da nomenclatura adicionado.
-- Textos alternativos dos recortes anteriores sinalizam explicitamente que o recurso visual ainda é legado.
+Os originais incorporados estão em `assets/traxelo/approved/`, com hashes em `docs/traxelo-approved-assets.json`. Os 17 arquivos do kit anterior foram preservados. Nenhum lettering foi substituído por fonte genérica e nenhum SVG aproximado foi apresentado como vetor original.
 
-## Não concluído
-- Substituição do lettering e logotipos rasterizados Traxio por **arquivos efetivos** do kit Traxelo.IA.
-- Substituição do ícone de aplicativo, favicon, imagem do login e recursos de launcher Android.
-- Revisão visual em navegador e Android; CI desta branch não é coberto automaticamente pelo workflow atual.
-- Renomeação técnica de identificadores persistentes, rotas OAuth, ID Android, chaves localStorage ou tabela Supabase. **Não renomear** sem migração planejada: isto pode quebrar sessões e dados.
-- Publicação no Vercel, merge em main ou distribuição de novo APK.
+A implementação atual está na branch isolada `dev/traxelo-android-routes`; a branch inicial desta transição foi `dev/traxelo-ia-brand-transition`, baseada em `dev/traxio-mockup-fidelity`. Identificadores persistentes, callbacks OAuth, pacote Android `app.traxio.mobile` e armazenamento de clientes não foram renomeados.
 
-## Recursos disponíveis para importação
-O proprietário aprovou os pacotes `Traxelo_IA_Kit_Visual_Codex.zip` e `Traxelo_IA_Kit_Vetorial_Editavel_Codex.zip`. Os SVGs são vetorização automática, não fonte vetorial original. Devem ser comparados com a prancha aprovada; a imagem da prancha ainda pode exibir slogan antigo, portanto **não** reproduzir o slogan rasterizado anterior.
+As capturas e os testes atuais estão descritos em [portfolio-validation.md](portfolio-validation.md) e [portfolio-review.html](portfolio-review.html). Prévia web: https://traxio-preview.vercel.app/ . O launcher mantém seu identificador técnico; a atualização de lettering não constitui migração de dados ou de contas.
 
-Ao importar, guardar originais intactos em `assets/traxelo/approved/` e derivados em `assets/traxelo/derived/`; evitar sobrescrever os 17 recursos imutáveis do kit antigo e seus hashes. Para trocar os recortes do header/login, revisar seletores `.brand-crop` e `.auth-original-logo` em `assets/kit-layout.css`, que atualmente dependem das dimensões e coordenadas do recorte Traxio. Preferir `<img>` independente, com object-fit:contain, após aferir dimensões reais. Não afirmar fidelidade sem capturas.
+A prancha recebida contém o slogan antigo e alguns recortes apresentam margens ou corte do símbolo. Foram selecionados os pixels completos da composição aprovada e ocultada somente a marca antiga embutida no cenário de login. As imagens e a paleta restantes foram mantidas. A fidelidade é avaliada pelas capturas, sem alegar fontes ou vetores originais que o kit não contém.
 
-## Validação
-Executar `npm ci && npm run check && npm run test:geolocation && npm test` em ambiente Node/Playwright com navegador disponível. Inspecionar visualmente login e header nos oito tamanhos/temas previstos. Confirmar autenticação real apenas em origem OAuth autorizada.
-
-**Política:** não tocar em `main`, banco real ou publicação sem revisão e autorização.
+`main` permanece preservada. A publicação autorizada é a prévia isolada, sem merge da branch principal.

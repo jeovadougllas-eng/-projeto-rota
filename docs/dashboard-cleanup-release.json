@@ -1,0 +1,14 @@
+{
+  "version": "1.2.2",
+  "noticeRemovedFromWebAndAndroid": true,
+  "bundleVersion": "99059c12cd318e9fb6e4b036710983795de60f9fa528514925d2e5ec162a2189",
+  "bundleSha256": "aff2a82f64859c63e9d29219c108950863f00a40ffb0bb1a39ecede61566158a",
+  "bytes": 12079847,
+  "filesVerified": 114,
+  "sourceCommit": "51751a06d6268ae954381080691502cbb789c742",
+  "deployment": "dpl_FWgs4kFERKy8p4TCjwDiPKoWcoMz",
+  "localBrowserChecks": 3,
+  "publishedBrowserChecks": 2,
+  "scope": "remove_dashboard_notice",
+  "nativeInstaller": "existing_installer_preserved_use_compatible_update"
+}

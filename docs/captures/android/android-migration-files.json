@@ -1,0 +1,14 @@
+{
+  "packageId": "app.traxio.mobile",
+  "backupSha256": "069e64ac21104ce3d9d442010904e2ade3f009e70058aa7a9ac35e9d94a6c5af",
+  "previousApkSha256": "7433061fab8c9346a75fdab13309198aee604e996a2e87386def97a44d504415",
+  "preservedFiles": 44,
+  "directories": [
+    "app_webview",
+    "shared_prefs",
+    "files"
+  ],
+  "migrated": true,
+  "allOriginalFilesVerified": true,
+  "newApkSha256": "6d9fe54fc87beac1e1da5200858ab5232468449f40733548d58ad75139fdcdc2"
+}

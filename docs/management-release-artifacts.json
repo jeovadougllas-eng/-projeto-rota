@@ -1,0 +1,13 @@
+{
+  "version": "1.2.0",
+  "apkBytes": 17871397,
+  "apkSha256": "1714c914f82bae180e3730d731c9a56b7d5e26b291c59ba915dc51fdf1bd6317",
+  "bundleVersion": "347ec7b6deee378f9099f4587ac20e4d695b18291c6b529e1f17e6e7e4db36fb",
+  "bundleSha256": "96a7fb3eddaa13632a6d8190b68b14ce8d1bf068f815c3beb2d336a5665b9964",
+  "bundleBytes": 12079289,
+  "bundleFiles": 114,
+  "allFilesVerified": true,
+  "originalInstallerPreserved": true,
+  "apiAnonymousDenied": true,
+  "nativeCorsVerified": true
+}

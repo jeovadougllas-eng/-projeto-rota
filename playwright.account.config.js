@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.iphone.config.js';export default defineConfig({...base,use:{...base.use,serviceWorkers:'block'},testMatch:'account.spec.js',timeout:45000,workers:2,outputDir:'test-results-account',reporter:[['list'],['json',{outputFile:'test-results-account/results.json'}]]});

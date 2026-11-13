@@ -1,0 +1,13 @@
+{
+  "firstInstallation": true,
+  "physicalDevice": false,
+  "checks": [
+    "Fresh APK includes the current RotaMapa UI bundle and starts with an empty customer portfolio and no signed-in account",
+    "All five sidebar pages remain usable without the duplicate header menu; light/dark surfaces visibly differ while scenic image rendering and menu icons remain identical",
+    "Real MapLibre in the installed Android WebView rotates to simulated GPS course; native zoom pauses camera follow, GPS remains active and Recenter restores course-up navigation",
+    "The installed original APK opens individual customer navigation from a focused pin, expands the real MapLibre map and preserves tracking in a floating window while another app tab is used (GPS and road replies are isolated fixtures)",
+    "Original APK saves a named route, creates a monthly agenda and reopens the saved sequence with current GPS without manufacturing visit records (account/GPS/road replies are isolated fixtures)",
+    "Installed Android calculates 17 units at the reached 5% tier (6 minimum, next 18/10%), saves and syncs a private order, and exports actual XLSX bytes through the existing native HTTPS browser (isolated account/catalog/storage fixtures)"
+  ],
+  "release": "2d569ef393106d37417244ecb0cb20bc1b21892844655beb3f973f28b9ecb4f2"
+}

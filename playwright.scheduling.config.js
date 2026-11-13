@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.iphone.config.js';export default defineConfig({...base,testMatch:['scheduling.spec.js','interface-theme.spec.js'],timeout:45000,outputDir:'test-results-scheduling',reporter:[['list'],['json',{outputFile:'test-results-scheduling/results.json'}]]});

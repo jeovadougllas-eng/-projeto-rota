@@ -1,0 +1,27 @@
+name: Published read-only geolocation comparison
+on:
+  push:
+    branches: [dev/traxelo-android-routes]
+    paths: ['.github/workflows/geolocation-benchmark-published.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Real public URL, server credential flags and auth boundary; no provider calls
+        run: npx playwright test --config=playwright.benchmark-published.config.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-geolocation-benchmark-evidence
+          retention-days: 14
+          path: test-results-benchmark-published/
