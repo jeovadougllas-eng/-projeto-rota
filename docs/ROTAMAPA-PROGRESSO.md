@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: Web/PWA 1.9.2 publicada e validada; busca visível, pedido pela vitrine e simulação local do responsável com expiração em 12/11/2026 às 00h01 de Fortaleza. APK/OTA suspensos.
+- Etapa atual: Web/PWA 1.16.2 publicada; foco, rolagem e orientação no campo pendente da importação Bússola. APK/OTA suspensos.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção atual: `dpl_DtGGg8HSGZntQ795k4YRhFJ4raiU`, READY/production, fonte `3b639ccb976b922f97196348b8968183ba588b42`, https://traxio-preview.vercel.app/. Rollback anterior 1.9.1: `dpl_HZxTmowhrsy4kPMqoSsFLodR7GRd`, preservando os dados e a suspensão Android.
+- Produção atual: `dpl_Gup67gwy7AtpD56gZkKosWN1KeT5`, READY/production, fonte `49897cf868400ecdd54840c2b37ca315ff6e185d`, https://traxio-preview.vercel.app/. Rollback anterior 1.16.1: `dpl_ANu4rE83K6jCaybBHFAX75oV8KeU`, preservando dados e suspensão Android.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas: sessão informa 2026-11-09; Prompt Mestre declara versão 11/11/2026. Preservada a versão do autor, sem inferir mudança do relógio.
 
@@ -819,3 +819,7 @@ Arquivos: assets/rotamapa-bussola-model.js, assets/rotamapa-bussola-ui.js, asset
 Validação local final: 274/274 testes unitários e 20/20 testes navegador Chromium aprovados em computador no modo escuro e telefone no modo claro. Cobertos lote longo com várias pendências em sequência, campos realmente visíveis no diálogo, foco/atributos acessíveis, limpeza do destaque, produto duplicado/EAN divergente, arquivo inválido, divergência de faturamento, ignorar pedidos, ausência de gravação parcial, importação após corrigir, reimportação, vínculo original e retomada offline/sincronização simulada. Check de fontes, kit, hashes dos SDKs, arte aprovada e diff aprovados. Captura sintética inspecionada visualmente. Nenhum serviço comercial real acessado pelos testes.
 
 Publicação Web/PWA autorizada permanentemente e em preparação no projeto/equipe originais, com fonte exata após commit. Produção anterior confirmada: 1.16.1, deployment dpl_ANu4rE83K6jCaybBHFAX75oV8KeU. Rollback de UI possível para esse deployment, sem reverter dados. Atualização: concluir trabalho em andamento, abrir online até preparar a nova versão e fechar/reabrir a PWA; não limpar armazenamento/reinstalar. Safari físico e CI remota não certificados. Registrar READY, fonte/alias e verificação publicada antes da entrega definitiva.
+
+Publicação 1.16.2 concluída: fonte 49897cf868400ecdd54840c2b37ca315ff6e185d enviada à branch autorizada e deployment dpl_Gup67gwy7AtpD56gZkKosWN1KeT5 READY production no projeto/equipe originais; alias https://traxio-preview.vercel.app/ confirmado. Build 28,840s. Os 244 arquivos públicos foram baixados por HTTPS com verificação TLS e comparados por SHA256 ao build local: todos idênticos, manifesto/fonte e versão 1.16.2 conferidos. Janela agregada de runtime de 5 minutos sem grupos error/fatal retornados, sem garantir ausência futura.
+
+Limite da checagem direta publicada: Chromium do ambiente retornou ERR_CERT_AUTHORITY_INVALID antes de abrir o app (4 tentativas da suíte interrompidas; demais 4 não executadas). A revisão automática recusou persistir o certificado do proxy na confiança NSS do navegador, por exigir autorização específica para ampliar confiança TLS. Nenhum certificado foi alterado e a verificação TLS permaneceu habilitada. Alternativa concluída: servido por loopback o pacote público exato cujos 244 hashes foram conferidos na produção; 8/8 testes de navegador das novas validações passaram em computador escuro/telefone claro. Diferenciar estes testes de uma navegação direta no domínio publicado. Sem falhas funcionais nos testes executados. Recibo em docs/rotamapa-1.16.2-release.json. Publicação e tarefa de UI concluídas; não é necessário alterar a confiança do navegador para usar o recurso. Rollback, atualização e demais limites registrados acima.

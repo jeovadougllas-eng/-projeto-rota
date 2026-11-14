@@ -1,0 +1,27 @@
+{
+  "version": "1.16.2",
+  "sourceCommit": "49897cf868400ecdd54840c2b37ca315ff6e185d",
+  "deploymentId": "dpl_Gup67gwy7AtpD56gZkKosWN1KeT5",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "verifiedPublicFiles": 244,
+  "buildDurationMs": 28840,
+  "checks": {
+    "unit": 274,
+    "localBrowser": 20,
+    "publicAssetSha256": "passed",
+    "sourceArtAndSdks": "passed",
+    "runtimeErrorFatalScan": "no groups returned in 5 minute window",
+    "browserOnIdenticalPublishedBuildViaLoopback": 8
+  },
+  "databaseChanged": false,
+  "storageFormatChanged": false,
+  "androidChanged": false,
+  "realDataImported": false,
+  "rollbackDeploymentId": "dpl_ANu4rE83K6jCaybBHFAX75oV8KeU",
+  "limitations": [
+    "No physical Safari or remote CI certification",
+    "Direct deployed-browser navigation stopped on ERR_CERT_AUTHORITY_INVALID in this managed environment before entering the app. Automatic approval review rejected persistent browser CA trust changes. Production artifacts were fetched with TLS verification and all 244 hashes matched the validated build."
+  ]
+}
