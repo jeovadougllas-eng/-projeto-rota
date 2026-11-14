@@ -1,9 +1,10 @@
 {
-  "version": "1.16.7",
+  "version": "1.16.8",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Cadastro editável com CNPJ, razão social, nome fantasia, contatos, campos adicionais, endereço e coordenadas. Correções manuais prevalecem sobre dados importados; IDs, histórico e fontes originais preservados, com sincronização automática.",
     "Controle Google por perfil, com aviso de renovação no dia seguinte para o limite diário e no próximo mês para o limite compartilhado. Configuração interna preservada e pins mantidos.",
     "Busca Google por nome ou endereço somente ao ajustar o pin, com cidade/UF, consulta por botão, até cinco resultados para revisão e proteção da cota existente. Posição só é salva ao confirmar; cancelamento preserva o cadastro.",
     "Exclusão por arquivo verifica os clientes selecionados sem bloquear por pendências de outros cadastros; preserva alterações locais e informa conflitos por cliente. Importação Bússola explica listas vazias, permite ignorar o pedido e usa o CNPJ reconhecido no cadastro.",

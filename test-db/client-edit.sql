@@ -1,0 +1,24 @@
+-- Synthetic local fixtures only. No production connection.
+BEGIN;
+INSERT INTO public.rotamapa_portfolios(user_id,id,name) VALUES('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000333','Editable customer fixture');
+INSERT INTO public.clients(user_id,portfolio_id,local_id,name,cnpj,city,neighborhood,latitude,longitude,data) VALUES('00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000333','editable-synthetic','Before','11222333000181','Before city','Before neighborhood',-5.8,-35.2,'{"id":"editable-synthetic","name":"Before","cnpj":"11222333000181","lat":-5.8,"lon":-35.2}');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',false);
+SELECT set_config('request.headers','{"x-rotamapa-portfolio":"00000000-0000-4000-8000-000000000333"}',false);
+SET ROLE authenticated;
+SELECT test.ensure((SELECT result='updated' AND current_revision=2 FROM public.traxio_update_client_safe('editable-synthetic',1,'{"id":"editable-synthetic","name":"After","cnpj":"04252011000110","fantasyName":"Synthetic fantasy","phone":"84900000000","city":"Natal","neighborhood":"Tirol","address":"Synthetic street","cep":"59000000","lat":-5.81,"lon":-35.21,"manualFields":{"cnpj":"04252011000110"}}')),'all editable summaries updated under CAS');
+SELECT test.ensure((SELECT cnpj='04252011000110' AND name='After' AND city='Natal' AND neighborhood='Tirol' AND latitude=-5.81 AND longitude=-35.21 AND data->>'phone'='84900000000' FROM public.clients WHERE local_id='editable-synthetic'),'indexed CNPJ region and pin match edited JSON');
+SELECT test.ensure((SELECT result='conflict_or_missing' FROM public.traxio_update_client_safe('editable-synthetic',1,'{"id":"editable-synthetic","name":"Stale"}')),'stale write rejected');
+SELECT test.ensure((SELECT result='updated' FROM public.traxio_update_client_safe('editable-synthetic',2,'{"id":"editable-synthetic","name":"After","cnpj":"","city":"","neighborhood":"","cep":"","lat":null,"lon":null,"manualFields":{"cnpj":""}}')),'explicit blanks allowed');
+SELECT test.ensure((SELECT cnpj IS NULL AND city IS NULL AND neighborhood IS NULL AND latitude IS NULL AND longitude IS NULL FROM public.clients WHERE local_id='editable-synthetic'),'cleared summaries do not resurrect old values');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000002',false);
+SELECT test.ensure((SELECT result='not_found' FROM public.traxio_update_client_safe('editable-synthetic',3,'{"name":"Other user"}')),'other user cannot change customer');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',false);
+SELECT set_config('request.headers','{"x-rotamapa-portfolio":"00000000-0000-4000-8000-000000000199"}',false);
+SELECT test.ensure((SELECT result='not_found' FROM public.traxio_update_client_safe('editable-synthetic',3,'{"name":"Other portfolio"}')),'other portfolio cannot change customer');
+RESET ROLE;
+SET ROLE anon;
+DO $$BEGIN BEGIN PERFORM public.traxio_update_client_safe('editable-synthetic',3,'{"name":"Anon"}');RAISE EXCEPTION 'anonymous update allowed';EXCEPTION WHEN insufficient_privilege THEN NULL;END;END$$;
+RESET ROLE;
+SELECT test.ensure((SELECT revision=3 AND name='After' FROM public.clients WHERE local_id='editable-synthetic'),'unauthorized attempts do not mutate record');
+ROLLBACK;
+SELECT 'Editable customer CAS, summaries and isolation assertions passed' AS result;

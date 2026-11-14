@@ -49,3 +49,6 @@ docker_local exec "$container" psql -U postgres -v ON_ERROR_STOP=1 -c "INSERT IN
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261114192835_google_insider_daily_limits.sql
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/google-profile-quota.sql
 node scripts/google-quota-concurrency.mjs "$container"
+
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261114201716_editable_client_summary_fields.sql
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/client-edit.sql

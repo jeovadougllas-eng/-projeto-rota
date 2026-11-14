@@ -39,7 +39,7 @@ function addressParts(c){
  let house=canonical?clean(c.houseNumber):clean(c.houseNumber)||field(c,['numero','numerodologradouro','numerodoimovel','nro','num'])||embeddedHouse||clean(company.numero);
  let complement=canonical?clean(c.complement):clean(c.complement)||field(c,['complemento','complement'])||[embeddedComplement,...complements].filter(Boolean).join(' · ')||clean(company.complemento);
  if(canonical){street=clean(c.street);city=clean(c.city);district=clean(c.neighborhood);state=stateCode(c.state);}
- return {street,house,complement,city:regionName(city||'')?city:'',district,state,zip:digits(clean(c.cep)||field(c,['cep','codigopostal'])||c.zip_code||company.cep),country:'BR'};
+ return {street,house,complement,city:regionName(city||'')?city:'',district,state,zip:canonical&&Object.hasOwn(c,'cep')?digits(c.cep):digits(clean(c.cep)||field(c,['cep','codigopostal'])||c.zip_code||company.cep),country:'BR'};
 }
 function parse(c){const parts=addressParts(c);const {complement,...query}=parts;return {...query,house:/^(sn|semnumero)$/.test(norm(parts.house))?'':parts.house};}
 function structured(c,{fillMissing=false}={}){
