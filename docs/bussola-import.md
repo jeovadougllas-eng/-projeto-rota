@@ -8,6 +8,8 @@ A prévia identifica clientes pelo CNPJ e produtos pelo EAN; também usa a rela�
 
 Número do pedido e CNPJ identificam pedidos externos. Distribuidora e cabeçalhos divergentes exigem conferência. PDF único do mesmo pedido pode receber o vínculo. Venda com vários PDFs fica bloqueada para não atribuir o total de um pedido ao conjunto. Vendas manuais do mesmo CNPJ são oferecidas para seleção, nunca juntadas automaticamente. Quando há candidatas, o padrão é ignorar até escolher um vínculo ou confirmar novo. Dois pedidos externos não podem usar o mesmo registro RM no lote.
 
+Ao confirmar com alguma pendência, o formulário rola até o campo correspondente e o coloca em foco, com destaque e mensagem junto dele. Ao corrigir e confirmar novamente, a próxima pendência é indicada. Pedidos marcados para ignorar continuam fora da validação do lote.
+
 Marcar a conferência global e, quando houver confirmação anterior de faturamento, a revisão da divergência. Só depois Confirmar importação grava o lote local. Carteira/histórico alterado durante a prévia invalida o lote e pede reabertura. Erro de espaço não grava metade do lote. Mesmo conteúdo externo é reconhecido mesmo em outro arquivo/dia; não cria outra venda. Pedidos novos recebem ID determinístico por conta/carteira/CNPJ/pedido. Índice e validação no servidor protegem duplicidade, inclusive entre CSV/PDF e aparelhos. Revisões usam o CAS existente. Conflitos remotos ficam pendentes, sem sobrescrever dados silenciosamente.
 
 ## Valores e histórico

@@ -4,3 +4,5 @@
 #orderDraftImport .commerce-item{min-width:0;overflow-wrap:anywhere}#orderDraftImport select,#orderDraftImport textarea{max-width:100%;box-sizing:border-box}
 
 #draftImportPhoto{display:block;max-width:100%;max-height:60vh;object-fit:contain;margin:12px auto}#draftImportPhoto[hidden]{display:none}
+
+#bussolaImportDialog [aria-invalid=true]{outline:2px solid #c5253c;outline-offset:3px;scroll-margin-block:24px}#bussolaImportDialog .bussola-field-error{display:block;margin-top:8px;color:#c5253c;font-weight:600}body.traxio-dark #bussolaImportDialog [aria-invalid=true]{outline-color:#ffb6be}body.traxio-dark #bussolaImportDialog .bussola-field-error{color:#ffb6be}

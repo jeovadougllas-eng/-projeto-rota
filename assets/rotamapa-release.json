@@ -1,9 +1,10 @@
 {
-  "version": "1.16.1",
+  "version": "1.16.2",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Importação do Bússola leva automaticamente ao campo com erro ao confirmar, com foco, destaque e orientação junto ao cliente, produto, vínculo ou conferência pendente.",
     "Central Importar arquivos reúne clientes, CSV do Bússola, pedidos, catálogos, promoções, caixas padrão e comissões; importações retiradas do Histórico de compras.",
     "Importar CSV de pedidos do Bússola com prévia, vínculo aos pedidos RM e proteção contra repetição.",
     "Faturamento sem impostos informado no CSV e total com impostos calculado apresentados separadamente; somente faturados entram nos rankings.",

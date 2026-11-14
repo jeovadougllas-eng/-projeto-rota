@@ -1,0 +1,2 @@
+import {defineConfig} from 'playwright/test';import base from './playwright.config.js';
+export default defineConfig({...base,testMatch:['bussola-import.spec.js'],projects:base.projects.filter(p=>['desktop-dark','phone-light'].includes(p.name)),timeout:60000,expect:{timeout:7000},reporter:[['list'],['json',{outputFile:'test-results-bussola/results.json'}]],outputDir:'test-results-bussola',use:{...base.use,baseURL:process.env.TRAXELO_PWA_BASE||base.use.baseURL},webServer:process.env.TRAXELO_PWA_BASE?undefined:base.webServer});
