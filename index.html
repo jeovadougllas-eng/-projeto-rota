@@ -815,7 +815,8 @@ function traxioScheduleSync(delay=1200){
   traxioAutoSync().catch(e=>{cloudNotice('Sincronização: '+(e.message||e)+'. Dados salvos neste aparelho; nova tentativa automática.',true);});
  },delay);
 }
-async function traxioAutoSync(){
+async function traxioAutoSync({onlyIds=null}={}){
+ const selected=onlyIds?new Set(onlyIds.map(String)):null;
  if(!authClient||!navigator.onLine||document.body.classList.contains('auth-locked')){traxioClientSyncStatus();return;}
  if(traxioSyncRunning){traxioSyncRequested=true;return;}
  if(cloudBusy||traxioSyncSuspended){traxioScheduleSync(1500);return;}
@@ -833,11 +834,12 @@ async function traxioAutoSync(){
   const baseline=traxioReadBase(userId);
   const remote=await cloudReadAll(userId);guard();
   const remoteById=new Map(remote.map(r=>[String(r.local_id),r]));
-  const snapshot=clients.map(c=>JSON.parse(JSON.stringify(c)));
+  const snapshot=clients.filter(c=>!selected||selected.has(String(c.id))).map(c=>JSON.parse(JSON.stringify(c)));
   const localById=new Map(snapshot.map(c=>[String(c.id),c]));
   const pendingReceive=[],pendingInactive=[];
   for(const r of remote){
    const id=String(r.local_id||'');
+   if(selected&&!selected.has(id))continue;
    if(!id||r.deleted_at||!r.data||typeof r.data!=='object'||Array.isArray(r.data)||typeof r.data.name!=='string')continue;
    const current=localById.get(id),remoteHash=cloudCanonical(r.data),prior=baseline[id];
    if(r.data.active===false){

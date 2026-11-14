@@ -1,9 +1,10 @@
 {
-  "version": "1.16.4",
+  "version": "1.16.5",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Exclusão por arquivo verifica os clientes selecionados sem bloquear por pendências de outros cadastros; preserva alterações locais e informa conflitos por cliente. Importação Bússola explica listas vazias, permite ignorar o pedido e usa o CNPJ reconhecido no cadastro.",
     "Cadastros manuais e importados com envio automático, novas tentativas após falhas, pendências visíveis e retomada ao reconectar ou reabrir. Exclusão por arquivo tenta sincronizar pendências antes de confirmar, preservando revisões e históricos.",
     "Exclusão por arquivo com prévia local rápida, leitura de CSV exportado em codificação antiga e conferência única da nuvem ao confirmar; históricos e versão anterior preservados.",
     "Importação do Bússola leva automaticamente ao campo com erro ao confirmar, com foco, destaque e orientação junto ao cliente, produto, vínculo ou conferência pendente.",
