@@ -41,3 +41,5 @@ for file in supabase/migrations/20261112235921_editable_unbilled_orders.sql test
 done
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261113010134_pending_pdf_order_adjustments.sql
 node scripts/pdf-amendment-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261114005253_bussola_csv_reconciliation.sql
+node scripts/bussola-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1

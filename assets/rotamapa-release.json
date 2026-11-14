@@ -1,9 +1,12 @@
 {
-  "version": "1.15.1",
+  "version": "1.16.0",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Importar CSV de pedidos do Bússola com prévia, vínculo aos pedidos RM e proteção contra repetição.",
+    "Faturamento sem impostos informado no CSV e total com impostos calculado apresentados separadamente; somente faturados entram nos rankings.",
+    "Catálogo EMS padronizado pela referência verificada de 44 EANs; PDFs reconhecem apresentações pelo EAN, preservando os pedidos antigos.",
     "Confirmar faturamento diretamente nos pedidos da feira; pedidos RM também aparecem nas notificações de pendência.",
     "Editar pedidos importados de um único PDF ainda não faturado, preservando o original, os preços e o vínculo com a feira. Ajustes feitos no RM não são enviados ao Mercado Farma.",
     "PWA com arquivos do aplicativo disponíveis offline também no computador; pedidos e dados locais preservados até reconectar.",

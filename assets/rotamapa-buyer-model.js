@@ -12,7 +12,7 @@ function months(month){if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))throw Error('MÃ
 function key(c){return root.RotaMapaClientIdentity.cnpj(c)||'id:'+String(c.id);}
 function analyze(clients,sales,month,options={}){const dates=months(month),byId=new Map(clients.map(c=>[String(c.id),c])),groups=new Map(),bought=new Set(),history=new Map(),active=new Map();
  for(const c of clients.filter(c=>c.active!==false&&!c.deleted_at).sort((a,b)=>Number(root.TraxioPlanner.location(b).ready)-Number(root.TraxioPlanner.location(a).ready)||String(a.id).localeCompare(String(b.id))))if(!active.has(key(c)))active.set(key(c),c);
- for(const s of sales){if(s.kind!=='sale'||s.status!=='confirmed')continue;const c=byId.get(String(s.clientId)),cnpj=s.source?.receipts?.[0]?.cnpj||c&&root.RotaMapaClientIdentity.cnpj(c),id=cnpj||'id:'+String(s.clientId),a=B().amounts(s);if(B().hasOrderInMonth(s,month))bought.add(id);
+ for(const s of sales){if(s.kind!=='sale'||s.status!=='confirmed')continue;const c=byId.get(String(s.clientId)),cnpj=s.bussola?.cnpj||s.source?.receipts?.[0]?.cnpj||c&&root.RotaMapaClientIdentity.cnpj(c),id=cnpj||'id:'+String(s.clientId),a=B().amounts(s);if(B().hasOrderInMonth(s,month))bought.add(id);
   if(s.date>=dates.start&&s.date<dates.end&&a.confirmedCents>0){
    const representative=active.get(id)||c,place=parts(representative||{});
    const g=groups.get(id)||{key:id,clientId:String(representative?.id||s.clientId),name:representative?.name||s.clientName||'Cliente arquivado',cnpj:cnpj||'',city:place.city||'',state:place.state||'',inCurrentPortfolio:active.has(id),totalCents:0,orders:0,clientIds:new Set(),purchases:[]};
@@ -37,7 +37,7 @@ function analyze(clients,sales,month,options={}){const dates=months(month),byId=
 // Unverified manual declarations never become invoiced merely by saving a sale.
 function confirmedManual(s,owner){
  const b=s.manualBilling;
- if(!owner||s.source||b?.version!==1||b.state!=='invoiced'||b.method!=='owner_confirmation'||b.confirmedBy!==owner||!Number.isFinite(Date.parse(b.confirmedAt))||!Number.isSafeInteger(b.totalCents)||b.totalCents<1||b.totalCents!==s.totalCents||b.invoiceDate!==undefined&&!root.RotaMapaCommerceModel.day(b.invoiceDate))return false;
+ if(!owner||s.bussola||s.source||b?.version!==1||b.state!=='invoiced'||b.method!=='owner_confirmation'||b.confirmedBy!==owner||!Number.isFinite(Date.parse(b.confirmedAt))||!Number.isSafeInteger(b.totalCents)||b.totalCents<1||b.totalCents!==s.totalCents||b.invoiceDate!==undefined&&!root.RotaMapaCommerceModel.day(b.invoiceDate))return false;
  return Array.isArray(s.lines)&&s.lines.length>0&&s.lines.every(l=>Number.isSafeInteger(l.quantity)&&l.quantity>0&&Number.isSafeInteger(l.unitCents)&&l.unitCents>=0)&&s.lines.reduce((n,l)=>n+l.quantity*l.unitCents,0)===b.totalCents;
 }
 function rankings(clients,sales,catalog,month,options={}){
@@ -48,18 +48,18 @@ function rankings(clients,sales,catalog,month,options={}){
   const id=key(c),p=parts(c);if(p.city)cities.set(cityKey(p.city),p.city.trim());
   if(c.active!==false&&!c.deleted_at&&!active.has(id))active.set(id,c);
  }
- const buyer=(id,c,source={})=>{const representative=active.get(id)||c,place=parts(representative||{});return {key:id,clientId:String(representative?.id||source.clientId||''),name:representative?.name||source.clientName||'Cliente arquivado',cnpj:root.RotaMapaClientIdentity.cnpj(representative)||source.source?.receipts?.[0]?.cnpj||'',city:place.city||'',state:place.state||'',inCurrentPortfolio:active.has(id),totalCents:0,orders:0,clientIds:new Set(),purchases:[]};};
+ const buyer=(id,c,source={})=>{const representative=active.get(id)||c,place=parts(representative||{});return {key:id,clientId:String(representative?.id||source.clientId||''),name:representative?.name||source.clientName||'Cliente arquivado',cnpj:root.RotaMapaClientIdentity.cnpj(representative)||source.bussola?.cnpj||source.source?.receipts?.[0]?.cnpj||'',city:place.city||'',state:place.state||'',inCurrentPortfolio:active.has(id),totalCents:0,orders:0,clientIds:new Set(),purchases:[]};};
  for(const [id,c]of active){const g=buyer(id,c);g.clientIds.add(String(c.id));buyers.set(id,g);}
  for(const p of catalog.filter(p=>p.kind==='product'&&!p.disabled)){products.set(String(p.id),{key:String(p.id),productId:String(p.id),name:p.name,code:p.code||'',inCurrentCatalog:true,units:0,totalCents:0,sales:new Set(),buyers:new Set()});}
  let totalCents=0,totalOrders=0,totalUnits=0;
  for(const s of sales){
-  if(s.kind!=='sale'||s.status!=='confirmed'||s.date<dates.start||s.date>=dates.end)continue;
+  const rankingDate=s.bussola?.invoiceDate||s.date;if(s.kind!=='sale'||s.status!=='confirmed'||rankingDate<dates.start||rankingDate>=dates.end)continue;
   const manual=confirmedManual(s,options.ownerId),billed=manual?[{state:'invoiced',amountCents:s.totalCents}]:B().receipts(s).filter(r=>r.state==='invoiced');if(!billed.length)continue;
-  const c=byId.get(String(s.clientId)),cnpj=root.RotaMapaClientIdentity.cnpj({cnpj:s.source?.receipts?.[0]?.cnpj})||c&&root.RotaMapaClientIdentity.cnpj(c),id=cnpj||'id:'+String(s.clientId),g=buyers.get(id)||buyer(id,c,s);
+  const c=byId.get(String(s.clientId)),cnpj=root.RotaMapaClientIdentity.cnpj({cnpj:s.bussola?.cnpj||s.source?.receipts?.[0]?.cnpj})||c&&root.RotaMapaClientIdentity.cnpj(c),id=cnpj||'id:'+String(s.clientId),g=buyers.get(id)||buyer(id,c,s);
   if(city&&cityKey(g.city)!==city)continue;
   const value=billed.reduce((n,r)=>n+r.amountCents,0);if(value<=0)continue;
-  g.totalCents+=value;g.orders++;g.clientIds.add(String(s.clientId));g.purchases.push({id:String(s.id),clientId:String(s.clientId),date:s.date,totalCents:value});buyers.set(id,g);totalCents+=value;totalOrders++;
-  for(const l of s.lines||[]){
+  g.totalCents+=value;g.orders++;g.clientIds.add(String(s.clientId));g.purchases.push({id:String(s.id),clientId:String(s.clientId),date:rankingDate,totalCents:value});buyers.set(id,g);totalCents+=value;totalOrders++;
+  for(const l of (s.bussola?root.RotaMapaBussola.financialLines(s):s.lines)||[]){
    const r=manual?billed[0]:billed.find(r=>r.index===l.sourceReceipt);if(!r)continue;
    const settled=r.settlement?.items?.[l.sourceItem],quantity=settled?.quantity??l.quantity,unitCents=settled?.unitCents??l.unitCents;
    if(!Number.isSafeInteger(quantity)||quantity<=0||!Number.isSafeInteger(unitCents)||unitCents<0)continue;

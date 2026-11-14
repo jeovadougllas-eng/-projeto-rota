@@ -40,7 +40,7 @@
  }
  function invoiced(sales,ownerId,timeZone='America/Fortaleza'){
   const out=[];for(const sale of sales){if(sale.kind!=='sale'||sale.status!=='confirmed')continue;
-   if(!sale.source){if(!root.RotaMapaBuyerModel.confirmedManual(sale,ownerId))continue;const date=sale.manualBilling.invoiceDate||sale.date;if(!day(date))continue;
+   if(sale.bussola){const o=sale.bussola;if(!o.grossBilledCents)continue;for(const [i,line]of o.items.entries())if(line.invoiced)out.push({saleId:sale.id,lineId:'bussola:'+line.ean,date:o.invoiceDate,productId:line.productId,amountCents:line.invoiced*line.grossUnitCents,commissionBaseCents:line.netBilledCents,returnedCents:0,adjustmentCents:0});}else if(!sale.source){if(!root.RotaMapaBuyerModel.confirmedManual(sale,ownerId))continue;const date=sale.manualBilling.invoiceDate||sale.date;if(!day(date))continue;
     for(const [i,line]of sale.lines.entries())out.push({saleId:sale.id,lineId:String(i),date,productId:line.productId,amountCents:line.quantity*line.unitCents,returnedCents:line.returnedCents??0,adjustmentCents:line.reversalCents??0});
    }else{
     for(const receipt of root.RotaMapaBillingModel.receipts(sale).filter(r=>r.state==='invoiced')){

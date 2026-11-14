@@ -11,6 +11,7 @@ function create(owner,storage=root.localStorage){
  function commit(next){storage.setItem(key,JSON.stringify(next));state=next;return state;}
  function add(event){if(!event?.id||!event.kind)throw Error('Registro inválido.');RotaMapaCommerceModel.validate(event.kind,event);const existing=state.events.find(e=>e.id===event.id);if(existing)return clone(existing);const value={...clone(event),version:1};commit({...state,events:[...state.events,value],outbox:[...new Set([...state.outbox,value.id])]});return clone(value);}
  function revise(id,patch){const old=state.events.find(e=>e.id===id);if(!old)throw Error('Visita não encontrada.');const value={...old,...clone(patch),id:old.id,kind:old.kind,version:(old.version||1)+1,updatedAt:new Date().toISOString()};RotaMapaCommerceModel.validate(value.kind,value);commit({...state,events:state.events.map(e=>e.id===id?value:e),outbox:[...new Set([...state.outbox,id])]});return clone(value);}
+ function applyBatch(values){if(!Array.isArray(values)||values.length>500)throw Error('Lote inválido.');const seen=new Set(),events=clone(state.events),outbox=new Set(state.outbox);for(const event of values){if(seen.has(event.id))throw Error('Registro repetido no lote.');seen.add(event.id);RotaMapaCommerceModel.validate(event.kind,event);const index=events.findIndex(e=>e.id===event.id),old=events[index];const value={...clone(event),version:(old?.version||0)+1,updatedAt:new Date().toISOString()};if(index<0)events.push(value);else events[index]=value;outbox.add(event.id);}commit({...state,events,outbox:[...outbox]});return clone(values);}
  function linkLegacy(token,id){commit({...state,legacyLinks:{...state.legacyLinks,[token]:id}});}
  async function sync(client,{isCurrent=()=>true}={}){
   if(busy)return {busy:true};busy=true;let sent=0,received=0,conflicts=0;
@@ -36,7 +37,7 @@ function create(owner,storage=root.localStorage){
    return {sent,received,conflicts,pending:state.outbox.length};
   }finally{busy=false;}
  }
- return {owner,portfolio,key,add,revise,linkLegacy,sync,snapshot:()=>clone(state),events:()=>clone(state.events),syncState:id=>state.outbox.includes(id)?'Pendente de envio':'Sincronizado'};
+ return {owner,portfolio,key,add,revise,applyBatch,linkLegacy,sync,snapshot:()=>clone(state),events:()=>clone(state.events),syncState:id=>state.outbox.includes(id)?'Pendente de envio':'Sincronizado'};
 }
 root.RotaMapaCommerceStore={create,canonical};
 })(globalThis);
