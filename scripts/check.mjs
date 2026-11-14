@@ -74,3 +74,5 @@ for(const file of ['rotamapa-order-import-model.js','rotamapa-order-import-ui.js
 await import('./check-offline-assets.mjs');
 
 for(const file of ['rotamapa-product-identity.js','rotamapa-bussola-model.js','rotamapa-bussola-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
+
+new Script(await readFile(new URL('../assets/rotamapa-file-imports.js',import.meta.url),'utf8'),{filename:'rotamapa-file-imports.js'});

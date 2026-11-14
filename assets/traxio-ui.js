@@ -133,8 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   stats.nextElementSibling.className='overview-note';
   const quick=node('aside','quick-actions');quick.innerHTML='<h3>Ações rápidas</h3>';
-  [['Planejar rota','Organize suas visitas','mapa'],['Ver no mapa','Explore seus clientes','mapa'],['Importar clientes','Adicione sua planilha','dados'],['Sincronizar dados','Atualize sua carteira','dados']].forEach(([text,description,target],i)=>{
-    const b=button('',()=>{switchTab(target);if(i===2)el('sheetFile').focus();if(i===3)el('cloudCheck').click();},'glass-action');
+  [['Planejar rota','Organize suas visitas','mapa'],['Ver no mapa','Explore seus clientes','mapa'],['Importar arquivos','Clientes, vendas e documentos','dados'],['Sincronizar dados','Atualize sua carteira','dados']].forEach(([text,description,target],i)=>{
+    const b=button('',()=>{switchTab(target);if(i===2)el('fileImportHeading')?.focus();if(i===3)el('cloudCheck').click();},'glass-action');
     b.setAttribute('aria-label',text);b.insertAdjacentHTML('afterbegin',glyph('dashboard_mockup_reference.png',858,635,668,[266,306,347,389][i],25,25,'kit-quick-icon'));
     const content=node('span','quick-action-copy');content.append(node('strong','',text),node('small','',description));b.append(content,node('span','action-chevron','›'));quick.append(b);
   });
@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     el('retryMap').addEventListener('click',()=>location.reload());
   }
 
-  el('dados').prepend(title('Importar carteira','Importe sua planilha, consulte cadastros e proteja suas carteiras.'));
+  el('dados').prepend(title('Importar arquivos','Clientes, vendas, pedidos e documentos comerciais em um só lugar.'));
   const guide = document.querySelector('.traxio-data-guide'), guideEntries = [...guide.children]; guide.replaceChildren();
   guideEntries.forEach((old,i)=>{
     const b=button('',()=>{

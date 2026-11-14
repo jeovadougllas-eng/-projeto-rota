@@ -42,7 +42,7 @@ test('theme, account menu, settings dialog and keyboard',async({page})=>{
 });
 
 test('quick actions, data accordions and weekly planner',async({page})=>{
-  await page.getByRole('button',{name:'Importar clientes',exact:true}).click();await expect(page.locator('#dados')).toBeVisible();
+  await page.locator('#painel').getByRole('button',{name:'Importar arquivos',exact:true}).click();await expect(page.locator('#dados')).toBeVisible();
   await page.locator('.traxio-data-guide button').nth(3).click();await expect(page.getByText('Baixar backup JSON',{exact:true})).toBeVisible();
   await page.locator('.tabs [data-tab="mapa"]').click();await page.locator('#route-mode-weekly').click();
   await expect(page.locator('#visitDate')).toBeVisible();await page.locator('#saveVisitDay').click();await expect(page.locator('#visitDayStatus')).toContainText('selecione os clientes');

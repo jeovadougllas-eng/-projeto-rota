@@ -10,7 +10,7 @@ test('approved dashboard contains actual translucent actions and no duplicate cu
  await expect(page.locator('#painel .stat')).toHaveCount(3);await expect(page.locator('#painel .glass-action')).toHaveCount(4);
  const alpha=await page.locator('#painel .glass-action').first().evaluate(n=>getComputedStyle(n).backgroundColor);
  expect(alpha).toMatch(/rgba/);
- await page.getByRole('button',{name:'Importar clientes',exact:true}).click();await expect(page.locator('#sheetFile')).toBeFocused();
+ await page.locator('#painel').getByRole('button',{name:'Importar arquivos',exact:true}).click();await expect(page.locator('#fileImportHeading')).toBeFocused();
  await page.locator('.tabs [data-tab=painel]').click();await page.locator('#allClientsShortcut').click();await expect(page.locator('#registryRows .client-link')).toHaveCount(7);
 });
 test('five contextual scenes retain original icons and usable pages without horizontal overflow',async({page},info)=>{

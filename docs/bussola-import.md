@@ -2,7 +2,7 @@
 
 ## Fluxo
 
-Em Histórico de compras ou Feira Unifarma > Vendas, usar **Importar CSV do Bússola**. Exportar Pedidos em CSV no Bússola; este recurso não faz login no Mercado Farma, não usa API externa nem envia pedidos. A leitura é local. Arquivo UTF-8 até 10 MB, 10 mil linhas e 500 pedidos; até 100 EANs por pedido. Colunas podem estar em outra ordem; nomes esperados são os da exportação Bússola. Separadores vírgula e ponto e vírgula, aspas, acentos e decimais brasileiros são tratados.
+Em Importar arquivos > Vendas do Bússola (ou no atalho contextual Feira Unifarma > Vendas), usar **Importar CSV do Bússola**. Exportar Pedidos em CSV no Bússola; este recurso não faz login no Mercado Farma, não usa API externa nem envia pedidos. A leitura é local. Arquivo UTF-8 até 10 MB, 10 mil linhas e 500 pedidos; até 100 EANs por pedido. Colunas podem estar em outra ordem; nomes esperados são os da exportação Bússola. Separadores vírgula e ponto e vírgula, aspas, acentos e decimais brasileiros são tratados.
 
 A prévia identifica clientes pelo CNPJ e produtos pelo EAN; também usa a relação verificada código EMS → EAN das 44 apresentações. Clientes fora da carteira ou ambíguos precisam ser ignorados ou resolvidos na carteira antes. Apresentação desconhecida requer associação explícita; EAN conflitante não pode ser associado silenciosamente.
 

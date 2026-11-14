@@ -1,9 +1,10 @@
 {
-  "version": "1.16.0",
+  "version": "1.16.1",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Central Importar arquivos reúne clientes, CSV do Bússola, pedidos, catálogos, promoções, caixas padrão e comissões; importações retiradas do Histórico de compras.",
     "Importar CSV de pedidos do Bússola com prévia, vínculo aos pedidos RM e proteção contra repetição.",
     "Faturamento sem impostos informado no CSV e total com impostos calculado apresentados separadamente; somente faturados entram nos rankings.",
     "Catálogo EMS padronizado pela referência verificada de 44 EANs; PDFs reconhecem apresentações pelo EAN, preservando os pedidos antigos.",
