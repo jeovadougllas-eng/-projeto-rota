@@ -1,0 +1,36 @@
+{
+  "version": "1.16.6",
+  "sourceCommit": "bd9f5b0c9b8454bd9bb3e948ae4fb8bd09e0c335",
+  "deploymentId": "dpl_CNkJ1ADTaRttBQoFBGeKoGqSTs2A",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "buildDurationMs": 21725,
+  "verifiedPublicFiles": 246,
+  "checks": {
+    "unitTests": 280,
+    "googleAndLocationFlowBrowserTests": 52,
+    "additionalDraftAndConfirmationBrowserTests": 22,
+    "explicitLightDarkVisualChecks": 2,
+    "directPublishedSyntheticBrowserTests": 10,
+    "sourceArtAndSdks": "passed",
+    "publishedEndpointConfigured": true,
+    "publishedEndpointSyntheticInvalidCredential": 403,
+    "publishedEndpointUnsupportedAction": 400,
+    "runtimeErrorFatalScan": "no groups returned in 5 minute window"
+  },
+  "databaseChanged": false,
+  "storageKeysChanged": false,
+  "quotaLimitsChanged": false,
+  "paidGoogleTestRequests": 0,
+  "androidChanged": false,
+  "realCommercialRecordsWritten": false,
+  "rollbackDeploymentId": "dpl_88DyHy4AnpzcEiwbMoLDsVWfDzm8",
+  "limitations": [
+    "Manual Google lookup requires internet and eligibility under existing account rules",
+    "The existing 3000 monthly application reservation cap includes map bootstrap and geocoding, not only pin searches",
+    "Application limits do not govern other projects or keys sharing Google billing; budget alerts are not provider spending caps",
+    "Unchanged Google-derived coordinates retain the existing expiry policy; independent manual points are not downgraded",
+    "No physical Safari or remote CI certification"
+  ]
+}
