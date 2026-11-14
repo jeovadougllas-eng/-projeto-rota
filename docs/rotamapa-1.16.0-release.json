@@ -1,0 +1,31 @@
+{
+  "version": "1.16.0",
+  "sourceCommit": "a81ee5783063116233aa2f0b520a6fc9498bd642",
+  "deploymentId": "dpl_4x7dW6uurMpskQryDDMhsSS9haWT",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "verifiedPublicFiles": 242,
+  "migration": "bussola_csv_reconciliation",
+  "checks": {
+    "unitTests": 274,
+    "browserRegressionExecutions": [46,22,12,4],
+    "publishedRuntimeSyntheticBrowserTests": 4,
+    "localSqlChain": "passed",
+    "sourceArtAndOfflineSdks": "passed",
+    "unauthenticatedRanking": 401,
+    "privateArtifacts": 404,
+    "runtimeErrorFatalScan": "no groups returned in 5 minute window"
+  },
+  "limitations": [
+    "Update every device to 1.16.0 before CSV import; older clients cannot validate the new CSV origin",
+    "CSV gross billed value is calculated; external freight, tax adjustments and returns are not inferred",
+    "Manual orders require explicit linkage; combined multi-PDF orders are blocked for review",
+    "No reliable external change timestamp, so preview and confirmation remain necessary",
+    "No physical Safari or remote CI certification"
+  ],
+  "rollbackDeploymentId": "dpl_9vjf6W8YgMePMXEbjXuxdf4WY8FN",
+  "rollbackCaution": "After importing CSV orders prefer a forward fix: previous client does not recognize the new source. Never delete originals or snapshots to roll back.",
+  "androidChanged": false,
+  "realCommercialDataImported": false
+}
