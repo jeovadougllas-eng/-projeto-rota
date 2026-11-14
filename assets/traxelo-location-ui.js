@@ -7,7 +7,7 @@ const nav=document.querySelector('nav.tabs'),main=document.querySelector('body>m
 // Fixed navigation must not be clipped/stacked by the scrolling content (notably WebKit).
 nav.id='primaryNavigation';document.body.insertBefore(nav,main);
 // The permanent sidebar is the sole page navigator. Keep pin/review cancellation on tab changes.
-nav.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{if(reviewQueue){finishReview();}else if(adjustingPin){directPin=false;endPin();showNotice('Ajuste cancelado ao mudar de aba. A posição do cliente não foi alterada.');}}));
+nav.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{if(reviewQueue){finishReview();}else if(adjustingPin){directPin=false;endPin({restore:true});showNotice('Ajuste cancelado ao mudar de aba. A posição do cliente não foi alterada.');}}));
 
 // One status surface describes local durability separately from confirmed cloud synchronization.
 const notice=node('div',null,'location-save-notice');notice.id='locationSaveNotice';notice.hidden=true;notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');
@@ -42,7 +42,7 @@ const pinActions=node('div',null,'row'),confirm=el('backToClient'),cancel=node('
 let directPin=false,pinStart=null,reviewQueue=null;
 const pinAddress=node('p');pinAddress.id='pinClientAddress';pinTitle.after(pinAddress);
 const queueControls=node('div',null,'row'),queueNext=node('button','Próximo cliente'),queueSkip=node('button','Pular por enquanto','secondary');queueNext.id='pinReviewNext';queueSkip.id='pinReviewSkip';queueNext.type=queueSkip.type='button';queueNext.hidden=queueSkip.hidden=true;queueControls.append(queueNext,queueSkip);pinPanel.append(queueControls);
-function finishReview(){const q=reviewQueue;reviewQueue=null;directPin=false;document.body.classList.remove('pin-review-active');confirm.hidden=false;queueNext.hidden=queueSkip.hidden=true;cancel.textContent='Cancelar ajuste';endPin();if(q)showNotice('Revisão encerrada: '+q.saved+' posição(ões) confirmada(s) neste aparelho; '+q.skipped+' pulada(s). Confira os avisos de envio à conta.');}
+function finishReview(){const q=reviewQueue;reviewQueue=null;directPin=false;document.body.classList.remove('pin-review-active');confirm.hidden=false;queueNext.hidden=queueSkip.hidden=true;cancel.textContent='Cancelar ajuste';endPin({restore:!q?.savedCurrent});if(q)showNotice('Revisão encerrada: '+q.saved+' posição(ões) confirmada(s) neste aparelho; '+q.skipped+' pulada(s). Confira os avisos de envio à conta.');}
 function openQueuedPin(){
  if(!reviewQueue)return;const q=reviewQueue;
  while(q.index<q.ids.length){const c=clients.find(c=>String(c.id)===q.ids[q.index]);if(c&&!P.location(c).ready&&P.hasSavedPoint(c))break;q.index++;}
@@ -51,26 +51,26 @@ function openQueuedPin(){
 }
 function beginReview(ids){const selected=new P.IdSet(ids),items=clients.filter(c=>selected.has(c.id)&&!P.location(c).ready&&P.hasSavedPoint(c));if(!items.length){showNotice('Selecione clientes com pontos salvos para conferir no mapa.');return;}reviewQueue={ids:items.map(c=>String(c.id)),index:0,saved:0,skipped:0,savedCurrent:false};document.body.classList.add('pin-review-active');openQueuedPin();}
 queueNext.onclick=()=>{if(reviewQueue){reviewQueue.index++;openQueuedPin();}};
-queueSkip.onclick=()=>{if(reviewQueue){reviewQueue.skipped++;endPin();reviewQueue.index++;openQueuedPin();}};
+queueSkip.onclick=()=>{if(reviewQueue){reviewQueue.skipped++;endPin({restore:true});reviewQueue.index++;openQueuedPin();}};
 
 function pinStatus(){
  if(!adjustingPin)return;pinPanel.hidden=false;const c=clients.find(c=>String(c.id)===String(editingClientId));pinTitle.textContent=c?'Conferir localização · '+c.name:'Conferir localização do novo cliente';pinAddress.textContent=c?.address||el('address').value;pinHelp.textContent='Arraste o pin laranja até a entrada da loja ou toque no mapa. Depois confirme para salvar.';if(reviewQueue)pinTitle.textContent='Cliente '+(reviewQueue.index+1)+' de '+reviewQueue.ids.length+' · '+(c?.name||'');confirm.disabled=!valid(num(el('lat').value),num(el('lon').value));
 }
 const adjustOriginal=el('adjustPin').onclick;
 el('adjustPin').onclick=()=>{
- const active=clients.find(c=>String(c.id)===String(editingClientId));pinStart=active?{id:active.id,lat:active.lat,lon:active.lon}:null;
+ const active=clients.find(c=>String(c.id)===String(editingClientId));pinStart={id:active?.id??null,lat:active?active.lat:num(el('lat').value),lon:active?active.lon:num(el('lon').value),precision:selectedPrecision};
  adjustOriginal();if(!adjustingPin)return;document.activeElement?.blur();el('clientEditDialog')?.close();pinStatus();setTimeout(()=>{map?.resize();showDraftMarker();el('map').scrollIntoView({block:'center',behavior:'instant'});},180);
 };
-function endPin(){adjustingPin=false;document.body.classList.remove('pin-mode');draftMarker?.remove();draftMarker=null;pinPanel.hidden=true;render();renderMarkers();}
+function endPin({restore=false}={}){if(restore&&pinStart){el('lat').value=pinStart.lat??'';el('lon').value=pinStart.lon??'';selectedPrecision=pinStart.precision;}adjustingPin=false;document.body.classList.remove('pin-mode');draftMarker?.remove();draftMarker=null;pinPanel.hidden=true;render();renderMarkers();}
 window.traxeloPinController=true;
 confirm.onclick=()=>{
  const lat=num(el('lat').value),lon=num(el('lon').value);
  if(!valid(lat,lon)){el('mapStatus').textContent='Escolha um ponto válido no mapa antes de confirmar.';pinHelp.textContent=el('mapStatus').textContent;return;}
  let record;
  const original=editingClientId!==null?clients.find(c=>String(c.id)===String(editingClientId)):null;
- if(pinStart&&!original){pinHelp.textContent='Este cliente não está mais na carteira. Cancele o ajuste e atualize a lista.';return;}
+ if(pinStart?.id!=null&&!original){pinHelp.textContent='Este cliente não está mais na carteira. Cancele o ajuste e atualize a lista.';return;}
  if(original){
-  record={...original,lat,lon,locationVerification:'manual_reviewed',locationSource:'manual_confirmation',locationConfirmedAt:new Date().toISOString()};if(window.RotaMapaGoogleModel)record=RotaMapaGoogleModel.manual(record,[original,original.locationCandidate,geoCandidates.get(original.id)]);delete record.locationCandidate;delete record.locationEvidence;delete record.locationSearchIssue;
+  record={...original,lat,lon,locationVerification:'manual_reviewed',locationSource:'manual_confirmation',locationConfirmedAt:new Date().toISOString()};if(window.RotaMapaGoogleModel)record=RotaMapaGoogleModel.manual(record,[original,original.locationCandidate,geoCandidates.get(original.id),window.RotaMapaGooglePin?.source()]);delete record.locationCandidate;delete record.locationEvidence;delete record.locationSearchIssue;
   const next=clients.map(c=>String(c.id)===String(record.id)?record:c);
   try{localStorage.setItem(KEY,JSON.stringify(next));}catch{const message='Não foi possível salvar a posição neste aparelho. Libere espaço e tente novamente.';pinHelp.textContent=message;el('mapStatus').textContent=message;return;}
   clients=next;geoCandidates.delete(record.id);searchSequence++;searchController?.abort();clearTimeout(searchTimer);traxioScheduleSync(200);
@@ -79,7 +79,7 @@ confirm.onclick=()=>{
  if(reviewQueue){reviewQueue.saved++;reviewQueue.savedCurrent=true;directPin=false;switchTab('mapa');pinPanel.hidden=false;confirm.hidden=true;queueSkip.hidden=true;queueNext.hidden=false;queueNext.textContent=reviewQueue.index+1>=reviewQueue.ids.length?'Concluir revisão':'Próximo cliente';pinHelp.textContent='Posição confirmada e salva neste aparelho. A sincronização com a conta é informada no aviso.';}else if(directPin){directPin=false;switchTab('mapa');}else{switchTab('clientes');el('clientEditDialog')?.showModal();el('saveStatus').textContent='Posição confirmada e salva. Não é necessário salvar o cadastro novamente.';}
  flushLocation(record.id);refreshSearch();
 };
-cancel.onclick=()=>{if(reviewQueue){finishReview();return;}const toMap=directPin;directPin=false;endPin();if(pinStart){el('lat').value=pinStart.lat??'';el('lon').value=pinStart.lon??'';}el('mapStatus').textContent='Ajuste cancelado. A posição do cliente não foi alterada.';if(!toMap){switchTab('clientes');el('clientEditDialog')?.showModal();}else switchTab('mapa');};
+cancel.onclick=()=>{if(reviewQueue){finishReview();return;}const toMap=directPin;directPin=false;endPin({restore:true});el('mapStatus').textContent='Ajuste cancelado. A posição do cliente não foi alterada.';if(!toMap){switchTab('clientes');el('clientEditDialog')?.showModal();}else switchTab('mapa');};
 window.traxeloReviewClient=id=>{
  const c=clients.find(c=>String(c.id)===String(id));if(!c)return;
  const cached=geoCandidates.get(c.id),candidate=valid(cached?.lat,cached?.lon)?cached:c.locationCandidate,point=valid(candidate?.lat,candidate?.lon)?candidate:valid(c.lat,c.lon)?c:null;
