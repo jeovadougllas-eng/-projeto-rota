@@ -1,0 +1,29 @@
+{
+  "version": "1.16.4",
+  "sourceCommit": "00f774fd04d77f92366b27c7a65b4fbb8b998a8f",
+  "deploymentId": "dpl_HU2PRaRuBRqvX91RhhSbZVRdxwRJ",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "buildDurationMs": 22363,
+  "verifiedPublicFiles": 244,
+  "checks": {
+    "unitTests": 275,
+    "localBrowserTests": 80,
+    "additionalFirstUseAndCloseTests": 4,
+    "directPublishedSyntheticBrowserTests": 6,
+    "sourceArtAndSdks": "passed",
+    "runtimeErrorFatalScan": "no groups returned in 5 minute window"
+  },
+  "databaseChanged": false,
+  "storageKeysChanged": false,
+  "androidChanged": false,
+  "realCommercialRecordsWritten": false,
+  "rollbackDeploymentId": "dpl_DMjp2XY6gRHB3vh1dNtuGn9xCi6c",
+  "limitations": [
+    "Sync requires a running authenticated document and connectivity; saved local changes resume on reopening or reconnecting",
+    "Native close warnings depend on browser support and interaction; persistence does not depend on the warning",
+    "Concurrent edits remain protected; a changed exclusion preview requires renewed review",
+    "No physical Safari or remote CI certification"
+  ]
+}
