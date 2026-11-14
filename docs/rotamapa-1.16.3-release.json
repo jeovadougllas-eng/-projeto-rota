@@ -1,0 +1,28 @@
+{
+  "version": "1.16.3",
+  "sourceCommit": "ba21ca61edb28a2efb20b698283270abac8e30b6",
+  "deploymentId": "dpl_DMjp2XY6gRHB3vh1dNtuGn9xCi6c",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "verifiedPublicFiles": 244,
+  "checks": {
+    "unitTests": 275,
+    "localExclusionAndUpdateBrowserTests": 20,
+    "privateReadOnlyAttachmentTests": 2,
+    "directPublishedSyntheticBrowserTests": 4,
+    "sourceArtAndSdks": "passed",
+    "runtimeErrorFatalScan": "no groups returned in 5 minute window"
+  },
+  "privateAttachmentReadResults": {
+    "csv": {"validRows":21,"invalidRows":0,"localReadMs":5},
+    "pdf": {"validRows":21,"invalidRows":0,"localReadMs":557},
+    "note":"Read only in isolated local browser, no client writes. Timings exclude network and startup and are not a device performance guarantee."
+  },
+  "databaseChanged": false,
+  "storageFormatChanged": false,
+  "androidChanged": false,
+  "realClientsDeleted": false,
+  "rollbackDeploymentId": "dpl_Gup67gwy7AtpD56gZkKosWN1KeT5",
+  "limitations": ["Confirmation requires online authentication and an unchanged, synchronized wallet", "Local preview speedup applies to file exclusions; full wallet replacement retains its previous synchronization flow", "No physical Safari or remote CI certification"]
+}
