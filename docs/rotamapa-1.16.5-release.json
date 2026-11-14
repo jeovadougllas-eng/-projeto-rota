@@ -1,0 +1,30 @@
+{
+  "version": "1.16.5",
+  "sourceCommit": "957f0fb20973dc06cdd0dd26fbb602c41fdab883",
+  "deploymentId": "dpl_88DyHy4AnpzcEiwbMoLDsVWfDzm8",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "buildDurationMs": 22716,
+  "verifiedPublicFiles": 244,
+  "checks": {
+    "unitTests": 275,
+    "localBussolaAndPortfolioFlowTests": 56,
+    "additionalAutoSyncAndSelectionIsolationTests": 32,
+    "directPublishedSyntheticBrowserTests": 8,
+    "sourceArtAndSdks": "passed",
+    "runtimeErrorFatalScan": "no groups returned in 5 minute window"
+  },
+  "databaseChanged": false,
+  "storageKeysChanged": false,
+  "androidChanged": false,
+  "realCommercialRecordsWritten": false,
+  "rollbackDeploymentId": "dpl_HU2PRaRuBRqvX91RhhSbZVRdxwRJ",
+  "limitations": [
+    "True selected-client conflicts remain protected and require renewed review; exclusion does not force local or remote data overwrites",
+    "Selected-client edits during the request remain available locally for review even if remote membership was already removed",
+    "Full portfolio replacement retains its existing strict synchronization checks",
+    "Bussola does not create or reactivate missing customers automatically; users can skip individual orders or correct the customer and reopen the CSV",
+    "No physical Safari or remote CI certification"
+  ]
+}
