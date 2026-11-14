@@ -317,7 +317,7 @@ function saveClientRecord({keepForm=false}={}){
  try{localStorage.setItem(KEY,JSON.stringify(next));}
  catch(error){$('saveStatus').textContent='Não foi possível salvar a posição neste aparelho. Libere espaço e tente confirmar novamente.';return null;}
  clients=next;geoCandidates.delete(record.id);clearTimeout(searchTimer);searchSequence++;searchController?.abort();
- editingClientId=keepForm?record.id:null;render();traxioScheduleSync(lat!==null?200:4500);
+ editingClientId=keepForm?record.id:null;render();traxioScheduleSync(200);
  if(selectedIds.has(record.id)&&!valid(record.lat,record.lon))queueClientGeocode([record.id]);
  if(!keepForm){
   for(const id of ['clientCity','clientNeighborhood','clientState','name','address','houseNumber','complement','pharmacyNetwork','salesRegion','cep','lat','lon'])$(id).value='';
@@ -787,28 +787,51 @@ function traxioReadBase(userId){
  try{const obj=JSON.parse(localStorage.getItem(RotaMapaPortfolioScope.key(TRAXIO_SYNC_BASE+userId,userId))||'{}');return obj&&typeof obj==='object'&&!Array.isArray(obj)?obj:{}}catch{return {}}
 }
 function traxioWriteBase(userId,base){localStorage.setItem(RotaMapaPortfolioScope.key(TRAXIO_SYNC_BASE+userId,userId),JSON.stringify(base))}
-function traxioScheduleSync(delay=4500){
- if(traxioSyncSuspended||!authClient||document.body.classList.contains('auth-locked'))return;
+let traxioSyncRetry=15000;
+function traxioPendingClients(){
+ const owner=localStorage.getItem(TRAXIO_SYNC_OWNER)||RotaMapaPortfolioScope.loadedOwner;
+ if(document.body.classList.contains('auth-locked'))return 0;
+ if(!owner)return clients.length;
+ const base=traxioReadBase(owner);
+ return clients.filter(c=>base[String(c.id)]?.hash!==cloudCanonical(c)).length;
+}
+function traxioClientSyncStatus(message=''){
+ let el=$('clientSyncStatus');
+ if(!el){const panel=$('portfolioPanel');if(!panel)return;el=document.createElement('p');el.id='clientSyncStatus';el.className='muted';el.setAttribute('role','status');el.setAttribute('aria-live','polite');panel.append(el);}
+ if(document.body.classList.contains('auth-locked')){el.textContent='';const registry=$('clientRegistrySyncStatus');if(registry)registry.textContent='';return;}
+ const pending=traxioPendingClients();
+ const registry=$('clientRegistrySyncStatus')||document.createElement('p');if(!registry.id){registry.id='clientRegistrySyncStatus';registry.className='muted';registry.setAttribute('role','status');$('clientList').before(registry);}
+ el.textContent=message||(pending?(pending+' cadastro(s) salvo(s) neste aparelho. '+(!navigator.onLine?'Sem internet: envio automático ao reconectar.':traxioSyncRunning?'Sincronizando com sua conta…':'Envio automático pendente. Pode continuar usando o app.')):'Clientes sincronizados com sua conta.');registry.textContent=el.textContent;
+}
+function traxioScheduleSync(delay=1200){
+ traxioClientSyncStatus();
+ if(!authClient||document.body.classList.contains('auth-locked'))return;
  // Keep the earliest requested flush: background lookup saves cannot postpone a confirmed pin.
  const due=Date.now()+delay;if(traxioSyncTimer&&traxioSyncDue<=due)return;
  clearTimeout(traxioSyncTimer);traxioSyncDue=due;
  traxioSyncTimer=setTimeout(()=>{
   traxioSyncTimer=null;traxioSyncDue=Infinity;
   if(traxioSyncRunning){traxioSyncRequested=true;return;}
-  traxioAutoSync().catch(e=>cloudNotice('Sincronização: '+(e.message||e),true));
+  traxioAutoSync().catch(e=>{cloudNotice('Sincronização: '+(e.message||e)+'. Dados salvos neste aparelho; nova tentativa automática.',true);});
  },delay);
 }
 async function traxioAutoSync(){
- if(traxioSyncRunning||cloudBusy||traxioSyncSuspended||!authClient||!navigator.onLine||document.body.classList.contains('auth-locked'))return;
- traxioSyncRunning=true;
- let inserted=0,updated=0,received=0,conflicts=0;
+ if(!authClient||!navigator.onLine||document.body.classList.contains('auth-locked')){traxioClientSyncStatus();return;}
+ if(traxioSyncRunning){traxioSyncRequested=true;return;}
+ if(cloudBusy||traxioSyncSuspended){traxioScheduleSync(1500);return;}
+ traxioSyncRunning=true;traxioClientSyncStatus();
+ const portfolio=RotaMapaPortfolioScope.loadedId;
+ let inserted=0,updated=0,received=0,conflicts=0,failed=0,failureMessage='';
+ let userId;
+ const guard=()=>{if(document.body.classList.contains('auth-locked')||RotaMapaPortfolioScope.loadedId!==portfolio||RotaMapaPortfolioScope.loadedOwner&&RotaMapaPortfolioScope.loadedOwner!==userId||RotaMapaPortfolioScope.active(userId)!==portfolio||localStorage.getItem(TRAXIO_SYNC_OWNER)!==userId)throw Error('A conta ou a carteira mudou. O envio permanece salvo na carteira original.');};
  try{
-  const userId=await cloudIdentity();
+  userId=await cloudIdentity();
   const owner=localStorage.getItem(TRAXIO_SYNC_OWNER);
-  if(owner&&owner!==userId){cloudNotice('Sincronização automática bloqueada: este navegador foi associado a outra conta. Exporte o backup e revise a troca de conta.',true);return}
+  if(owner&&owner!==userId){failureMessage='Sincronização bloqueada: confira a conta deste aparelho.';cloudNotice('Sincronização automática bloqueada: este navegador foi associado a outra conta. Exporte o backup e revise a troca de conta.',true);return}
   if(!owner)localStorage.setItem(TRAXIO_SYNC_OWNER,userId);
+  guard();
   const baseline=traxioReadBase(userId);
-  const remote=await cloudReadAll(userId);
+  const remote=await cloudReadAll(userId);guard();
   const remoteById=new Map(remote.map(r=>[String(r.local_id),r]));
   const snapshot=clients.map(c=>JSON.parse(JSON.stringify(c)));
   const localById=new Map(snapshot.map(c=>[String(c.id),c]));
@@ -841,10 +864,10 @@ async function traxioAutoSync(){
     const {data,error}=await authClient.rpc('traxio_update_client_safe',{
      p_local_id:id,p_expected_revision:prior.revision,p_data:current
     });
-    if(error)throw error;
+    guard();if(error)throw error;
     const outcome=Array.isArray(data)?data[0]:data;
     if(outcome?.result==='updated'&&Number.isSafeInteger(Number(outcome.current_revision))){
-     baseline[id]={hash:localHash,revision:Number(outcome.current_revision)};updated++;
+     baseline[id]={hash:localHash,revision:Number(outcome.current_revision)};traxioWriteBase(userId,baseline);updated++;
     }else conflicts++;
     continue;
    }
@@ -856,8 +879,8 @@ async function traxioAutoSync(){
    if(!id||remoteById.has(id)||baseline[id])continue;
    const row=cloudRow(c,userId);
    const {data,error}=await authClient.from('clients').insert(row).select('revision').single();
-   if(error){conflicts++;continue}
-   baseline[id]={hash:cloudCanonical(c),revision:Number(data.revision)};inserted++;
+   guard();if(error){failed++;continue}
+   baseline[id]={hash:cloudCanonical(c),revision:Number(data.revision)};traxioWriteBase(userId,baseline);inserted++;
   }
   if(pendingReceive.length||pendingInactive.length){
    let changed=false;
@@ -875,11 +898,18 @@ async function traxioAutoSync(){
     try{localStorage.setItem(KEY,JSON.stringify(clients));render()}finally{traxioSyncSuspended=false}
    }
   }
-  traxioWriteBase(userId,baseline);
-  cloudNotice('Automática: '+inserted+' enviados, '+updated+' atualizados, '+received+' recebidos, '+conflicts+' conflitos protegidos.'+(conflicts?' Nenhum conflito foi sobrescrito.':''),conflicts>0);
- }finally{traxioSyncRunning=false;if(traxioSyncRequested){traxioSyncRequested=false;traxioScheduleSync(200);}}
+  guard();traxioWriteBase(userId,baseline);
+  if(failed){traxioScheduleSync(traxioSyncRetry);traxioSyncRetry=Math.min(traxioSyncRetry*2,60000);}else traxioSyncRetry=15000;
+  cloudNotice('Automática: '+inserted+' enviados, '+updated+' atualizados, '+received+' recebidos, '+conflicts+' conflitos protegidos.'+(conflicts?' Nenhum conflito foi sobrescrito.':'')+(failed?' '+failed+' envio(s) pendente(s); nova tentativa automática.':''),conflicts>0||failed>0);
+ }catch(error){failureMessage='Não foi possível confirmar a sincronização. Dados locais preservados; nova tentativa automática.';traxioScheduleSync(traxioSyncRetry);traxioSyncRetry=Math.min(traxioSyncRetry*2,60000);throw error;
+ }finally{traxioSyncRunning=false;traxioClientSyncStatus(failureMessage||(conflicts?'Há divergências de clientes que precisam de revisão. Os dados locais foram preservados.':''));if(traxioSyncRequested){traxioSyncRequested=false;traxioScheduleSync(200);}}
+
 }
-window.addEventListener('online',()=>traxioScheduleSync(1200));
+window.addEventListener('online',()=>traxioScheduleSync(200));
+window.addEventListener('offline',()=>traxioClientSyncStatus());
+window.addEventListener('beforeunload',event=>{if(traxioPendingClients()){event.preventDefault();event.returnValue='';}});
+// Mobile browsers may skip beforeunload. Local storage is already durable; retry on resume/start.
+document.addEventListener('DOMContentLoaded',()=>traxioClientSyncStatus());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)traxioScheduleSync(1200)});
 setInterval(()=>traxioScheduleSync(1200),120000);
 
