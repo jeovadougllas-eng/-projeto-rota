@@ -1,0 +1,27 @@
+{
+  "version": "1.16.1",
+  "sourceCommit": "4273ee1bef6a195892e3c6be8b395a94a5023297",
+  "deploymentId": "dpl_ANu4rE83K6jCaybBHFAX75oV8KeU",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "verifiedPublicFiles": 244,
+  "checks": {
+    "currentHubAndClientAcceptance": 12,
+    "publishedSyntheticBrowserTests": 4,
+    "sourceArtAndSdks": "passed",
+    "runtimeErrorFatalScan": "no groups returned in 5 minute window"
+  },
+  "regressionNotes": [
+    "Initial PDF visit fixture closed an already-closed history dialog; corrected and passed on desktop and phone",
+    "Legacy dashboard visual assertion expects translucent rgba while unchanged theme returns opaque rgb; not used to certify this release",
+    "Legacy client CSV flow expects immediate writes; current preview and portfolio review tested instead",
+    "Identical labels in dashboard and navigation required scoping test selectors"
+  ],
+  "databaseChanged": false,
+  "storageFormatChanged": false,
+  "androidChanged": false,
+  "realDataImported": false,
+  "rollbackDeploymentId": "dpl_4x7dW6uurMpskQryDDMhsSS9haWT",
+  "limitations": ["No physical Safari or remote CI certification"]
+}
