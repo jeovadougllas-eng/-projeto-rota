@@ -23,5 +23,12 @@
   "limitations": [
     "No physical Safari or remote CI certification",
     "Direct deployed-browser navigation stopped on ERR_CERT_AUTHORITY_INVALID in this managed environment before entering the app. Automatic approval review rejected persistent browser CA trust changes. Production artifacts were fetched with TLS verification and all 244 hashes matched the validated build."
-  ]
+  ],
+  "followUpVerification": {
+    "directPublishedBrowserTests": 8,
+    "publicAssetSha256": "244 files passed",
+    "tlsTrustChanged": false,
+    "realDataImported": false,
+    "newDeploymentCreated": false
+  }
 }
