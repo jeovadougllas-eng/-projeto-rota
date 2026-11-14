@@ -1,0 +1,42 @@
+{
+  "version": "1.16.7",
+  "sourceCommit": "c6d54dda15cf95c7627d3dbfa62da4fee99193e4",
+  "deploymentId": "dpl_BGS4VJtGmuoDQFWZSfoskxD7vtes",
+  "target": "production",
+  "state": "READY",
+  "url": "https://traxio-preview.vercel.app/",
+  "buildDurationMs": 22332,
+  "verifiedPublicFiles": 246,
+  "checks": {
+    "unitTests": 283,
+    "localGoogleBrowserTests": 46,
+    "directPublishedSyntheticBrowserTests": 8,
+    "localPostgresFullSuite": "passed",
+    "concurrentQuotaRequests": {"attempted":24,"accepted":1,"monthlyCounter":4000},
+    "sourceArtAndSdks": "passed",
+    "newSecurityAdvisors": 0,
+    "runtimeErrorFatalScan": "no groups returned in 5 minute window"
+  },
+  "databaseChanged": true,
+  "migration": {
+    "source":"supabase/migrations/20261114192835_google_insider_daily_limits.sql",
+    "remoteVersion":"20261114193944",
+    "name":"google_insider_daily_limits",
+    "counterHistoryPreserved":true
+  },
+  "policy": {"projectMonth":4000,"insiderDay":20,"signatureIndividualLimit":null,"timezone":"America/Fortaleza","quantitiesVisibleInProduct":false},
+  "membershipsChanged":false,
+  "storageKeysChanged": false,
+  "paidGoogleTestRequests": 0,
+  "androidChanged": false,
+  "realCommercialRecordsWritten": false,
+  "rollbackDeploymentId": "dpl_CNkJ1ADTaRttBQoFBGeKoGqSTs2A",
+  "limitations": [
+    "All accounts including Signature remain subject to the shared monthly ceiling",
+    "Four Insider accounts may reserve at most 2480 operations over 31 days; the remaining 1520 is shared margin, not a protected per-account allocation",
+    "Operations include map bootstrap and geocoding; one client lookup can require multiple reservations",
+    "Application policy does not control external Google billing usage",
+    "Web rollback retains the new database policy through the compatible boolean wrapper",
+    "No physical Safari or remote CI certification"
+  ]
+}
