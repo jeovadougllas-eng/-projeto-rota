@@ -1,9 +1,10 @@
 {
-  "version": "1.16.2",
+  "version": "1.16.3",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Exclusão por arquivo com prévia local rápida, leitura de CSV exportado em codificação antiga e conferência única da nuvem ao confirmar; históricos e versão anterior preservados.",
     "Importação do Bússola leva automaticamente ao campo com erro ao confirmar, com foco, destaque e orientação junto ao cliente, produto, vínculo ou conferência pendente.",
     "Central Importar arquivos reúne clientes, CSV do Bússola, pedidos, catálogos, promoções, caixas padrão e comissões; importações retiradas do Histórico de compras.",
     "Importar CSV de pedidos do Bússola com prévia, vínculo aos pedidos RM e proteção contra repetição.",
