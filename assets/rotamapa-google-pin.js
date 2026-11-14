@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(last?.print===print&&Date.now()-last.at<30000){draw(last.data,sequence,active);status.textContent+=' Resultado já consultado; nenhuma nova busca foi enviada.';return;}
   if(Date.now()-lastSent<3000){status.textContent='Aguarde alguns segundos antes de fazer outra busca.';return;}
   const ticket=++sequence;controller=new AbortController();button.disabled=true;button.setAttribute('aria-busy','true');lastSent=Date.now();status.textContent='Buscando no Google…';results.replaceChildren();
-  try{const data=await RotaMapaGoogle.searchPin(query,controller.signal);if(ticket!==sequence||key()!==active)return;last={print,data,at:Date.now()};draw(data,ticket,active);}catch(error){if(ticket===sequence&&key()===active)status.textContent=error.status===429?'Limite de consultas atingido. Nenhum pin foi alterado. Aguarde a renovação da cota ou ajuste manualmente.':error.message;}finally{if(ticket===sequence){controller=null;button.disabled=false;button.removeAttribute('aria-busy');}}
+  try{const data=await RotaMapaGoogle.searchPin(query,controller.signal);if(ticket!==sequence||key()!==active)return;last={print,data,at:Date.now()};draw(data,ticket,active);}catch(error){if(ticket===sequence&&key()===active)status.textContent=error.status===429&&!['google_user_daily_limit','google_project_monthly_limit'].includes(error.code)?'Limite de consultas atingido. Nenhum pin foi alterado. Aguarde a renovação da cota ou ajuste manualmente.':error.message;}finally{if(ticket===sequence){controller=null;button.disabled=false;button.removeAttribute('aria-busy');}}
  };
  window.RotaMapaGooglePin={source:()=>context&&key()===context?point:null};sync();
 });

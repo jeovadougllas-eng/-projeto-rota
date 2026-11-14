@@ -43,3 +43,9 @@ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase
 node scripts/pdf-amendment-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261114005253_bussola_csv_reconciliation.sql
 node scripts/bussola-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1
+
+# Profile quotas change no existing counters; all following writes are disposable fixtures.
+docker_local exec "$container" psql -U postgres -v ON_ERROR_STOP=1 -c "INSERT INTO rotamapa_private.google_usage(bucket,period,used) VALUES('migration-preserved','2000-01-01',42);"
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261114192835_google_insider_daily_limits.sql
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/google-profile-quota.sql
+node scripts/google-quota-concurrency.mjs "$container"
