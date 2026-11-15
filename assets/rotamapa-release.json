@@ -1,9 +1,10 @@
 {
-  "version": "1.16.9",
+  "version": "1.17.0",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Bloco de notas no Comercial com estilos iPhone/Android por aparelho, cálculos locais por linha com precedência e parênteses, subtotais por loja e total geral, salvamento offline, sincronização por nota com revisão e cópias de conflito, lixeira e compartilhamento de texto.",
     "Rua, número, cidade e UF compatíveis validam a localização Google automaticamente, incluindo número estimado no trecho. Sem número confiável ou com divergência permanece para revisão. Pontos válidos não dependem do carregamento do mapa; recuperação de localizações anteriores com conferência, sem reativar clientes ou alterar dados comerciais.",
     "Cadastro editável com CNPJ, razão social, nome fantasia, contatos, campos adicionais, endereço e coordenadas. Correções manuais prevalecem sobre dados importados; IDs, histórico e fontes originais preservados, com sincronização automática.",
     "Controle Google por perfil, com aviso de renovação no dia seguinte para o limite diário e no próximo mês para o limite compartilhado. Configuração interna preservada e pins mantidos.",

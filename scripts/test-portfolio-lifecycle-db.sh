@@ -52,3 +52,6 @@ node scripts/google-quota-concurrency.mjs "$container"
 
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261114201716_editable_client_summary_fields.sql
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/client-edit.sql
+
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261115115931_commercial_notes.sql
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/notes.sql
