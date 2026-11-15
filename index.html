@@ -312,6 +312,7 @@ function saveClientRecord({keepForm=false}={}){
  }else{delete record.locationConfirmedAt;delete record.locationSource;}
  record=RotaMapaGoogleModel.manual(record,[original,original?.locationCandidate,geoCandidates.get(original?.id),window.RotaMapaGooglePin?.source()]);delete record.locationCandidate;
  if(original&&!samePoint&&(original.lat!==lat||original.lon!==lon||original.address!==address))delete record.locationEvidence;
+ if(original&&valid(original.lat,original.lon)&&lat===null)record.locationClearedAt=new Date().toISOString();else if(lat!==null)delete record.locationClearedAt;
  if(business)try{record=RotaMapaClientEditor.apply(record,original,business);}catch(error){RotaMapaClientEditor.failure(error);return null;}
  const next=clients.map(c=>String(c.id)===String(record.id)?record:c);
  if(!original)next.push(record);

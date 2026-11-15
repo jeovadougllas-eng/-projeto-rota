@@ -202,6 +202,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    if(existing&&report.ready.length!==existing.points.length){phase('location-error','As localizações da sequência mudaram. Organize as visitas novamente.');return;}
    const points=report.ready;
    if(!points.length){review.open=true;phase('location-error','Nenhum cliente selecionado possui localização utilizável. Corrija os endereços ou confirme os pontos no mapa.');return;}
+   if(points.some(c=>window.RotaMapaGoogleModel?.automatic(c))){await window.RotaMapaGoogle?.ensureMap();if(!current(run))return;if(!map?.__google)throw Error('Abra o mapa Google com internet para usar estes pontos. As localizações salvas foram preservadas.');}
    const approved=new P.IdSet(points.map(c=>c.id));
    state.excluded=existing?[...existing.excluded]:destination?[]:[...selectedIds].filter(id=>!approved.has(id)).map(String);
    calculationPlan={points,start:existing?.start};activeSelection=JSON.stringify([...selectedIds].sort());

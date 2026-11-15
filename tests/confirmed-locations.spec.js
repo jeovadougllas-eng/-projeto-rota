@@ -4,7 +4,7 @@ import {records,fakeMap,services} from './fixtures/routing.js';
 async function setup(page,info,rows=records){
  await prepare(page,{records:rows,theme:info.project.metadata.theme});
  await page.addInitScript(()=>Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition:ok=>ok({coords:{latitude:-5.8,longitude:-35.22,accuracy:8}}),watchPosition:()=>1,clearWatch(){}}}));
- await ready(page);await fakeMap(page);await page.locator('.tabs [data-tab="mapa"]').click();
+ await ready(page);await fakeMap(page);await page.locator('.tabs [data-tab="mapa"]').click();await page.evaluate(()=>{document.getElementById('mapClientListDisclosure').open=true;document.getElementById('routePlannerPanel').open=true;document.getElementById('fieldMapOptions').open=true;});
 }
 async function confirmPoint(page){
  await page.evaluate(()=>{openClientLocation(1,{lat:-5.812345,lon:-35.212345});setDraft(-5.812345,-35.212345);});

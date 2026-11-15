@@ -31,5 +31,19 @@ function exclude(current,incoming){
 }
 
 function restore(current,archived){const snapshot=new Set(archived.map(c=>String(c.id))),now=new Map(current.map(c=>[String(c.id),c])),result=archived.map(c=>({...clone(c),...clone(now.get(String(c.id))||{}),active:c.active!==false}));for(const c of current)if(!snapshot.has(String(c.id)))result.push({...clone(c),active:false});return result;}
-root.RotaMapaPortfolioVersionModel={fromRows,compare,exclude,restore};
+function recoverLocations(current,archived,{now=Date.now()}={}){
+ const byId=new Map(),duplicates=new Set();for(const c of archived){const id=String(c.id);if(byId.has(id))duplicates.add(id);byId.set(id,c);}
+ const fields=['lat','lon','locationVerification','locationSource','locationConfirmedAt','locationMatchedAt','locationEvidence','googleDerived','googleExpiresAt','googlePlaceId'];
+ const recovered=[],skipped=[];const pointTime=c=>Math.max(0,...['locationConfirmedAt','locationMatchedAt','locationClearedAt'].map(k=>Date.parse(c[k])||0));
+ const address=c=>{const p=root.TraxioGeo.parse(c);return p.street&&p.city?JSON.stringify({...p,street:root.TraxioGeo.streetKey(p.street),house:norm(p.house).replace(/^0+(?=\d)/,''),city:norm(p.city),district:norm(p.district),state:root.TraxioGeo.stateCode(p.state),zip:norm(p.zip)}):null;};
+ const clients=current.map(c=>{if(c.active===false||root.TraxioPlanner.location(c).ready)return clone(c);const old=byId.get(String(c.id));if(!old)return clone(c);let reason='';const clean=root.RotaMapaGoogleModel.clean(old,{now}),manual=(old.locationVerification==='manual_reviewed'||!old.locationVerification&&old.locationSource==='manual_confirmation')&&Number.isFinite(Date.parse(old.locationConfirmedAt)),automatic=old.locationVerification==='automatic_housenumber'&&old.locationEvidence?.addressMatch===true;
+ if(duplicates.has(String(c.id))||!cnpj(c)||cnpj(c)!==cnpj(old))reason='Identificação divergente ou duplicada.';
+ else if(!address(c)||address(c)!==address(old))reason='Endereço alterado ou insuficiente para recuperação segura.';
+ else if((String(old.locationSource||'').startsWith('google')||old.googleDerived===true)&&(!Number.isFinite(Date.parse(old.googleExpiresAt))||Date.parse(old.googleExpiresAt)<=now)||!(manual||automatic)||!root.TraxioPlanner.location(clean).ready)reason='Sem confirmação válida preservada ou ponto Google expirado.';
+ else if(pointTime(c)>pointTime(old))reason='Há uma alteração de localização mais recente.';
+ if(reason){skipped.push({id:c.id,name:c.name,reason});return clone(c);}
+ const next=clone(c);for(const key of fields){if(Object.hasOwn(clean,key)&&clean[key]!==undefined)next[key]=clone(clean[key]);else delete next[key];}delete next.locationCandidate;delete next.locationSearchIssue;next.locationRecoveredAt=new Date(now).toISOString();recovered.push({id:c.id,name:c.name,cnpj:cnpj(c)});return next;
+ });return{clients,recovered,skipped};
+}
+root.RotaMapaPortfolioVersionModel={fromRows,compare,exclude,restore,recoverLocations};
 })(globalThis);

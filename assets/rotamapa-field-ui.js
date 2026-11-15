@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded',()=>{
    const cells=[...row.cells];if(cells.length<3||row.hasAttribute('data-field-card'))return;
    row.dataset.fieldCard='';const point=cells[1].querySelector('.registry-location-status'),location=make('small','field-client-region',cells[2].textContent.trim());
    if(point)cells[1].insertBefore(location,point);else cells[1].append(location);
-   if(point)point.dataset.ready=String(point.textContent==='Localização confirmada');
+   if(point&&!point.hasAttribute('data-ready'))point.dataset.ready=String(point.textContent==='Localização confirmada');
    const check=cells[0].querySelector('input[type=checkbox]');if(check){const label=make('label','field-client-select');label.append(check);cells[0].append(label);}
   }
  }
