@@ -225,6 +225,9 @@
     },
     "api/google-location.js": {
       "maxDuration": 60
+    },
+    "api/cnpj-biz.js": {
+      "maxDuration": 45
     }
   }
 }
