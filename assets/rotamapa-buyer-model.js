@@ -64,7 +64,7 @@ function rankings(clients,sales,catalog,month,options={}){
    const settled=r.settlement?.items?.[l.sourceItem],quantity=settled?.quantity??l.quantity,unitCents=settled?.unitCents??l.unitCents;
    if(!Number.isSafeInteger(quantity)||quantity<=0||!Number.isSafeInteger(unitCents)||unitCents<0)continue;
    const id=String(l.productId||'name:'+normalize(l.name)),p=products.get(id)||{key:id,productId:String(l.productId||''),name:l.name||'Produto arquivado',code:l.code||'',inCurrentCatalog:false,units:0,totalCents:0,sales:new Set(),buyers:new Set()};
-   p.units+=quantity;p.totalCents+=quantity*unitCents;p.sales.add(String(s.id));p.buyers.add(g.key);products.set(id,p);totalUnits+=quantity;
+   p.units+=quantity;p.totalCents+=s.bussola?.version===2?l.totalCents:quantity*unitCents;p.sales.add(String(s.id));p.buyers.add(g.key);products.set(id,p);totalUnits+=quantity;
   }
  }
  for(const c of clients){const g=buyers.get(key(c));if(g)g.clientIds.add(String(c.id));}

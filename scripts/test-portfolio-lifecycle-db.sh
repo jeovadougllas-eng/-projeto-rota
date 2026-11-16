@@ -64,3 +64,6 @@ node scripts/reconciliation-db-fixture.mjs | docker_local exec -i "$container" p
 
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261116123402_november_sales_reset_barrier.sql
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/sales-reset.sql
+
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261116150812_bussola_explicit_net_totals.sql
+node scripts/bussola-net-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1
