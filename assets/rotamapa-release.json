@@ -1,9 +1,10 @@
 {
-  "version": "1.17.5",
+  "version": "1.17.6",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Campanhas futuras podem ser preparadas antecipadamente. Consulta inclui vigentes e agendadas; salvar abre a data e modalidade cadastradas, e o desconto só fica disponível durante a vigência.",
     "Bússola usa os totais líquidos originais do CSV para solicitado, atendido e faturado, sem somar etapas ou reconstruir valores por preço bruto. Cancelados destacados, saldo parcial separado e valores consistentes no histórico, ranking, feira, PDF e Excel. Importações antigas permanecem preservadas na sua base original.",
     "Celular na vertical com valores completos e campos de 16px para prevenir zoom automático no login, mantendo ampliação manual. Aviso de faturamento junto do cabeçalho sem cobrir conteúdo. Histórico aceita reinicialização mensal protegida, com backup, bloqueio de reenvio antigo e reimportação Bússola idempotente; outubro e demais dados preservados.",
     "Ajuda e perguntas frequentes no rodapé, envio de feedback com imagem opcional, fila offline, acompanhamento pelo usuário e gestão autorizada. Política e termos com identidade RotaMapa e retorno ao endereço atual.",

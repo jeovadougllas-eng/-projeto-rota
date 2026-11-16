@@ -6,7 +6,7 @@
  const click=(label,fn)=>{const b=make('button',label,'secondary');b.type='button';b.onclick=()=>Promise.resolve().then(fn).catch(error=>feedback(error.message));return b;};
  const dialog=$('commerceCampaignList'),overview=$('commerceCampaignRows');
  const tools=make('div',null,'campaign-browser-filters');
- tools.innerHTML='<label>Condições em<input type="date" id="campaignBrowserDate"></label><label>Exibir<select id="campaignBrowserScope"><option value="active">Vigentes nessa data</option><option value="all">Todas as vigências</option></select></label>';
+ tools.innerHTML='<label>Condições em<input type="date" id="campaignBrowserDate"></label><label>Exibir<select id="campaignBrowserScope"><option value="current">Vigentes e futuras</option><option value="active">Vigentes nessa data</option><option value="all">Todas as vigências</option></select></label>';
  overview.before(tools);
  const detail=make('section');detail.id='campaignBrowserDetail';detail.hidden=true;
  detail.innerHTML='<button type="button" id="campaignBrowserBack" class="secondary">← Voltar às campanhas</button><h3 id="campaignBrowserTitle"></h3><label>Buscar produto<input type="search" id="campaignBrowserSearch" placeholder="Nome ou apresentação"></label><p id="campaignBrowserCount" role="status"></p><div id="campaignBrowserProducts" class="commerce-list"></div>';
@@ -22,7 +22,7 @@
   if(!sales||document.body.classList.contains('auth-locked')){reset();return;}
   try{const same=library?.owner===sales.owner&&library.portfolio===sales.portfolio,items=same?await library.items():[];
    if(rev!==revision||sales!==RotaMapaSales.getStore()||same&&library!==RotaMapaLibrary.getStore())return;
-   records=items;rows=G.conditions(sales.events().filter(c=>c.kind==='campaign'),items,sales.events().filter(c=>c.kind==='product'),{date:$('campaignBrowserDate').value,all:$('campaignBrowserScope').value==='all'});render();
+   records=items;rows=G.conditions(sales.events().filter(c=>c.kind==='campaign'),items,sales.events().filter(c=>c.kind==='product'),{date:$('campaignBrowserDate').value,all:$('campaignBrowserScope').value!=='active'});if($('campaignBrowserScope').value==='current')rows=rows.filter(r=>r.end>=$('campaignBrowserDate').value);render();
   }catch(error){if(rev===revision)feedback(error.message);}
  }
  function render(){
@@ -34,10 +34,11 @@
   }
   $('campaignBrowserTitle').tabIndex=-1;$('campaignBrowserTitle').textContent=label(selected);
   const needle=G.norm($('campaignBrowserSearch').value),found=rows.filter(r=>r.family===selected&&G.norm(r.name).includes(needle));
-  $('campaignBrowserCount').textContent=found.length+' condições · '+($('campaignBrowserScope').value==='all'?'Todas as vigências':$('campaignBrowserDate').value.split('-').reverse().join('/'));
+  $('campaignBrowserCount').textContent=found.length+' condições · '+($('campaignBrowserScope').value==='all'?'Todas as vigências':$('campaignBrowserScope').value==='current'?'Vigentes e futuras':$('campaignBrowserDate').value.split('-').reverse().join('/'));
   const target=$('campaignBrowserProducts');target.replaceChildren();
   if(selected&&!found.length)target.append(make('p','Não há condições para este filtro. Importe a lâmina da campanha ou selecione outra data.'));
   for(const row of found){const card=make('article',null,'commerce-item');card.append(make('strong',row.name),make('p',row.start.split('-').reverse().join('/')+' a '+row.end.split('-').reverse().join('/')));
+   if(row.start>date())card.append(make('p','Agendada · disponível a partir de '+row.start.split('-').reverse().join('/')));
    for(const [index,tier] of row.tiers.entries()){const minimum=tier.minimum??tier.minQty,price=tier.priceCents??tier.unitPriceCents;card.append(make('p',(tier.label||(row.tiers.length===1?'Faixa única':'Faixa '+(index+1)))+' · A partir de '+minimum+' un. · '+(price!=null?M.brl(price)+' por unidade':(tier.discountBps/100).toLocaleString('pt-BR')+'% sobre a tabela')));const context=[tier.region,tier.startTime&&tier.endTime?'Horário: '+tier.startTime+' a '+tier.endTime:'',tier.stock!==''&&tier.stock!=null?'Estoque informado: '+tier.stock+' un.':'',tier.restrictions].filter(Boolean);if(context.length)card.append(make('small',context.join(' · ')));}
    if(row.kind==='legacy'){if(row.campaign.type==='importada')card.append(click('Consultar documento',()=>RotaMapaLibrary.openCampaign(row.campaign.imported.documentId,row.productId)));else card.append(click('Editar condições',()=>RotaMapaSales.openCampaign(row.campaign)));}
    else{const source=records.find(r=>r.value.id===row.id),pending=!source?.synced&&row.document.data.format==='pdf';card.append(make('small','Fonte: '+row.document.data.fileName+(pending?' · Confirmação de importação pendente':'')));card.append(click(pending?'Sincronizar para calcular':'Consultar e calcular',()=>pending?RotaMapaLibrary.sync():RotaMapaLibrary.openCampaign(row.id,row.productId)));}
@@ -51,5 +52,6 @@
  dialog.addEventListener('close',()=>{selected=null;$('campaignBrowserSearch').value='';});
  window.addEventListener('rotamapa:sales-rendered',refresh);window.addEventListener('rotamapa:library-rendered',refresh);window.addEventListener('rotamapa:commerce-scope-changed',reset);
  new MutationObserver(()=>{if(document.body.classList.contains('auth-locked'))reset();}).observe(document.body,{attributes:true,attributeFilter:['class']});
- window.RotaMapaCampaignBrowser={refresh};refresh();
+ window.addEventListener('rotamapa:campaign-saved',event=>{const c=event.detail;if(!c)return;selected=G.family(c);$('campaignBrowserDate').value=c.startDate;$('campaignBrowserScope').value='active';$('campaignBrowserSearch').value='';feedback(c.startDate>date()?'Campanha agendada para '+c.startDate.split('-').reverse().join('/')+'. O desconto será aplicado somente durante a vigência.':'Condições salvas.');refresh();});
+ window.RotaMapaCampaignBrowser={refresh,creationContext:()=>dialog.open?{date:$('campaignBrowserDate').value,type:['dia_d','acelera'].includes(selected)?selected:null}:null};refresh();
 })();
