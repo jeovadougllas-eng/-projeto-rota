@@ -55,3 +55,5 @@ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/
 
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261115115931_commercial_notes.sql
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/notes.sql
+
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/sale-visits.sql

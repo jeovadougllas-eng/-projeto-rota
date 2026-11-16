@@ -11,13 +11,14 @@ const date=s=>s?s.split('-').reverse().join('/'):'';
 function guard(){const ledger=window.TraxeloVisits?.getStore();if(!ledger||!owner||ledger.owner!==owner||document.body.classList.contains('auth-locked'))throw Error('Entre na mesma conta para consultar este histórico.');const cacheOwner=localStorage.getItem('traxio_sync_owner_v29');if(cacheOwner&&cacheOwner!==owner)throw Error('A carteira deste aparelho pertence a outra conta.');return ledger;}
 function action(text,fn,secondary=false){const b=node('button',text,secondary?'secondary':'');b.type='button';b.onclick=()=>{try{guard();fn();}catch(e){$('visitDetailsError').textContent=e.message;}};return b;}
 function liveClient(id){return clients.find(c=>String(c.id)===String(id));}
-function identity(row){const events=TraxeloVisits.getStore()?.events()||[],snapshot=(row.visitId?events.find(v=>v.id===row.visitId):events.find(v=>String(v.clientId)===String(row.clientId)))?.client,live=liveClient(row.clientId);return {...row,cnpj:row.visitId?RotaMapaClientIdentity.cnpj(snapshot)||RotaMapaClientIdentity.cnpj(live):RotaMapaClientIdentity.cnpj(live)||RotaMapaClientIdentity.cnpj(snapshot)};}
+function identity(row){const events=TraxeloVisits.events?.()||TraxeloVisits.getStore()?.events()||[],snapshot=(row.visitId?events.find(v=>v.id===row.visitId):events.find(v=>String(v.clientId)===String(row.clientId)))?.client,live=liveClient(row.clientId);return {...row,cnpj:row.visitId?RotaMapaClientIdentity.cnpj(snapshot)||RotaMapaClientIdentity.cnpj(live):RotaMapaClientIdentity.cnpj(live)||RotaMapaClientIdentity.cnpj(snapshot)};}
 function salesForVisit(id){return window.RotaMapaSales?.getStore()?.events().find(s=>s.kind==='sale'&&s.visitId===id&&s.status!=='cancelled');}
 function showSelection(row){
  const box=$('visitDetailsSelection');box.replaceChildren();box.hidden=false;box.append(node('h3',row.name));RotaMapaClientIdentity.append(box,identity(row));
  if(row.date)box.append(node('p',(kind==='visits'||kind==='revisits'?'Visita: ':'Última visita no mês: ')+date(row.date)));
  if(row.address)box.append(node('p',row.address));if(row.city)box.append(node('p',row.city));
- if(kind==='visits'){
+ if(kind==='visits'&&row.automaticSaleVisit){box.append(node('p','Registrada automaticamente por venda. Este registro mensal não comprova presença física e acompanha a situação das vendas de origem.'));box.append(action('Consultar vendas de origem',()=>{d.close();RotaMapaSales.openHistory(row.clientId,{month:row.date.slice(0,7)});}));
+ }else if(kind==='visits'){
   const sale=salesForVisit(row.visitId);box.append(node('p',sale?.status==='confirmed'?'Esta visita já possui uma venda registrada.':'O pedido será vinculado a esta visita. O número de visitas permanece o mesmo.'));
   box.append(action(sale?.status==='confirmed'?'Consultar venda':'Registrar venda',()=>{const v=guard().events().find(v=>v.id===row.visitId&&v.status==='confirmed');if(!v)throw Error('Esta visita foi alterada. Atualize a lista antes de lançar a venda.');d.close();window.RotaMapaSales.openVisitSale(row.visitId);}));
  }else if(kind==='unvisited'){

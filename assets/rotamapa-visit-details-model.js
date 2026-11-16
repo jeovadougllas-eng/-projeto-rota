@@ -5,7 +5,7 @@ const M=root.TraxeloVisitsModel;
 function rows(model,kind,{range='today'}={}){
  if(!model?.summary||!Array.isArray(model.visits)||!Array.isArray(model.pdvs))throw Error('O relatório ainda não está disponível.');
  const today=M.day(model.asOf,model.timeZone),visits=[...model.visits];
- const visitRow=v=>({key:v.id,visitId:v.id,clientId:String(v.clientId),name:v.client?.name||v.clientId,date:v.visitDate,address:v.client?.address||'',city:v.client?.city||'',routeId:v.routeId||null});
+ const visitRow=v=>({key:v.id,visitId:v.id,clientId:String(v.clientId),name:v.client?.name||v.clientId,date:v.visitDate,address:v.client?.address||'',city:v.client?.city||'',routeId:v.routeId||null,...(v.automaticSaleVisit?{automaticSaleVisit:true,sourceSaleIds:v.sourceSaleIds}:{} )});
  if(kind==='visits'){
   if(!['today','five'].includes(range))throw Error('Escolha Hoje ou Últimos 5 dias.');
   const first=range==='today'?today:M.add(today,-4);

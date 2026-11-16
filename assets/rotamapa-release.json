@@ -1,9 +1,10 @@
 {
-  "version": "1.17.1",
+  "version": "1.17.2",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Novas vendas e pedidos reais marcam o cliente como visitado no mês da venda, sem duplicar visitas existentes. Registro identificado automaticamente por venda, preservado offline e sincronizado com o pedido; simulações não contam e cancelamentos preservam visitas manuais.",
     "CSV Bússola inclui automaticamente CNPJs fora da carteira ao confirmar, consulta somente a página pública CNPJ.biz, preserva cadastro/pin ao reincluir, sinaliza dados pendentes se o site limitar e evita repetição de clientes e pedidos.",
     "Bloco de notas no Comercial com estilos iPhone/Android por aparelho, cálculos locais por linha com precedência e parênteses, subtotais por loja e total geral, salvamento offline, sincronização por nota com revisão e cópias de conflito, lixeira e compartilhamento de texto.",
     "Rua, número, cidade e UF compatíveis validam a localização Google automaticamente, incluindo número estimado no trecho. Sem número confiável ou com divergência permanece para revisão. Pontos válidos não dependem do carregamento do mapa; recuperação de localizações anteriores com conferência, sem reativar clientes ou alterar dados comerciais.",
