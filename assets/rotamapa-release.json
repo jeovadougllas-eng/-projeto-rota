@@ -1,9 +1,10 @@
 {
-  "version": "1.17.7",
+  "version": "1.17.8",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Novo modelo Dia D de Ofertas com cabeçalho e rodapé de validade automáticos. SUPER COMBO DE OFERTAS reúne Acelera e Dia D da data escolhida em colunas independentes, somente logo EMS e preços com impostos; vigências ficam na legenda. Downloads PNG/TXT e prévias futuras disponíveis em Material de Divulgação.",
     "Vitrine de campanhas permite selecionar datas futuras para preparar cards e textos antecipadamente. PNG, legenda TXT e lista de preços usam a vigência selecionada; pedidos continuam respeitando as datas das campanhas.",
     "Campanhas futuras podem ser preparadas antecipadamente. Consulta inclui vigentes e agendadas; salvar abre a data e modalidade cadastradas, e o desconto só fica disponível durante a vigência.",
     "Bússola usa os totais líquidos originais do CSV para solicitado, atendido e faturado, sem somar etapas ou reconstruir valores por preço bruto. Cancelados destacados, saldo parcial separado e valores consistentes no histórico, ranking, feira, PDF e Excel. Importações antigas permanecem preservadas na sua base original.",
