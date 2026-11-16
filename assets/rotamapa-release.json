@@ -1,9 +1,11 @@
 {
-  "version": "1.17.2",
+  "version": "1.17.3",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Ajuda e perguntas frequentes no rodapé, envio de feedback com imagem opcional, fila offline, acompanhamento pelo usuário e gestão autorizada. Política e termos com identidade RotaMapa e retorno ao endereço atual.",
+    "Bússola confere candidatos por CNPJ, período e produtos, exige confirmar pedido novo quando há correspondências e permite vínculo revisado mesmo com números diferentes entre sistemas. Revisão de duplicidades com backup e correção atômica preserva originais, faturamento e histórico.",
     "Novas vendas e pedidos reais marcam o cliente como visitado no mês da venda, sem duplicar visitas existentes. Registro identificado automaticamente por venda, preservado offline e sincronizado com o pedido; simulações não contam e cancelamentos preservam visitas manuais.",
     "CSV Bússola inclui automaticamente CNPJs fora da carteira ao confirmar, consulta somente a página pública CNPJ.biz, preserva cadastro/pin ao reincluir, sinaliza dados pendentes se o site limitar e evita repetição de clientes e pedidos.",
     "Bloco de notas no Comercial com estilos iPhone/Android por aparelho, cálculos locais por linha com precedência e parênteses, subtotais por loja e total geral, salvamento offline, sincronização por nota com revisão e cópias de conflito, lixeira e compartilhamento de texto.",
