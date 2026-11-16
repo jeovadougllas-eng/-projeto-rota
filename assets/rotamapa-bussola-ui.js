@@ -50,7 +50,7 @@ $('bussolaSave').onclick=async()=>{const ticket=epoch;let errorTarget=null;clear
   if(p.action!=='new'&&!prior)throw Error('Pedido original não encontrado.');
   if(prior&&targets.has(prior.id))throw Error('Não vincule dois pedidos do Bússola ao mesmo registro RM.');
   if(prior)targets.add(prior.id);
-  errorTarget=null;const id=prior?.id||await B.id(p.order,scope.store.owner,scope.store.portfolio);
+  errorTarget=null;const id=prior?.id||await B.id(p.order,scope.store.owner,scope.store.portfolio,scope.store.resetGeneration(p.order.requestDate.slice(0,7)));
   if(ticket!==epoch||!dialog.open)return;guard();
   if(scope.store.events().some(s=>s.kind==='sale'&&s.id!==prior?.id&&B.externalMatch(s,p.order)))throw Error('Pedido já encontrado no histórico. Reabra a importação.');
   try{prepared.push(B.build(p.order,{prior,client,products:products(),productMap:p.productMap,id}));}catch(error){if(error.field==='client'&&!clients.some(c=>B.customerCnpj(c)===p.order.cnpj))error.message='Não foi possível preparar este cliente com segurança. Confira o CNPJ e reabra o arquivo.';errorTarget=error.field==='client'?(dialog.querySelector('[data-bussola-missing-client="'+index+'"]')||dialog.querySelector('[data-bussola-client="'+index+'"]')):error.field==='product'?dialog.querySelector('[data-bussola-product="'+index+':'+error.itemIndex+'"]'):action;throw error;}

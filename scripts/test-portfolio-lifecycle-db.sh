@@ -61,3 +61,6 @@ docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261116103124_help_feedback_and_order_reconciliation.sql
 docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/feedback.sql
 node scripts/reconciliation-db-fixture.mjs | docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1
+
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < supabase/migrations/20261116123402_november_sales_reset_barrier.sql
+docker_local exec -i "$container" psql -U postgres -v ON_ERROR_STOP=1 < test-db/sales-reset.sql

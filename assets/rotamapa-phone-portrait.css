@@ -1,0 +1,27 @@
+/* Keep pinch-to-zoom available. Readable controls prevent Safari's automatic focus zoom. */
+@media(max-width:650px){
+ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+ #authScreen .auth-panel input:not([type=checkbox]),#authScreen input:not([type=checkbox]),body.rm-field.traxio-ui-ready :is(input:not([type=checkbox]):not([type=radio]),select,textarea){font-size:16px!important}
+ #authScreen .auth-panel input:not([type=checkbox]){min-height:44px;height:auto}
+ .visit-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .visit-metrics>div,.visit-metrics .visit-metric-action{min-width:0;max-width:100%}
+ .visit-metrics strong,.visit-metrics span{white-space:normal;overflow-wrap:anywhere}
+ dialog{box-sizing:border-box;min-width:0;max-width:calc(100dvw - 20px)}
+ dialog :is(.row,.grid)>*,body.rm-field main .tab{min-width:0}
+}
+@media(max-width:650px) and (orientation:portrait){
+ body.rm-field.traxio-ui-ready[data-screen] #commerceMetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ body.rm-field.traxio-ui-ready[data-screen] #commerceMetrics>div:nth-child(n+3){grid-column:1/-1}
+ body.rm-field.traxio-ui-ready[data-screen] #commerceMetrics>div{min-width:0;padding:12px}
+ body.rm-field.traxio-ui-ready[data-screen] #commerceMetrics strong{font-size:clamp(23px,6.2vw,30px);line-height:1.2}
+ body.rm-field.traxio-ui-ready[data-screen] #painel .stats-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ body.rm-field.traxio-ui-ready[data-screen] #painel .stat{min-width:0;padding:10px 6px}
+ body.rm-field.traxio-ui-ready[data-screen] #painel .stat strong{font-size:clamp(23px,7vw,34px);overflow-wrap:anywhere}
+ body.rm-field.traxio-ui-ready[data-screen] #painel .stat .muted{white-space:normal;overflow-wrap:anywhere}
+ body.rm-field main :is(.commerce-panel,.visit-report-panel,.field-page-hero,.field-portfolio-switch){min-width:0;max-width:100%}
+ body.rm-field .field-portfolio-switch select{min-width:0;max-width:100%}
+}
+/* Position is measured against the real header, including its safe-area inset once. */
+#billingReminder{max-width:calc(100dvw - var(--sidebar-w) - 16px);white-space:normal;overflow-wrap:anywhere;min-width:0}
+
+body.rm-field.traxio-ui-ready:has(#billingReminder:not([hidden]))>main{top:calc(var(--header-h) + var(--billing-notice-height,52px))}

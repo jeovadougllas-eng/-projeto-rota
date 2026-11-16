@@ -10,14 +10,15 @@ function create(owner,storage=root.localStorage){
  try{const saved=JSON.parse(storage.getItem(key)||'null');if(saved&&saved.schema===1&&Array.isArray(saved.events)&&Array.isArray(saved.outbox)&&saved.baseline&&typeof saved.baseline==='object')state={...state,...saved};else if(storage.getItem(key)!==null)throw Error('Formato local não reconhecido.');}catch{throw Error('O histórico local não pôde ser lido. Preserve os dados deste aparelho antes de continuar.');}
  let busy=false;
  function commit(next){storage.setItem(key,JSON.stringify(next));state=next;return state;}
- function add(event){if(!event?.id||!event.kind)throw Error('Registro inválido.');RotaMapaCommerceModel.validate(event.kind,event);const existing=state.events.find(e=>e.id===event.id);if(existing)return clone(existing);const value={...visitMarker(clone(event),null),version:1};commit({...state,events:[...state.events,value],outbox:[...new Set([...state.outbox,value.id])]});return clone(value);}
+ function add(event){if(!event?.id||!event.kind)throw Error('Registro inválido.');RotaMapaCommerceModel.validate(event.kind,event);const existing=state.events.find(e=>e.id===event.id);if(existing)return clone(existing);const value={...visitMarker(root.RotaMapaSalesReset?.stamp(clone(event),state)||clone(event),null),version:1};commit({...state,events:[...state.events,value],outbox:[...new Set([...state.outbox,value.id])]});return clone(value);}
  function revise(id,patch){const old=state.events.find(e=>e.id===id);if(!old)throw Error('Visita não encontrada.');const value=visitMarker({...old,...clone(patch),id:old.id,kind:old.kind,version:(old.version||1)+1,updatedAt:new Date().toISOString()},old);RotaMapaCommerceModel.validate(value.kind,value);commit({...state,events:state.events.map(e=>e.id===id?value:e),outbox:[...new Set([...state.outbox,id])]});return clone(value);}
- function applyBatch(values){if(!Array.isArray(values)||values.length>500)throw Error('Lote inválido.');const seen=new Set(),events=clone(state.events),outbox=new Set(state.outbox);for(const event of values){if(seen.has(event.id))throw Error('Registro repetido no lote.');seen.add(event.id);RotaMapaCommerceModel.validate(event.kind,event);const index=events.findIndex(e=>e.id===event.id),old=events[index];const value={...visitMarker(clone(event),old),version:(old?.version||0)+1,updatedAt:new Date().toISOString()};if(index<0)events.push(value);else events[index]=value;outbox.add(event.id);}commit({...state,events,outbox:[...outbox]});return clone(values);}
+ function applyBatch(values){if(!Array.isArray(values)||values.length>500)throw Error('Lote inválido.');const seen=new Set(),events=clone(state.events),outbox=new Set(state.outbox);for(const event of values){if(seen.has(event.id))throw Error('Registro repetido no lote.');seen.add(event.id);RotaMapaCommerceModel.validate(event.kind,event);const index=events.findIndex(e=>e.id===event.id),old=events[index];const value={...visitMarker(root.RotaMapaSalesReset?.stamp(clone(event),state)||clone(event),old),version:(old?.version||0)+1,updatedAt:new Date().toISOString()};if(index<0)events.push(value);else events[index]=value;outbox.add(event.id);}commit({...state,events,outbox:[...outbox]});return clone(values);}
  function linkLegacy(token,id){commit({...state,legacyLinks:{...state.legacyLinks,[token]:id}});}
  async function sync(client,{isCurrent=()=>true}={}){
   if(busy)return {busy:true};busy=true;let sent=0,received=0,conflicts=0;
   try{
    const identity=await client.auth.getUser();if(identity.error||identity.data?.user?.id!==owner||!isCurrent())throw Error('A conta mudou. A sincronização foi interrompida.');
+   if(root.RotaMapaSalesReset){const reset=await client.rpc('rotamapa_sales_reset_state');if(reset.error)throw reset.error;if(!isCurrent())return{cancelled:true};commit(root.RotaMapaSalesReset.apply(state,reset.data));}
    const remote=[];
    for(let offset=0;offset<50000;offset+=500){const {data,error}=await client.from('rotamapa_commerce_items').select('id,data,revision').eq('user_id',owner).eq('portfolio_id',portfolio).order('id',{ascending:true}).range(offset,offset+499);if(error)throw error;if(!Array.isArray(data))throw Error('Resposta inválida das vendas na nuvem.');remote.push(...data);if(data.length<500)break;if(offset>=49500)throw Error('Registros acima do limite de leitura. Exporte o backup e contate o suporte.');}
    if(!isCurrent())return {cancelled:true};
@@ -38,7 +39,7 @@ function create(owner,storage=root.localStorage){
    return {sent,received,conflicts,pending:state.outbox.length};
   }finally{busy=false;}
  }
- return {owner,portfolio,key,add,revise,applyBatch,linkLegacy,sync,snapshot:()=>clone(state),events:()=>clone(state.events),syncState:id=>state.outbox.includes(id)?'Pendente de envio':'Sincronizado'};
+ return {owner,portfolio,key,resetGeneration:month=>state.resets?.generations?.[month]||'',add,revise,applyBatch,linkLegacy,sync,snapshot:()=>clone(state),events:()=>clone(state.events),syncState:id=>state.outbox.includes(id)?'Pendente de envio':'Sincronizado'};
 }
 root.RotaMapaCommerceStore={create,canonical};
 })(globalThis);

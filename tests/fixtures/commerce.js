@@ -5,7 +5,7 @@ export async function commerceFixture(page){await page.addInitScript(({owner,pro
  const seed=[{id:productId,portfolio_id:'00000000-0000-4000-8000-000000000000',kind:'product',data:{id:productId,kind:'product',name:'Produto teste XPE - 120ml',priceCents:2000,code:'TESTE'},revision:1}];
  const cache='__commerce_cloud';if(!localStorage.getItem(cache))localStorage.setItem(cache,JSON.stringify(seed));window.__commerceWrites=[];
  const fixture=window.supabase,create=fixture.createClient.bind(fixture);
- fixture.createClient=(...args)=>{const client=create(...args),oldFrom=client.from.bind(client);client.from=table=>{
+ fixture.createClient=(...args)=>{const client=create(...args),oldFrom=client.from.bind(client),oldRpc=client.rpc.bind(client);client.rpc=(name,...rest)=>name==='rotamapa_sales_reset_state'?Promise.resolve({data:JSON.parse(localStorage.getItem('__sales_reset_state')||'{"generations":{},"removedIds":[]}'),error:null}):oldRpc(name,...rest);client.from=table=>{
   if(table==='traxelo_workspace_items'){const cached=JSON.parse(localStorage.getItem(window.RotaMapaPortfolioScope?.key('traxelo.workspace.v1:'+owner,owner)||'traxelo.workspace.v1:'+owner)||'{\"items\":[]}');const q={then:yes=>Promise.resolve({data:cached.items||[],error:null}).then(yes)};for(const method of ['select','eq','order','range'])q[method]=()=>q;return q;}if(!['rotamapa_commerce_items','traxelo_visit_events'].includes(table))return oldFrom(table);
   let mode='read',payload=null,filters=[],offset=0,end=499;
   const key=table==='rotamapa_commerce_items'?cache:'__commerce_visit_cloud',load=()=>JSON.parse(localStorage.getItem(key)||'[]');
