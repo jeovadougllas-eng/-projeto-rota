@@ -64,3 +64,28 @@ body.rm-field.traxio-ui-ready[data-rm-theme] :is(#showroomPresentation>header,#s
 body.rm-field.traxio-ui-ready[data-rm-theme] :is(.material-viewer header,#presentationBody,.showroom-order-bar){background:var(--rm-theme-panel)!important;color:var(--rm-theme-ink)!important;border-color:var(--rm-theme-line)!important}
 body.rm-field.traxio-ui-ready[data-rm-theme] #showroomPresentation #presentationBody .presentation-tiers>button[aria-pressed=true]{background:var(--rm-theme-accent)!important;color:var(--rm-theme-on-accent)!important;border-color:var(--rm-theme-line)!important}
 body.rm-field.traxio-ui-ready[data-rm-theme] #showroomPresentation #presentationTotal{border-color:var(--rm-theme-accent)!important}
+/* Legacy text may set its own color inside an action. The action owns its ink. */
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.field-primary-action,button:not(.secondary):not(.client-link):not(.visit-metric-action)) :is(strong,small,span){color:inherit}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#fieldPortfolioManagement>summary,#fieldRegistryExtra>summary,.dashboard-overview>h2){color:var(--rm-theme-ink)!important}
+/* Deliberate specificity beats legacy component ID selectors, scoped to nodes
+   measured by the contrast guard. It does not recolor maps, logos or images. */
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=black]){color:#000!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=white]){color:#fff!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=plate]){color:var(--rm-theme-ink)!important;background-color:var(--rm-theme-solid)!important;background-image:none!important;box-decoration-break:clone;-webkit-box-decoration-break:clone;border-radius:3px}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=hero]){color:#fff!important;background-color:#002b35!important;background-image:none!important;box-decoration-break:clone;-webkit-box-decoration-break:clone;border-radius:3px}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(input,textarea)::placeholder{color:var(--rm-theme-ink)!important;opacity:1}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(button,input,select,textarea):disabled{opacity:1}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(button,a,input,select,textarea,h1,h2,h3,h4,p,strong,small,span,td,th,summary,label,li){transition-property:transform!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#visitDailyChart svg,#visitCoverageChart svg,#centralCommissionChart){background:var(--rm-theme-solid);color:var(--rm-theme-ink)}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#visitDailyChart,#visitCoverageChart,#centralCommissionChart) text{fill:var(--rm-theme-ink)!important;color:var(--rm-theme-ink)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.notes-card small,.appointment-date[data-urgency=past]){opacity:1}
+/* Keep series distinguishable and match the legend to its line after fixing
+   label contrast. Axes continue to use the theme's primary ink. */
+body.rm-field.traxio-ui-ready[data-rm-theme]{--rm-series-a:#00675f;--rm-series-b:#536100}
+body.rm-field.traxio-ui-ready.traxio-dark[data-rm-theme]{--rm-series-a:#76ffe6;--rm-series-b:#e1ff7a}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#visitDailyChart,#visitCoverageChart) [fill="#24d8bd"]{fill:var(--rm-series-a)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#visitDailyChart,#visitCoverageChart) [stroke="#24d8bd"]{stroke:var(--rm-series-a)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#visitDailyChart,#visitCoverageChart) [fill="#c4ee51"]{fill:var(--rm-series-b)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#visitDailyChart,#visitCoverageChart) [stroke="#c4ee51"]{stroke:var(--rm-series-b)!important}
+
+body.rm-field.traxio-ui-ready[data-rm-theme] #pwaUpdateApply{background:var(--rm-theme-accent)!important;color:var(--rm-theme-on-accent)!important;border-color:var(--rm-theme-line)!important}

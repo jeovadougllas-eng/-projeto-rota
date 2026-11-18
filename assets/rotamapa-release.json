@@ -1,9 +1,10 @@
 {
-  "version": "1.18.2",
+  "version": "1.18.3",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Contraste revisado nos temas claros e escuros: títulos, filtros, botões, campos, rodapé e gráficos legíveis. Proteção de leitura dos textos sobre fotos, gradientes e caixas transparentes, mantendo a opacidade escolhida; acompanha mudanças de tela, foco e conteúdo.",
     "Temas corrigidos: menu lateral, Feira Unifarma, campos e painéis acompanham as cores escolhidas. Opacidade real de 25% a 100%, sem aumento automático. Importação de foto com leitura alternativa, miniatura e aviso próximo ao arquivo. Fundos cósmicos e espaciais alinhados aos parâmetros da prévia.",
     "Preferências → Temas e fundos: 37 opções entre originais, sólidos, gradientes, espaço, cósmicos e estilos para imagem pessoal, além de cor personalizada. Painéis, seletores e diálogos acompanham a paleta, com ajustes de opacidade, escurecimento e desfoque. Escolha e imagem salvas somente nesta conta e aparelho, disponíveis offline; prévia cancelável e restauração do original.",
     "A PWA avisa quando uma nova versão está pronta, com Atualizar agora e Depois. Ativação protege edições, pin, rota e outras janelas; dados salvos e pendências de sincronização permanecem no aparelho. Sobre e atualizações usa o mesmo fluxo seguro.",
