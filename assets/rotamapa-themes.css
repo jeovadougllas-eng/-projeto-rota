@@ -60,3 +60,7 @@ body.rm-field.traxio-ui-ready[data-rm-theme] dialog{background:var(--rm-theme-pa
 #rmThemeBackdrop[data-scene=marte] .rm-theme-planet{background:linear-gradient(135deg,#d58b64,#65392b 40%,#160e1b 75%)}
 body.rm-field.traxio-ui-ready[data-rm-theme] #offlineConnectionStatus{background:var(--rm-theme-solid)!important;color:var(--rm-theme-ink)!important;border-color:var(--rm-theme-line)!important}
 body.rm-field.traxio-ui-ready[data-rm-theme] :is(.theme-toggle,.appointment-bell):not([data-urgency]){color:var(--rm-theme-chrome-ink)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#showroomPresentation>header,#showroomPresentation>footer,#showroomPresentation>header strong,#presentationCounter,#presentationValidity,#savedMaterialViewer>header){color:var(--rm-theme-ink)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.material-viewer header,#presentationBody,.showroom-order-bar){background:var(--rm-theme-panel)!important;color:var(--rm-theme-ink)!important;border-color:var(--rm-theme-line)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] #showroomPresentation #presentationBody .presentation-tiers>button[aria-pressed=true]{background:var(--rm-theme-accent)!important;color:var(--rm-theme-on-accent)!important;border-color:var(--rm-theme-line)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] #showroomPresentation #presentationTotal{border-color:var(--rm-theme-accent)!important}
