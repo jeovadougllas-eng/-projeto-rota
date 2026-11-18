@@ -1,9 +1,10 @@
 {
-  "version": "1.17.8",
+  "version": "1.17.9",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "A PWA avisa quando uma nova versão está pronta, com Atualizar agora e Depois. Ativação protege edições, pin, rota e outras janelas; dados salvos e pendências de sincronização permanecem no aparelho. Sobre e atualizações usa o mesmo fluxo seguro.",
     "Novo modelo Dia D de Ofertas com cabeçalho e rodapé de validade automáticos. SUPER COMBO DE OFERTAS reúne Acelera e Dia D da data escolhida em colunas independentes, somente logo EMS e preços com impostos; vigências ficam na legenda. Downloads PNG/TXT e prévias futuras disponíveis em Material de Divulgação.",
     "Vitrine de campanhas permite selecionar datas futuras para preparar cards e textos antecipadamente. PNG, legenda TXT e lista de preços usam a vigência selecionada; pedidos continuam respeitando as datas das campanhas.",
     "Campanhas futuras podem ser preparadas antecipadamente. Consulta inclui vigentes e agendadas; salvar abre a data e modalidade cadastradas, e o desconto só fica disponível durante a vigência.",
