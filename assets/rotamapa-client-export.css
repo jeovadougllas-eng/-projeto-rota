@@ -1,0 +1,10 @@
+#clientExportDialog{box-sizing:border-box;max-height:calc(100dvh - 24px);overflow:auto;margin:auto}
+#clientExportDialog .client-table{min-width:1190px;width:100%;table-layout:auto}
+#clientExportDialog :is(th,td){padding:10px 12px;font:inherit;font-size:14px;line-height:1.4;text-align:left;white-space:normal;word-break:normal;overflow-wrap:break-word}
+#clientExportDialog th{font-weight:700}
+#clientExportDialog :is(th,td):first-child{min-width:150px;width:150px;white-space:nowrap}
+#clientExportDialog :is(th,td):nth-child(2){min-width:220px;width:220px}
+#clientExportDialog :is(th,td):nth-child(3){min-width:200px;width:200px}
+#clientExportDialog :is(th,td):nth-child(4){min-width:230px;width:230px}
+#clientExportDialog :is(th,td):nth-child(5),#clientExportDialog :is(th,td):nth-child(6){min-width:160px;width:160px}
+#clientExportDialog :is(th,td):nth-child(7){min-width:70px;width:70px;white-space:nowrap}

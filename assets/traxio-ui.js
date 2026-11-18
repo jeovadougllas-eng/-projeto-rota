@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const originalRender = render;
   render = () => { originalRender(); renderRegistry(true); };
   renderRegistry(true);
-  window.RotaMapaRegistry={refresh:()=>renderRegistry()};
+  window.RotaMapaRegistry={refresh:()=>renderRegistry(),filtered:()=>filteredClients().slice()};
 
   // Route modes expose useful planning controls without replacing the route engine.
   el('mapa').prepend(title('Mapa e Rotas','Planeje suas rotas, visualize no mapa e otimize seus trajetos.'));
