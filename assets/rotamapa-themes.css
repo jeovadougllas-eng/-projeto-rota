@@ -38,3 +38,25 @@ body.rm-field #rmThemesDialog input[type=color]{width:64px;min-height:44px;paddi
 body.rm-field.traxio-ui-ready[data-rm-theme] #pwaUpdateNotice{background:var(--rm-theme-solid);color:var(--rm-theme-ink);border-color:var(--rm-theme-line)}body.rm-field.traxio-ui-ready[data-rm-theme] #pwaUpdateNotice :is(p,strong),body.rm-field.traxio-ui-ready[data-rm-theme] #pwaUpdateLock h2{color:var(--rm-theme-ink)!important}
 
 body.rm-field.traxio-ui-ready[data-rm-theme]>.app-scenery{display:none}
+/* Complete opt-in palette: navigation, fair, nested surfaces and semantic variables. */
+body.rm-field.traxio-ui-ready[data-rm-theme]{--bg:var(--rm-theme-base);--card:var(--rm-theme-panel);--surface-selected:var(--rm-theme-accent);--surface-on-selected:var(--rm-theme-on-accent);--field-teal:var(--rm-theme-accent)}
+body.rm-field.traxio-ui-ready[data-rm-theme]>nav.tabs{background:var(--rm-theme-chrome)!important;color:var(--rm-theme-chrome-ink)}
+body.rm-field.traxio-ui-ready[data-rm-theme][data-screen] .tabs>button{background:transparent!important;color:var(--rm-theme-chrome-ink)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme][data-screen] .tabs>button.active{background:var(--rm-theme-accent)!important;color:var(--rm-theme-on-accent)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#accountToggle,.account-menu-heading){background:var(--rm-theme-field)!important;color:var(--rm-theme-ink)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.field-history-actions,.field-map-actions,.field-import-actions,.glass-action,.stat,.fair-metrics>div,.fair-panel,.route-mode-panel,.visit-chart,.registry-controls,.registry-footer,.client-tile,.strategy-option,.history-stats>div,.management-preview article,.notes-editor,.notes-list){background:var(--rm-theme-panel)!important;color:var(--rm-theme-ink)!important;border-color:var(--rm-theme-line)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.fair-edition-tools label,#fairPeriod,#fairFeedback,#fairAccessNote,.fair-panel,.fair-metrics,.field-portfolio-switch,.stat,.history-stats) :is(p,strong,small,label,span){color:inherit}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(#fairPeriod,#fairFeedback,#fairAccessNote,.fair-edition-tools label){color:var(--rm-theme-ink)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] #feiraUnifarma .fair-tabs>button[aria-selected=true]{background:var(--rm-theme-accent)!important;color:var(--rm-theme-on-accent)!important;border-color:var(--rm-theme-line)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.commerce-heading,.account-dialog-head){background:transparent!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.fair-tabs,.appointment-tabs,.route-mode-tabs) button[aria-selected=false]{background:var(--rm-theme-field)!important;color:var(--rm-theme-ink)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.fair-simulation-badge,#fairSimulateOrder){background:#fff1c9!important;color:#573e09!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] dialog::backdrop{background:#0007;backdrop-filter:blur(3px)}
+body.rm-field.traxio-ui-ready[data-rm-theme] dialog{background:var(--rm-theme-panel)!important}
+#rmThemeImagePreview{width:100%;max-height:160px;object-fit:contain;border:1px solid var(--surface-line);border-radius:8px;margin-top:10px}
+#rmThemeImagePreview[hidden]{display:none}
+#rmThemeBackdrop[data-scene=orbita] .rm-theme-planet{background:linear-gradient(135deg,#c6b99b,#5f5444 35%,#1b2032 67%);box-shadow:inset -40px -20px 35px #020512}
+#rmThemeBackdrop[data-scene=lua] .rm-theme-planet{background:radial-gradient(circle at 35% 32%,#c7d3dc,#6d8191 50%,#172334 85%)}
+#rmThemeBackdrop[data-scene=marte] .rm-theme-planet{background:linear-gradient(135deg,#d58b64,#65392b 40%,#160e1b 75%)}
+body.rm-field.traxio-ui-ready[data-rm-theme] #offlineConnectionStatus{background:var(--rm-theme-solid)!important;color:var(--rm-theme-ink)!important;border-color:var(--rm-theme-line)!important}
+body.rm-field.traxio-ui-ready[data-rm-theme] :is(.theme-toggle,.appointment-bell):not([data-urgency]){color:var(--rm-theme-chrome-ink)!important}
