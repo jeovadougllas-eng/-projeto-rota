@@ -43,7 +43,7 @@ add('clientes','cobertura','Cobertura de visitas','Clientes visitados e pendente
 action('clientes','localizacoes','Revisar localizações','Conferir os pontos que precisam de atenção.',()=>go('mapa','localizacoes'));
 action('clientes','gerenciar','Gerenciar carteira','Atualizar, retirar clientes e consultar versões.',()=>go('painel','gerenciar'));
 // Map: keep the real map, pin actions and navigation overlay; move lengthy tools away.
-function beginRouteSelection(){if(window.TraxeloNavigation?.isTracking()){go('mapa');return;}click('clearRoute');$('origin').value='gps';$('origin').dispatchEvent(new Event('change'));selectedIds.clear();syncRouteChoices();renderWorkspace();go('mapa','clientes');}
+function beginRouteSelection(reset=true){if(window.TraxeloNavigation?.isTracking()){go('mapa');return;}click('clearRoute');$('origin').value='gps';$('origin').dispatchEvent(new Event('change'));if(reset)selectedIds.clear();syncRouteChoices();renderWorkspace();go('mapa','clientes');}
 const map=$('mapa'),workspace=take('.workspace',map),mapPanel=take('.workspace-map',map);add('mapa','mapa','Mapa','Mapa da carteira e rota calculada.',[workspace]);
 add('mapa','clientes','Selecionar clientes','Buscar lojas e filtrar cidade, bairros e prioridades.',['fieldMapControls'],()=>{if($('mapClientListDisclosure'))$('mapClientListDisclosure').open=true;});
 add('mapa','planejar','Planejar rota','Origem, estratégia e ordem das paradas.',['routePlannerPanel']);
@@ -52,7 +52,7 @@ add('mapa','ferramentas','Mais ferramentas','Rotas por modo e buscas de localiza
 add('mapa','localizacoes','Revisar localizações','Buscar por nome ou endereço e conferir pins.',['googleLocateClients','googleLocationFeedback','locationReview','clientLocationSearch']);
 const providerFeedback=$('googleLocationFeedback');if(providerFeedback&&mapPanel){const mirror=make('p');mirror.id='rmMapLocationFeedback';mirror.setAttribute('role','status');mirror.setAttribute('aria-live','polite');mapPanel.prepend(mirror);const copyFeedback=()=>{mirror.textContent=providerFeedback.textContent;mirror.hidden=providerFeedback.hidden;};copyFeedback();new MutationObserver(copyFeedback).observe(providerFeedback,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['hidden']});}
 // Keep the heading/context for the tool, rather than hiding the map controls themselves.
-const mapActions=make('div',null,'rm-map-topic-actions');for(const [id,label]of [['clientes','Clientes'],['planejar','Planejar rota'],['salvas','Rotas salvas'],['ferramentas','Ferramentas']])mapActions.append(button(label,()=>id==='planejar'?beginRouteSelection():go('mapa',id),id==='planejar'?'':'secondary'));if(mapPanel)mapPanel.before(mapActions);
+const mapActions=make('div',null,'rm-map-topic-actions');for(const [id,label]of [['clientes','Clientes'],['planejar','Planejar rota'],['salvas','Rotas salvas'],['ferramentas','Ferramentas']])mapActions.append(button(label,()=>id==='planejar'?beginRouteSelection(false):go('mapa',id),id==='planejar'?'':'secondary'));if(mapPanel)mapPanel.before(mapActions);
 // Restore the sequential planning flow using the original strategy/origin controls.
 const selectionView=pages.get('mapa').topics.get('clientes').view,filters=$('fieldMapControls');
 if(filters&&$('regionPicker')){filters.prepend($('regionPicker'));$('regionPicker').open=true;}
