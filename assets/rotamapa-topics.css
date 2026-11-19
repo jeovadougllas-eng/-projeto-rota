@@ -63,3 +63,5 @@ body.rm-topics-ready .rm-topic-icon{display:flex;align-items:center;justify-cont
 body.rm-topics-ready .rm-topic-icon svg{width:25px;height:25px;stroke:currentColor;fill:none}
 body.rm-topics-ready .rm-topic-copy{flex:1}
 body.rm-topics-ready.rm-task-open main>.tab.active>.rm-topic-cover{display:none}
+/* The update invitation remains actionable without covering the task's last controls. */
+body.rm-field.traxio-ui-ready.rm-topics-ready.rm-pwa-update-visible>main{bottom:calc(var(--rm-update-notice-height,180px) + 36px + env(safe-area-inset-bottom,0px))!important;scroll-padding-bottom:20px}

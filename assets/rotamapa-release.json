@@ -1,9 +1,10 @@
 {
-  "version": "1.19.0",
+  "version": "1.19.1",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Busca por nome da farmácia/endereço permanece junto ao mapa durante o ajuste do pin; o campo aparece somente ao conferir uma localização.",
     "Central por tópicos: as áreas do menu abrem com cards de funções. Filtros, consultas, formulários e importações têm espaços próprios, com retorno e seleção preservados.",
     "Mapa em evidência, com seleção de clientes, planejamento, rotas salvas e ferramentas separados. Navegação ampliada e mapa minimizado mantidos.",
     "Dia D: usar condições anteriores, escolher origem e nova data, adicionar/remover produtos, ajustar faixas e conferir a cópia. Percentuais usam a tabela atual; preços fixos são mostrados para revisão. Campanha original preservada e conflitos conferidos antes de salvar.",
