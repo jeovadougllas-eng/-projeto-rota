@@ -1,0 +1,13 @@
+CREATE ROLE authenticated NOLOGIN;CREATE ROLE anon NOLOGIN;
+CREATE SCHEMA auth;CREATE SCHEMA rotamapa_private;CREATE SCHEMA traxelo_private;CREATE SCHEMA test;
+CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
+CREATE FUNCTION public.rotamapa_current_portfolio() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('test.portfolio',true),'')::uuid $$;
+CREATE FUNCTION traxelo_private.portfolio_plan_access() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT jsonb_build_object('plan',coalesce(nullif(current_setting('test.plan',true),''),'pro')) $$;
+CREATE TABLE public.rotamapa_commerce_items(user_id uuid,portfolio_id uuid,id uuid,kind text,data jsonb,PRIMARY KEY(user_id,portfolio_id,id));
+CREATE TABLE public.rotamapa_library_items(user_id uuid,portfolio_id uuid,id text,kind text,source_hash text,data jsonb,PRIMARY KEY(user_id,portfolio_id,id));
+ALTER TABLE public.rotamapa_commerce_items ENABLE ROW LEVEL SECURITY;ALTER TABLE public.rotamapa_library_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY commerce ON public.rotamapa_commerce_items FOR ALL TO authenticated USING(user_id=auth.uid() AND portfolio_id=public.rotamapa_current_portfolio()) WITH CHECK(user_id=auth.uid() AND portfolio_id=public.rotamapa_current_portfolio());
+CREATE POLICY library ON public.rotamapa_library_items FOR ALL TO authenticated USING(user_id=auth.uid() AND portfolio_id=public.rotamapa_current_portfolio()) WITH CHECK(user_id=auth.uid() AND portfolio_id=public.rotamapa_current_portfolio());
+GRANT USAGE ON SCHEMA auth,rotamapa_private,traxelo_private,test TO authenticated;GRANT USAGE ON SCHEMA rotamapa_private TO anon;
+GRANT SELECT,INSERT,UPDATE ON public.rotamapa_commerce_items,public.rotamapa_library_items TO authenticated;
+CREATE FUNCTION test.ensure(ok boolean,label text) RETURNS void LANGUAGE plpgsql AS $$BEGIN IF ok IS DISTINCT FROM true THEN RAISE EXCEPTION 'Failed: %',label;END IF;END$$;

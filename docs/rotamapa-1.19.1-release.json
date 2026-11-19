@@ -1,0 +1,45 @@
+{
+  "version": "1.19.1",
+  "url": "https://traxio-preview.vercel.app/",
+  "target": "production",
+  "status": "READY",
+  "sourceCommit": "8fdd3517b575a5eda29b0ac9ddef62d96bfa8669",
+  "deploymentId": "dpl_5tZML95sq99nYBbpZcKBj3Jt8Ytc",
+  "projectId": "prj_Bes4oJLB9Nsv4tosvzI29F5sfytu",
+  "teamId": "team_nkA7YdysnXiPjmhoqbOoTBzc",
+  "framework": null,
+  "buildDurationMs": 18398,
+  "verifiedPublicFiles": 274,
+  "staticSha256": "all matched",
+  "validation": {
+    "unitTests": 359,
+    "consolidatedBrowser": 28,
+    "responsiveWidths": [
+      320,
+      768,
+      1024,
+      1440
+    ],
+    "correctionWithRealOffline": 8,
+    "publishedSmoke": 8,
+    "importedCopyBrowserLocal": 2,
+    "importedCopyBrowserPublished": 2,
+    "localPostgresAssertions": 32
+  },
+  "database": {
+    "projectId": "ggsptbcgpdakxsdjrldd",
+    "migrationVersion": "20261119151645",
+    "migration": "copied_dia_d_imported_conditions",
+    "securityInvoker": true,
+    "anonymousExecute": false,
+    "rlsPreserved": true,
+    "newAdvisories": 0,
+    "productionTestDataWritten": false
+  },
+  "limits": [
+    "Chromium browser simulations; physical iPhone/Safari not validated",
+    "Hosted database checked through metadata; business writes only in isolated local tests",
+    "Existing advisor warnings unchanged"
+  ],
+  "android": "suspended"
+}
