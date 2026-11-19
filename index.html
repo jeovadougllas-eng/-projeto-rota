@@ -372,6 +372,7 @@ function updateRegionOptions(){
  for(const c of clients){const r=regionParts(c);if(regionCityValue!=='all'&&(norm(r.city)||'unknown')!==regionCityValue)continue;
   if(regionZoneValue!=='all'&&norm(window.RotaMapaBuyerModel?.region(c)||'')!==regionZoneValue)continue;
   const id=norm(r.district)||'unknown';if(!districts.has(id))districts.set(id,r.district||'Bairro não informado');}
+ const natalCity=regionCityValue==='natal'||regionCityValue==='natalrn';if(natalCity&&window.RotaMapaBuyerModel){for(const [zone,names] of Object.entries(RotaMapaBuyerModel.natal)){if(regionZoneValue!=='all'&&norm(zone)!==regionZoneValue)continue;for(const name of names)if(!districts.has(norm(name)))districts.set(norm(name),name);}}
  const ordered=[...districts].sort((a,b)=>a[1].localeCompare(b[1],'pt-BR'));
  const validIds=new Set(ordered.map(([id])=>id));regionSelectedNeighborhoods=new Set([...regionSelectedNeighborhoods].filter(id=>validIds.has(id)));
  box.replaceChildren();for(const [id,name] of ordered){const label=document.createElement('label'),ck=document.createElement('input');ck.type='checkbox';ck.checked=regionSelectedNeighborhoods.has(id);ck.onchange=()=>{if(ck.checked)regionSelectedNeighborhoods.add(id);else regionSelectedNeighborhoods.delete(id);updateRegionSummary();renderWorkspace()};label.append(ck,document.createTextNode(name));box.append(label)}

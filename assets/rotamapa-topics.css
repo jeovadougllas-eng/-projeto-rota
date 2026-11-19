@@ -65,3 +65,5 @@ body.rm-topics-ready .rm-topic-copy{flex:1}
 body.rm-topics-ready.rm-task-open main>.tab.active>.rm-topic-cover{display:none}
 /* The update invitation remains actionable without covering the task's last controls. */
 body.rm-field.traxio-ui-ready.rm-topics-ready.rm-pwa-update-visible>main{bottom:calc(var(--rm-update-notice-height,180px) + 36px + env(safe-area-inset-bottom,0px))!important;scroll-padding-bottom:20px}
+
+#routeSuggestionWizard{box-sizing:border-box;padding:20px;width:min(620px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto}#routeSuggestionWizard h2{margin-top:0}#routeSuggestionWizard .strategy-panel{display:block}#routeSuggestionWizard button{margin-top:12px}#suggestToggle{margin:16px 0;width:100%;min-height:48px}

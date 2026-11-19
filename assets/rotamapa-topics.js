@@ -23,7 +23,7 @@ for(const [id,name]of [['painel','Painel'],['clientes','Clientes'],['mapa','Mapa
 build('ranking','Ranking',$('rankingContent'));build('feiraUnifarma','Feira Unifarma',$('fairWorkspace'));
 const home=$('painel'),hero=take('.traxio-hero',home);if(hero){hero.classList.add('rm-topic-cover');home.prepend(hero);}
 add('painel','carteira','Minha carteira','Clientes, cobertura e pontos a revisar.',[take('.dashboard-overview',home)]);
-action('painel','planejar','Planejar minha rota','Escolher clientes e organizar as paradas.',()=>go('mapa','clientes'));
+action('painel','planejar','Planejar minha rota','Escolher clientes e organizar as paradas.',()=>beginRouteSelection());
 action('painel','agenda','Agenda de hoje','Consultar visitas e compromissos.',()=>go('agendamentos','agenda'));
 action('painel','vendas','Vendas do mês','Consultar pedidos e faturamento.',()=>go('historico','vendas'));
 add('painel','gerenciar','Gerenciar carteiras','Trocar, atualizar ou consultar versões.',['portfolioPanel']);
@@ -43,6 +43,7 @@ add('clientes','cobertura','Cobertura de visitas','Clientes visitados e pendente
 action('clientes','localizacoes','Revisar localizações','Conferir os pontos que precisam de atenção.',()=>go('mapa','localizacoes'));
 action('clientes','gerenciar','Gerenciar carteira','Atualizar, retirar clientes e consultar versões.',()=>go('painel','gerenciar'));
 // Map: keep the real map, pin actions and navigation overlay; move lengthy tools away.
+function beginRouteSelection(){if(window.TraxeloNavigation?.isTracking()){go('mapa');return;}click('clearRoute');$('origin').value='gps';$('origin').dispatchEvent(new Event('change'));selectedIds.clear();syncRouteChoices();renderWorkspace();go('mapa','clientes');}
 const map=$('mapa'),workspace=take('.workspace',map),mapPanel=take('.workspace-map',map);add('mapa','mapa','Mapa','Mapa da carteira e rota calculada.',[workspace]);
 add('mapa','clientes','Selecionar clientes','Buscar lojas e filtrar cidade, bairros e prioridades.',['fieldMapControls'],()=>{if($('mapClientListDisclosure'))$('mapClientListDisclosure').open=true;});
 add('mapa','planejar','Planejar rota','Origem, estratégia e ordem das paradas.',['routePlannerPanel']);
@@ -51,7 +52,28 @@ add('mapa','ferramentas','Mais ferramentas','Rotas por modo e buscas de localiza
 add('mapa','localizacoes','Revisar localizações','Buscar por nome ou endereço e conferir pins.',['googleLocateClients','googleLocationFeedback','locationReview','clientLocationSearch']);
 const providerFeedback=$('googleLocationFeedback');if(providerFeedback&&mapPanel){const mirror=make('p');mirror.id='rmMapLocationFeedback';mirror.setAttribute('role','status');mirror.setAttribute('aria-live','polite');mapPanel.prepend(mirror);const copyFeedback=()=>{mirror.textContent=providerFeedback.textContent;mirror.hidden=providerFeedback.hidden;};copyFeedback();new MutationObserver(copyFeedback).observe(providerFeedback,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['hidden']});}
 // Keep the heading/context for the tool, rather than hiding the map controls themselves.
-const mapActions=make('div',null,'rm-map-topic-actions');for(const [id,label]of [['clientes','Clientes'],['planejar','Planejar rota'],['salvas','Rotas salvas'],['ferramentas','Ferramentas']])mapActions.append(button(label,()=>go('mapa',id),id==='planejar'?'':'secondary'));if(mapPanel)mapPanel.before(mapActions);
+const mapActions=make('div',null,'rm-map-topic-actions');for(const [id,label]of [['clientes','Clientes'],['planejar','Planejar rota'],['salvas','Rotas salvas'],['ferramentas','Ferramentas']])mapActions.append(button(label,()=>id==='planejar'?beginRouteSelection():go('mapa',id),id==='planejar'?'':'secondary'));if(mapPanel)mapPanel.before(mapActions);
+// Restore the sequential planning flow using the original strategy/origin controls.
+const selectionView=pages.get('mapa').topics.get('clientes').view,filters=$('fieldMapControls');
+if(filters&&$('regionPicker')){filters.prepend($('regionPicker'));$('regionPicker').open=true;}
+const wizard=make('dialog',null,'detail-dialog commerce-dialog');wizard.id='routeSuggestionWizard';wizard.setAttribute('aria-labelledby','routeWizardTitle');
+const title=make('h2','Como sugerir a rota?');title.id='routeWizardTitle';
+const close=button('Fechar',()=>wizard.close(),'secondary');close.setAttribute('aria-label','Fechar sugestão de rota');
+const strategyStep=make('section'),originStep=make('section');strategyStep.id='routeStrategyStep';originStep.id='routeOriginStep';originStep.hidden=true;
+wizard.append(title,close,strategyStep,originStep);document.body.append(wizard);
+strategyStep.append($('strategyPanel'));$('strategyPanel').hidden=false;
+const advance=$('generateSuggestion');advance.textContent='Avançar: escolher origem';advance.onclick=()=>{strategyStep.hidden=true;originStep.hidden=false;title.textContent='De onde você quer sair?';$('origin').focus();};
+const originField=$('origin').closest('.field');originStep.append(originField);
+const originNote=make('p','A permissão de localização é controlada pelo navegador e pelo sistema do aparelho.');originStep.append(originNote);
+const originBack=button('Voltar aos critérios',()=>{originStep.hidden=true;strategyStep.hidden=false;title.textContent='Como sugerir a rota?';});
+const calculate=button('Confirmar origem e calcular rota',()=>{wizard.close();go('mapa','planejar');click('calcRoute');});calculate.id='routeWizardCalculate';originStep.append(originBack,calculate);
+$('origin').value='gps';$('origin').dispatchEvent(new Event('change'));
+const suggest=$('suggestToggle');selectionView.append(suggest);suggest.textContent='Sugerir rota';suggest.onclick=null;
+suggest.addEventListener('click',e=>{e.stopImmediatePropagation();if(!selectedIds.size){window.alert('Selecione pelo menos um cliente para sugerir a rota.');return;}originStep.prepend(originField);resumeOrigin.hidden=true;strategyStep.hidden=false;originStep.hidden=true;title.textContent='Como sugerir a rota?';wizard.showModal();},true);
+window.addEventListener('rotamapa:commerce-scope-changed',()=>{if(wizard.open)wizard.close();});
+const resumeOrigin=button('Continuar planejamento',()=>{originStep.prepend(originField);resumeOrigin.hidden=true;wizard.showModal();});resumeOrigin.id='routeResumeOrigin';resumeOrigin.hidden=true;mapActions.append(resumeOrigin);
+$('pickRouteOrigin').addEventListener('click',()=>{wizard.close();go('mapa');mapPanel.prepend(originField);resumeOrigin.hidden=false;});
+
 const oldShow=show;show=function(page,topic){if(page==='mapa'&&!topic)topic='mapa';oldShow(page,topic);if(page==='mapa'){const p=pages.get(page);p.landing.hidden=true;const t=p.topics.get(topic);p.heading.textContent=topic==='mapa'?'Mapa e Rotas':t?.title||'Mapa e Rotas';p.back.hidden=topic==='mapa';if(topic==='mapa')setTimeout(()=>window.dispatchEvent(new Event('resize')),30);}};
 if($('openSavedRoutes'))$('openSavedRoutes').addEventListener('click',()=>go('mapa','salvas'));
 if($('plannerState'))new MutationObserver(()=>{if(current.page==='mapa'&&current.topic==='planejar'&&typeof lastRoute!=='undefined'&&lastRoute&&/Rota (parcialmente )?calculada/.test($('plannerState').textContent))go('mapa');}).observe($('plannerState'),{childList:true,characterData:true,subtree:true});
@@ -107,7 +129,7 @@ for(const [id,page,topic]of [['billingReminder','historico','faturamento'],['cov
 const nav=$('rmMobileMenu')||button('Menu',()=>{const open=document.body.classList.toggle('rm-topic-menu-open');nav.setAttribute('aria-expanded',String(open));},'secondary rm-topic-mobile');nav.id='rmMobileMenu';nav.setAttribute('aria-controls','rmTopicsSidebar');nav.setAttribute('aria-expanded','false');const sidebar=take('body>nav.tabs');if(sidebar)sidebar.id='rmTopicsSidebar';take('body>header')?.prepend(nav);
 window.addEventListener('popstate',event=>{const s=event.state;if(!s?.rmTopics)return;restoring=true;try{while(dialogStack.length&&dialogStack.at(-1).dialog.id!==s.dialog){const last=dialogStack.at(-1);if(!last.dialog.dispatchEvent(new Event('cancel',{cancelable:true}))){history.forward();return;}last.dialog.close();unmount(last);}if(!dialogStack.length){current={page:s.page,topic:s.topic};originalTab(current.page);show(current.page,current.topic);}}finally{restoring=false;}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&dialogStack.length&&!document.querySelector('dialog:modal')&&(!$('accountDialog')||$('accountDialog').hidden)){e.preventDefault();cancelDialog(dialogStack.at(-1).dialog);}});
-new MutationObserver(()=>{if(document.body.classList.contains('auth-locked')){closeAll(true);for(const p of pages.values())show(p.id,null);current={page:'painel',topic:null};remember(true);}}).observe(document.body,{attributes:true,attributeFilter:['class']});
+new MutationObserver(()=>{if(document.body.classList.contains('auth-locked')){if(wizard.open)wizard.close();closeAll(true);for(const p of pages.values())show(p.id,null);current={page:'painel',topic:null};remember(true);}}).observe(document.body,{attributes:true,attributeFilter:['class']});
 document.body.classList.add('rm-topics-ready');current={page:document.querySelector('main>.tab.active')?.id||'painel',topic:null};show(current.page,null);remember(true);
 window.RotaMapaTopics={go,current:()=>({...current}),registerDialog,version:1};
 }
