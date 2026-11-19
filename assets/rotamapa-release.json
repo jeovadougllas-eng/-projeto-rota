@@ -4,6 +4,7 @@
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Planejar rota: filtrar região antes da seleção; Sugerir rota abre os quatro critérios e depois a origem GPS. Planejamento novo separado da seleção anterior e das rotas salvas.",
     "Busca por nome da farmácia/endereço permanece junto ao mapa durante o ajuste do pin; o campo aparece somente ao conferir uma localização.",
     "Central por tópicos: as áreas do menu abrem com cards de funções. Filtros, consultas, formulários e importações têm espaços próprios, com retorno e seleção preservados.",
     "Mapa em evidência, com seleção de clientes, planejamento, rotas salvas e ferramentas separados. Navegação ampliada e mapa minimizado mantidos.",
