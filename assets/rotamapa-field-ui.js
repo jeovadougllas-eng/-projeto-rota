@@ -160,5 +160,5 @@ document.addEventListener('DOMContentLoaded',()=>{
  $('appointmentGenerateRoute').classList.add('field-primary-action');$('appointmentGenerateRoute').replaceChildren(icon('route'),make('span',null,'Gerar rota do dia'));
  const newAppointment=action('Novo agendamento',()=>{$('appointmentNewTab').click();reveal($('appointmentNewPanel'));},'calendar');newAppointment.id='fieldNewAppointment';$('appointmentGenerateRoute').after(newAppointment);
  $('appointmentListTab').click();
- window.RotaMapaFieldUI={version:1,reveal};
+ window.RotaMapaFieldUI={version:1,reveal,icon};
 });

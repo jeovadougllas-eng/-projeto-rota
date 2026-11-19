@@ -1,9 +1,12 @@
 {
-  "version": "1.18.4",
+  "version": "1.19.0",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Central por tópicos: as áreas do menu abrem com cards de funções. Filtros, consultas, formulários e importações têm espaços próprios, com retorno e seleção preservados.",
+    "Mapa em evidência, com seleção de clientes, planejamento, rotas salvas e ferramentas separados. Navegação ampliada e mapa minimizado mantidos.",
+    "Dia D: usar condições anteriores, escolher origem e nova data, adicionar/remover produtos, ajustar faixas e conferir a cópia. Percentuais usam a tabela atual; preços fixos são mostrados para revisão. Campanha original preservada e conflitos conferidos antes de salvar.",
     "Clientes: exportar os marcados em PDF ou Excel, com CNPJ, razão social, nome fantasia, logradouro e número, bairro, cidade e estado, sem CEP. Prévia informa selecionados fora do filtro, permite reunir bairros diferentes e oferece Limpar seleção. Arquivos gerados localmente, inclusive offline; zeros do CNPJ preservados no Excel.",
     "Contraste revisado nos temas claros e escuros: títulos, filtros, botões, campos, rodapé e gráficos legíveis. Proteção de leitura dos textos sobre fotos, gradientes e caixas transparentes, mantendo a opacidade escolhida; acompanha mudanças de tela, foco e conteúdo.",
     "Temas corrigidos: menu lateral, Feira Unifarma, campos e painéis acompanham as cores escolhidas. Opacidade real de 25% a 100%, sem aumento automático. Importação de foto com leitura alternativa, miniatura e aviso próximo ao arquivo. Fundos cósmicos e espaciais alinhados aos parâmetros da prévia.",

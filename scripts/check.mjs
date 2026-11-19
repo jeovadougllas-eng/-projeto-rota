@@ -76,3 +76,5 @@ await import('./check-offline-assets.mjs');
 for(const file of ['rotamapa-product-identity.js','rotamapa-bussola-model.js','rotamapa-bussola-ui.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});
 
 new Script(await readFile(new URL('../assets/rotamapa-file-imports.js',import.meta.url),'utf8'),{filename:'rotamapa-file-imports.js'});
+
+for(const file of ['rotamapa-topics.js','rotamapa-campaign-reuse-model.js','rotamapa-campaign-reuse.js'])new Script(await readFile(new URL('../assets/'+file,import.meta.url),'utf8'),{filename:file});

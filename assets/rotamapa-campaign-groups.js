@@ -26,7 +26,7 @@
  }
  function conditions(campaigns,documents,products,options){
   const docs=documents.map(r=>r.value||r).filter(r=>r.kind==='campaigns'),known=new Set(docs.map(r=>r.id)),rows=[];
-  for(const c of campaigns){if(c.type==='importada'&&known.has(c.imported?.documentId))continue;if(!visible(c,options))continue;
+  for(const c of campaigns){if(c.type==='importada'&&known.has(c.imported?.documentId)&&!c.copiedFrom)continue;if(!visible(c,options))continue;
    rows.push({family:family(c,docs),kind:'legacy',id:c.id,productId:c.productId,name:products.find(p=>p.id===c.productId)?.name||'Produto do histórico',...bounds(c),tiers:c.type==='importada'?c.imported.entries:c.tiers,campaign:c});}
   for(const document of docs){const entries=document.data.entries||[],byProduct=new Map();
    for(const entry of entries){if(!visible(entry,options))continue;const p=entry.productId?products.find(p=>p.id===entry.productId):root.RotaMapaCommissions?.match(entry,products).product;
