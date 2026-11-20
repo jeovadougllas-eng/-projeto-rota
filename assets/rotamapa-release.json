@@ -4,6 +4,7 @@
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Excel EMS: removida declaração duplicada de imagem no pacote do arquivo, corrigindo outra causa do aviso de recuperação no Microsoft Excel.",
     "Correção de compatibilidade do Excel estilizado: ordem OOXML de impressão ajustada para evitar aviso de recuperação do conteúdo.",
     "Planilhas de pedidos com identidade EMS: logo, título mesclado centralizado, tipografia e destaque de quantidade. Mesmo visual no modelo e pedido preenchido.",
     "Excel para Mercado Farma: modelo do catálogo com quantidade em branco e exportação do pedido com quantidades preenchidas, somente nome, EAN e quantidade.",
