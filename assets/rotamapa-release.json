@@ -1,9 +1,10 @@
 {
-  "version": "1.19.7",
+  "version": "1.19.8",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Correção de compatibilidade do Excel estilizado: ordem OOXML de impressão ajustada para evitar aviso de recuperação do conteúdo.",
     "Planilhas de pedidos com identidade EMS: logo, título mesclado centralizado, tipografia e destaque de quantidade. Mesmo visual no modelo e pedido preenchido.",
     "Excel para Mercado Farma: modelo do catálogo com quantidade em branco e exportação do pedido com quantidades preenchidas, somente nome, EAN e quantidade.",
     "Mapa geral mostra toda a carteira: localizações confirmadas em verde e aproximadas em laranja. Planejamento e navegação exibem apenas a seleção da rota. Street View nativo do Google disponível no ajuste do pin.",
