@@ -1,9 +1,10 @@
 {
-  "version": "1.19.9",
+  "version": "1.19.10",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Planilhas de pedidos com bordas finas em todas as células dos produtos, conforme modelo enviado pelo usuário.",
     "Excel EMS: removida declaração duplicada de imagem no pacote do arquivo, corrigindo outra causa do aviso de recuperação no Microsoft Excel.",
     "Correção de compatibilidade do Excel estilizado: ordem OOXML de impressão ajustada para evitar aviso de recuperação do conteúdo.",
     "Planilhas de pedidos com identidade EMS: logo, título mesclado centralizado, tipografia e destaque de quantidade. Mesmo visual no modelo e pedido preenchido.",
