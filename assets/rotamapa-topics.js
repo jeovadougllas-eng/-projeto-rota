@@ -101,6 +101,7 @@ add('dados','ferramentas','Ferramentas da carteira','Backup e ferramentas adicio
 if($('fileImportPortfolio'))pages.get('dados').header.append($('fileImportPortfolio'));if($('fileImportStatus'))pages.get('dados').root.append($('fileImportStatus'));if($('fileImportHub'))$('fileImportHub').hidden=true;if($('fieldCommerceTools'))$('fieldCommerceTools').hidden=true;
 // Commercial entry cards hand off to the original catalog/calculator/campaign dialogs.
 action('promocoes','pedidos','Pedidos','Montar pedidos ou registrar uma venda.',()=>window.RotaMapaSales?.openSale());
+action('promocoes','modelo-pedido','Exemplo de planilha de pedidos','Baixar Excel com produtos, EAN e quantidade em branco.',()=>window.RotaMapaOrderExcel.template());
 action('promocoes','catalogo','Catálogo e preços','Consultar ou cadastrar produtos.',()=>click('openCommerceCatalog'));
 action('promocoes','campanhas','Campanhas','Dia D, Acelera e condições anteriores.',()=>click('openCommerceCampaigns'));
 add('promocoes','materiais','Material de divulgação','Cards, listas e textos por data.',['commercialMaterials']);
