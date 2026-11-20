@@ -135,7 +135,7 @@ renderMarkers=function(){
  for(const p of points){
   const c=p.client,b=node('button','●','traxelo-saved-pin');b.type='button';b.dataset.clientId=String(c.id);b.dataset.locationState=p.ready?'confirmed':'approximate';
   b.title=(p.ready?'Cliente confirmado: ':'Localização aproximada, conferir: ')+c.name;b.setAttribute('aria-label',b.title);
-  if(!p.ready){b.style.background='#c66a00';b.style.border='3px dashed #fff';}
+  if(!p.ready){b.style.setProperty('background','#c66a00','important');b.style.setProperty('border','3px dashed #fff','important');b.style.setProperty('color','#fff','important');}
   b.onclick=()=>window.TraxeloMapActions?.showClient(c.id,{fly:false});
   markers.push(new maplibregl.Marker({element:b}).setLngLat([p.lon,p.lat]).addTo(map));
  }

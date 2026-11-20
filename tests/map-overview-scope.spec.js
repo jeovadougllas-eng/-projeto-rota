@@ -7,6 +7,7 @@ test('general map shows the full portfolio with distinct states; planning shows 
  await page.evaluate(()=>{RotaMapaTopics.go('mapa');renderMarkers();});
  const pins=()=>page.evaluate(()=>markers.map(m=>{const e=m.getElement();return{id:e.dataset.clientId,state:e.dataset.locationState,label:e.getAttribute('aria-label')};}));
  expect((await pins()).map(p=>p.id).sort()).toEqual(['approx','auto','candidate','manual']);expect((await pins()).filter(p=>p.state==='confirmed')).toHaveLength(2);expect((await pins()).filter(p=>p.state==='approximate')).toHaveLength(2);
+ expect(await page.evaluate(()=>{const e=markers.map(m=>m.getElement()).find(e=>e.dataset.locationState==='approximate');document.getElementById('map').append(e);const color=getComputedStyle(e).backgroundColor;e.remove();return color;})).toBe('rgb(198, 106, 0)');
  await page.evaluate(()=>{RotaMapaTopics.go('mapa','clientes');selectedIds.clear();selectedIds.add('manual');syncRouteChoices();renderMarkers();});
  expect((await pins())).toHaveLength(1);expect((await pins())[0].label).toContain('Confirmado manual');
  await page.evaluate(()=>document.querySelector('nav.tabs [data-tab=mapa]').click());
