@@ -1,6 +1,19 @@
 {
   "headers": [
     {
+      "source": "/assets/modelos-pedidos/modelo-pedido-ems-v2.xlsx",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"RotaMapa_Modelo_Pedido_EMS_V2.xlsx\""
+        }
+      ]
+    },
+    {
       "source": "/assets/modelos-pedidos/modelo-pedido-ems.xlsx",
       "headers": [
         {
