@@ -25,7 +25,7 @@ el('backToClient').after(saveAndGo);saveAndGo.onclick=async()=>{
  const c=clients.find(c=>String(c.id)===String(id));if(!c||!P.location(c).ready)return;focusId=String(id);refresh();await navigate(c);
 };
 const baseRender=renderMarkers;renderMarkers=function(){
- baseRender();refresh();const c=client();if(!map||!c||adjustingPin||!valid(c.lat,c.lon))return;
+ baseRender();refresh();const c=client();if(!map||!c||adjustingPin||!valid(c.lat,c.lon)||window.RotaMapaMapOverview?.active()||window.RotaMapaMapScope==='selection'&&!selectedIds.has(c.id))return;
  const b=document.createElement('button');b.type='button';b.className='traxelo-saved-pin traxelo-focused-pin';b.textContent='●';b.setAttribute('aria-label','Destino individual: '+c.name);b.onclick=()=>showClient(c.id,{fly:false});
  markers.push(new maplibregl.Marker({element:b}).setLngLat([Number(c.lon),Number(c.lat)]).addTo(map));
 };

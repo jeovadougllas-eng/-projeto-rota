@@ -1,9 +1,10 @@
 {
-  "version": "1.19.4",
+  "version": "1.19.5",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Mapa geral mostra toda a carteira: localizações confirmadas em verde e aproximadas em laranja. Planejamento e navegação exibem apenas a seleção da rota. Street View nativo do Google disponível no ajuste do pin.",
     "Planejar rota: filtrar região antes da seleção; Sugerir rota abre os quatro critérios e depois a origem GPS. Planejamento novo separado da seleção anterior e das rotas salvas.",
     "Busca por nome da farmácia/endereço permanece junto ao mapa durante o ajuste do pin; o campo aparece somente ao conferir uma localização.",
     "Central por tópicos: as áreas do menu abrem com cards de funções. Filtros, consultas, formulários e importações têm espaços próprios, com retorno e seleção preservados.",

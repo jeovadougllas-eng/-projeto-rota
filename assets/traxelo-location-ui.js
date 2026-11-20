@@ -112,14 +112,36 @@ function refreshSearch(){
   const action=node('button',hasPoint?'Confirmar pin no mapa':'Corrigir endereço','secondary');action.type='button';action.onclick=()=>window.traxeloReviewClient(c.id);row.append(action);list.append(row);
  }
 }
+// Display scope is independent from route selection and never modifies customer coordinates.
+window.RotaMapaMapScope='portfolio';
+function portfolioPoint(c){
+ if(c.active===false||c.deleted_at)return null;
+ const clean=window.RotaMapaGoogleModel?.clean(c)||c;
+ const raw=geoCandidates.get(c.id)||clean.locationCandidate;
+ const candidate=raw?(window.RotaMapaGoogleModel?.clean(raw)||raw):null;
+ const point=valid(clean.lat,clean.lon)?clean:candidate;
+ if(!point||!valid(point.lat,point.lon))return null;
+ if(window.RotaMapaGoogleModel?.automatic(point)&&!map?.__google)return null;
+ return {client:c,lat:Number(point.lat),lon:Number(point.lon),ready:P.location(clean).ready};
+}
+function overview(){return window.RotaMapaMapScope==='portfolio'&&!window.TraxeloNavigation?.isTracking();}
+function overviewPoints(){return clients.map(portfolioPoint).filter(Boolean);}
+function fitOverview(){if(!map)return;const points=overviewPoints();if(!points.length)return;const bounds=new maplibregl.LngLatBounds();points.forEach(p=>bounds.extend([p.lon,p.lat]));map.fitBounds(bounds,{padding:55,maxZoom:16});}
+window.RotaMapaMapOverview={active:overview,points:overviewPoints,fit:fitOverview};
 const originalMarkers=renderMarkers;
 renderMarkers=function(){
- originalMarkers();if(!map)return;
- for(const c of visibleClients().filter(c=>P.location(c).ready&&(!window.RotaMapaGoogleModel?.automatic(c)||map.__google)&&!selectedIds.has(c.id))){
-  const b=node('button','●','traxelo-saved-pin');b.type='button';b.title='Cliente confirmado: '+c.name;b.setAttribute('aria-label',b.title);b.onclick=()=>window.TraxeloMapActions?.showClient(c.id,{fly:false});
-  markers.push(new maplibregl.Marker({element:b}).setLngLat([Number(c.lon),Number(c.lat)]).addTo(map));
+ originalMarkers();if(!map||!overview())return;
+ const points=overviewPoints(),confirmed=points.filter(p=>p.ready).length;el('mapSelectionStatus').textContent='Carteira no mapa: '+confirmed+' confirmados (verde) · '+(points.length-confirmed)+' aproximados (laranja).';
+ for(const p of points){
+  const c=p.client,b=node('button','●','traxelo-saved-pin');b.type='button';b.dataset.clientId=String(c.id);b.dataset.locationState=p.ready?'confirmed':'approximate';
+  b.title=(p.ready?'Cliente confirmado: ':'Localização aproximada, conferir: ')+c.name;b.setAttribute('aria-label',b.title);
+  if(!p.ready){b.style.background='#c66a00';b.style.border='3px dashed #fff';}
+  b.onclick=()=>window.TraxeloMapActions?.showClient(c.id,{fly:false});
+  markers.push(new maplibregl.Marker({element:b}).setLngLat([p.lon,p.lat]).addTo(map));
  }
 };
+nav.querySelector('[data-tab=mapa]')?.addEventListener('click',()=>{if(window.TraxeloNavigation?.isTracking())return;window.RotaMapaMapScope='portfolio';queueMicrotask(()=>{renderMarkers();fitOverview();});});
+el('fitBtn').addEventListener('click',()=>{if(overview())fitOverview();});
 const previousWorkspace=renderWorkspace;
 renderWorkspace=function(){
  previousWorkspace();refreshSearch();
@@ -130,7 +152,7 @@ renderWorkspace=function(){
   }
  }
 };
-async function fitConfirmed(){await initMap();const ready=visibleClients().filter(c=>P.location(c).ready);if(!map||!ready.length)return;renderMarkers();const bounds=new maplibregl.LngLatBounds();ready.forEach(c=>bounds.extend([Number(c.lon),Number(c.lat)]));map.fitBounds(bounds,{padding:55,maxZoom:16});}
+async function fitConfirmed(){await initMap();const ready=overview()?overviewPoints():visibleClients().filter(c=>P.location(c).ready);if(!map||!ready.length)return;renderMarkers();const bounds=new maplibregl.LngLatBounds();ready.forEach(c=>bounds.extend([Number(c.lon),Number(c.lat)]));map.fitBounds(bounds,{padding:55,maxZoom:16});}
 el('showLocatedClients').onclick=fitConfirmed;
 el('showLocationReviews').onclick=()=>{el('locationSearchReviewList').hidden=false;el('locationSearchReviewList').scrollIntoView({block:'nearest'});};
 const R=TraxeloGeoRecovery,{SearchFailure}=R;

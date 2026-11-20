@@ -186,6 +186,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(!map.getSource('route')||!map.getLayer('route-line'))throw Error('Não foi possível renderizar o itinerário no mapa.');
  }
  async function calculate(strategy='distance',{existing=null,destination=null,scheduled=null}={}){
+  window.RotaMapaMapScope='selection';
   if(routeBusy){el('mapStatus').textContent='Já há uma operação em andamento. Aguarde ou limpe o trajeto para cancelar.';return;}
   let buyer=existing?.buyer||null;
   if(strategy==='potential'&&!existing&&!destination){try{buyer=await RotaMapaBuyers.prepare();}catch(e){phase('review',e.message);return;}}
@@ -266,6 +267,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(!result)return false;window.TraxeloNavigation?.start();return true;
  }
  async function openSaved(saved,{currentOrigin=true}={}){
+  window.RotaMapaMapScope='selection';
   const localOwner=localStorage.getItem('traxio_sync_owner_v29'),activeOwner=window.TraxeloWorkspace?.getStore()?.owner;if(localOwner&&localOwner!==activeOwner)throw Error('A carteira deste navegador pertence a outra conta. Use um perfil separado antes de abrir esta rota.');
   if(window.TraxeloNavigation?.isTracking()&&!confirm('Trocar a navegação atual pela rota salva? As visitas registradas serão preservadas.'))return false;
   let resolved=TraxeloPremiumModel.resolve(saved,clients,{currentOrigin});
