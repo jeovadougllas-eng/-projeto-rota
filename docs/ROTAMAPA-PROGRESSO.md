@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: Web/PWA 1.19.11 publicada e validada — revisão de temas claros/escuros e lateral fixa, mantendo a central por tópicos; APK/OTA suspensos.
+- Etapa atual: Web/PWA 1.19.12 publicada e validada — títulos sobre imagens e Ajuda/Feedback sem placas verdes; lateral fixa e central por tópicos preservadas; APK/OTA suspensos.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção atual: 1.19.11, dpl_49Mh6jtYmEaXtjdjF5DvhmoBzpk8, READY/production, fonte 49d73bd819e816dc76357a8a890e4d6738a4d9a2, https://traxio-preview.vercel.app/. Complemento Supabase 20261119151645 permanece aplicado; nenhum SQL nesta revisão. Rollback visual 1.19.10 preserva os dados.
+- Produção atual: 1.19.12, dpl_DcBJ5WQvWWvqkdW4RSFuLGjum1eh, READY/production, fonte 48aded87dff71ed4b582bb2461bfe99f68286a84, https://traxio-preview.vercel.app/. Complemento Supabase 20261119151645 permanece aplicado; nenhum SQL nesta revisão. Rollback visual 1.19.11 preserva os dados.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas e horários de uso seguem America/Fortaleza. Referências históricas de etapas e do Prompt Mestre foram preservadas.
 
@@ -1277,3 +1277,5 @@ Pedido: retirar o fundo verde dos títulos nos banners de todos os menus e dos c
 O teste anterior de contraste não verificava ausência de fundos: texto branco em verde era legível, mas contrariava a aparência solicitada. Novo teste verifica explicitamente fundo transparente em todos os títulos visíveis e nos dois controles, junto ao auditor independente de contraste (agora reconhecendo halos opacos nas bordas das letras sobre fotos). Matriz direcionada: 10 menus × 37 paletas × 2 modos × opacidades 25/100 × desktop/celular = 2.960 combinações. Rodada inicial 2/2 passou em 2,3min; rodada final acrescenta os modos originais antes da galeria, capturas do título/rodapé e cliques de Ajuda/Feedback. Resultados finais/publicação registrados abaixo.
 
 Validação final local: 2/2 cenários desktop/celular em 2,5min, cobrindo 2.960 combinações da galeria e mais 40 cenários de menus no modo original claro/escuro. Transparência e contraste aprovados; capturas de título e rodapé do celular inspecionadas. Ajuda e Feedback abrem e fecham normalmente. npm run check e git diff --check aprovados. Testes com Chromium e dados sintéticos, sem conta real; não valida Safari/iPhone físico. Publicação Web/PWA autorizada em andamento; rollback disponível na 1.19.11.
+
+Publicação 1.19.12 concluída: deployment dpl_DcBJ5WQvWWvqkdW4RSFuLGjum1eh READY/production, fonte 48aded87dff71ed4b582bb2461bfe99f68286a84, projeto prj_Bes4oJLB9Nsv4tosvzI29F5sfytu/equipe team_nkA7YdysnXiPjmhoqbOoTBzc e alias https://traxio-preview.vercel.app/ confirmados. Versão, commit, target e SHA256 dos 280 arquivos públicos idênticos ao runtime preparado. Verificação pública: 80 combinações (10 menus, original/galeria, claro/escuro, celular/desktop) com transparência e contraste aprovados; Ajuda/Feedback abrem e fecham. Fetch nativo do Node foi bloqueado por conexão direta; conferência HTTPS repetida com urllib, respeitando o proxy do ambiente, aprovada. Atualização pelo aviso Atualizar agora, sem reinstalação ou limpeza dos dados. Recibo em docs/rotamapa-1.19.12-release.json. Somente Web/PWA, sem SQL/conta real/APK/OTA; limitações de Safari/iPhone físico mantidas.
