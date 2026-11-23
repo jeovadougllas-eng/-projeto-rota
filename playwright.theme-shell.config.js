@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.config.js';export default defineConfig({...base,testMatch:'theme-shell-audit.spec.js',timeout:1200000,workers:2,reporter:'list',outputDir:'test-results-theme-shell',projects:base.projects.filter(p=>['phone-light','desktop-light'].includes(p.name))});

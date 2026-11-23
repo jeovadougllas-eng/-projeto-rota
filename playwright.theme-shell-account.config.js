@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.theme-shell.config.js';export default defineConfig({...base,testMatch:'theme-shell-account.spec.js',outputDir:'test-results-theme-shell-account'});

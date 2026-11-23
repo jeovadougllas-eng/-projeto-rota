@@ -13,7 +13,7 @@ export function auditContrast(){
   if(!text&&!n.matches('input:not([type=checkbox]):not([type=range]):not([type=color]),textarea,select'))continue;
   if(n.closest('svg')&&!n.matches('text'))continue;if(n.matches('option')||getComputedStyle(n).fontSize==='0px')continue;
   const chain=[];let cur=n;while(cur&&cur!==document.body){chain.unshift(cur);cur=cur.parentElement;}
-  let worst=22,best=0;const levels=[];const fg=rgba(getComputedStyle(n)[n.matches('svg text')?'fill':'color']);for(const base of [[0,0,0],[255,255,255]]){let bg=base;
+  let worst=22,best=0;const levels=[];const fg=rgba(getComputedStyle(n)[n.matches('svg text')?'fill':'color']);const wallpaper=document.getElementById('rmThemeBackdrop')?.style.getPropertyValue('--rm-bg')||'',root=rgba(getComputedStyle(document.body).backgroundColor),uncertain=!!document.body.dataset.rmTheme&&/gradient|url\(/.test(wallpaper)||chain.some(a=>getComputedStyle(a).backgroundImage!=='none'||a.matches('.field-page-hero,.traxio-hero,.showroom-hero'));const bases=!uncertain&&root[3]===1?[root.slice(0,3)]:[[0,0,0],[255,255,255]];for(const base of bases){let bg=base;
    for(const a of chain){const st=getComputedStyle(a);bg=blend(rgba(st.backgroundColor),bg);if(st.backgroundImage!=='none'||a.matches('.field-page-hero,.traxio-hero,.showroom-hero'))bg=base;}
    levels.push(lum(bg));const r=ratio(blend(fg,bg),bg);worst=Math.min(worst,r);best=Math.max(best,r);
   }

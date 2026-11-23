@@ -9,9 +9,9 @@
  const ratio=(a,b)=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05);
  function refresh(root=document.body){if(running)return;running=true;try{
   for(const n of marked)if(!n.isConnected||root===document.body||n===root||root.contains(n)){n.removeAttribute('data-rm-readable');marked.delete(n);}
-  if(!document.body.dataset.rmTheme)return;
+  if(!document.body.classList.contains('rm-field'))return;
   const cache=new WeakMap(),style=n=>{if(!cache.has(n))cache.set(n,getComputedStyle(n));return cache.get(n);},backs=new WeakMap();
-  function backgrounds(n){if(n===document.body||!n)return[[0,0,0],[255,255,255]];if(backs.has(n))return backs.get(n);const bg=rgba(style(n).backgroundColor);let out=backgrounds(n.parentElement).map(b=>blend(bg,b));
+  function backgrounds(n){if(n===document.body||!n){const wallpaper=document.getElementById('rmThemeBackdrop')?.style.getPropertyValue('--rm-bg')||'';if(document.body.dataset.rmTheme&&/gradient|url\(/.test(wallpaper))return[[0,0,0],[255,255,255]];const bg=rgba(getComputedStyle(document.body).backgroundColor);return bg[3]===1?[bg.slice(0,3)]:[[0,0,0],[255,255,255]];}if(backs.has(n))return backs.get(n);const bg=rgba(style(n).backgroundColor);let out=backgrounds(n.parentElement).map(b=>blend(bg,b));
    // Decorative photos/gradients can contain any color. An opaque control/plate
    // above them resolves that uncertainty in the subsequent compositing step.
    if(style(n).backgroundImage!=='none'||n.matches('.field-page-hero,.traxio-hero,.showroom-hero'))out=[[0,0,0],[255,255,255]];
@@ -33,6 +33,6 @@
  }finally{running=false;}}
  function schedule(root=document.body){if(!(root instanceof Element))root=document.body;pendingRoots.add(root);if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;const roots=[...pendingRoots];pendingRoots.clear();for(const n of roots)if(n.isConnected&&!roots.some(other=>other!==n&&other.contains(n)))refresh(n);});}
  new MutationObserver(records=>{for(const r of records){const root=r.target.nodeType===1?r.target:r.target.parentElement;if(root?.closest('.gm-style,.maplibregl-map,#rmThemeBackdrop'))continue;schedule(root);}}).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','style','hidden','open','disabled','aria-selected','aria-pressed','data-rm-theme']});
- window.addEventListener('resize',()=>schedule());for(const event of ['pointerover','pointerout','focusin','focusout'])document.addEventListener(event,e=>{const control=e.target.closest?.('button,a,input,textarea,select,summary,[role=button]');if(control)schedule(control.parentElement);},true);document.addEventListener('toggle',e=>schedule(e.target),true);
+ window.addEventListener('resize',()=>schedule());for(const event of ['pointerover','pointerout','focusin','focusout'])document.addEventListener(event,e=>{const control=e.target.closest?.('button,a,input,textarea,select,summary,[role=button]');if(control)schedule(control.parentElement);},true);document.addEventListener('transitionend',e=>schedule(e.target.parentElement),true);document.addEventListener('toggle',e=>schedule(e.target),true);
  window.RotaMapaThemeContrast=Object.freeze({refresh});schedule();
 })();

@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.theme-shell-behavior.config.js';export default defineConfig({...base,use:{...base.use,baseURL:'https://traxio-preview.vercel.app',serviceWorkers:'block'},webServer:undefined,outputDir:'test-results-theme-shell-published'});

@@ -1,0 +1,39 @@
+/* Shared shell palette and permanent navigation. No business control is moved. */
+body.rm-field.traxio-ui-ready:not([data-rm-theme]){--rm-theme-base:#eef6f4;--rm-theme-solid:#f5fbf8;--rm-theme-panel:var(--glass);--rm-theme-field:var(--surface-field);--rm-theme-ink:var(--surface-ink);--rm-theme-muted:var(--surface-muted);--rm-theme-line:var(--surface-line);--rm-theme-chrome:#e6f1ed;--rm-theme-chrome-ink:#133e45;--rm-theme-accent:#00796e;--rm-theme-on-accent:#fff;--bg:var(--rm-theme-base);--ink:var(--surface-ink);--text:var(--surface-ink);--panel:var(--glass);--line:var(--surface-line);--muted:var(--surface-muted)}
+body.rm-field.traxio-ui-ready.traxio-dark:not([data-rm-theme]){--rm-theme-base:#002832;--rm-theme-solid:#03313b;--rm-theme-chrome:#002e38;--rm-theme-chrome-ink:#f3fbfa}
+body.rm-field.traxio-ui-ready{background:var(--rm-theme-base)!important;color:var(--rm-theme-ink)!important;color-scheme:light}
+body.rm-field.traxio-ui-ready.traxio-dark{color-scheme:dark}
+body.rm-field.traxio-ui-ready:not(.traxio-dark)>.app-scenery{display:none!important}
+body.rm-field.traxio-ui-ready>main{background:var(--rm-theme-base)!important;color:var(--rm-theme-ink)}
+body.rm-field.traxio-ui-ready[data-rm-theme]>main{background:transparent!important}
+body.rm-field.traxio-ui-ready>:is(header,nav.tabs){background:var(--rm-theme-chrome)!important;color:var(--rm-theme-chrome-ink)!important}
+body.rm-field.traxio-ui-ready :is(.theme-toggle,.appointment-bell:not([data-urgency]),.appointment-bell[data-urgency=normal],.header-motto){color:var(--rm-theme-chrome-ink)!important}
+body.rm-field.traxio-ui-ready #agendaDashboard,body.rm-field.traxio-ui-ready .premium-panel{background:var(--rm-theme-panel)!important;color:var(--rm-theme-ink)!important;border-color:var(--rm-theme-line)!important}
+body.rm-field.traxio-ui-ready #agendaDashboard :is(h2,p,small,strong){background:transparent!important;color:inherit!important}
+body.rm-field.traxio-ui-ready #traxio-legal-links :is(a,button),body.rm-field.traxio-ui-ready #traxio-legal-links :is(a,button):hover{background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;color:var(--rm-theme-ink)!important;text-decoration:underline!important;font:inherit!important;padding:4px 0!important;min-height:32px!important;border-radius:0!important}
+body.rm-field.traxio-ui-ready #traxio-legal-links{gap:12px 20px;flex-wrap:wrap}
+/* Keep the same ten navigation entries visible beside the topic pages. */
+body.rm-field.traxio-ui-ready.rm-topics-ready #rmMobileMenu{display:none!important}
+body.rm-field.traxio-ui-ready.rm-topics-ready>nav.tabs,body.rm-field.traxio-ui-ready.rm-topics-ready.rm-topic-menu-open>nav.tabs{display:flex!important;flex-direction:column!important;position:fixed!important;left:0!important;right:auto!important;top:var(--header-h)!important;bottom:0!important;width:var(--sidebar-w)!important;max-width:var(--sidebar-w)!important;height:auto!important;max-height:calc(100dvh - var(--header-h))!important;margin:0!important;padding:6px 4px max(6px,env(safe-area-inset-bottom))!important;gap:3px!important;overflow-y:auto!important;z-index:25!important;box-sizing:border-box}
+body.rm-field.traxio-ui-ready.rm-topics-ready[data-screen]>nav.tabs>button{flex:1 0 44px!important;min-height:44px!important;max-height:74px;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:3px!important;padding:5px 2px!important;width:100%!important;font-size:11px!important;line-height:1.15!important;color:var(--rm-theme-chrome-ink)!important}
+body.rm-field.traxio-ui-ready.rm-topics-ready[data-screen]>nav.tabs>button.active{background:var(--rm-theme-accent)!important;color:var(--rm-theme-on-accent)!important}
+body.rm-field.traxio-ui-ready.rm-topics-ready>main,body.rm-field.traxio-ui-ready.rm-topics-ready.rm-topic-menu-open>main{left:var(--sidebar-w)!important;right:0!important;width:auto!important;max-width:none!important;margin-left:0!important;margin-top:0!important;box-sizing:border-box!important}
+@media(max-width:600px){body.rm-field.traxio-ui-ready.rm-topics-ready>main{padding-left:10px!important;padding-right:10px!important}body.rm-field.traxio-ui-ready.rm-topics-ready>header{gap:5px!important}body.rm-field.traxio-ui-ready.rm-topics-ready>nav.tabs svg{width:24px;height:24px}}
+body.rm-field.traxio-ui-ready:not(.traxio-dark) #rmThemeBackdrop .rm-theme-shade{background:#fff}
+body.rm-field.traxio-ui-ready:not(.traxio-dark) #rmThemeBackdrop[data-kind=photo] .rm-theme-shade{opacity:max(.75,var(--rm-shade))}
+/* The guard also protects the original light/dark appearance. */
+body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=black]){color:#000!important}
+body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=white]){color:#fff!important}
+body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=plate]){color:var(--rm-theme-ink)!important;background-color:var(--rm-theme-solid)!important;background-image:none!important}
+body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=hero]){color:#fff!important;background-color:#002b35!important}
+body.rm-field.traxio-ui-ready :is(dialog,.detail-dialog,.account-dialog,#accountMenu,.fair-panel,.route-mode-panel,.visit-chart,.client-tile,.strategy-option,.feedback-card,.fair-metrics>div,.appointment-notice,.registry-controls,.registry-footer,.notes-editor,.notes-list){background:var(--rm-theme-panel)!important;color:var(--rm-theme-ink)!important;border-color:var(--rm-theme-line)!important}
+body.rm-field.traxio-ui-ready:not(.traxio-dark) .header-brand{background:#003843;border-radius:8px}
+/* One quiet footer surface protects plain links over arbitrary imported imagery. */
+body.rm-field.traxio-ui-ready #traxio-legal-links{background:var(--rm-theme-solid)!important}
+/* Respect authentication and existing per-account menu visibility. */
+body.rm-field.traxio-ui-ready.rm-topics-ready>nav.tabs>button[hidden],body.rm-field.traxio-ui-ready.rm-topics-ready.auth-locked>nav.tabs{display:none!important}
+/* Avoid transient palette mixtures while the readability guard measures a switch. */
+body.rm-field.traxio-ui-ready :is(button,input,select,textarea){transition:box-shadow .15s!important}
+/* iOS uses white system status icons with the existing black-translucent mode.
+   Preserve their contrast in the safe inset while keeping the app header light. */
+body.rm-field.traxio-ui-ready.iphone-pwa-standalone:not(.traxio-dark)>header{background:linear-gradient(to bottom,#003843 0 var(--iphone-safe-top,env(safe-area-inset-top,0px)),var(--rm-theme-chrome) var(--iphone-safe-top,env(safe-area-inset-top,0px)) 100%)!important}
