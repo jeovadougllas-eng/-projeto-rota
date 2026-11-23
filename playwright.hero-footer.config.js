@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.config.js';export default defineConfig({...base,testMatch:'hero-footer.spec.js',timeout:300000,reporter:'list',outputDir:'test-results-hero-footer',projects:base.projects.filter(p=>['phone-light','desktop-light'].includes(p.name))});

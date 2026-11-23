@@ -25,7 +25,7 @@ body.rm-field.traxio-ui-ready:not(.traxio-dark) #rmThemeBackdrop[data-kind=photo
 body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=black]){color:#000!important}
 body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=white]){color:#fff!important}
 body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=plate]){color:var(--rm-theme-ink)!important;background-color:var(--rm-theme-solid)!important;background-image:none!important}
-body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=hero]){color:#fff!important;background-color:#002b35!important}
+body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=hero]){color:#fff!important;background-color:transparent!important;text-shadow:-1px -1px 0 #001923,1px -1px 0 #001923,-1px 1px 0 #001923,1px 1px 0 #001923,0 2px 4px #001923!important}
 body.rm-field.traxio-ui-ready :is(dialog,.detail-dialog,.account-dialog,#accountMenu,.fair-panel,.route-mode-panel,.visit-chart,.client-tile,.strategy-option,.feedback-card,.fair-metrics>div,.appointment-notice,.registry-controls,.registry-footer,.notes-editor,.notes-list){background:var(--rm-theme-panel)!important;color:var(--rm-theme-ink)!important;border-color:var(--rm-theme-line)!important}
 body.rm-field.traxio-ui-ready:not(.traxio-dark) .header-brand{background:#003843;border-radius:8px}
 /* One quiet footer surface protects plain links over arbitrary imported imagery. */

@@ -1,9 +1,10 @@
 {
-  "version": "1.19.11",
+  "version": "1.19.12",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Títulos sobre imagens sem placa verde, com sombra discreta para leitura. Ajuda e Feedback no rodapé como links sem fundo, em todos os temas claros e escuros.",
     "Revisão de aparência: modo claro em todo o ambiente, cores e contraste consistentes nas paletas, programação com o mesmo painel do tema, Ajuda/Feedback como links e menu fixo na lateral. Páginas por tópicos e funções preservadas.",
     "Planilhas de pedidos com bordas finas em todas as células dos produtos, conforme modelo enviado pelo usuário.",
     "Excel EMS: removida declaração duplicada de imagem no pacote do arquivo, corrigindo outra causa do aviso de recuperação no Microsoft Excel.",

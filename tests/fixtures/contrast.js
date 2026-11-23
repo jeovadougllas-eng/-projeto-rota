@@ -12,6 +12,9 @@ export function auditContrast(){
   const text=[...n.childNodes].filter(t=>t.nodeType===3).map(t=>t.textContent.trim()).join(' ').trim();
   if(!text&&!n.matches('input:not([type=checkbox]):not([type=range]):not([type=color]),textarea,select'))continue;
   if(n.closest('svg')&&!n.matches('text'))continue;if(n.matches('option')||getComputedStyle(n).fontSize==='0px')continue;
+  // A one-pixel dark halo provides the local background at a photo title's glyph edges.
+  const shadow=getComputedStyle(n).textShadow,halos=shadow.match(/rgba?\([^)]*\)/g)||[];
+  if(n.closest('.field-page-hero,.traxio-hero,.showroom-hero')&&halos.length>=4&&halos.every(h=>rgba(h)[3]>=.99)){const fg=rgba(getComputedStyle(n).color);count++;const r=Math.min(...halos.map(h=>ratio(fg,rgba(h))));if(r<4.49)issues.push({selector:path(n),text,ratio:r,kind:'halo'});continue;}
   const chain=[];let cur=n;while(cur&&cur!==document.body){chain.unshift(cur);cur=cur.parentElement;}
   let worst=22,best=0;const levels=[];const fg=rgba(getComputedStyle(n)[n.matches('svg text')?'fill':'color']);const wallpaper=document.getElementById('rmThemeBackdrop')?.style.getPropertyValue('--rm-bg')||'',root=rgba(getComputedStyle(document.body).backgroundColor),uncertain=!!document.body.dataset.rmTheme&&/gradient|url\(/.test(wallpaper)||chain.some(a=>getComputedStyle(a).backgroundImage!=='none'||a.matches('.field-page-hero,.traxio-hero,.showroom-hero'));const bases=!uncertain&&root[3]===1?[root.slice(0,3)]:[[0,0,0],[255,255,255]];for(const base of bases){let bg=base;
    for(const a of chain){const st=getComputedStyle(a);bg=blend(rgba(st.backgroundColor),bg);if(st.backgroundImage!=='none'||a.matches('.field-page-hero,.traxio-hero,.showroom-hero'))bg=base;}
