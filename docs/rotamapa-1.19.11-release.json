@@ -1,0 +1,35 @@
+{
+  "version": "1.19.11",
+  "url": "https://traxio-preview.vercel.app/",
+  "target": "production",
+  "status": "READY",
+  "sourceCommit": "49d73bd819e816dc76357a8a890e4d6738a4d9a2",
+  "deploymentId": "dpl_49Mh6jtYmEaXtjdjF5DvhmoBzpk8",
+  "validation": {
+    "publicFileHashes": 280,
+    "unitTests": 361,
+    "themes": 37,
+    "matrixCombinations": 24272,
+    "textChecks": 1129128,
+    "localFlows": 16,
+    "publishedFlows": 16,
+    "finalTargetedPublishedCases": 4,
+    "offlineRealWorker": 2,
+    "focusHoverCases": 2,
+    "viewportWidths": [
+      320,
+      390,
+      768,
+      1024,
+      1440
+    ]
+  },
+  "limits": [
+    "Chromium browser simulations, no physical iPhone/Android tested",
+    "WebKit could not start because host libraries are missing",
+    "Synthetic authentication, services and business records; no real account writes"
+  ],
+  "databaseChanges": false,
+  "android": "suspended",
+  "rollbackVersion": "1.19.10"
+}
