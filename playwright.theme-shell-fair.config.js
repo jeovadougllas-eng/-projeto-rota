@@ -1,0 +1,1 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.theme-shell-published.config.js';export default defineConfig({...base,testMatch:'theme-shell-fair.spec.js',timeout:900000,outputDir:'test-results-theme-shell-fair'});

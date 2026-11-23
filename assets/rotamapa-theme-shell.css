@@ -20,7 +20,7 @@ body.rm-field.traxio-ui-ready.rm-topics-ready[data-screen]>nav.tabs>button.activ
 body.rm-field.traxio-ui-ready.rm-topics-ready>main,body.rm-field.traxio-ui-ready.rm-topics-ready.rm-topic-menu-open>main{left:var(--sidebar-w)!important;right:0!important;width:auto!important;max-width:none!important;margin-left:0!important;margin-top:0!important;box-sizing:border-box!important}
 @media(max-width:600px){body.rm-field.traxio-ui-ready.rm-topics-ready>main{padding-left:10px!important;padding-right:10px!important}body.rm-field.traxio-ui-ready.rm-topics-ready>header{gap:5px!important}body.rm-field.traxio-ui-ready.rm-topics-ready>nav.tabs svg{width:24px;height:24px}}
 body.rm-field.traxio-ui-ready:not(.traxio-dark) #rmThemeBackdrop .rm-theme-shade{background:#fff}
-body.rm-field.traxio-ui-ready:not(.traxio-dark) #rmThemeBackdrop[data-kind=photo] .rm-theme-shade{opacity:max(.75,var(--rm-shade))}
+body.rm-field.traxio-ui-ready:not(.traxio-dark) #rmThemeBackdrop[data-kind=photo] .rm-theme-shade{opacity:calc(.75 + .25 * var(--rm-shade,0))}
 /* The guard also protects the original light/dark appearance. */
 body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=black]){color:#000!important}
 body.rm-field.traxio-ui-ready :is(#rmContrast1#rmContrast2#rmContrast3,[data-rm-readable=white]){color:#fff!important}
