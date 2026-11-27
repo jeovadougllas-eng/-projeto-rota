@@ -1,0 +1,2 @@
+import{defineConfig}from'playwright/test';import base from'./playwright.config.js';
+export default defineConfig({...base,testMatch:['portfolio-recovery.spec.js','boxes-header.spec.js','portfolio-lifecycle.spec.js','portfolio-update.spec.js','portfolios.spec.js'],reporter:'list',timeout:45000,outputDir:'test-results-wallet-recovery',projects:base.projects.filter(p=>['phone-light','desktop-dark'].includes(p.name)),use:{...base.use,baseURL:process.env.TRAXELO_PWA_BASE||'http://127.0.0.1:4174',serviceWorkers:'block'},webServer:undefined});

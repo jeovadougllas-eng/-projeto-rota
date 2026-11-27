@@ -1,0 +1,12 @@
+import{test,expect}from'playwright/test';import{setupLinks}from'./fixtures/links.js';
+test('EMS-style workbook title, fourth-row headers and Marca retain all 44 box quantities and EANs',async({page})=>{
+ await setupLinks(page);const before=await page.evaluate(()=>JSON.stringify(RotaMapaSales.getStore().events()));await page.evaluate(()=>RotaMapaTopics.go('dados','promocoes'));
+ await page.locator('#centralImportBoxes').click();const bytes=await page.evaluate(()=>{
+  const rows=[['Portfólio de produtos'],[],[],['Categoria','Código','Marca','Apresentação','EAN','Unidades por caixa'],...Array.from({length:44},(_,i)=>['Linha',String(i+1).padStart(5,'0'),'Marca sintética '+i,'10 mg — 30 comprimidos',String(i+1).padStart(13,'0'),i+12])];
+  const book=XLSX.utils.book_new();XLSX.utils.book_append_sheet(book,XLSX.utils.aoa_to_sheet(rows),'Produtos');return[...new Uint8Array(XLSX.write(book,{type:'array',bookType:'xlsx'}))];
+ });
+ await page.locator('#centralImportFile').setInputFiles({name:'Produtos-sinteticos.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',buffer:Buffer.from(bytes)});
+ await expect(page.locator('#centralImportRows .commerce-item')).toHaveCount(44);await expect(page.locator('#centralImportRows')).not.toContainText('Revisar exceção');await expect(page.locator('#centralImportRows')).toContainText('Marca sintética 0');await page.locator('#centralImportSave').click();await expect(page.locator('#centralImportDialog')).toBeHidden();await page.waitForFunction(()=>!document.body.classList.contains('rm-task-open')&&!history.state?.dialog);
+ await page.evaluate(()=>RotaMapaTopics.go('promocoes','consultas'));await expect(page.locator('#centralBoxRows .commerce-item')).toHaveCount(44);await page.locator('#commercialBoxes summary').click();await page.locator('#centralBoxSearch').fill('0000000000001');await expect(page.locator('#centralBoxRows .commerce-item')).toHaveCount(1);await expect(page.locator('#centralBoxRows')).toContainText('12 unidades por caixa');await expect(page.locator('#centralBoxRows')).toContainText('00001');await expect(page.locator('#centralBoxRows')).toContainText('10 mg — 30 comprimidos');
+ expect(await page.evaluate(()=>JSON.stringify(RotaMapaSales.getStore().events()))).toBe(before);await page.reload();await page.waitForFunction(()=>window.RotaMapaTopics);await page.evaluate(()=>RotaMapaTopics.go('promocoes','consultas'));await expect(page.locator('#centralBoxRows .commerce-item')).toHaveCount(44);
+});

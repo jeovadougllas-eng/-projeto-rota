@@ -913,7 +913,7 @@ async function traxioAutoSync({onlyIds=null}={}){
 }
 window.addEventListener('online',()=>traxioScheduleSync(200));
 window.addEventListener('offline',()=>traxioClientSyncStatus());
-window.addEventListener('beforeunload',event=>{if(traxioPendingClients()&&!window.RotaMapaPwaUpdates?.isReloading()){event.preventDefault();event.returnValue='';}});
+window.addEventListener('beforeunload',event=>{if(traxioPendingClients()&&!window.RotaMapaPwaUpdates?.isReloading()&&!window.RotaMapaPortfolios?.isSwitching?.()){event.preventDefault();event.returnValue='';}});
 // Mobile browsers may skip beforeunload. Local storage is already durable; retry on resume/start.
 document.addEventListener('DOMContentLoaded',()=>traxioClientSyncStatus());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)traxioScheduleSync(1200)});

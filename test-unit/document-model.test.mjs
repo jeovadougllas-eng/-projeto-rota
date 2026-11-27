@@ -26,3 +26,9 @@ test('review retains valid price, stock, time and restrictions when another camp
 test('ambiguous OCR lines retain global commercial restrictions for review',()=>{
  const r=M.parseText('Vigência 31/02/2026 a 30/11/2026\n001 Produto 15% mínimo 6\nSomente rede credenciada','campaigns');assert.equal(r.entries.length,0);assert.ok(r.review.length);assert.match(r.review[0].restrictions,/Somente rede credenciada/);
 });
+test('box workbook titles and fourth-row Marca headers retain identifiers, presentations and original line numbers',()=>{
+ const r=M.rows([['Portfólio de produtos'],[],[],['Categoria','Código','Marca','Apresentação','EAN','Unidades por caixa'],['Linha','00123','Marca A','10 mg 30 cp','0000000000123',48]],'boxes');assert.equal(r.review.length,0);assert.equal(r.entries.length,1);assert.deepEqual([r.entries[0].line,r.entries[0].code,r.entries[0].name,r.entries[0].presentation,r.entries[0].ean,r.entries[0].units],[5,'00123','Marca A','10 mg 30 cp','0000000000123',48]);
+});
+test('ambiguous box headers and invalid EANs require review instead of silently choosing a table',()=>{
+ assert.throws(()=>M.rows([['Código','Unidades por caixa'],['001',12],['Código','Unidades por caixa'],['002',24]],'boxes'),/mais de um cabeçalho/);const r=M.rows([['Marca','EAN','Unidades por caixa'],['Marca A','EAN incorreto',12]],'boxes');assert.equal(r.entries.length,0);assert.match(r.review[0].reason,/EAN/);
+});

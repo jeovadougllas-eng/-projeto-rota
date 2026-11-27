@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const portfolio=$('portfolioPanel'),portfolioName=portfolio.querySelector(':scope>div'),portfolioVersion=$('activePortfolioVersion'),switchRow=make('div','field-portfolio-switch');
  switchRow.append(portfolioName,$('choosePortfolio'));
  const portfolioMore=disclosure('Gerenciar carteira','fieldPortfolioManagement',$('updatePortfolio'),$('portfolioVersions'),portfolioVersion,$('portfolioStatus'),$('usefulPortfolioCompany'));
- portfolio.replaceChildren(switchRow,portfolioMore);
+ const recovery=$('portfolioRecovery');portfolio.replaceChildren(switchRow,portfolioMore,...(recovery?[recovery]:[]));
  const next=make('section','field-next-step');next.id='fieldNextStep';next.append(make('h3',null,'Seu próximo passo'));
  const quickButtons=[...quick.querySelectorAll('button')],primary=quickButtons[0];
  quickButtons.forEach((b,i)=>{b.querySelector('.kit-quick-icon')?.replaceWith(icon(['route','map','cloud','sync'][i]));b.querySelector('.action-chevron')?.replaceWith(icon('arrow'));});
