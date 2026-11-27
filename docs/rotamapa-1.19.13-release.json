@@ -1,0 +1,27 @@
+{
+  "version": "1.19.13",
+  "url": "https://traxio-preview.vercel.app/",
+  "target": "production",
+  "status": "READY",
+  "sourceCommit": "03a794a153885e9a5646ee287ab3a5ba3f676e60",
+  "deploymentId": "dpl_EWmB7rSZScxZYVpCYx2TA5UuZEge",
+  "validation": {
+    "publicFileHashes": 280,
+    "modelTests": 363,
+    "publishedBrowserCases": 42,
+    "originalWorkbookProducts": 44,
+    "originalWorkbookReviewRows": 0,
+    "recoveryViewportWidths": [
+      320,
+      390,
+      1440
+    ]
+  },
+  "limits": [
+    "Chromium simulated desktop/phone; no physical iPhone or Safari verified",
+    "Synthetic services and account records; no real account data changed"
+  ],
+  "databaseChanges": false,
+  "android": "suspended",
+  "rollbackVersion": "1.19.12"
+}
