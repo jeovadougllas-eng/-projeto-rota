@@ -19,7 +19,7 @@ function apply(record,original,draft){const next={...record,name:draft.name},cha
 // Public lookup fills only genuinely missing data; manual blanks and pins remain authoritative.
 function enrich(record,data){
  const cnpj=root.RotaMapaClientIdentity.cnpj(record);
- if(!validCnpj(cnpj)||data?.cnpj!==cnpj||data?.companyData?.cnpj!==cnpj||data?.companyData?.source!=='CNPJ.biz · página pública')throw Error('O CNPJ da consulta não corresponde ao cadastro.');
+ if(!validCnpj(cnpj)||data?.cnpj!==cnpj||data?.companyData?.cnpj!==cnpj||!['CNPJ.biz · página pública','BrasilAPI · consulta pública'].includes(data?.companyData?.source))throw Error('O CNPJ da consulta não corresponde ao cadastro.');
  let next=clone(record);next.companyData=clone(data.companyData);
  const addressKeys=['street','houseNumber','complement','city','neighborhood','state','cep'],manual=record.manualFields||{};
  const hasAddress=!!text(record.address)||addressKeys.some(k=>!!text(record[k]));
@@ -31,7 +31,7 @@ function enrich(record,data){
   if(!text(read(record,k))&&!(addressKeys.includes(k)&&text(previousAddress[addressNames[k]||k]))&&!own(manual,k)&&!(protectedAddress&&addressKeys.includes(k))&&text(data[k]))next[k]=text(data[k]);
  }
  if(next.companyLookupPending&&next.name==='Cliente CNPJ '+cnpj&&text(data.name))next.name=text(data.name);
- next.companyLookupPending=false;next.companyLookupProvider='cnpj_biz';delete next.companyError;
+ next.companyLookupPending=false;next.companyLookupProvider=data.companyData.source==='BrasilAPI · consulta pública'?'brasilapi':'cnpj_biz';delete next.companyError;
  if(!protectedAddress)next=root.TraxioGeo.structured(next,{fillMissing:true});
  if(!text(next.address)&&!protectedAddress)next.address=[next.street,next.houseNumber?'nº '+next.houseNumber:'',next.complement].filter(Boolean).join(' · ');
  return next;
