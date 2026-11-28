@@ -1,9 +1,10 @@
 {
-  "version": "1.19.13",
+  "version": "1.19.14",
   "channel": "Atualização de testes",
   "supportEmail": "suporte@rotamapa.example",
   "supportDemo": true,
   "notes": [
+    "Consulta individual ao CNPJ.biz na ficha do cliente para completar campos vazios, inclusive em cadastros manuais com apenas razão social e CNPJ. Dados manuais, campos apagados e pins confirmados preservados; endereço consultado não cria localização automaticamente.",
     "Gerenciamento permanece acessível após arquivar ou excluir carteiras; nova importação usa outra identificação. Exclusões interrompidas podem ser retomadas. Atualização mostra progresso, cancelamento e erros na tela em uso. Tabela de caixas reconhece título antes do cabeçalho, Marca, apresentação e EAN.",
     "Títulos sobre imagens sem placa verde, com sombra discreta para leitura. Ajuda e Feedback no rodapé como links sem fundo, em todos os temas claros e escuros.",
     "Revisão de aparência: modo claro em todo o ambiente, cores e contraste consistentes nas paletas, programação com o mesmo painel do tema, Ajuda/Feedback como links e menu fixo na lateral. Páginas por tópicos e funções preservadas.",

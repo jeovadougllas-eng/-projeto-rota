@@ -16,5 +16,25 @@ function apply(record,original,draft){const next={...record,name:draft.name},cha
  const extraValues=new Map(draft.extras.map(f=>[norm(f.label),f.value]));const update=rows=>rows.map(f=>{const key=aliases.get(norm(f.label));return changed.has(key)?{...f,value:String(changed.get(key))}:editedExtra&&!key&&extraValues.has(norm(f.label))?{...f,value:extraValues.get(norm(f.label))}:f;}).filter(f=>!editedExtra||aliases.has(norm(f.label))||extraValues.has(norm(f.label)));
  for(const [key,backup]of [['importFields','originalImportFields'],['latestImportFields','originalLatestImportFields']]){if(!Array.isArray(original?.[key]))continue;const rows=update(original[key]);if(JSON.stringify(rows)!==JSON.stringify(original[key])){if(!next[backup])next[backup]=clone(original[key]);next[key]=rows;}}
  if(changed.size||editedExtra)next.clientEditedAt=new Date().toISOString();if(new TextEncoder().encode(JSON.stringify(next)).length>262144)throw fail('O cadastro está muito extenso. Reduza os textos adicionais antes de salvar.','extras');return next;}
-root.RotaMapaClientEditModel={definitions,read,extras,stage,apply,validCnpj};
+// Public lookup fills only genuinely missing data; manual blanks and pins remain authoritative.
+function enrich(record,data){
+ const cnpj=root.RotaMapaClientIdentity.cnpj(record);
+ if(!validCnpj(cnpj)||data?.cnpj!==cnpj||data?.companyData?.cnpj!==cnpj||data?.companyData?.source!=='CNPJ.biz · página pública')throw Error('O CNPJ da consulta não corresponde ao cadastro.');
+ let next=clone(record);next.companyData=clone(data.companyData);
+ const addressKeys=['street','houseNumber','complement','city','neighborhood','state','cep'],manual=record.manualFields||{};
+ const hasAddress=!!text(record.address)||addressKeys.some(k=>!!text(record[k]));
+ const protectedAddress=addressKeys.some(k=>own(manual,k))||!!record.addressManuallyEdited&&hasAddress;
+ const previousAddress=root.TraxioGeo.addressParts({...record,addressFieldsVersion:undefined}),addressNames={houseNumber:'house',neighborhood:'district',cep:'zip'};
+ // Older empty manual registrations were incorrectly marked as edited addresses.
+ if(!protectedAddress&&!hasAddress){next.addressManuallyEdited=false;const region=next.geocodingRegionOverride;if(region&&!['city','district','state'].some(k=>text(region[k])))delete next.geocodingRegionOverride;}
+ for(const k of ['fantasyName',...addressKeys,'phone','email']){
+  if(!text(read(record,k))&&!(addressKeys.includes(k)&&text(previousAddress[addressNames[k]||k]))&&!own(manual,k)&&!(protectedAddress&&addressKeys.includes(k))&&text(data[k]))next[k]=text(data[k]);
+ }
+ if(next.companyLookupPending&&next.name==='Cliente CNPJ '+cnpj&&text(data.name))next.name=text(data.name);
+ next.companyLookupPending=false;next.companyLookupProvider='cnpj_biz';delete next.companyError;
+ if(!protectedAddress)next=root.TraxioGeo.structured(next,{fillMissing:true});
+ if(!text(next.address)&&!protectedAddress)next.address=[next.street,next.houseNumber?'nº '+next.houseNumber:'',next.complement].filter(Boolean).join(' · ');
+ return next;
+}
+root.RotaMapaClientEditModel={definitions,read,extras,stage,apply,enrich,validCnpj};
 })(globalThis);
