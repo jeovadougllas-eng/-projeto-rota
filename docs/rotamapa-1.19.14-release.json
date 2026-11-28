@@ -1,0 +1,22 @@
+{
+  "version": "1.19.14",
+  "url": "https://traxio-preview.vercel.app/",
+  "target": "production",
+  "status": "READY",
+  "sourceCommit": "8b5eb420f5d5f3b00e515c4a5a978b7dadea6e8b",
+  "deploymentId": "dpl_8UZGjzKFfKGp83k1Yb5P6X1rHbpb",
+  "validation": {
+    "publicFileHashes": 280,
+    "modelTests": 366,
+    "localBrowserCases": 26,
+    "publishedBrowserCases": 24
+  },
+  "limits": [
+    "Chromium with simulated desktop/phone; no physical iPhone or Safari verified",
+    "Synthetic service responses and account records; CNPJ.biz availability remains external",
+    "No real account data changed"
+  ],
+  "databaseChanges": false,
+  "android": "suspended",
+  "rollbackVersion": "1.19.13"
+}

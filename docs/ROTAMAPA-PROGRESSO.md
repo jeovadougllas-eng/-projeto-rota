@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: Web/PWA 1.19.13 publicada e validada — recuperação de carteiras, atualização com feedback visível e leitura do modelo de caixas padrão; APK/OTA suspensos.
+- Etapa atual: Web/PWA 1.19.14 publicada e validada — consulta individual ao CNPJ.biz e preenchimento de cadastro manual vazio; APK/OTA suspensos.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção atual: 1.19.13, dpl_EWmB7rSZScxZYVpCYx2TA5UuZEge, READY/production, fonte 03a794a153885e9a5646ee287ab3a5ba3f676e60, https://traxio-preview.vercel.app/. Complemento Supabase 20261119151645 e cadastro autorizado do Arrastão permanecem preservados; nenhum SQL nesta revisão. Rollback 1.19.12 preserva os dados.
+- Produção atual: 1.19.14, dpl_8UZGjzKFfKGp83k1Yb5P6X1rHbpb, READY/production, fonte 8b5eb420f5d5f3b00e515c4a5a978b7dadea6e8b, https://traxio-preview.vercel.app/. Complemento Supabase 20261119151645 e cadastro autorizado do Arrastão permanecem preservados; nenhum SQL nesta revisão. Rollback 1.19.13 preserva os dados.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas e horários de uso seguem America/Fortaleza. Referências históricas de etapas e do Prompt Mestre foram preservadas.
 
@@ -1314,3 +1314,6 @@ Implementado botão Completar cadastro pelo CNPJ.biz na ficha do cliente (Client
 Proteções: validação exata de CNPJ e fonte; respostas tardias após mudar conta/carteira não são aplicadas. Pausa cancela a consulta; HTTP 403/429 interrompe sem insistência. Não houve alteração de API, autenticação, SQL, políticas, catálogo, registros de clientes reais ou APK/OTA. A disponibilidade e conteúdo do site público CNPJ.biz continuam externos ao RM.
 
 Validação: 366 testes unitários passaram e npm run check aprovado. 24 cenários de navegador focados passaram em computador e celular; incluem cadastro sintético salvo pela interface somente com razão social/CNPJ, preenchimento individual e em lote, preservação de pin e campos manuais/apagados, persistência, offline, HTTP 403, pausa e troca de conta. Ajustado seletor desatualizado de um teste anterior para entrar no tópico Cadastrar cliente. Também passaram 2 regressões Bússola (computador/celular). Ficha concluída inspecionada visualmente nas duas larguras. Evidências e confirmação da publicação serão registradas após o deploy. Rollback Web/PWA 1.19.13, sem apagar dados. Próximo passo: publicar no projeto Vercel existente e verificar versão, hashes e fluxo no domínio canônico.
+
+
+Publicação concluída em 28/11/2026: fonte 8b5eb420f5d5f3b00e515c4a5a978b7dadea6e8b, deployment dpl_8UZGjzKFfKGp83k1Yb5P6X1rHbpb, projeto prj_Bes4oJLB9Nsv4tosvzI29F5sfytu, equipe team_nkA7YdysnXiPjmhoqbOoTBzc, READY/production. Domínio canônico https://traxio-preview.vercel.app/ confirmado. Manifesto público idêntico ao build local e 280 hashes conferidos; release 1.19.14. Repetidos 24 cenários de navegador no domínio publicado, todos aprovados, com serviços/contas sintéticos e sem gravações reais. Evidência: docs/rotamapa-1.19.14-release.json. Chromium em computador/celular simulados; Safari e iPhone físico não testados. Endpoint público externo não chamado com dados reais. Servidor local de testes encerrado. Para receber: Atualizar agora no aviso da PWA ou Sobre e atualizações. Rollback: versão 1.19.13, fonte 03a794a153885e9a5646ee287ab3a5ba3f676e60. Nenhuma pendência de implementação deste pedido.
