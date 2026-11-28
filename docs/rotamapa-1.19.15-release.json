@@ -1,0 +1,25 @@
+{
+  "version": "1.19.15",
+  "url": "https://traxio-preview.vercel.app/",
+  "target": "production",
+  "status": "READY",
+  "sourceCommit": "8863d7c1add9b710e97f45b2be8c64b5a9eddd55",
+  "deploymentId": "dpl_CmqmSLBwqZtTPFPDCwxvm9yntrgr",
+  "validation": {
+    "publicFileHashes": 280,
+    "modelTests": 372,
+    "localBrowserCases": 40,
+    "publishedBrowserCases": 24,
+    "unauthenticatedEndpointStatus": 401,
+    "livePublicProviderStatus": 200,
+    "screenshotExamplePublicLookupStatus": 200
+  },
+  "limits": [
+    "Chromium simulated desktop/phone; no physical iPhone or Safari verified",
+    "Authenticated app flows use synthetic services/accounts; no real registry writes",
+    "Live public BrasilAPI reads succeeded; external data availability and freshness remain provider-dependent"
+  ],
+  "databaseChanges": false,
+  "android": "suspended",
+  "rollbackVersion": "1.19.14"
+}

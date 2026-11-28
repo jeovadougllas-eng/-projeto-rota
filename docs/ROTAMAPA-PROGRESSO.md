@@ -2,11 +2,11 @@
 
 ## Estado de continuidade
 
-- Etapa atual: Web/PWA 1.19.14 publicada e validada — consulta individual ao CNPJ.biz e preenchimento de cadastro manual vazio; APK/OTA suspensos.
+- Etapa atual: Web/PWA 1.19.15 publicada e validada — consulta pública pela BrasilAPI na ficha, lote e Bússola; APK/OTA suspensos.
 - Conta de continuidade: exclusivamente a conta Codex desta conversa, por decisão posterior do proprietário. Não alternar contas.
 - Branch exclusiva: `dev/rotamapa-atualizacao-integral`.
 - Base: `aebf58353428de586c59cc321032f3e63ce50cee`.
-- Produção atual: 1.19.14, dpl_8UZGjzKFfKGp83k1Yb5P6X1rHbpb, READY/production, fonte 8b5eb420f5d5f3b00e515c4a5a978b7dadea6e8b, https://traxio-preview.vercel.app/. Complemento Supabase 20261119151645 e cadastro autorizado do Arrastão permanecem preservados; nenhum SQL nesta revisão. Rollback 1.19.13 preserva os dados.
+- Produção atual: 1.19.15, dpl_CmqmSLBwqZtTPFPDCwxvm9yntrgr, READY/production, fonte 8863d7c1add9b710e97f45b2be8c64b5a9eddd55, https://traxio-preview.vercel.app/. Complemento Supabase 20261119151645 e cadastro autorizado do Arrastão permanecem preservados; nenhum SQL nesta revisão. Rollback 1.19.14 preserva os dados.
 - Experimental preservada: `4d8c018eed5956a4eef6e87536602a893275746c`; sem merge.
 - Datas e horários de uso seguem America/Fortaleza. Referências históricas de etapas e do Prompt Mestre foram preservadas.
 
@@ -1328,3 +1328,6 @@ Mapeamento explícito: razão social, nome fantasia, tipo/logradouro, número, c
 Ficha, lote e descoberta Bússola passam ao novo endpoint. Intervalos e pausa existentes preservados; HTTP 403/429 interrompe sem contornar bloqueios. Teste público de leitura do CNPJ institucional Banco do Brasil retornou HTTP 200; parser conferiu identidade e campos de endereço sem imprimir dados completos nem gravar clientes. Testes sintéticos de API verificam autenticação, carteira, origem, validação, limites, respostas incorretas e ausência de credenciais no request ao provedor. Validação local: 372 testes unitários aprovados; npm run check e git diff --check aprovados. 24 cenários da ficha/edição e 14 regressões Bússola passaram. Dois testes antigos da entrada da Feira falharam por seletor de aba oculta após a interface por tópicos; corrigido somente o teste para o tópico Pedidos da feira, com os dois casos aprovados na repetição (40 cenários locais validados ao total). Ficha inspecionada visualmente em celular. Resultados da publicação serão registrados nesta etapa. Não houve SQL, migração, alteração de auth/RLS, escrita em conta real, APK/OTA ou integração paga.
 
 Limites: dados dependem da disponibilidade e atualização da BrasilAPI, sem garantia de preenchimento integral. Localização no mapa é separada. Rollback previsto: Web/PWA 1.19.14 (fonte 8b5eb420f5d5f3b00e515c4a5a978b7dadea6e8b), preservando dados já salvos.
+
+
+Publicação 1.19.15 concluída e validada em 28/11/2026: projeto prj_Bes4oJLB9Nsv4tosvzI29F5sfytu, equipe team_nkA7YdysnXiPjmhoqbOoTBzc, deployment dpl_CmqmSLBwqZtTPFPDCwxvm9yntrgr READY/production, fonte 8863d7c1add9b710e97f45b2be8c64b5a9eddd55. Alias canônico https://traxio-preview.vercel.app/ confirmado, manifesto público idêntico ao build e 280 hashes conferidos. Novo /api/cnpj publicado e recusando acesso sem sessão com HTTP 401. Repetidos 24 testes de ficha/edição no domínio público, todos aprovados, com contas e serviços simulados. A consulta pública externa do exemplo do print também retornou HTTP 200 com identidade e campos de endereço; nenhum dado desse cliente foi salvo ou publicado nesta validação. Evidência: docs/rotamapa-1.19.15-release.json. Nenhuma alteração no banco ou autenticação; APK/OTA suspensos. Servidor local encerrado. Atualização: Atualizar agora na PWA; caminho Clientes → Consultar e selecionar clientes → Ver ficha → Completar cadastro pela BrasilAPI. Rollback Web/PWA 1.19.14, fonte 8b5eb420f5d5f3b00e515c4a5a978b7dadea6e8b, preservando registros. Não houve teste em iPhone físico/Safari nem login real. Nenhuma pendência de implementação deste pedido.
